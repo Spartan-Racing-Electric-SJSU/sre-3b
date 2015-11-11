@@ -1,0 +1,50 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.23107.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{A24353ED-78BD-4B86-8F5E-D6CB5B5A3F69}"
+	ProjectSection(SolutionItems) = preProject
+		APDB.h = APDB.h
+		DIAG_Constants.h = DIAG_Constants.h
+		DIAG_Functions.h = DIAG_Functions.h
+		IO_ADC.h = IO_ADC.h
+		IO_CAN.h = IO_CAN.h
+		IO_Constants.h = IO_Constants.h
+		IO_DIO.h = IO_DIO.h
+		IO_Driver.h = IO_Driver.h
+		IO_EEPROM.h = IO_EEPROM.h
+		IO_POWER.h = IO_POWER.h
+		IO_PWD.h = IO_PWD.h
+		IO_PWM.h = IO_PWM.h
+		IO_RTC.h = IO_RTC.h
+		IO_UART.h = IO_UART.h
+		IO_WDTimer.h = IO_WDTimer.h
+		main.c = main.c
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "make", "make", "{DE1080CD-0A24-415F-8889-D5D10F6CC096}"
+	ProjectSection(SolutionItems) = preProject
+		make\flash.cmm = make\flash.cmm
+		make\make.bat = make\make.bat
+		make\make.exe = make\make.exe
+		make\Makefile = make\Makefile
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "build", "build", "{F0192D88-2512-47B4-8B37-4B70EF5A0B6F}"
+	ProjectSection(SolutionItems) = preProject
+		build\AddAPDB.exe = build\AddAPDB.exe
+		build\public.key = build\public.key
+		build\settings.mk = build\settings.mk
+		build\targets.xml = build\targets.xml
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{DE1080CD-0A24-415F-8889-D5D10F6CC096} = {A24353ED-78BD-4B86-8F5E-D6CB5B5A3F69}
+		{F0192D88-2512-47B4-8B37-4B70EF5A0B6F} = {A24353ED-78BD-4B86-8F5E-D6CB5B5A3F69}
+	EndGlobalSection
+EndGlobal
