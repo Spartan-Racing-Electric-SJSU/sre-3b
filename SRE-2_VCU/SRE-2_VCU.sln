@@ -21,6 +21,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		IO_UART.h = IO_UART.h
 		IO_WDTimer.h = IO_WDTimer.h
 		main.c = main.c
+		ptypes_xe167.h = ptypes_xe167.h
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "make", "make", "{DE1080CD-0A24-415F-8889-D5D10F6CC096}"

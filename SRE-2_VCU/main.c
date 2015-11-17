@@ -14,6 +14,13 @@
 *                              RTDS will be turned on when WPS_FR (shock pot)
 *                              is above 1000 ohms.  Turn knob to test output.
 *                            - Updated this file's description (above)
+*                            - Added more RTDS test outputs
+*                              - On/off at 1000 ohms on pins:
+*                                  117, 118, 144
+*                              - Variable output from 100-1500 ohms:
+*                                  105, 106
+*                              - Variable output from 250-1000 ohms:
+*                                  103, 104, 115, 116
 * 2015-11-15 - Rusty Pedrosa - Disabled CAN_FIFO temporarily to fix compile issues
 *                            - Disabled unused sensors temporarily
 * 2015-11-07 - Rusty Pedrosa - Fixed data splitting into bytes for CAN messages
@@ -46,6 +53,7 @@
 #include "APDB.h"
 #include "IO_CAN.h"
 #include "IO_DIO.h"
+#include "IO_PWM.h"
 #include <math.h>
 
 /* Application Database,
@@ -198,9 +206,19 @@ void main(void)
     //Digital outputs
     IO_DO_Init(IO_DO_00);
 
+    //Digital PWM outputs
+    IO_PWM_Init(IO_PWM_00, 100, TRUE, FALSE, 0, FALSE, NULL); //100Hz: On/off at 1000 ohms
+    IO_PWM_Init(IO_PWM_01, 100, TRUE, FALSE, 0, FALSE, NULL); //100Hz: Change from 0 to 100 at 100-1500 ohms
+    IO_PWM_Init(IO_PWM_02, 250, TRUE, FALSE, 0, FALSE, NULL); //250Hz: On/off at 1000 ohms
+    IO_PWM_Init(IO_PWM_03, 250, TRUE, FALSE, 0, FALSE, NULL); //250Hz: Change from 0 to 100% at 100-1500 ohms
+    IO_PWM_Init(IO_PWM_04, 250, TRUE, FALSE, 0, FALSE, NULL); //250Hz: Change from 0 to 100% at 250-1000 ohms
+    IO_PWM_Init(IO_PWM_05, 50, TRUE, FALSE, 0, FALSE, NULL); //Change from 0 to 100% at 250-1000 ohms
+    IO_PWM_Init(IO_PWM_06, 500, TRUE, FALSE, 0, FALSE, NULL); //Change from 0 to 100% at 250-1000 ohms
+    IO_PWM_Init(IO_PWM_07, 1000, TRUE, FALSE, 0, FALSE, NULL); //Change from 0 to 100% at 250-1000 ohms
+
     //ADC channels ---------------------------------------------------
     //TPS
-    IO_ADC_ChannelInit(IO_ADC_5V_00, IO_ADC_RATIOMETRIC, 0, 0, IO_ADC_SENSOR_SUPPLY_0, NULL);
+    IO_ADC_ChannelInit(IO_ADC_5V_00, IO_ADC_RATIOMETRIC, 0, 0, IO_ADC_SENSOR_SUPPLY_0, NULL);  
     IO_ADC_ChannelInit(IO_ADC_5V_01, IO_ADC_RATIOMETRIC, 0, 0, IO_ADC_SENSOR_SUPPLY_1, NULL);
 
     //BPS
@@ -361,16 +379,58 @@ void main(void)
         canMessage.data[6] = (ubyte1)Sensor_WPS_RR.sensorValue;
         canMessage.data[7] = Sensor_WPS_RR.sensorValue >> 8;
 
-        //IO_DO Test
+        //RTDS tests ---------------------------------------------------
+        //On/Off @ 1000 ohms ---------------------------------------------------
+        //Hook up RTDS to pin 117 or 118 or 144
         if (Sensor_WPS_FR.sensorValue > 1000)
         {
-            IO_DO_Set(IO_DO_00, TRUE);
+            IO_DO_Set(IO_DO_00, TRUE);                //Pin 144
+            IO_PWM_SetDuty(IO_PWM_00, 0xFFFF, NULL);  //Pin 118
+            IO_PWM_SetDuty(IO_PWM_02, 0xFFFF, NULL);  //Pin 117
         }
         else
         {
-            IO_DO_Set(IO_DO_00, FALSE);
+            IO_DO_Set(IO_DO_00, FALSE);          //Pin 144
+            IO_PWM_SetDuty(IO_PWM_00, 0, NULL);  //Pin 118
+            IO_PWM_SetDuty(IO_PWM_02, 0, NULL);  //Pin 117
         }
-        
+
+        //Variable from 100 to 1500 ohms ---------------------------------------------------
+        //Hook up RTDS to pin 105 or 106
+        sbyte2 calcDuty;
+        ubyte2 finalDuty;
+
+        //Percent = (Voltage - CalibMin) / (CalibMax - CalibMin)
+        calcDuty = 0xFFFF * ((Sensor_WPS_FR.sensorValue - 100) / (1500 - 100));
+        if (calcDuty < 0)
+        {
+            calcDuty = 0;
+        }
+        else if (calcDuty > 1)
+        {
+            calcDuty = 100;
+        }
+        finalDuty = calcDuty;
+        IO_PWM_SetDuty(IO_PWM_01, finalDuty, NULL);  //Pin 106
+        IO_PWM_SetDuty(IO_PWM_03, finalDuty, NULL);  //Pin 105
+
+        //Variable from 250 to 1000 ---------------------------------------------------
+        //Hook up RTDS to pin 103, 104, 115, or 116
+        calcDuty = 0xFFFF * ((Sensor_WPS_FR.sensorValue - 250) / (1000 - 250));
+        if (calcDuty < 0)
+        {
+            calcDuty = 0;
+        }
+        else if(calcDuty > 1)
+        {
+            calcDuty = 100;
+        }
+        finalDuty = calcDuty;
+        IO_PWM_SetDuty(IO_PWM_04, finalDuty, NULL);  //Pin 116
+        IO_PWM_SetDuty(IO_PWM_05, finalDuty, NULL);  //Pin 104
+        IO_PWM_SetDuty(IO_PWM_06, finalDuty, NULL);  //Pin 115
+        IO_PWM_SetDuty(IO_PWM_07, finalDuty, NULL);  //Pin 103
+
         /*
         canMessage[Sensor_WPS_FL.canMessageID].length = 8;
         canMessage[Sensor_WPS_FL.canMessageID].data[0] = Sensor_WPS_FL.sensorValue;
