@@ -1,22 +1,20 @@
 /*****************************************************************************
-* VCU Sensor Input Logic
+* VCU Logic
 ******************************************************************************
-* This file contains rough pseudocode for the INPUT functions that will be 
-* performed by the VCU.  The objective of writing this code is to gain an 
-* understanding for some of the logic that the VCU will perform while 
-* avoiding the specific programming complexities of the VCU itself.
-* 
-* While this file will contain actual calculations used by the VCU, which can
-* be complex or confusing, the code itself should be clear enough that anyone
-* on the team can follow its logic regardless of their level of understanding
-* of computer programming.
+* This file temporarily contains all input/output functions that will be 
+* performed by the VCU.
 *
-* Note that only input functions (reading values from sensors) should be
-* contained within this file.  Translations into usable units (e.g. voltage
-* to throttle percent, for example) DO belong here.
+* Initialization of all I/O pins, sensor object definitions, calculations,
+* output functions, and CAN messaging are all performed here.  These should
+* be split up (how?) later on.
 *
 * Revision history:
-* 2015-11-15 - Rusty Pedrosa - Disabled CAN_FIFO temporarily to sensor issues
+* 2015-11-16 - Rusty Pedrosa - Fixed shock pot ADC channel numbers
+*                            - Added IO_DO test code (for driving RTDS):
+*                              RTDS will be turned on when WPS_FR (shock pot)
+*                              is above 1000 ohms.  Turn knob to test output.
+*                            - Updated this file's description (above)
+* 2015-11-15 - Rusty Pedrosa - Disabled CAN_FIFO temporarily to fix compile issues
 *                            - Disabled unused sensors temporarily
 * 2015-11-07 - Rusty Pedrosa - Fixed data splitting into bytes for CAN messages
 *                            - Changed all sensors to a single Sensor struct/datatype
@@ -47,6 +45,7 @@
 #include "IO_RTC.h"
 #include "APDB.h"
 #include "IO_CAN.h"
+#include "IO_DIO.h"
 #include <math.h>
 
 /* Application Database,
@@ -196,6 +195,9 @@ void main(void)
     //Variable power supply (used by BPS)
     IO_POWER_Set(IO_SENSOR_SUPPLY_VAR, IO_POWER_14_5_V);    //IO_POWER_Set(IO_PIN_269, IO_POWER_8_5_V);
 
+    //Digital outputs
+    IO_DO_Init(IO_DO_00);
+
     //ADC channels ---------------------------------------------------
     //TPS
     IO_ADC_ChannelInit(IO_ADC_5V_00, IO_ADC_RATIOMETRIC, 0, 0, IO_ADC_SENSOR_SUPPLY_0, NULL);
@@ -333,12 +335,7 @@ void main(void)
         canMessage[Sensor_TPS0.canMessageID].data[1] = Sensor_TPS0.sensorValue >> 8; //TPS0.hibyte
         canMessage[Sensor_TPS0.canMessageID].data[2] = Sensor_TPS1.sensorValue;         //TPS0.lowbyte
         canMessage[Sensor_TPS0.canMessageID].data[3] = Sensor_TPS1.sensorValue >> 8; //TPS0.hibyte
-
-        IO_ADC_Get(IO_ADC_5V_04, &LSPS0.reading, &LSPS0.fresh);
-        IO_ADC_Get(IO_ADC_5V_05, &LSPS1.reading, &LSPS1.fresh);
-        IO_ADC_Get(IO_ADC_5V_06, &LSPS2.reading, &LSPS2.fresh);
-        IO_ADC_Get(IO_ADC_5V_07, &LSPS3.reading, &LSPS3.fresh);
-			
+		
         //Brake Position Sensor ---------------------------------------------------
         IO_ADC_Get(IO_ADC_5V_02, &Sensor_BPS0.sensorValue, &Sensor_BPS0.fresh);
         //Load data into CAN
@@ -351,11 +348,10 @@ void main(void)
 */
         //Shock pots ---------------------------------------------------
         IO_ADC_Get(IO_ADC_5V_04, &Sensor_WPS_FL.sensorValue, &Sensor_WPS_FL.fresh);
-        IO_ADC_Get(IO_ADC_5V_04, &Sensor_WPS_FR.sensorValue, &Sensor_WPS_FR.fresh);
-        IO_ADC_Get(IO_ADC_5V_04, &Sensor_WPS_RL.sensorValue, &Sensor_WPS_RL.fresh);
-        IO_ADC_Get(IO_ADC_5V_04, &Sensor_WPS_RL.sensorValue, &Sensor_WPS_RR.fresh);
+        IO_ADC_Get(IO_ADC_5V_05, &Sensor_WPS_FR.sensorValue, &Sensor_WPS_FR.fresh);
+        IO_ADC_Get(IO_ADC_5V_06, &Sensor_WPS_RL.sensorValue, &Sensor_WPS_RL.fresh);
+        IO_ADC_Get(IO_ADC_5V_07, &Sensor_WPS_RL.sensorValue, &Sensor_WPS_RR.fresh);
 
-        //TEMP ONLYYYYYYYYY
         canMessage.data[0] = (ubyte1)Sensor_WPS_FL.sensorValue;
         canMessage.data[1] = Sensor_WPS_FL.sensorValue >> 8;
         canMessage.data[2] = (ubyte1)Sensor_WPS_FR.sensorValue;
@@ -365,6 +361,15 @@ void main(void)
         canMessage.data[6] = (ubyte1)Sensor_WPS_RR.sensorValue;
         canMessage.data[7] = Sensor_WPS_RR.sensorValue >> 8;
 
+        //IO_DO Test
+        if (Sensor_WPS_FR.sensorValue > 1000)
+        {
+            IO_DO_Set(IO_DO_00, TRUE);
+        }
+        else
+        {
+            IO_DO_Set(IO_DO_00, FALSE);
+        }
         
         /*
         canMessage[Sensor_WPS_FL.canMessageID].length = 8;
