@@ -8,7 +8,18 @@
 * output functions, and CAN messaging are all performed here.  These should
 * be split up (how?) later on.
 *
+* TODO:
+* - Get CAN_FIFO working
+* - Read calibration data from EEPROM on startup
+* - Save calibration data to EEPROM from calibration function
+*
 * Revision history:
+* 2015-11-16 - Rusty Pedrosa - Fixed RTDS PWM % calculation typecasting bug
+*                            - Changed RTDS test pins around
+*                            - RTDS code tested successfully - PWM control works!
+*                            - Added CAN message definition for Rinehart
+*                            - Added TPS calibration check to GetThrottlePosition
+*                            - Fixed some comments
 * 2015-11-16 - Rusty Pedrosa - Fixed shock pot ADC channel numbers
 *                            - Added IO_DO test code (for driving RTDS):
 *                              RTDS will be turned on when WPS_FR (shock pot)
@@ -272,11 +283,11 @@ void main(void)
                      , 0
                      , 0);
 */
-//OLD WORKIGNS TUFF
+//OLD WORKING STUFF
 	ubyte1 handle_w;
 	IO_CAN_DATA_FRAME canMessage;
 	
-	 IO_CAN_Init( IO_CAN_CHANNEL_0
+	IO_CAN_Init( IO_CAN_CHANNEL_0
                , 250
                , 0     //default
                , 0     //default
@@ -288,17 +299,12 @@ void main(void)
                     , IO_CAN_STD_FRAME
                     , 0
                     , 0);
-/*					
-	canMessage.data[0] = LSPS0.reading;
-	canMessage.data[1] = 1;
-	canMessage.data[2] = 2;
-	canMessage.data[3] = 3;
-*/	
+
+    //Temporary: We only define one CAN message
 	canMessage.length = 8; // how many bytes in the message
 	canMessage.id_format = IO_CAN_STD_FRAME;
 	canMessage.id = 1;
 	
-
 	//START WORKIGN HERESTART WORKIGN HERESTART WORKIGN HERESTART WORKIGN HERESTART WORKIGN HERESTART WORKIGN HERESTART WORKIGN HERESTART WORKIGN HERE
 
     //----------------------------------------------------------------------------
@@ -468,13 +474,13 @@ void main(void)
         //Battery voltage (at VCU internal electronics supply input)
         IO_ADC_Get(IO_ADC_UBAT, &Sensor_LVBattery.sensorValue, &Sensor_LVBattery.fresh);
 
-        //----------------------------------------------------------------------------
-        // CAN
-        //----------------------------------------------------------------------------
-
         canMessage[Sensor_LVBattery.canMessageID].length = 2;
         canMessage[Sensor_LVBattery.canMessageID].data[0] = Sensor_LVBattery.sensorValue;
         canMessage[Sensor_LVBattery.canMessageID].data[1] = Sensor_LVBattery.sensorValue >> 8;
+
+        //----------------------------------------------------------------------------
+        // CAN
+        //----------------------------------------------------------------------------
 */
         //canMessage[Sensor_WPS_FL.canMessageID].data[0] = Sensor_WPS_FL.sensorValue;
         //canMessage[Sensor_WPS_FL.canMessageID].data[1] = Sensor_WPS_FL.sensorValue >> 8;
@@ -492,6 +498,37 @@ void main(void)
             
         }
 	 
+
+
+
+
+
+        //Rinehart CAN control message (heartbeat) structure ----------------
+        IO_CAN_DATA_FRAME canMCUControlMessage;
+        canMCUControlMessage.length = 8; // how many bytes in the message
+        canMCUControlMessage.id_format = IO_CAN_STD_FRAME;
+        canMCUControlMessage.id = 0xC0;
+
+        //Torque
+        ubyte2 mcuTorque = 125; //In Nm. 125 continuous, 240 max
+        canMessage.data[0] = (ubyte1)mcuTorque;
+        canMessage.data[1] = mcuTorque >> 8;
+
+        //Speed (RPM?) - not needed - mcu should be in torque mode
+        canMessage.data[2] = 0;
+        canMessage.data[3] = 0;
+
+        //Direction
+        canMessage.data[4] = 1;
+
+        //unused/unused/unused/unused unused/unused/Discharge/Inverter Enable
+        canMessage.data[5] = 0b00000001;
+
+        //Torque Limit
+        canMessage.data[2] = 0;
+        canMessage.data[3] = 0;
+
+
 
         /* Task end function for IO Driver
         * This function needs to be called at
@@ -630,6 +667,14 @@ float4 GetThrottlePosition(void)
     if (fabs(TPS1PedalPercent - TPS0PedalPercent) > .1)
     {
         //Err.Report(Err.Codes.TPSDiscrepancy, "TPS discrepancy of over 10%", Motor.Stop);
+        TPSErrorState++;
+    }
+
+    //-------------------------------------------------------------------
+    //Make sure the sensors have been calibrated
+    //-------------------------------------------------------------------
+    if ((Sensor_TPS0.isCalibrated == FALSE) || (Sensor_TPS1.isCalibrated == FALSE))
+    {
         TPSErrorState++;
     }
 
