@@ -363,7 +363,7 @@ void main(void)
 
         //?? - For future use ---------------------------------------------------
         //IO_ADC_Get(IO_ADC_5V_03, &Sensor_BPS1.sensorValue, &Sensor_BPS1.fresh);
-*/
+
         //Shock pots ---------------------------------------------------
         IO_ADC_Get(IO_ADC_5V_04, &Sensor_WPS_FL.sensorValue, &Sensor_WPS_FL.fresh);
         IO_ADC_Get(IO_ADC_5V_05, &Sensor_WPS_FR.sensorValue, &Sensor_WPS_FR.fresh);
@@ -378,58 +378,64 @@ void main(void)
         canMessage.data[5] = Sensor_WPS_RL.sensorValue >> 8;
         canMessage.data[6] = (ubyte1)Sensor_WPS_RR.sensorValue;
         canMessage.data[7] = Sensor_WPS_RR.sensorValue >> 8;
+        */
 
         //RTDS tests ---------------------------------------------------
-        //On/Off @ 1000 ohms ---------------------------------------------------
-        //Hook up RTDS to pin 117 or 118 or 144
+        //Control the RTDS with a pot
+        //Pot goes from 2.2 ohm to 4930 ohm
+        //Note: There's a problem with the old RTDS where it plays sound
+        //      even at 0 duty cycle / DO=FALSE.  Gotta figure out why this
+        //      happens and if there's a problem with the VCU.
+        
+        //Get the pot value, put into CAN message
+        IO_ADC_Get(IO_ADC_5V_05, &Sensor_WPS_FR.sensorValue, &Sensor_WPS_FR.fresh);
+        canMessage.data[0] = (ubyte1)Sensor_WPS_FR.sensorValue;
+        canMessage.data[1] = Sensor_WPS_FR.sensorValue >> 8;
+        canMessage.data[2] = 0;  //empty spot in can message
+
+        //Turn RTDS On/Off @ 1000 ohms ---------------------------------------------------
+        //Hook up RTDS to 144 (Digital 4A on/off), or pin 118 (digital 2A PWM)
         if (Sensor_WPS_FR.sensorValue > 1000)
         {
+            canMessage.data[3] = 1;
             IO_DO_Set(IO_DO_00, TRUE);                //Pin 144
             IO_PWM_SetDuty(IO_PWM_00, 0xFFFF, NULL);  //Pin 118
-            IO_PWM_SetDuty(IO_PWM_02, 0xFFFF, NULL);  //Pin 117
         }
         else
         {
+            canMessage.data[3] = 0;
             IO_DO_Set(IO_DO_00, FALSE);          //Pin 144
             IO_PWM_SetDuty(IO_PWM_00, 0, NULL);  //Pin 118
-            IO_PWM_SetDuty(IO_PWM_02, 0, NULL);  //Pin 117
         }
 
-        //Variable from 100 to 1500 ohms ---------------------------------------------------
-        //Hook up RTDS to pin 105 or 106
-        sbyte2 calcDuty;
-        ubyte2 finalDuty;
+        //Variable ---------------------------------------------------
+        //Hook up RTDS to pin 103
+        float4 dutyPercent;  //Percent (some fraction between 0 and 1)
+        ubyte2 dutyHex;
 
-        //Percent = (Voltage - CalibMin) / (CalibMax - CalibMin)
-        calcDuty = 0xFFFF * ((Sensor_WPS_FR.sensorValue - 100) / (1500 - 100));
-        if (calcDuty < 0)
+        //Important: be careful about casting between floats and ints
+        dutyPercent = ((float4)Sensor_WPS_FR.sensorValue - 1000) / (2000 - 1000);
+        if (dutyPercent < 0)
         {
-            calcDuty = 0;
+            dutyPercent = 0;
         }
-        else if (calcDuty > 1)
+        else if(dutyPercent > 1)
         {
-            calcDuty = 100;
+            dutyPercent = 1;
         }
-        finalDuty = calcDuty;
-        IO_PWM_SetDuty(IO_PWM_01, finalDuty, NULL);  //Pin 106
-        IO_PWM_SetDuty(IO_PWM_03, finalDuty, NULL);  //Pin 105
 
-        //Variable from 250 to 1000 ---------------------------------------------------
-        //Hook up RTDS to pin 103, 104, 115, or 116
-        calcDuty = 0xFFFF * ((Sensor_WPS_FR.sensorValue - 250) / (1000 - 250));
-        if (calcDuty < 0)
-        {
-            calcDuty = 0;
-        }
-        else if(calcDuty > 1)
-        {
-            calcDuty = 100;
-        }
-        finalDuty = calcDuty;
-        IO_PWM_SetDuty(IO_PWM_04, finalDuty, NULL);  //Pin 116
-        IO_PWM_SetDuty(IO_PWM_05, finalDuty, NULL);  //Pin 104
-        IO_PWM_SetDuty(IO_PWM_06, finalDuty, NULL);  //Pin 115
-        IO_PWM_SetDuty(IO_PWM_07, finalDuty, NULL);  //Pin 103
+        //Not used
+        canMessage.data[4] = 0;
+        canMessage.data[5] = 0;
+
+        //Set the volume level (0 to 65535.. or 0 to FFFF as seen by VCU)
+        dutyHex = 65535 * dutyPercent;
+        IO_PWM_SetDuty(IO_PWM_06, 0, NULL);  //Pin 115 - for testing old RTDS
+        IO_PWM_SetDuty(IO_PWM_07, dutyHex, NULL);  //Pin 103
+
+        //Show the % output in CAN
+        canMessage.data[6] = (ubyte1)dutyHex;
+        canMessage.data[7] = dutyHex >> 8;
 
         /*
         canMessage[Sensor_WPS_FL.canMessageID].length = 8;
