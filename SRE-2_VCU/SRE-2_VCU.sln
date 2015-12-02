@@ -6,6 +6,7 @@ MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{A24353ED-78BD-4B86-8F5E-D6CB5B5A3F69}"
 	ProjectSection(SolutionItems) = preProject
 		APDB.h = APDB.h
+		CAN_Sensors.c = CAN_Sensors.c
 		DIAG_Constants.h = DIAG_Constants.h
 		DIAG_Functions.h = DIAG_Functions.h
 		IO_ADC.h = IO_ADC.h
@@ -22,6 +23,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		IO_WDTimer.h = IO_WDTimer.h
 		main.c = main.c
 		ptypes_xe167.h = ptypes_xe167.h
+		RMSStartup.c = RMSStartup.c
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "make", "make", "{DE1080CD-0A24-415F-8889-D5D10F6CC096}"

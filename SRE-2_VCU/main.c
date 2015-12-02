@@ -120,7 +120,7 @@ APDB appl_db =
 //----------------------------------------------------------------------------
 typedef struct _Sensor {
     //CAN stuff
-    ubyte1 canMessageID;
+    ubyte1 canMessageID;  //Required!
     
     //Sensor values / properties
     ubyte2 specMin;
@@ -143,19 +143,6 @@ typedef struct _Sensor {
 //----------------------------------------------------------------------------
 // canMessageID should be specified NOW!
 //----------------------------------------------------------------------------
-
-/* OLD OBJECTS
-//Create objects to represent our two TPS's 
-//These are the min and max voltages in our TPS's spec sheet
-//RULE: EV2.3.10 - power must be cut if these are exceeded
-//NOTE: Should this be stored in EEPROM or where ever configuration data goes?
-TPS TPS0 = { 0.5, 4.5, 4.5, 0.5, FALSE, 0, FALSE, 0 };
-TPS TPS1 = { 4.5, 0.5, 0.5, 4.5, FALSE, 0, FALSE, 0 };
-LSPS LSPS0 = {5, 5000, 5, 0, FALSE};
-LSPS LSPS1 = {5, 5000, 5, 0, FALSE};
-LSPS LSPS2 = {5, 5000, 5, 0, FALSE};
-LSPS LSPS3 = {5, 5000, 5, 0, FALSE};
-*/
 
 //TODO: Read stored calibration data from EEPROM
 
@@ -214,18 +201,12 @@ void main(void)
     //Variable power supply (used by BPS)
     IO_POWER_Set(IO_SENSOR_SUPPLY_VAR, IO_POWER_14_5_V);    //IO_POWER_Set(IO_PIN_269, IO_POWER_8_5_V);
 
-    //Digital outputs
-    IO_DO_Init(IO_DO_00);
+    //Digital outputs ---------------------------------------------------
+    //IO_DO_Init(IO_DO_00);
 
-    //Digital PWM outputs
-    IO_PWM_Init(IO_PWM_00, 100, TRUE, FALSE, 0, FALSE, NULL); //100Hz: On/off at 1000 ohms
-    IO_PWM_Init(IO_PWM_01, 100, TRUE, FALSE, 0, FALSE, NULL); //100Hz: Change from 0 to 100 at 100-1500 ohms
-    IO_PWM_Init(IO_PWM_02, 250, TRUE, FALSE, 0, FALSE, NULL); //250Hz: On/off at 1000 ohms
-    IO_PWM_Init(IO_PWM_03, 250, TRUE, FALSE, 0, FALSE, NULL); //250Hz: Change from 0 to 100% at 100-1500 ohms
-    IO_PWM_Init(IO_PWM_04, 250, TRUE, FALSE, 0, FALSE, NULL); //250Hz: Change from 0 to 100% at 250-1000 ohms
-    IO_PWM_Init(IO_PWM_05, 50, TRUE, FALSE, 0, FALSE, NULL); //Change from 0 to 100% at 250-1000 ohms
-    IO_PWM_Init(IO_PWM_06, 500, TRUE, FALSE, 0, FALSE, NULL); //Change from 0 to 100% at 250-1000 ohms
-    IO_PWM_Init(IO_PWM_07, 1000, TRUE, FALSE, 0, FALSE, NULL); //Change from 0 to 100% at 250-1000 ohms
+    //Digital PWM outputs ---------------------------------------------------
+    //We're not using these
+    IO_PWM_Init(IO_PWM_07, 700, TRUE, FALSE, 0, FALSE, NULL);  //Temporary RTDS output
 
     //ADC channels ---------------------------------------------------
     //TPS
@@ -236,7 +217,7 @@ void main(void)
     IO_ADC_ChannelInit(IO_ADC_5V_02, IO_ADC_RATIOMETRIC, 0, 0, IO_ADC_SENSOR_SUPPLY_0, NULL);
 
     //Unused
-    //IO_ADC_Channerive RTD device 
+    //IO_ADC_ChannelInit(IO_ADC_5V_03, IO_ADC_RATIOMETRIC, 0, 0, IO_ADC_SENSOR_SUPPLY_0, NULL);
 
     //Shockpots
     IO_ADC_ChannelInit(IO_ADC_5V_04, IO_ADC_RESISTIVE, 0, 0, 0, NULL);
@@ -250,63 +231,7 @@ void main(void)
     IO_PWD_FreqInit(IO_PWD_09, IO_PWD_RISING_VAR);  //Is there a reason to look for rising vs falling edge?
     IO_PWD_FreqInit(IO_PWD_10, IO_PWD_RISING_VAR);  //Is there a reason to look for rising vs falling edge?
     IO_PWD_FreqInit(IO_PWD_11, IO_PWD_RISING_VAR);  //Is there a reason to look for rising vs falling edge?
-
 	
-    //Create CAN Message Objects ---------------------------------------------------
-/********** NEW NOT WORKING STUFF
-
-    ubyte1 canMessageCount = 4;
-    IO_CAN_DATA_FRAME canMessage[canMessageCount];// = { { { 0 } } };  //20 different things being reported over CAN
-                                                                    //0 = TPS0,TPS1
-                                                                    //1 = BPS0,1
-                                                                    //2 = WSS FL,FR,RL,RR
-                                                                    //3 = WPS FL,FR,RL,RR
-
-   
-    for (ubyte1 i = 0; i < canMessageCount; i++)
-    {
-        canMessage[i].id = i;  //TPS0
-        canMessage[i].id_format = IO_CAN_STD_FRAME;
-        //canMessage[i].length = 4;  //TPS0 = byte 0,1; TPS1 = byte 1,2; 
-    }
-
-    //Activate the CAN channels ---------------------------------------------------
-    ubyte1 handle_w; //What is this for?
-    //ubyte1 handle_fifo_w; //What is this for?
-    IO_CAN_Init(IO_CAN_CHANNEL_0, 250, 0, 0, 0);
-    IO_CAN_ConfigMsg(&handle_w, IO_CAN_CHANNEL_0, IO_CAN_MSG_WRITE, IO_CAN_STD_FRAME, 0, 0);
-    IO_CAN_ConfigFIFO(&handle_fifo_w
-                     , IO_CAN_CHANNEL_0 // channel 0
-                     , canMessageCount  // 20 items
-                     , IO_CAN_MSG_WRITE // transmit fifo buffer
-                     , IO_CAN_STD_FRAME // standard ID
-                     , 0
-                     , 0);
-*/
-//OLD WORKING STUFF
-	ubyte1 handle_w;
-	IO_CAN_DATA_FRAME canMessage;
-	
-	IO_CAN_Init( IO_CAN_CHANNEL_0
-               , 250
-               , 0     //default
-               , 0     //default
-               , 0);   //default
-			   
-	IO_CAN_ConfigMsg( &handle_w
-                    , IO_CAN_CHANNEL_0
-                    , IO_CAN_MSG_WRITE
-                    , IO_CAN_STD_FRAME
-                    , 0
-                    , 0);
-
-    //Temporary: We only define one CAN message
-	canMessage.length = 8; // how many bytes in the message
-	canMessage.id_format = IO_CAN_STD_FRAME;
-	canMessage.id = 1;
-	
-	//START WORKIGN HERESTART WORKIGN HERESTART WORKIGN HERESTART WORKIGN HERESTART WORKIGN HERESTART WORKIGN HERESTART WORKIGN HERESTART WORKIGN HERE
-
     //----------------------------------------------------------------------------
     // TODO: Initial Power-up functions
     //----------------------------------------------------------------------------
@@ -331,41 +256,24 @@ void main(void)
         //Get a timestamp of when this task started from the Real Time Clock
         IO_RTC_StartTime(&timestamp_sensorpoll);
 
-        /* Task begin function for IO Driver
-         * This function needs to be called at
-         * the beginning of every SW cycle
-         */
+        //Mark the beginning of a task - what does this actually do?
         IO_Driver_TaskBegin();
-
 
         //----------------------------------------------------------------------------
         // Read sensors and insert their data into CAN messages
-        //Each can message's .data[] holds 1 byte - sensor data must be broken up into separate bytes
+        // Each can message's .data[] holds 1 byte - sensor data must be broken up into separate bytes
         //----------------------------------------------------------------------------
 
         //TODO: Handle errors (using the return values for these Get functions)
 
         //TODO: RTDS
-        //Feed 6-28V (will draw 4-18mA)
 
-/*
         //Torque Encoders ---------------------------------------------------
         IO_ADC_Get(IO_ADC_5V_00, &Sensor_TPS0.sensorValue, &Sensor_TPS0.fresh);
         IO_ADC_Get(IO_ADC_5V_01, &Sensor_TPS1.sensorValue, &Sensor_TPS1.fresh);
-
-        //TPS CAN messages
-        canMessage[Sensor_TPS0.canMessageID].length = 4;                                             //Little endian
-        canMessage[Sensor_TPS0.canMessageID].data[0] = Sensor_TPS0.sensorValue;         //TPS0.lowbyte
-        canMessage[Sensor_TPS0.canMessageID].data[1] = Sensor_TPS0.sensorValue >> 8; //TPS0.hibyte
-        canMessage[Sensor_TPS0.canMessageID].data[2] = Sensor_TPS1.sensorValue;         //TPS0.lowbyte
-        canMessage[Sensor_TPS0.canMessageID].data[3] = Sensor_TPS1.sensorValue >> 8; //TPS0.hibyte
 		
         //Brake Position Sensor ---------------------------------------------------
         IO_ADC_Get(IO_ADC_5V_02, &Sensor_BPS0.sensorValue, &Sensor_BPS0.fresh);
-        //Load data into CAN
-        canMessage[Sensor_BPS0.canMessageID].length = 2;
-        canMessage[Sensor_BPS0.canMessageID].data[0] = Sensor_BPS0.sensorValue;
-        canMessage[Sensor_BPS0.canMessageID].data[1] = Sensor_BPS0.sensorValue >> 8;
 
         //?? - For future use ---------------------------------------------------
         //IO_ADC_Get(IO_ADC_5V_03, &Sensor_BPS1.sensorValue, &Sensor_BPS1.fresh);
@@ -376,16 +284,6 @@ void main(void)
         IO_ADC_Get(IO_ADC_5V_06, &Sensor_WPS_RL.sensorValue, &Sensor_WPS_RL.fresh);
         IO_ADC_Get(IO_ADC_5V_07, &Sensor_WPS_RL.sensorValue, &Sensor_WPS_RR.fresh);
 
-        canMessage.data[0] = (ubyte1)Sensor_WPS_FL.sensorValue;
-        canMessage.data[1] = Sensor_WPS_FL.sensorValue >> 8;
-        canMessage.data[2] = (ubyte1)Sensor_WPS_FR.sensorValue;
-        canMessage.data[3] = Sensor_WPS_FR.sensorValue >> 8;
-        canMessage.data[4] = (ubyte1)Sensor_WPS_RL.sensorValue;
-        canMessage.data[5] = Sensor_WPS_RL.sensorValue >> 8;
-        canMessage.data[6] = (ubyte1)Sensor_WPS_RR.sensorValue;
-        canMessage.data[7] = Sensor_WPS_RR.sensorValue >> 8;
-        */
-
         //RTDS tests ---------------------------------------------------
         //Control the RTDS with a pot
         //Pot goes from 2.2 ohm to 4930 ohm
@@ -393,152 +291,37 @@ void main(void)
         //      even at 0 duty cycle / DO=FALSE.  Gotta figure out why this
         //      happens and if there's a problem with the VCU.
         
-        //Get the pot value, put into CAN message
-        IO_ADC_Get(IO_ADC_5V_05, &Sensor_WPS_FR.sensorValue, &Sensor_WPS_FR.fresh);
-        canMessage.data[0] = (ubyte1)Sensor_WPS_FR.sensorValue;
-        canMessage.data[1] = Sensor_WPS_FR.sensorValue >> 8;
-        canMessage.data[2] = 0;  //empty spot in can message
-
-        //Turn RTDS On/Off @ 1000 ohms ---------------------------------------------------
-        //Hook up RTDS to 144 (Digital 4A on/off), or pin 118 (digital 2A PWM)
-        if (Sensor_WPS_FR.sensorValue > 1000)
-        {
-            canMessage.data[3] = 1;
-            IO_DO_Set(IO_DO_00, TRUE);                //Pin 144
-            IO_PWM_SetDuty(IO_PWM_00, 0xFFFF, NULL);  //Pin 118
-        }
-        else
-        {
-            canMessage.data[3] = 0;
-            IO_DO_Set(IO_DO_00, FALSE);          //Pin 144
-            IO_PWM_SetDuty(IO_PWM_00, 0, NULL);  //Pin 118
-        }
-
-        //Variable ---------------------------------------------------
         //Hook up RTDS to pin 103
         float4 dutyPercent;  //Percent (some fraction between 0 and 1)
         ubyte2 dutyHex;
 
-        //Important: be careful about casting between floats and ints
-        dutyPercent = ((float4)Sensor_WPS_FR.sensorValue - 1000) / (2000 - 1000);
-        if (dutyPercent < 0)
-        {
-            dutyPercent = 0;
-        }
-        else if(dutyPercent > 1)
-        {
-            dutyPercent = 1;
-        }
-
-        //Not used
-        canMessage.data[4] = 0;
-        canMessage.data[5] = 0;
+        dutyPercent = getPercent((float4)Sensor_WPS_FR.sensorValue, 500, 2500, TRUE);
 
         //Set the volume level (0 to 65535.. or 0 to FFFF as seen by VCU)
         dutyHex = 65535 * dutyPercent;
         IO_PWM_SetDuty(IO_PWM_06, 0, NULL);  //Pin 115 - for testing old RTDS
         IO_PWM_SetDuty(IO_PWM_07, dutyHex, NULL);  //Pin 103
-
-        //Show the % output in CAN
-        canMessage.data[6] = (ubyte1)dutyHex;
-        canMessage.data[7] = dutyHex >> 8;
-
-        /*
-        canMessage[Sensor_WPS_FL.canMessageID].length = 8;
-        canMessage[Sensor_WPS_FL.canMessageID].data[0] = Sensor_WPS_FL.sensorValue;
-        canMessage[Sensor_WPS_FL.canMessageID].data[1] = Sensor_WPS_FL.sensorValue >> 8;
-        canMessage[Sensor_WPS_FL.canMessageID].data[2] = Sensor_WPS_FR.sensorValue;
-        canMessage[Sensor_WPS_FL.canMessageID].data[3] = Sensor_WPS_FR.sensorValue >> 8;
-        canMessage[Sensor_WPS_FL.canMessageID].data[4] = Sensor_WPS_RL.sensorValue;
-        canMessage[Sensor_WPS_FL.canMessageID].data[5] = Sensor_WPS_RL.sensorValue >> 8;
-        canMessage[Sensor_WPS_FL.canMessageID].data[6] = Sensor_WPS_RR.sensorValue;
-        canMessage[Sensor_WPS_FL.canMessageID].data[7] = Sensor_WPS_RR.sensorValue >> 8;
-
+        
         //Wheel speed sensors ---------------------------------------------------
-        IO_PWD_FreqGet(IO_PWD_08, &Sensor_WSS_FL.sensorValue;
-        IO_PWD_FreqGet(IO_PWD_09, &Sensor_WSS_FR.sensorValue;
-        IO_PWD_FreqGet(IO_PWD_10, &Sensor_WSS_RL.sensorValue;
-        IO_PWD_FreqGet(IO_PWD_11, &Sensor_WSS_RR.sensorValue;
-
-        canMessage[Sensor_WSS_FL.canMessageID].length = 8;
-        canMessage[Sensor_WSS_FL.canMessageID].data[0] = Sensor_WSS_FL.sensorValue;
-        canMessage[Sensor_WSS_FL.canMessageID].data[1] = Sensor_WSS_FL.sensorValue >> 8;
-        canMessage[Sensor_WSS_FL.canMessageID].data[2] = Sensor_WSS_FR.sensorValue;
-        canMessage[Sensor_WSS_FL.canMessageID].data[3] = Sensor_WSS_FR.sensorValue >> 8;
-        canMessage[Sensor_WSS_FL.canMessageID].data[4] = Sensor_WSS_RL.sensorValue;
-        canMessage[Sensor_WSS_FL.canMessageID].data[5] = Sensor_WSS_RL.sensorValue >> 8;
-        canMessage[Sensor_WSS_FL.canMessageID].data[6] = Sensor_WSS_RR.sensorValue;
-        canMessage[Sensor_WSS_FL.canMessageID].data[7] = Sensor_WSS_RR.sensorValue >> 8;
-
+        IO_PWD_FreqGet(IO_PWD_08, &Sensor_WSS_FL.sensorValue);
+        IO_PWD_FreqGet(IO_PWD_09, &Sensor_WSS_FR.sensorValue);
+        IO_PWD_FreqGet(IO_PWD_10, &Sensor_WSS_RL.sensorValue);
+        IO_PWD_FreqGet(IO_PWD_11, &Sensor_WSS_RR.sensorValue);
+        
         //Other stuff ---------------------------------------------------
         //Battery voltage (at VCU internal electronics supply input)
         IO_ADC_Get(IO_ADC_UBAT, &Sensor_LVBattery.sensorValue, &Sensor_LVBattery.fresh);
-
-        canMessage[Sensor_LVBattery.canMessageID].length = 2;
-        canMessage[Sensor_LVBattery.canMessageID].data[0] = Sensor_LVBattery.sensorValue;
-        canMessage[Sensor_LVBattery.canMessageID].data[1] = Sensor_LVBattery.sensorValue >> 8;
-
-        //----------------------------------------------------------------------------
-        // CAN
-        //----------------------------------------------------------------------------
-*/
-        //canMessage[Sensor_WPS_FL.canMessageID].data[0] = Sensor_WPS_FL.sensorValue;
-        //canMessage[Sensor_WPS_FL.canMessageID].data[1] = Sensor_WPS_FL.sensorValue >> 8;
-		//canMessage.data[0] = LSPS0.reading;
-//		canMessage.data[0] = Sensor_WPS_FL.sensorValue;
-//		canMessage.data[1] = Sensor_WPS_FL.sensorValue >> 8;
-				 
-        if (IO_CAN_MsgStatus(handle_w) == IO_E_OK)
-        {
-            
-            /* and send back */
-            IO_CAN_WriteMsg(handle_w, &canMessage);
-
-            /* wait for successful transmission */
-            
-        }
-	 
-
-
-
-
-
-        //Rinehart CAN control message (heartbeat) structure ----------------
-        IO_CAN_DATA_FRAME canMCUControlMessage;
-        canMCUControlMessage.length = 8; // how many bytes in the message
-        canMCUControlMessage.id_format = IO_CAN_STD_FRAME;
-        canMCUControlMessage.id = 0xC0;
-
-        //Torque
-        ubyte2 mcuTorque = 125; //In Nm. 125 continuous, 240 max
-        canMessage.data[0] = (ubyte1)mcuTorque;
-        canMessage.data[1] = mcuTorque >> 8;
-
-        //Speed (RPM?) - not needed - mcu should be in torque mode
-        canMessage.data[2] = 0;
-        canMessage.data[3] = 0;
-
-        //Direction
-        canMessage.data[4] = 1;
-
-        //unused/unused/unused/unused unused/unused/Discharge/Inverter Enable
-        canMessage.data[5] = 0b00000001;
-
-        //Torque Limit
-        canMessage.data[2] = 0;
-        canMessage.data[3] = 0;
-
 
 
         /* Task end function for IO Driver
         * This function needs to be called at
         * the end of every SW cycle
-        */
-		
+        */		
         IO_Driver_TaskEnd();
 
         /* wait until the cycle time is over */
-        while (IO_RTC_GetTimeUS(timestamp_sensorpoll && IO_CAN_MsgStatus(handle_w) != IO_E_OK) < 5000);   // wait until 5ms have passed
+        //&& IO_CAN_MsgStatus(handle_fifo_w) != IO_E_OK
+        while (IO_RTC_GetTimeUS(timestamp_sensorpoll) < 5000);   // wait until 5ms have passed
     } //end of main loop
 
     //----------------------------------------------------------------------------
@@ -550,12 +333,33 @@ void main(void)
 
 
 /*****************************************************************************
+* Helper functions
+****************************************************************************/
+/*-------------------------------------------------------------------
+* getPercent
+* Returns the % (position) of value, between min and max
+* If zeroToOneOnly is true, then % will be capped at 0%-100% (no negative % or > 100%)
+-------------------------------------------------------------------*/
+float4 getPercent(float4 value, float4 min, float4 max, bool zeroToOneOnly)
+{
+    float4 retVal = (value - min) / (max - min);
+
+    if (zeroToOneOnly == TRUE)
+    {
+        if (retVal > 1) { retVal = 1; }
+        else if (retVal < 0) { retVal = 0; }
+    }
+
+    return retVal;
+}
+
+/*****************************************************************************
 * Torque Encoder (TPS) functions
 * RULE EV2.3.5:
 * If an implausibility occurs between the values of these two sensors the power to the motor(s) must be immediately shut down completely.
 * It is not necessary to completely deactivate the tractive system, the motor controller(s) shutting down the power to the motor(s) is sufficient.
 ****************************************************************************/
- 
+
 // Physical pedal travel will only occur across the center (about 1/2) of the actual sensor's range of travel
 // The rules (especially EV2.3.6) are written about % of PEDAL travel, not percent of sensor range, so we must calculate pedal travel by recording the min/max voltages at min/max throttle positions
 
@@ -582,7 +386,6 @@ void calibrateTPS(ubyte1 secondsToRunCalibration)
 
     ubyte4 timestamp_calibrationstart = 0;
     IO_RTC_StartTime(&timestamp_calibrationstart);  //Get a timestamp of when this task started from the Real Time Clock
-    
     //TODO: Don't start coundown until values have been set
     while (IO_RTC_GetTimeUS(timestamp_calibrationstart) < (ubyte4)secondsToRunCalibration * 1000 * 1000)   // Give the user # seconds to do this
     {
@@ -659,9 +462,9 @@ float4 GetThrottlePosition(void)
     //-------------------------------------------------------------------
     //Calculate individual throttle percentages
     //Percent = (Voltage - CalibMin) / (CalibMax - CalibMin)
-    float4 TPS0PedalPercent = (Sensor_TPS0.sensorValue - Sensor_TPS0.calibMin) / (Sensor_TPS0.calibMax - Sensor_TPS0.calibMin); //Analog Input 0
-    float4 TPS1PedalPercent = (Sensor_TPS1.sensorValue - Sensor_TPS1.calibMin) / (Sensor_TPS1.calibMax - Sensor_TPS1.calibMin); //Analog input 1
-  
+    float4 TPS0PedalPercent = getPercent(Sensor_TPS0.sensorValue, Sensor_TPS0.calibMin, Sensor_TPS0.calibMax, FALSE); //Analog Input 0
+    float4 TPS1PedalPercent = getPercent(Sensor_TPS1.sensorValue, Sensor_TPS1.calibMin, Sensor_TPS1.calibMax, FALSE); //Analog input 1
+
     //Check for implausibility (discrepancy > 10%)
     //RULE: EV2.3.6 Implausibility is defined as a deviation of more than 10% pedal travel between the sensors.
     if (fabs(TPS1PedalPercent - TPS0PedalPercent) > .1)
