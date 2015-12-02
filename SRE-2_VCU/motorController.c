@@ -13,7 +13,7 @@ void main(void)
     canMCUControlMessage.id = 0xC0;
 
     //Torque (Nm * 10)
-    ubyte2 mcuTorque = 5; //In Nm. 125 continuous, 240 max
+    ubyte2 mcuTorque = 5; //In Nm * 10. 125 continuous, 240 max
     canMCUControlMessage.data[0] = (ubyte1)mcuTorque;
     canMCUControlMessage.data[1] = mcuTorque >> 8;
 
