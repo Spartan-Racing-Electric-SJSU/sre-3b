@@ -97,23 +97,9 @@
 #define _SENSORS_H
 
 //----------------------------------------------------------------------------
-// Sensor Object Properties
-//----------------------------------------------------------------------------
-// canMessageBaseId - The starting CAN address for all messages
-ubyte1 canMessageBaseId = 0x500;
-
-
-//----------------------------------------------------------------------------
 // Sensor Object Definitions
 //----------------------------------------------------------------------------
 // Parameters:
-// canMessageIdOffset - Unique ID (address) for each CAN message, starting at
-//                      CANBaseAddress.  Multiple sensors
-//                can be assigned to a single ID/message if they'll fit in the
-//                available data space
-//                TODO: What's the limit?
-//				  https://docs.google.com/spreadsheets/d/1sYXx191RtMq5Vp5PbPsq3BziWvESF9arZhEjYUMFO3Y/edit
-// TODO: Write the rest of these
 //
 // specMin/Max values should come from each sensor's datasheets, but it is not
 // required for all sensors.
@@ -121,10 +107,6 @@ ubyte1 canMessageBaseId = 0x500;
 // TODO: What about having default calbiration values?  (Probably useless)
 //----------------------------------------------------------------------------
 typedef struct _Sensor {
-    //CAN stuff
-    ubyte1 canMessageIdOffset;  //Required!
-    //Note: CAN message address = canMessageBaseId + canMessageIdOffset
-
     //Sensor values / properties
     ubyte2 specMin;
     ubyte2 specMax;
@@ -142,8 +124,6 @@ typedef struct _Sensor {
 
 //----------------------------------------------------------------------------
 // Sensor Object Instantiations
-//----------------------------------------------------------------------------
-// canMessageIdOffset should be specified NOW!
 //----------------------------------------------------------------------------
 
 //TODO: Read stored calibration data from EEPROM
@@ -178,6 +158,6 @@ Sensor Sensor_LVBattery = { 0xA };  //Note: There will be no init for this "sens
 //----------------------------------------------------------------------------
 // Sensor Functions
 //----------------------------------------------------------------------------
-
+void updateSensors(void);
 
 #endif /* _SENSORS_H */

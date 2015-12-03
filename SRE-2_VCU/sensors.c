@@ -12,15 +12,15 @@
 *                              statement inside of a loop
 *****************************************************************************/
 
-
 #include "IO_Driver.h"  //Includes datatypes, constants, etc - should be included in every c file
+#include "IO_ADC.h"
+#include "IO_PWD.h"
+#include "IO_PWM.h"
+//#include "IO_DIO.h"
+
 #include "sensors.h"
 
-
-#include "IO_CAN.h"
-
-
-void updateSensors()
+void updateSensors(void)
 {
     //----------------------------------------------------------------------------
     // Read sensors values from ADC channels
@@ -59,102 +59,27 @@ void updateSensors()
     IO_ADC_Get(IO_ADC_UBAT, &Sensor_LVBattery.sensorValue, &Sensor_LVBattery.fresh);
 
 
-
-
     //----------------------------------------------------------------------------
-    // Load sensor values into CAN messages
-    // Each can message's .data[] holds 1 byte - sensor data must be broken up into separate bytes
+    //RTDS test - Temporary code only
     //----------------------------------------------------------------------------
+    //Control the RTDS with a pot
+    //Pot goes from 2.2 ohm to 4930 ohm
+    //Note: There's a problem with the old RTDS where it plays sound
+    //      even at 0 duty cycle / DO=FALSE.  Gotta figure out why this
+    //      happens and if there's a problem with the VCU.
 
-    //Create CAN Message Objects ---------------------------------------------------
-    const ubyte1 canMessageCount = 1;
-    IO_CAN_DATA_FRAME canSensorMessage[canMessageCount] = { { { 0 } } };
+    //Hook up RTDS to pin 103
+    float4 dutyPercent;  //Percent (some fraction between 0 and 1)
+    ubyte2 dutyHex;      //percent * max value (FFFF)
 
-    for (ubyte1 i = 0x500; i < canMessageCount; i++)
-    {
-        canSensorMessage[i].id = canMessageIdOffset + i;
-        canSensorMessage[i].id_format = IO_CAN_STD_FRAME;
-        
-        switch(i)
-        {
-        case 0: //TPS sensors
-            canSensorMessage[i].length = 8;
-            canSensorMessage[0].data[0] = Sensor_TPS0.sensorValue;      //TPS0.lowbyte
-            canSensorMessage[0].data[1] = Sensor_TPS0.sensorValue >> 8; //TPS0.hibyte
+    dutyPercent = getPercent((float4)Sensor_WPS_FR.sensorValue, 50, 4550, TRUE);
 
-            canSensorMessage[0].data[4] = Sensor_TPS1.sensorValue;      //TPS0.lowbyte
-            canSensorMessage[0].data[5] = Sensor_TPS1.sensorValue >> 8; //TPS0.hibyte
-            break;
+    //Set the volume level (0 to 65535.. or 0 to FFFF as seen by VCU)
+    dutyHex = 65535 * dutyPercent;       //becomes an integer
 
-        case 1: //BPS sensor(s)
-            canSensorMessage[i].length = 8;
+    dutyHex = (Sensor_WPS_FR.fresh = FALSE) ? 0 : dutyHex;  //Set to 0 if sensor reading is not fresh
 
-            break;
+    IO_PWM_SetDuty(IO_PWM_07, dutyHex, NULL);  //Pin 103
 
-        case 2:
-            canSensorMessage[i].length = 8;
-
-            break;
-
-        case 3:
-            canSensorMessage[i].length = 8;
-
-            break;
-
-        case 4:
-            canSensorMessage[i].length = 8;
-
-            break;
-
-        }
-    }
-
-    //Activate the CAN channels ---------------------------------------------------
-    ubyte1 handle_fifo_w; //What is this for?
-    IO_CAN_Init(IO_CAN_CHANNEL_0, 250, 0, 0, 0);
-    IO_CAN_ConfigFIFO(&handle_fifo_w, IO_CAN_CHANNEL_0, canMessageCount, IO_CAN_MSG_WRITE, IO_CAN_STD_FRAME, 0, 0);
-
-
-
-    //TPS CAN messages (both TPS's in same address
-    canSensorMessage[0].id = i;
-    canSensorMessage[0].id_format = IO_CAN_STD_FRAME;
-    canSensorMessage[0].length = 4;                             //Little endian
-
-    canSensorMessage[Sensor_BPS0.canMessageID].length = 2;
-    canSensorMessage[Sensor_BPS0.canMessageID].data[0] = Sensor_BPS0.sensorValue;
-    canSensorMessage[Sensor_BPS0.canMessageID].data[1] = Sensor_BPS0.sensorValue >> 8;
-
-
-    canSensorMessage[Sensor_WPS_FL.canMessageID].length = 8;
-    canSensorMessage[Sensor_WPS_FL.canMessageID].data[0] = (ubyte1)Sensor_WPS_FL.sensorValue;
-    canSensorMessage[Sensor_WPS_FL.canMessageID].data[1] = Sensor_WPS_FL.sensorValue >> 8;
-    canSensorMessage[Sensor_WPS_FR.canMessageID].data[2] = (ubyte1)Sensor_WPS_FR.sensorValue;
-    canSensorMessage[Sensor_WPS_FR.canMessageID].data[3] = Sensor_WPS_FR.sensorValue >> 8;
-    canSensorMessage[Sensor_WPS_RL.canMessageID].data[4] = (ubyte1)Sensor_WPS_RL.sensorValue;
-    canSensorMessage[Sensor_WPS_RL.canMessageID].data[5] = Sensor_WPS_RL.sensorValue >> 8;
-    canSensorMessage[Sensor_WPS_RR.canMessageID].data[6] = (ubyte1)Sensor_WPS_RR.sensorValue;
-    canSensorMessage[Sensor_WPS_RR.canMessageID].data[7] = Sensor_WPS_RR.sensorValue >> 8;
-
-
-    canSensorMessage[Sensor_WSS_FL.canMessageID].length = 8;
-    canSensorMessage[Sensor_WSS_FL.canMessageID].data[0] = Sensor_WSS_FL.sensorValue;
-    canSensorMessage[Sensor_WSS_FL.canMessageID].data[1] = Sensor_WSS_FL.sensorValue >> 8;
-    canSensorMessage[Sensor_WSS_FL.canMessageID].data[2] = Sensor_WSS_FR.sensorValue;
-    canSensorMessage[Sensor_WSS_FL.canMessageID].data[3] = Sensor_WSS_FR.sensorValue >> 8;
-    canSensorMessage[Sensor_WSS_FL.canMessageID].data[4] = Sensor_WSS_RL.sensorValue;
-    canSensorMessage[Sensor_WSS_FL.canMessageID].data[5] = Sensor_WSS_RL.sensorValue >> 8;
-    canSensorMessage[Sensor_WSS_FL.canMessageID].data[6] = Sensor_WSS_RR.sensorValue;
-    canSensorMessage[Sensor_WSS_FL.canMessageID].data[7] = Sensor_WSS_RR.sensorValue >> 8;
-
-    canSensorMessage[Sensor_LVBattery.canMessageID].length = 2;
-    canSensorMessage[Sensor_LVBattery.canMessageID].data[0] = Sensor_LVBattery.sensorValue;
-    canSensorMessage[Sensor_LVBattery.canMessageID].data[1] = Sensor_LVBattery.sensorValue >> 8;
-
-
-    //----------------------------------------------------------------------------
-    // CAN
-    //----------------------------------------------------------------------------
-    IO_CAN_WriteFIFO(handle_fifo_w, canMessage, canMessageCount);
 
 }

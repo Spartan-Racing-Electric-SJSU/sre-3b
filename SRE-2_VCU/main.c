@@ -64,15 +64,15 @@
 #include <string.h>
 #include "IO_Driver.h"  //Includes datatypes, constants, etc - should be included in every c file
 #include "IO_RTC.h"
-#include "IO_CAN.h"
-#include "IO_DIO.h"
-#include "IO_PWM.h"
+//#include "IO_CAN.h"
+//#include "IO_PWM.h"
 
 //Our code
-#include "vcuInitializations.c"
-#include "sensors.c"
-#include "outputCalculations.c"
-#include "motorController.c"
+#include "initializeVCU.h"
+#include "sensors.h"
+#include "canOutput.h"
+#include "outputCalculations.h"
+#include "motorController.h"
 
 
 /*****************************************************************************
@@ -82,6 +82,9 @@
 ****************************************************************************/
 void main(void)
 {
+
+    inititalizeVCU();
+
     /*******************************************/
     /*       PERIODIC APPLICATION CODE         */
     /*******************************************/
@@ -93,42 +96,34 @@ void main(void)
     while (1)
     {
         //----------------------------------------------------------------------------
-        // Task management stuff
+        // Task management stuff (start)
         //----------------------------------------------------------------------------
         //Get a timestamp of when this task started from the Real Time Clock
         IO_RTC_StartTime(&timestamp_sensorpoll);
-
         //Mark the beginning of a task - what does this actually do?
         IO_Driver_TaskBegin();
 
-        //RTDS tests ---------------------------------------------------
-        //Control the RTDS with a pot
-        //Pot goes from 2.2 ohm to 4930 ohm
-        //Note: There's a problem with the old RTDS where it plays sound
-        //      even at 0 duty cycle / DO=FALSE.  Gotta figure out why this
-        //      happens and if there's a problem with the VCU.
-        
-        //Hook up RTDS to pin 103
-        float4 dutyPercent;  //Percent (some fraction between 0 and 1)
-        ubyte2 dutyHex;
 
-        dutyPercent = getPercent((float4)Sensor_WPS_FR.sensorValue, 500, 2500, TRUE);
 
-        //Set the volume level (0 to 65535.. or 0 to FFFF as seen by VCU)
-        dutyHex = 65535 * dutyPercent;
-        IO_PWM_SetDuty(IO_PWM_06, 0, NULL);  //Pin 115 - for testing old RTDS
-        IO_PWM_SetDuty(IO_PWM_07, dutyHex, NULL);  //Pin 103
-        
+        //----------------------------------------------------------------------------
+        // DO STUFF!!!!!!!!!!
+        //----------------------------------------------------------------------------
+        updateSensors();
+        broadcastSensorCanMessages();
+        //FINISH ADDING THESE
+        //Make .h files for calculations and MCU control
 
-        /* Task end function for IO Driver
-        * This function needs to be called at
-        * the end of every SW cycle
-        */		
+
+
+
+        //----------------------------------------------------------------------------
+        // Task management stuff (end)
+        //----------------------------------------------------------------------------
+        //Task end function for IO Driver - This function needs to be called at the end of every SW cycle
         IO_Driver_TaskEnd();
+        //wait until the cycle time is over
+        while (IO_RTC_GetTimeUS(timestamp_sensorpoll) < 5000);   // wait until 5ms (5000us) have passed
 
-        /* wait until the cycle time is over */
-        //&& IO_CAN_MsgStatus(handle_fifo_w) != IO_E_OK
-        while (IO_RTC_GetTimeUS(timestamp_sensorpoll) < 5000);   // wait until 5ms have passed
     } //end of main loop
 
     //----------------------------------------------------------------------------
