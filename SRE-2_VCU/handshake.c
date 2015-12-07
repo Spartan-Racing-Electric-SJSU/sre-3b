@@ -11,24 +11,23 @@
  *	Once the inverter sees a Disable command, 
  *  the lockout is removed, Rinehart can receive the Inverter Enable command,
  *  and torque can be set. 
- *
- *
  **************************************************************************
  *  TO-DO:
  *
- *	1.  Write disable lockout message to Rinehart and get reply; 
- *		debugging suggests that it could possibly be gated by EEPROM values
- *      (SEE RMS CAN PROTOCOL PG. 27 of 49)
+ *	1.  Figure out why inverter isn't enabling;
+ *		possible open circuit detection on 3 phase output?
+ * 
+ *  2.  Clean and organize code structure and logic; optimization
  *
- *  2.  Disable lockout message must be setup to be transmitted at 500 ms
- *      or faster before inverter is powered on.
- *
- *  3.  Implement time stamps 
  *  
- *	
  **************************************************************************
  * 	REVISION HISTORY: 
- *	
+ 
+ *	2015-12-06 - Rabeel Elahi - Lockout disable command working
+ *							  - Torque command working
+ *							  - Added periodic timer for disable lockout message 
+ *							  - CAN baud rate set to 500
+ *							  
  *	2015-11-30 - Rabeel Elahi - Flashed code to VCU; started debugging code
  *							  -	The "create_CAN_frame" function is working
 							  - The "hand_shake" function is working up to line 242
@@ -48,10 +47,19 @@
 #include "IO_RTC.h" // RTC (REAL TIME CLOCK)
 #include "APDB.h"
 
-// FUNCTION DECLARATIONS // 
+
 
 void hand_shake();
 IO_CAN_DATA_FRAME create_CAN_frame(ubyte1 data_array[8], ubyte4 id);
+
+void periodic_func();
+IO_CAN_DATA_FRAME temp_frame;
+IO_CAN_DATA_FRAME test_frame;
+
+ubyte1 handle_w_PCAN, handle_r_PCAN, handle_w_RINEHART, handle_r_RINEHART;
+
+
+
 
 
 
@@ -87,9 +95,52 @@ APDB appl_db =
           , 0                      /* ubyte4 headerCRC          */
           };
 
+		  
+		
+				
 void main (void)
 {
-	ubyte1 handle_w_PCAN, handle_w_RINEHART, handle_r; // user-defined handles for either read or write operations
+	
+		IO_CAN_Init( IO_CAN_CHANNEL_1 // INITIALIZE CAN 1
+			, 500
+			, 0     //default
+			, 0     //default
+			, 0);   //default
+			
+		IO_CAN_Init( IO_CAN_CHANNEL_0 // INITIALIZE CAN 0
+			, 500
+			, 0     //default
+			, 0     //default
+			, 0);   //default
+
+		IO_CAN_ConfigMsg( &handle_w_PCAN
+				, IO_CAN_CHANNEL_0
+				, IO_CAN_MSG_WRITE
+				, IO_CAN_STD_FRAME
+				, 0
+				, 0);
+				
+		IO_CAN_ConfigMsg( &handle_r_PCAN
+				, IO_CAN_CHANNEL_0
+				, IO_CAN_MSG_WRITE
+				, IO_CAN_STD_FRAME
+				, 0
+				, 0);
+				
+		IO_CAN_ConfigMsg( &handle_w_RINEHART
+				, IO_CAN_CHANNEL_1
+				, IO_CAN_MSG_WRITE
+				, IO_CAN_STD_FRAME
+				, 0
+				, 0);
+
+		IO_CAN_ConfigMsg( &handle_r_RINEHART
+				, IO_CAN_CHANNEL_1
+				, IO_CAN_MSG_READ
+				, IO_CAN_STD_FRAME
+				, 0
+				, 0);
+	
 	ubyte4 time_stamp_0; // timestamp variables for different timing tasks
 	IO_CAN_DATA_FRAME can_frame;
 	IO_CAN_DATA_FRAME debug_frame; // Temporary CAN frame to store CAN messages
@@ -97,68 +148,37 @@ void main (void)
 	
 	ubyte1 debug_array[8] = {1,2,3,4,5,6,7,8};
 	ubyte4 debug_id = 0xFC;
-	
 	debug_frame = create_CAN_frame(debug_array, debug_id);
 	
 	
-
-	IO_CAN_Init( IO_CAN_CHANNEL_1 // INITIALIZE CAN 1
-			, 250
-			, 0     //default
-			, 0     //default
-			, 0);   //default
-	IO_CAN_Init( IO_CAN_CHANNEL_0 // INITIALIZE CAN 0
-			, 250
-			, 0     //default
-			, 0     //default
-			, 0);   //default
-
-	IO_CAN_ConfigMsg( &handle_w_PCAN  // WRITING TO CAN 0 - (PCAN)
-			, IO_CAN_CHANNEL_0
-			, IO_CAN_MSG_WRITE
-			, IO_CAN_STD_FRAME
-			, 0
-			, 0);
-	IO_CAN_ConfigMsg( &handle_w_RINEHART  // WRITING TO CAN 1 - (PCAN)
-			, IO_CAN_CHANNEL_1
-			, IO_CAN_MSG_WRITE
-			, IO_CAN_STD_FRAME
-			, 0
-			, 0);
-	IO_CAN_ConfigMsg( &handle_r // READING FROM CAN 1 -(RINEHART)
-			, IO_CAN_CHANNEL_1
-			, IO_CAN_MSG_READ
-			, IO_CAN_STD_FRAME
-			, 0
-			, 0);
-			
-			
-
+		
 	while(1){
 
 		// (RTC) REAL TIME CLOCK -- SEE IO_RTC.h in VCU API DOCUMENT //
 
 		IO_RTC_StartTime(&time_stamp_0); // start time (get timestamp)
 
-		// FETCH LOCKOUT IS ENABLED MESSAGE (CAN ID: 0xAA) //
+		
 		
 		
 		//The function below returns the time in u-seconds which has passed
 		//since the given timestamp has been taken via IO_RTC_StartTime()
 
-		while(IO_RTC_GetTimeUS(time_stamp_0) < 5000){ // checks to see if 5 ms have passed
+		// FETCH LOCKOUT IS ENABLED MESSAGE (CAN ID: 0xAA) //
+		while(IO_RTC_GetTimeUS(time_stamp_0) < 10000){ // checks to see if 5 ms have passed
 		
-			IO_CAN_ReadMsg(handle_r, &can_frame);
-				if(can_frame.id == 0xAA){
+			IO_CAN_ReadMsg(handle_r_RINEHART, &can_frame);
+			
+				if(can_frame.id == 0xAA && can_frame.data[0] == 0x04){
 					break;
 				}
 				else{
 					continue;
 				}
 		}
-		// CHECK IF LOCKOUT IS ENABLED (BYTE 6); IF YES, INITIALIZE HAND_SHAKE SEQUENCE
 		
-		if(can_frame.id == 0xAA && can_frame.data[6] == 0x80){ 
+		// CHECK IF LOCKOUT IS ENABLED (BYTE 6 = 128); IF YES, INITIALIZE HAND_SHAKE SEQUENCE
+		if(can_frame.id == 0xAA && can_frame.data[6] == 0x80 ){ 
 		//IO_CAN_WriteMsg(handle_w_PCAN, &debug_frame);
 			hand_shake();
 		}
@@ -170,62 +190,28 @@ void main (void)
 }
 
 	
-	
-	
 	// FUNCTION DEFINITIONS // 
+	
+	void periodic_func(){
+		
+		IO_CAN_WriteMsg(handle_r_PCAN, &temp_frame);
+		IO_CAN_WriteMsg(handle_w_RINEHART, &temp_frame);
+		
+	}
 
 	void hand_shake(){
 
 		int i = 0;
-		ubyte1 handle_w_PCAN, handle_w_RINEHART, handle_r;
-		
 		ubyte1 array[8] = {0};
 		ubyte4 id = 0;
 		ubyte1 debug_array[8] = {1,2,3,4,5,6,7,8};
 		ubyte4 debug_id = 0xFC;
 		
-		
-		
-		IO_CAN_DATA_FRAME temp_frame;
 		IO_CAN_DATA_FRAME debug_frame;
-		IO_CAN_DATA_FRAME test_frame;
-		
 		debug_frame = create_CAN_frame(debug_array,debug_id);
 		
 		ubyte4 time_stamp_1;
 		
-		IO_CAN_Init( IO_CAN_CHANNEL_1 // INITIALIZE CAN 1
-			, 250
-			, 0     //default
-			, 0     //default
-			, 0);   //default
-		IO_CAN_Init( IO_CAN_CHANNEL_0 // INITIALIZE CAN 0
-			, 250
-			, 0     //default
-			, 0     //default
-			, 0);   //default
-
-		IO_CAN_ConfigMsg( &handle_w_PCAN
-				, IO_CAN_CHANNEL_0
-				, IO_CAN_MSG_WRITE
-				, IO_CAN_STD_FRAME
-				, 0
-				, 0);
-		IO_CAN_ConfigMsg( &handle_w_RINEHART
-				, IO_CAN_CHANNEL_1
-				, IO_CAN_MSG_WRITE
-				, IO_CAN_STD_FRAME
-				, 0
-				, 0);
-
-		IO_CAN_ConfigMsg( &handle_r
-				, IO_CAN_CHANNEL_1
-				, IO_CAN_MSG_READ
-				, IO_CAN_STD_FRAME
-				, 0
-				, 0);
-				
-		//IO_CAN_WriteMsg(handle_w_PCAN, &debug_frame);
 
 		// CREATE LOCKOUT DISABLE MESSAGE //
 
@@ -237,54 +223,59 @@ void main (void)
 		// PASS ID AND DATA ARRAY TO FUNCTION THAT WILL RETURN FULL CAN FRAME WITH PASSED VALUES
 		temp_frame = create_CAN_frame(array, id);
 		
-		// WRITE MESSAGE TO PCAN (DEBUGGING) //
 		
-		//IO_CAN_WriteMsg(handle_w_PCAN, &temp_frame);
-		
-		//***************WORKING UP UNTIL THIS POINT**********************//
-		
-		
+	 // while(1){
+				// IO_CAN_ReadMsg(handle_r_RINEHART, &test_frame);
+			 // IO_CAN_WriteMsg(handle_w_PCAN, &test_frame);
+	// }
 		
 		
-		// WRITE MESSAGE TO RINEHART //
+		// WRITE MESSAGE TO RINEHART EVERY 60ms //
 		
-		while(IO_RTC_GetTimeUS(time_stamp_1) < 5000){
-		IO_CAN_WriteMsg(handle_w_RINEHART, &temp_frame);
-		}
-
-		IO_RTC_StartTime(&time_stamp_1); // start time (get timestamp)
+		IO_RTC_PeriodicInit(60000, &periodic_func);
+		
 
 		// VERIFY THAT LOCKOUT IS DISABLED //
-
-		while(IO_RTC_GetTimeUS(time_stamp_1) < 5000){ // checks to see if 5 ms have passed
-			IO_CAN_ReadMsg(handle_r, &temp_frame);
-			if(temp_frame.id == 0xAA){	
-			IO_CAN_WriteMsg(handle_w_PCAN, &temp_frame);
-					break;
+			
+			while(1){
+			IO_CAN_ReadMsg(handle_r_RINEHART, &test_frame);
+			if(test_frame.id == 0xAA){
+				IO_CAN_WriteMsg(handle_w_PCAN, &test_frame);
+				break;
+			}
+			else{
+				continue;
+			}
 				}
-				else{
-					continue;
-				}
-		}
+		
 		
 
 		//IF LOCKOUT IS DISABLED, ENABLE INVERTER AND SET TORQUE TO +10 Nm
-		if(temp_frame.id == 0xAA && temp_frame.data[6] == 0){
+		if(test_frame.id == 0xAA){
+		
 
 			//CREATE MESSAGE TO ENABLE INVERTER AND SET TORQUE TO +10 Nm
 			array[0] = 0x64; // TORQUE
-			array[4] = 0x1;  // INVERTER ENABLE
-			array[5] = 0x1;  // INVERTER ENABLE
+			array[4] = 0x01;  // INVERTER ENABLE
+			array[5] = 0x01;  // INVERTER ENABLE
 			id = 0xC0;
-			//PASS FRAME DATA (MESSAGE ID AND DATA ARRAY) TO CREATE CAN MESSAGE
-			temp_frame = create_CAN_frame(array, id);
 			
-			// WRITE MESSAGE TO PCAN (DEBUGGING) //
-			IO_CAN_WriteMsg(handle_w_PCAN, &temp_frame); 
-		
+			//PASS FRAME DATA (MESSAGE ID AND DATA ARRAY) TO CREATE CAN MESSAGE
+			test_frame = create_CAN_frame(array, id);
+			
+			
+			IO_RTC_PeriodicDeInit();
+	
+			
 			// WRITE ENABLE INVERTER AND SET TORQUE TO +10 Nm MESSAGE TO CAN //
-			IO_CAN_WriteMsg(handle_w_RINEHART, &temp_frame);
-		}
+			IO_CAN_WriteMsg(handle_w_RINEHART, &test_frame);
+					
+  }
+  
+  // while(1){
+				 // IO_CAN_ReadMsg(handle_r_RINEHART, &temp_frame);
+			  // IO_CAN_WriteMsg(handle_w_PCAN, &temp_frame);
+		// }
 		return;
 	}
 
