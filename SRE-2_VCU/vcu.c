@@ -1,10 +1,11 @@
 #include "IO_Driver.h"  //Includes datatypes, constants, etc - should be included in every c file
 #include "APDB.h"
 #include "IO_ADC.h"
+#include "IO_CAN.h"
 
-#include "initializeVCU.h"
+#include "vcu.h"
 
-void inititalizeVCU(void)
+void vcu_inititalizeVCU(void)
 {
     //Application Database, needed for TTC-Downloader
     appl_db =
@@ -43,7 +44,11 @@ void inititalizeVCU(void)
     /* Initialize the IO driver (without safety functions) */
     //TODO: What does the VCU IO Driver do?
     IO_Driver_Init(NULL);
+}
 
+//Turns on the VCU's ADC channels and power supplies.
+void vcu_initializeADC(void)
+{
     //Power supplies ---------------------------------------------------
     //Analog sensor supplies
     IO_POWER_Set(IO_ADC_SENSOR_SUPPLY_0, IO_POWER_ON);
@@ -52,15 +57,15 @@ void inititalizeVCU(void)
     //Variable power supply (used by BPS)
     IO_POWER_Set(IO_SENSOR_SUPPLY_VAR, IO_POWER_14_5_V);    //IO_POWER_Set(IO_PIN_269, IO_POWER_8_5_V);
 
-                                                            //Digital outputs ---------------------------------------------------
-                                                            //IO_DO_Init(IO_DO_00);
+    //Digital outputs ---------------------------------------------------
+    //IO_DO_Init(IO_DO_00);
 
-                                                            //Digital PWM outputs ---------------------------------------------------
-                                                            //We're not using these
+    //Digital PWM outputs ---------------------------------------------------
+    //We're not using these
     IO_PWM_Init(IO_PWM_07, 700, TRUE, FALSE, 0, FALSE, NULL);  //Temporary RTDS output
 
-                                                               //ADC channels ---------------------------------------------------
-                                                               //TPS
+    //ADC channels ---------------------------------------------------
+    //TPS
     IO_ADC_ChannelInit(IO_ADC_5V_00, IO_ADC_RATIOMETRIC, 0, 0, IO_ADC_SENSOR_SUPPLY_0, NULL);
     IO_ADC_ChannelInit(IO_ADC_5V_01, IO_ADC_RATIOMETRIC, 0, 0, IO_ADC_SENSOR_SUPPLY_1, NULL);
 
@@ -69,7 +74,7 @@ void inititalizeVCU(void)
 
     //Unused
     //IO_ADC_ChannelInit(IO_ADC_5V_03, IO_ADC_RATIOMETRIC, 0, 0, IO_ADC_SENSOR_SUPPLY_0, NULL);
-
+    
     //Shockpots
     IO_ADC_ChannelInit(IO_ADC_5V_04, IO_ADC_RESISTIVE, 0, 0, 0, NULL);
     IO_ADC_ChannelInit(IO_ADC_5V_05, IO_ADC_RESISTIVE, 0, 0, 0, NULL);
@@ -90,4 +95,12 @@ void inititalizeVCU(void)
     //TODO: Run calibration functions?
     //TODO: Power-on error checking?
 
+
+}
+
+void vcu_initializeCAN(void)
+{
+    //Activate the CAN channels --------------------------------------------------
+    IO_CAN_Init(IO_CAN_CHANNEL_0, canSpeed_Channel0, 0, 0, 0);
+    IO_CAN_ConfigFIFO(&handle_fifo_w, IO_CAN_CHANNEL_0, messageIndex + 1, IO_CAN_MSG_WRITE, IO_CAN_STD_FRAME, 0, 0);
 }

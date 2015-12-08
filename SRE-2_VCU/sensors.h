@@ -134,19 +134,22 @@ Sensor Sensor_TPS1 = { 0, 4.5, 0.5 };
 
 //Brake Position Sensors
 Sensor Sensor_BPS0 = { 1, 0.5, 4.5 };  //Brake system pressure (or front only in the future)
-                                       //Sensor Sensor_BPS1 = { 2, 0.5, 4.5 }; //Rear brake system pressure (separate address in case used for something else)
+//Sensor Sensor_BPS1 = { 2, 0.5, 4.5 }; //Rear brake system pressure (separate address in case used for something else)
 
-                                       //Wheel Speed Sensors (like an ABS sensor)
-Sensor Sensor_WSS_FL = { 3 };
-Sensor Sensor_WSS_FR = { 3 };
-Sensor Sensor_WSS_RL = { 3 };
-Sensor Sensor_WSS_RR = { 3 };
+//Wheel Speed Sensors (like an ABS sensor)
+Sensor Sensor_WSS_FL = { 2 };
+Sensor Sensor_WSS_FR = { 2 };
+Sensor Sensor_WSS_RL = { 2 };
+Sensor Sensor_WSS_RR = { 2 };
 
 //Wheel Position Sensors (Shock pots)
-Sensor Sensor_WPS_FL = { 4 };
-Sensor Sensor_WPS_FR = { 4 };
-Sensor Sensor_WPS_RL = { 4 };
-Sensor Sensor_WPS_RR = { 4 };
+Sensor Sensor_WPS_FL = { 3 };
+Sensor Sensor_WPS_FR = { 3 };
+Sensor Sensor_WPS_RL = { 3 };
+Sensor Sensor_WPS_RR = { 3 };
+
+//Steering position sensor (SPS) - continuous rotation sensor, works like TPS, probably ratiometric
+Sensor Sensor_SAS = { 4 };
 
 //Switches
 //precharge failure
@@ -158,6 +161,7 @@ Sensor Sensor_LVBattery = { 0xA };  //Note: There will be no init for this "sens
 //----------------------------------------------------------------------------
 // Sensor Functions
 //----------------------------------------------------------------------------
-void updateSensors(void);
+void sensors_initializeSensors(void);
+void sensors_updateSensors(void);
 
-#endif /* _SENSORS_H */
+#endif // _SENSORS_H

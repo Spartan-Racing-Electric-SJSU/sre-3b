@@ -68,8 +68,9 @@
 //#include "IO_PWM.h"
 
 //Our code
-#include "initializeVCU.h"
+#include "vcu.h"
 #include "sensors.h"
+#include "canInput.h"
 #include "canOutput.h"
 #include "outputCalculations.h"
 #include "motorController.h"
@@ -83,14 +84,15 @@
 void main(void)
 {
 
-    inititalizeVCU();
+    vcu_inititalizeVCU();  //Startup stuff required by the 
+    vcu_inititalizeADC();  //Activate the VCU's analog-digital I/O
+    vcu_inititalizeCAN();  //Activate the VCU's analog-digital I/O
+
 
     /*******************************************/
     /*       PERIODIC APPLICATION CODE         */
     /*******************************************/
-    /* main loop, executed periodically with a
-    * defined cycle time (here: 5 ms)
-    */
+    /* main loop, executed periodically with a defined cycle time (here: 5 ms) */
 
 	ubyte4 timestamp_sensorpoll = 0;
     while (1)
@@ -108,10 +110,29 @@ void main(void)
         //----------------------------------------------------------------------------
         // DO STUFF!!!!!!!!!!
         //----------------------------------------------------------------------------
-        updateSensors();
-        broadcastSensorCanMessages();
-        //FINISH ADDING THESE
+        //Get readings from our sensors and other local devices (buttons, 12v battery, etc)
+        sensors_updateSensors();
+
+        //canInput - pull messages from CAN FIFO and update our object representations.
+        //Also echo can0 messages to can1 for DAQ.
+        canInput_readMessages();
+
+
+        //calculations - Now that we have local sensor data and external data from CAN, we can
+        //do actual processing work, from pedal travel calcs to traction control
+        //calculations_calculateStuff();
+
+        motorController_controlTheMotor();
+
+        //Drop the sensor readings into CAN (just raw data, not calculated stuff)
+        canOutput_writeMotorControl();
+
         //Make .h files for calculations and MCU control
+
+        canOutput_writeStatusMessages();
+
+        //Drop the sensor readings into CAN (just raw data, not calculated stuff)
+        canOutput_writeSensorMessages();
 
 
 

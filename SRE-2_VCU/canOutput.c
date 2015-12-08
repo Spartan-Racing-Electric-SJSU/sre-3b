@@ -1,8 +1,37 @@
+/*****************************************************************************
+* CAN Output
+******************************************************************************
+* This file is where we will (1) assemble and (2) send all of the can messaages
+* that are sent over CAN.  This includes sensor messages, MCU control, etc.
+*
+* The expectation is that all object representations of the devices on our car
+* (sensors, controllers... all devices) will be up-to-date, and this function
+* can simply grab objects, load their data into CAN frames, then place those 
+* frames into the FIFO queue.
+* 
+******************************************************************************
+* To-do:
+*
+******************************************************************************
+* Revision history:
+* 2015-11-16 - Rusty Pedrosa -
+*****************************************************************************/
+
 #include "sensors.h"
+#include "can.h"
 #include "IO_CAN.h"
 
 #include "canOutput.h"
 
+
+
+
+/*****************************************************************************
+* Helper functions
+****************************************************************************/
+/*-------------------------------------------------------------------
+* Sesnorstesdgsdfgsdfgsdfg
+-------------------------------------------------------------------*/
 //----------------------------------------------------------------------------
 // Sensor messages
 //----------------------------------------------------------------------------
@@ -11,10 +40,9 @@
 // The message addresses are at:
 // https://docs.google.com/spreadsheets/d/1sYXx191RtMq5Vp5PbPsq3BziWvESF9arZhEjYUMFO3Y/edit
 //----------------------------------------------------------------------------
-
-void broadcastSensorCanMessages(void)
+void canOutput_sendSensorMessages(void)
 {
-    //Each CAN message needs:
+    //Each CAN message must have these things assigned:
     //id
     //id_format
     //length
@@ -80,6 +108,9 @@ void broadcastSensorCanMessages(void)
             canSensorMessages[messageIndex].data[7] = Sensor_WPS_RR.sensorValue >> 8;
 
             break;
+
+        case 4: //SPS ---------------------------------------------------
+            break;
         } //end switch
     } //end for
 
@@ -101,10 +132,6 @@ void broadcastSensorCanMessages(void)
     //----------------------------------------------------------------------------
     //TODO: Make sure it's okay for ConfigFIFO(,,size) to be different from the array's size.
 
-    //Activate the CAN channels ---------------------------------------------------
-    ubyte1 handle_fifo_w; //This is the representation of the CAN FIFO write queue
-    IO_CAN_Init(IO_CAN_CHANNEL_0, canSpeed_Channel0, 0, 0, 0);
-    IO_CAN_ConfigFIFO(&handle_fifo_w, IO_CAN_CHANNEL_0, messageIndex + 1, IO_CAN_MSG_WRITE, IO_CAN_STD_FRAME, 0, 0);
 
     //Place the can messsages into the FIFO queue ---------------------------------------------------
     IO_CAN_WriteFIFO(handle_fifo_w, canSensorMessages, messageIndex + 1);

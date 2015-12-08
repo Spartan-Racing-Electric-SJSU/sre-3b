@@ -20,12 +20,18 @@
 
 #include "sensors.h"
 
-void updateSensors(void)
+
+/*-------------------------------------------------------------------
+* getPercent
+* Returns the % (position) of value, between min and max
+* If zeroToOneOnly is true, then % will be capped at 0%-100% (no negative % or > 100%)
+-------------------------------------------------------------------*/
+//----------------------------------------------------------------------------
+// Read sensors values from ADC channels
+// The sensor values should be stored in sensor objects.
+//----------------------------------------------------------------------------
+void sensors_updateSensors(void)
 {
-    //----------------------------------------------------------------------------
-    // Read sensors values from ADC channels
-    // The sensor values should be stored in sensor objects.
-    //----------------------------------------------------------------------------
 
     //TODO: Handle errors (using the return values for these Get functions)
 
@@ -76,7 +82,6 @@ void updateSensors(void)
 
     //Set the volume level (0 to 65535.. or 0 to FFFF as seen by VCU)
     dutyHex = 65535 * dutyPercent;       //becomes an integer
-
     dutyHex = (Sensor_WPS_FR.fresh = FALSE) ? 0 : dutyHex;  //Set to 0 if sensor reading is not fresh
 
     IO_PWM_SetDuty(IO_PWM_07, dutyHex, NULL);  //Pin 103

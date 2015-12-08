@@ -15,6 +15,7 @@
 APDB appl_db;
 
 //Functions
-void inititalizeVCU(void);
+void vcu_inititalizeVCU(void);
+void vcu_inititalizeADC(void);
 
 #endif //  _INITIALIZEVCU_H

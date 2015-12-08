@@ -21,15 +21,15 @@ void main(void)
     canMCUControlMessage.data[2] = 0;
     canMCUControlMessage.data[3] = 0;
 
-    //Direction
+    //Direction: 0=CW, 1=CCW
     canMCUControlMessage.data[4] = 1;
 
     //unused/unused/unused/unused unused/unused/Discharge/Inverter Enable
     canMCUControlMessage.data[5] = 0b00000001;
 
-    //Torque Limit?
-    canMCUControlMessage.data[2] = 0;
-    canMCUControlMessage.data[3] = 0;
+    //Unused (future use)
+    canMCUControlMessage.data[6] = 0;
+    canMCUControlMessage.data[7] = 0;
 
 
 
