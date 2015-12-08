@@ -1,50 +1,53 @@
+
+
+
 #include "IO_Driver.h"  //Includes datatypes, constants, etc - should be included in every c file
 #include "APDB.h"
 #include "IO_ADC.h"
+#include "IO_PWM.h"
 #include "IO_CAN.h"
 
+#include "sensors.c"
 #include "vcu.h"
+#include "can.h"
+#include "motorController.h"
 
-void vcu_inititalizeVCU(void)
-{
-    //Application Database, needed for TTC-Downloader
-    appl_db =
-    {
-        0                      /* ubyte4 versionAPDB        */
-        ,{ 0 }                    /* BL_T_DATE flashDate       */
-                                  /* BL_T_DATE buildDate       */
-        ,{ (ubyte4)(((((ubyte4)RTS_TTC_FLASH_DATE_YEAR) & 0x0FFF) << 0) |
-            ((((ubyte4)RTS_TTC_FLASH_DATE_MONTH) & 0x0F) << 12) |
-            ((((ubyte4)RTS_TTC_FLASH_DATE_DAY) & 0x1F) << 16) |
-            ((((ubyte4)RTS_TTC_FLASH_DATE_HOUR) & 0x1F) << 21) |
-            ((((ubyte4)RTS_TTC_FLASH_DATE_MINUTE) & 0x3F) << 26)) }
-        , 0                      /* ubyte4 nodeType           */
-        , 0                      /* ubyte4 startAddress       */
-        , 0                      /* ubyte4 codeSize           */
-        , 0                      /* ubyte4 legacyAppCRC       */
-        , 0                      /* ubyte4 appCRC             */
-        , 1                      /* ubyte1 nodeNr             */
-        , 0                      /* ubyte4 CRCInit            */
-        , 0                      /* ubyte4 flags              */
-        , 0                      /* ubyte4 hook1              */
-        , 0                      /* ubyte4 hook2              */
-        , 0                      /* ubyte4 hook3              */
-        , APPL_START             /* ubyte4 mainAddress        */
-        ,{ 0, 1 }                 /* BL_T_CAN_ID canDownloadID */
-        ,{ 0, 2 }                 /* BL_T_CAN_ID canUploadID   */
-        , 0                      /* ubyte4 legacyHeaderCRC    */
-        , 0                      /* ubyte4 version            */
-        , 500                    /* ubyte2 canBaudrate        */
-        , 0                      /* ubyte1 canChannel         */
-        ,{ 0 }                    /* ubyte1 reserved[8*4]      */
-        , 0                      /* ubyte4 headerCRC          */
-    };
+//Defaults
+extern MotorController MCU0;
+extern const ubyte1 canMessageLimit = 10;
+extern IO_CAN_DATA_FRAME canMessages[];
+extern const ubyte2 canMessageBaseId_VCU = 0x500;
 
+extern const ubyte2 canSpeed_Channel0 = 500;
+extern const ubyte2 canSpeed_Channel1 = 250;
 
-    /* Initialize the IO driver (without safety functions) */
-    //TODO: What does the VCU IO Driver do?
-    IO_Driver_Init(NULL);
-}
+extern Sensor Sensor_TPS0;
+extern Sensor Sensor_TPS1;
+
+//Brake Position Sensors
+extern Sensor Sensor_BPS0;  //Brake system pressure (or front only in the future)
+                                              //Sensor Sensor_BPS1 = { 2, 0.5, 4.5 }; //Rear brake system pressure (separate address in case used for something else)
+
+                                              //Wheel Speed Sensors (like an ABS sensor)
+extern Sensor Sensor_WSS_FL;
+extern Sensor Sensor_WSS_FR;
+extern Sensor Sensor_WSS_RL;
+extern Sensor Sensor_WSS_RR;
+
+//Wheel Position Sensors (Shock pots)
+extern Sensor Sensor_WPS_FL;
+extern Sensor Sensor_WPS_FR;// = { 3 };
+extern Sensor Sensor_WPS_RL;
+extern Sensor Sensor_WPS_RR;
+
+//Steering position Sensor (SPS) - continuous rotation sensor, works like TPS, probably ratiometric
+extern Sensor Sensor_SAS;
+
+//Switches
+//precharge failure
+
+//Other
+extern Sensor Sensor_LVBattery;// = { 0xA };  //Note: There will be no init for this "sensor"
 
 //Turns on the VCU's ADC channels and power supplies.
 void vcu_initializeADC(void)
@@ -98,9 +101,73 @@ void vcu_initializeADC(void)
 
 }
 
+//Initializes all four can FIFO queues
 void vcu_initializeCAN(void)
 {
     //Activate the CAN channels --------------------------------------------------
     IO_CAN_Init(IO_CAN_CHANNEL_0, canSpeed_Channel0, 0, 0, 0);
-    IO_CAN_ConfigFIFO(&handle_fifo_w, IO_CAN_CHANNEL_0, messageIndex + 1, IO_CAN_MSG_WRITE, IO_CAN_STD_FRAME, 0, 0);
+    IO_CAN_Init(IO_CAN_CHANNEL_1, canSpeed_Channel1, 0, 0, 0);
+
+    //Configure the FIFO queues
+    //This specifies: The handle names for the queues
+    //, which channel the queue belongs to
+    //, the # of messages (or maximum count?)
+    //, the direction of the queue (in/out)
+    //, the frame size
+    //, and other stuff?
+    IO_CAN_ConfigFIFO(&canFifoHandle_HiPri_Read, IO_CAN_CHANNEL_0, canMessageLimit, IO_CAN_MSG_READ, IO_CAN_STD_FRAME, 0, 0);
+    IO_CAN_ConfigFIFO(&canFifoHandle_HiPri_Write, IO_CAN_CHANNEL_0, canMessageLimit, IO_CAN_MSG_WRITE, IO_CAN_STD_FRAME, 0, 0);
+    IO_CAN_ConfigFIFO(&canFifoHandle_LoPri_Read, IO_CAN_CHANNEL_1, canMessageLimit, IO_CAN_MSG_READ, IO_CAN_STD_FRAME, 0, 0);
+    IO_CAN_ConfigFIFO(&canFifoHandle_LoPri_Write, IO_CAN_CHANNEL_1, canMessageLimit, IO_CAN_MSG_WRITE, IO_CAN_STD_FRAME, 0, 0);
+
+    IO_CAN_DATA_FRAME canMessages[10] = { { { 0 } } };
 }
+
+
+//Initialize the motor controllers (assign the can message IDs)
+void vcu_initializeMCU(void)
+{
+    MCU0.canMessageBaseId = 0xA0;
+}
+
+
+//Initialize the sensors with default values
+void vcu_initializeSensors(void)
+{
+    //Torque Encoders (TPS is not really accurate since there's no throttle to position in an EV)
+    //TODO: specMin/specMax are ints, won't store decimal values!!!!!!!
+    Sensor_TPS0.specMin = 0.5;
+    Sensor_TPS0.specMax = 4.5;
+    Sensor_TPS1.specMin = 4.5;
+    Sensor_TPS1.specMax = 0.5;
+
+    //Brake Position Sensors
+    Sensor_BPS0.specMin = 0.5;
+    Sensor_BPS0.specMax = 4.5;
+    //Sensor_BPS1.specMin = 0.5;
+    //Sensor_BPS1.specMax = 4.5;
+
+    /*
+    //Wheel Speed Sensors (like an ABS sensor)
+    Sensor_WSS_FL;
+    Sensor_WSS_FR;
+    Sensor_WSS_RL;
+    Sensor_WSS_RR;
+
+    //Wheel Position Sensors (Shock pots)
+    Sensor_WPS_FL;
+    Sensor_WPS_FR;
+    Sensor_WPS_RL;
+    Sensor_WPS_RR;
+
+    //Steering position Sensor (SPS) - continuous rotation sensor, works like TPS, probably ratiometric
+    Sensor_SAS;
+
+    //Switches
+    //precharge failure
+
+    //Other
+    Sensor_LVBattery;// = { 0xA };  //Note: There will be no init for this "sensor"
+    */
+}
+

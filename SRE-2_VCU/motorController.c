@@ -1,36 +1,39 @@
+#include "IO_Driver.h"
+#include "motorController.h"
+//#include "outputCalculations.h"
+//#include "sensors.h"
 
-void main(void)
+//Import extrenal variables
+//extern Sensor Sensor_WPS_FR; // = { 3 };
+
+//Update the MCU object from its CAN messages
+void motorController_setCommands() 
 {
-
-    //Remove lockout by sending Inverter disable command
-
-    //
-
-    //Rinehart CAN control message (heartbeat) structure ----------------
-    IO_CAN_DATA_FRAME canMCUControlMessage;
-    canMCUControlMessage.length = 8; // how many bytes in the message
-    canMCUControlMessage.id_format = IO_CAN_STD_FRAME;
-    canMCUControlMessage.id = 0xC0;
-
-    //Torque (Nm * 10)
-    ubyte2 mcuTorque = 5; //In Nm * 10. 125 continuous, 240 max
-    canMCUControlMessage.data[0] = (ubyte1)mcuTorque;
-    canMCUControlMessage.data[1] = mcuTorque >> 8;
-
-    //Speed (RPM?) - not needed - mcu should be in torque mode
-    canMCUControlMessage.data[2] = 0;
-    canMCUControlMessage.data[3] = 0;
-
-    //Direction: 0=CW, 1=CCW
-    canMCUControlMessage.data[4] = 1;
-
-    //unused/unused/unused/unused unused/unused/Discharge/Inverter Enable
-    canMCUControlMessage.data[5] = 0b00000001;
-
-    //Unused (future use)
-    canMCUControlMessage.data[6] = 0;
-    canMCUControlMessage.data[7] = 0;
-
-
-
+    MCU0.commands.enableDischarge = FALSE;
+    //If lockout has not been disabled
+    if (MCU0.lockoutDisabled == FALSE)
+    {
+        MCU0.commands.enableInverter = FALSE;
+        //MCU0.commands.enableDischarge = FALSE;
+        //MCU0.commands.direction = 0;
+        //MCU0.commands.requestedTorque = 0;
+    }
+    else  //Lockout has been removed
+    {
+        if (MCU0.inverterEnabled == FALSE)
+        {
+            MCU0.commands.enableInverter = TRUE;
+            //MCU0.commands.enableDischarge = FALSE;
+            //MCU0.commands.direction = 0;
+            //MCU0.commands.requestedTorque = 0;
+        }
+        else
+        {
+            MCU0.commands.enableInverter = TRUE;
+            //MCU0.commands.enableDischarge = FALSE;
+            
+            //SET THE TORQUE to 10 Nm * reistance value HARD CODED TEMPORARILY
+//            MCU0.commands.requestedTorque = 100 * getPercent((float4)Sensor_WPS_FR.sensorValue, 500, 2500, TRUE);
+        }
+    }
 }

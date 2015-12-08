@@ -62,6 +62,7 @@
 //VCU/C headers
 #include <stdio.h>
 #include <string.h>
+#include "APDB.h"
 #include "IO_Driver.h"  //Includes datatypes, constants, etc - should be included in every c file
 #include "IO_RTC.h"
 //#include "IO_CAN.h"
@@ -75,6 +76,38 @@
 #include "outputCalculations.h"
 #include "motorController.h"
 
+//Application Database, needed for TTC-Downloader
+APDB appl_db =
+    { 0                      /* ubyte4 versionAPDB        */
+    ,{ 0 }                    /* BL_T_DATE flashDate       */
+                          /* BL_T_DATE buildDate                   */
+    ,{ (ubyte4)(((((ubyte4)RTS_TTC_FLASH_DATE_YEAR) & 0x0FFF) << 0) |
+        ((((ubyte4)RTS_TTC_FLASH_DATE_MONTH) & 0x0F) << 12) |
+        ((((ubyte4)RTS_TTC_FLASH_DATE_DAY) & 0x1F) << 16) |
+        ((((ubyte4)RTS_TTC_FLASH_DATE_HOUR) & 0x1F) << 21) |
+        ((((ubyte4)RTS_TTC_FLASH_DATE_MINUTE) & 0x3F) << 26)) }
+    , 0                      /* ubyte4 nodeType           */
+    , 0                      /* ubyte4 startAddress       */
+    , 0                      /* ubyte4 codeSize           */
+    , 0                      /* ubyte4 legacyAppCRC       */
+    , 0                      /* ubyte4 appCRC             */
+    , 1                      /* ubyte1 nodeNr             */
+    , 0                      /* ubyte4 CRCInit            */
+    , 0                      /* ubyte4 flags              */
+    , 0                      /* ubyte4 hook1              */
+    , 0                      /* ubyte4 hook2              */
+    , 0                      /* ubyte4 hook3              */
+    , APPL_START             /* ubyte4 mainAddress        */
+    ,{ 0, 1 }                 /* BL_T_CAN_ID canDownloadID */
+    ,{ 0, 2 }                 /* BL_T_CAN_ID canUploadID   */
+    , 0                      /* ubyte4 legacyHeaderCRC    */
+    , 0                      /* ubyte4 version            */
+    , 500                    /* ubyte2 canBaudrate        */
+    , 0                      /* ubyte1 canChannel         */
+    ,{ 0 }                    /* ubyte1 reserved[8*4]      */
+    , 0                      /* ubyte4 headerCRC          */
+};
+
 
 /*****************************************************************************
 * Main!
@@ -83,10 +116,12 @@
 ****************************************************************************/
 void main(void)
 {
-
-    vcu_inititalizeVCU();  //Startup stuff required by the 
-    vcu_inititalizeADC();  //Activate the VCU's analog-digital I/O
-    vcu_inititalizeCAN();  //Activate the VCU's analog-digital I/O
+    /* Initialize the IO driver (without safety functions) */
+    //TODO: What does the VCU IO Driver do?
+    IO_Driver_Init(NULL);
+    vcu_initializeADC();  //Activate the VCU's analog-digital I/O
+    vcu_initializeCAN();
+    vcu_initializeMCU();
 
 
     /*******************************************/
@@ -122,19 +157,11 @@ void main(void)
         //do actual processing work, from pedal travel calcs to traction control
         //calculations_calculateStuff();
 
-        motorController_controlTheMotor();
+        motorController_setCommands();
 
         //Drop the sensor readings into CAN (just raw data, not calculated stuff)
-        canOutput_writeMotorControl();
-
-        //Make .h files for calculations and MCU control
-
-        canOutput_writeStatusMessages();
-
-        //Drop the sensor readings into CAN (just raw data, not calculated stuff)
-        canOutput_writeSensorMessages();
-
-
+        canOutput_sendMCUControl();
+        canOutput_sendSensorMessages();
 
 
         //----------------------------------------------------------------------------
