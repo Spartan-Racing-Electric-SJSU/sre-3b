@@ -11,11 +11,15 @@
 #ifndef _INITIALIZEVCU_H
 #define _INITIALIZEVCU_H
 
+#include "IO_Driver.h"
+#include "APDB.h"
+
 //Application Database, needed for TTC-Downloader
-APDB appl_db;
+//APDB appl_db;
 
 //Functions
-void vcu_inititalizeVCU(void);
-void vcu_inititalizeADC(void);
-
+void vcu_initializeVCU(void);
+void vcu_initializeADC(void);
+void vcu_initializeCAN(void);
+void vcu_initializeMCU(void);
 #endif //  _INITIALIZEVCU_H

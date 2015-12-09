@@ -19,7 +19,7 @@
 //#include "IO_DIO.h"
 
 #include "sensors.h"
-
+#include "outputCalculations.h"
 
 /*-------------------------------------------------------------------
 * getPercent
@@ -82,9 +82,13 @@ void sensors_updateSensors(void)
 
     //Set the volume level (0 to 65535.. or 0 to FFFF as seen by VCU)
     dutyHex = 65535 * dutyPercent;       //becomes an integer
-    dutyHex = (Sensor_WPS_FR.fresh = FALSE) ? 0 : dutyHex;  //Set to 0 if sensor reading is not fresh
+    dutyHex = (Sensor_WPS_FR.fresh == FALSE) ? 0 : dutyHex;  //Set to 0 if sensor reading is not fresh
 
     IO_PWM_SetDuty(IO_PWM_07, dutyHex, NULL);  //Pin 103
 
 
+}
+
+void testTorque(void) {
+//    MCU0.commands.requestedTorque = 100 * getPercent((float4)Sensor_WPS_FR.sensorValue, 500, 2500, TRUE);
 }

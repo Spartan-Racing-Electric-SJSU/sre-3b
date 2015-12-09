@@ -28,7 +28,17 @@
 #include <math.h>
 #include "IO_Driver.h"  //Includes datatypes, constants, etc - should be included in every c file
 
+#include "outputCalculations.h"  //Includes datatypes, constants, etc - should be included in every c file
+
 #include "sensors.h"
+
+
+
+
+extern Sensor Sensor_TPS0;
+extern Sensor Sensor_TPS1;
+
+
 
 /*****************************************************************************
 * Helper functions
@@ -278,10 +288,6 @@ void GetBrakePosition(void)
 //Outputs: 4 speeds, RPM, ground speed
 //4 funcs, one to get each wheel’s speed
 //16 bumps per rotation, 16 hz = 1 rotation per second
-#define NUM_BUMPS 16
-#define WHEEL_DIAMETER 18 //Inches
-#define NUM_BUMPS_D (double)NUM_BUMPS
-#define WHEEL_DIAMETER_D (double)WHEEL_DIAMETER
 
 double freq_to_rpm(double freq) {
     return (double)((freq / NUM_BUMPS_D)*60.0);

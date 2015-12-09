@@ -1,52 +1,60 @@
 /*****************************************************************************
 * CAN Output
 ******************************************************************************
+* Description:
 * This file is where we will (1) assemble and (2) send all of the can messaages
 * that are sent over CAN.  This includes sensor messages, MCU control, etc.
 *
-* The expectation is that all object representations of the devices on our car
-* (sensors, controllers... all devices) will be up-to-date, and this function
-* can simply grab objects, load their data into CAN frames, then place those 
-* frames into the FIFO queue.
-* 
-******************************************************************************
-* To-do:
+* Assumptions:
+* All devices on our car (sensors, controllers... even the VCU itself) are
+* represented as objects.  These objects should be up-to-date before these
+* functions are called, otherwise CAN messages will be produced with data that
+* is outdated (same message as last time).
+*
+* Usage:
+* Each function should perform the following steps->
+* 1. Utilize the canMessages[] object (an array of CAN frames), defined in can.h
+* 2. Define each CAN message's properties:
+*    - id
+*    - id_format (always IO_CAN_STD_FRAME - we don't need extended frames)
+*    - length
+*    - data[]
+* 3. Pass the canMessages into the CAN FIFO queue
+* Important - Ensure these steps are completed before calling another function
+* (e.g. MCU heartbeat message) that also uses same canSensorMessge[] object.
 *
 ******************************************************************************
+* To-do:
+* Decide whether to use different canMessage[] objs for each function
+* , or perhaps just for separate read/write queues
+* , or not at all (one object for 2 queues [read/write] * 2 can channels [can0/1])
+******************************************************************************
 * Revision history:
-* 2015-11-16 - Rusty Pedrosa -
+* 2015-12-07 - Rusty Pedrosa - File created
 *****************************************************************************/
 
-#include "sensors.h"
-#include "can.h"
 #include "IO_CAN.h"
 
 #include "canOutput.h"
+#include "sensors.h"
+#include "motorController.h"
+#include "can.h"
 
-
-
+extern MotorController MCU0;
+//extern const ubyte1 canMessageLimit = 10;
+extern IO_CAN_DATA_FRAME canMessages[];
+//extern const ubyte2 canMessageBaseId_VCU = 0x500;
 
 /*****************************************************************************
-* Helper functions
+* Standalone Sensor messages
+******************************************************************************
+* Load sensor values into CAN messages
+* Each can message's .data[] holds 1 byte - sensor data must be broken up into separate bytes
+* The message addresses are at:
+* https://docs.google.com/spreadsheets/d/1sYXx191RtMq5Vp5PbPsq3BziWvESF9arZhEjYUMFO3Y/edit
 ****************************************************************************/
-/*-------------------------------------------------------------------
-* Sesnorstesdgsdfgsdfgsdfg
--------------------------------------------------------------------*/
-//----------------------------------------------------------------------------
-// Sensor messages
-//----------------------------------------------------------------------------
-// Load sensor values into CAN messages
-// Each can message's .data[] holds 1 byte - sensor data must be broken up into separate bytes
-// The message addresses are at:
-// https://docs.google.com/spreadsheets/d/1sYXx191RtMq5Vp5PbPsq3BziWvESF9arZhEjYUMFO3Y/edit
-//----------------------------------------------------------------------------
 void canOutput_sendSensorMessages(void)
 {
-    //Each CAN message must have these things assigned:
-    //id
-    //id_format
-    //length
-    //data[]
     
     //Keep track of the current message # that we're working on.
     //(# of messages in the array going to FIFO queue, NOT the same as message ID/address)
@@ -59,58 +67,60 @@ void canOutput_sendSensorMessages(void)
     //This loop only handles the standalone sensors (CAN address 0x500 to 0x503 [for now])
     for (messageIndex = 0; messageIndex <= 3; messageIndex++)
     {
-        canSensorMessages[messageIndex].id = canMessageIdOffset + messageIndex;
-        canSensorMessages[messageIndex].id_format = IO_CAN_STD_FRAME;
+        canMessages[messageIndex].id = canMessageBaseId_VCU + messageIndex;
+        canMessages[messageIndex].id_format = IO_CAN_STD_FRAME;
 
         switch (messageIndex)
         {
         case 0: //TPS ---------------------------------------------------
-            canSensorMessages[messageIndex].length = 8;
-            canSensorMessages[messageIndex].data[0] = Sensor_TPS0.sensorValue;      //TPS0.lowbyte
-            canSensorMessages[messageIndex].data[1] = Sensor_TPS0.sensorValue >> 8; //TPS0.hibyte
+            canMessages[messageIndex].length = 8;
+            canMessages[messageIndex].data[0] = (ubyte1)Sensor_TPS0.sensorValue;      //TPS0.lowbyte
+            canMessages[messageIndex].data[1] = Sensor_TPS0.sensorValue >> 8; //TPS0.hibyte
 
-            canSensorMessages[messageIndex].data[4] = Sensor_TPS1.sensorValue;      //TPS0.lowbyte
-            canSensorMessages[messageIndex].data[5] = Sensor_TPS1.sensorValue >> 8; //TPS0.hibyte
+            canMessages[messageIndex].data[4] = (ubyte1)Sensor_TPS1.sensorValue;      //TPS0.lowbyte
+            canMessages[messageIndex].data[5] = Sensor_TPS1.sensorValue >> 8; //TPS0.hibyte
 
             break;
 
         case 1: //BPS ---------------------------------------------------
-            canSensorMessages[messageIndex].length = 2;
-            canSensorMessages[messageIndex].data[0] = Sensor_BPS0.sensorValue;
-            canSensorMessages[messageIndex].data[1] = Sensor_BPS0.sensorValue >> 8;
+            canMessages[messageIndex].length = 2;
+            canMessages[messageIndex].data[0] = (ubyte1)Sensor_BPS0.sensorValue;
+            canMessages[messageIndex].data[1] = Sensor_BPS0.sensorValue >> 8;
 
             break;
 
 
         case 2: //WSS ---------------------------------------------------
-            canSensorMessages[messageIndex].length = 8;
-            canSensorMessages[messageIndex].data[0] = Sensor_WSS_FL.sensorValue;
-            canSensorMessages[messageIndex].data[1] = Sensor_WSS_FL.sensorValue >> 8;
-            canSensorMessages[messageIndex].data[2] = Sensor_WSS_FR.sensorValue;
-            canSensorMessages[messageIndex].data[3] = Sensor_WSS_FR.sensorValue >> 8;
-            canSensorMessages[messageIndex].data[4] = Sensor_WSS_RL.sensorValue;
-            canSensorMessages[messageIndex].data[5] = Sensor_WSS_RL.sensorValue >> 8;
-            canSensorMessages[messageIndex].data[6] = Sensor_WSS_RR.sensorValue;
-            canSensorMessages[messageIndex].data[7] = Sensor_WSS_RR.sensorValue >> 8;
+            canMessages[messageIndex].length = 8;
+            canMessages[messageIndex].data[0] = (ubyte1)Sensor_WSS_FL.sensorValue;
+            canMessages[messageIndex].data[1] = Sensor_WSS_FL.sensorValue >> 8;
+            canMessages[messageIndex].data[2] = (ubyte1)Sensor_WSS_FR.sensorValue;
+            canMessages[messageIndex].data[3] = Sensor_WSS_FR.sensorValue >> 8;
+            canMessages[messageIndex].data[4] = (ubyte1)Sensor_WSS_RL.sensorValue;
+            canMessages[messageIndex].data[5] = Sensor_WSS_RL.sensorValue >> 8;
+            canMessages[messageIndex].data[6] = (ubyte1)Sensor_WSS_RR.sensorValue;
+            canMessages[messageIndex].data[7] = Sensor_WSS_RR.sensorValue >> 8;
             //TODO: Figure out if cast to ubyte1 is needed
 
             break;
 
         case 3: //WPS ---------------------------------------------------
-            canSensorMessages[messageIndex].length = 8;
-            canSensorMessages[messageIndex].data[0] = (ubyte1)Sensor_WPS_FL.sensorValue;
-            canSensorMessages[messageIndex].data[1] = Sensor_WPS_FL.sensorValue >> 8;
-            canSensorMessages[messageIndex].data[2] = (ubyte1)Sensor_WPS_FR.sensorValue;
-            canSensorMessages[messageIndex].data[3] = Sensor_WPS_FR.sensorValue >> 8;
-            canSensorMessages[messageIndex].data[4] = (ubyte1)Sensor_WPS_RL.sensorValue;
-            canSensorMessages[messageIndex].data[5] = Sensor_WPS_RL.sensorValue >> 8;
-            canSensorMessages[messageIndex].data[6] = (ubyte1)Sensor_WPS_RR.sensorValue;
-            canSensorMessages[messageIndex].data[7] = Sensor_WPS_RR.sensorValue >> 8;
+            canMessages[messageIndex].length = 8;
+            canMessages[messageIndex].data[0] = (ubyte1)Sensor_WPS_FL.sensorValue;
+            canMessages[messageIndex].data[1] = Sensor_WPS_FL.sensorValue >> 8;
+            canMessages[messageIndex].data[2] = (ubyte1)Sensor_WPS_FR.sensorValue;
+            canMessages[messageIndex].data[3] = Sensor_WPS_FR.sensorValue >> 8;
+            canMessages[messageIndex].data[4] = (ubyte1)Sensor_WPS_RL.sensorValue;
+            canMessages[messageIndex].data[5] = Sensor_WPS_RL.sensorValue >> 8;
+            canMessages[messageIndex].data[6] = (ubyte1)Sensor_WPS_RR.sensorValue;
+            canMessages[messageIndex].data[7] = Sensor_WPS_RR.sensorValue >> 8;
 
             break;
 
         case 4: //SPS ---------------------------------------------------
+
             break;
+
         } //end switch
     } //end for
 
@@ -119,11 +129,11 @@ void canOutput_sendSensorMessages(void)
     //----------------------------------------------------------------------------
     //12v battery ---------------------------------------------------    
     messageIndex++;
-    canSensorMessages[messageIndex].id = canMessageBaseId + 0xA;  //0x50A
-    canSensorMessages[messageIndex].id_format = IO_CAN_STD_FRAME;
-    canSensorMessages[messageIndex].length = 2;
-    canSensorMessages[messageIndex].data[0] = Sensor_LVBattery.sensorValue;
-    canSensorMessages[messageIndex].data[1] = Sensor_LVBattery.sensorValue >> 8;
+    canMessages[messageIndex].id = canMessageBaseId_VCU + 0xA;  //0x50A
+    canMessages[messageIndex].id_format = IO_CAN_STD_FRAME;
+    canMessages[messageIndex].length = 2;
+    canMessages[messageIndex].data[0] = (ubyte1)Sensor_LVBattery.sensorValue;
+    canMessages[messageIndex].data[1] = Sensor_LVBattery.sensorValue >> 8;
 
 
 
@@ -133,6 +143,42 @@ void canOutput_sendSensorMessages(void)
     //TODO: Make sure it's okay for ConfigFIFO(,,size) to be different from the array's size.
 
 
+    //Place message into CAN 1 output FIFO queue
+    IO_CAN_WriteFIFO(canFifoHandle_LoPri_Write, canMessages, messageIndex + 1);
+}
+
+
+/*****************************************************************************
+* Motor Controller (MCU) control message
+******************************************************************************
+* TODO: Parameterize the motor controller (allow multiple motor controllers)
+****************************************************************************/
+void canOutput_sendMCUControl(void)
+{
+    //Rinehart CAN control message (heartbeat) structure ----------------
+    canMessages[0].length = 8; // how many bytes in the message
+    canMessages[0].id_format = IO_CAN_STD_FRAME;
+    canMessages[0].id = 0xC0;
+
+    //Torque (Nm * 10)
+    ubyte2 mcuTorque = 5; //In Nm * 10. 125 continuous, 240 max
+    canMessages[0].data[0] = (ubyte1)MCU0.commands.requestedTorque;
+    canMessages[0].data[1] = MCU0.commands.requestedTorque >> 8;
+
+    //Speed (RPM?) - not needed - mcu should be in torque mode
+    canMessages[0].data[2] = 0;
+    canMessages[0].data[3] = 0;
+
+    //Direction: 0=CW, 1=CCW
+    canMessages[0].data[4] = 1; //MCU0.direction;
+
+    //unused/unused/unused/unused unused/unused/Discharge/Inverter Enable
+    canMessages[0].data[5] = MCU0.commands.enableInverter ? 1 : 0; // 0b00000001;
+
+    //Unused (future use)
+    canMessages[0].data[6] = 0;
+    canMessages[0].data[7] = 0;
+
     //Place the can messsages into the FIFO queue ---------------------------------------------------
-    IO_CAN_WriteFIFO(handle_fifo_w, canSensorMessages, messageIndex + 1);
+    IO_CAN_WriteFIFO(canFifoHandle_HiPri_Write, canMessages, 1);  //Important: Only transmit the first message
 }
