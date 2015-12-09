@@ -22,14 +22,23 @@
 
 # Executables
 *.exe
+!make.exe
 *.out
 *.app
 *.i*86
 *.x86_64
-*.hex
+#*.hex
 
 # Debug files
 *.dSYM/
 
 #Rusty's VS Folder
 SRE2
+
+#VCU build files
+*.src
+*.map
+*.mapxml
+*.mdf
+*.s19
+AddAPDB.html
