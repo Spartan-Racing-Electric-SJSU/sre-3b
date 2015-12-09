@@ -6,6 +6,8 @@
 //Import extrenal variables
 //extern Sensor Sensor_WPS_FR; // = { 3 };
 
+extern MotorController MCU0;
+
 //Update the MCU object from its CAN messages
 void motorController_setCommands() 
 {
@@ -36,4 +38,9 @@ void motorController_setCommands()
 //            MCU0.commands.requestedTorque = 100 * getPercent((float4)Sensor_WPS_FR.sensorValue, 500, 2500, TRUE);
         }
     }
+}
+
+
+void testTorque(void) {
+    //    MCU0.commands.requestedTorque = 100 * getPercent((float4)Sensor_WPS_FR.sensorValue, 500, 2500, TRUE);
 }

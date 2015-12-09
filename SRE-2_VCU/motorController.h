@@ -63,7 +63,7 @@ typedef struct _MotorController {
 // Motor Controller Object Instantiations
 //----------------------------------------------------------------------------
 //CAN Message ID should be defined for each motor controller here.
-MotorController MCU0; // = { 0xA0 };
+extern MotorController MCU0; // = { 0xA0 };
 
 
 //----------------------------------------------------------------------------

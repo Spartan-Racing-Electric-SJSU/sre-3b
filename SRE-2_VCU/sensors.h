@@ -130,67 +130,34 @@ typedef struct _Sensor {
 //Initialize all sensors in vcu.c
 //TODO: Read stored calibration data from EEPROM
 
-/*
 //Torque Encoders (TPS is not really accurate since there's no throttle to position in an EV)
-extern Sensor Sensor_TPS0 = { 0, 0.5, 4.5 };
-extern Sensor Sensor_TPS1 = { 0, 4.5, 0.5 };
+extern Sensor Sensor_TPS0;  // = { 0, 0.5, 4.5 };
+extern Sensor Sensor_TPS1;  // = { 0, 4.5, 0.5 };
 
 //Brake Position Sensors
-extern Sensor Sensor_BPS0 = { 1, 0.5, 4.5 };  //Brake system pressure (or front only in the future)
-//Sensor Sensor_BPS1 = { 2, 0.5, 4.5 }; //Rear brake system pressure (separate address in case used for something else)
+extern Sensor Sensor_BPS0;  // = { 1, 0.5, 4.5 };  //Brake system pressure (or front only in the future)
+//extern Sensor Sensor_BPS1;  // = { 2, 0.5, 4.5 }; //Rear brake system pressure (separate address in case used for something else)
 
 //Wheel Speed Sensors (like an ABS sensor)
-extern Sensor Sensor_WSS_FL = { 2 };
-extern Sensor Sensor_WSS_FR = { 2 };
-extern Sensor Sensor_WSS_RL = { 2 };
-extern Sensor Sensor_WSS_RR = { 2 };
+extern Sensor Sensor_WSS_FL;  // = { 2 };
+extern Sensor Sensor_WSS_FR;  // = { 2 };
+extern Sensor Sensor_WSS_RL;  // = { 2 };
+extern Sensor Sensor_WSS_RR;  // = { 2 };
 
 //Wheel Position Sensors (Shock pots)
-extern Sensor Sensor_WPS_FL = { 3 };
-extern Sensor Sensor_WPS_FR;// = { 3 };
-extern Sensor Sensor_WPS_RL = { 3 };
-extern Sensor Sensor_WPS_RR = { 3 };
+extern Sensor Sensor_WPS_FL;  // = { 3 };
+extern Sensor Sensor_WPS_FR;  // = { 3 };
+extern Sensor Sensor_WPS_RL;  // = { 3 };
+extern Sensor Sensor_WPS_RR;  // = { 3 };
 
 //Steering position Sensor (SPS) - continuous rotation sensor, works like TPS, probably ratiometric
-extern Sensor Sensor_SAS = { 4 };
+extern Sensor Sensor_SAS;  // = { 4 };
 
 //Switches
 //precharge failure
 
 //Other
-extern Sensor Sensor_LVBattery;// = { 0xA };  //Note: There will be no init for this "sensor"
-
-*/
-
-
-//Torque Encoders (TPS is not really accurate since there's no throttle to position in an EV)
-Sensor Sensor_TPS0;
-Sensor Sensor_TPS1;
-
-//Brake Position Sensors
-Sensor Sensor_BPS0;  //Brake system pressure (or front only in the future)
-//Sensor Sensor_BPS1 = { 2, 0.5, 4.5 }; //Rear brake system pressure (separate address in case used for something else)
-
-//Wheel Speed Sensors (like an ABS sensor)
-Sensor Sensor_WSS_FL;
-Sensor Sensor_WSS_FR;
-Sensor Sensor_WSS_RL;
-Sensor Sensor_WSS_RR;
-
-//Wheel Position Sensors (Shock pots)
-Sensor Sensor_WPS_FL;
-Sensor Sensor_WPS_FR;// = { 3 };
-Sensor Sensor_WPS_RL;
-Sensor Sensor_WPS_RR;
-
-//Steering position Sensor (SPS) - continuous rotation sensor, works like TPS, probably ratiometric
-Sensor Sensor_SAS;
-
-//Switches
-//precharge failure
-
-//Other
-Sensor Sensor_LVBattery;// = { 0xA };  //Note: There will be no init for this "sensor"
+extern Sensor Sensor_LVBattery; // = { 0xA };  //Note: There will be no init for this "sensor"
 
 
 //----------------------------------------------------------------------------

@@ -11,7 +11,7 @@
 
 //These should match
 extern const ubyte1 canMessageLimit;
-extern IO_CAN_DATA_FRAME canMessages[10]; //  = { { { 0 } } };
+extern IO_CAN_DATA_FRAME canMessages[]; //  = { { { 0 } } };
 
 //These are our four FIFO queues.  All messages should come/go through one of these queues.
 extern ubyte1 canFifoHandle_HiPri_Read;
@@ -32,7 +32,6 @@ extern const ubyte2 canSpeed_Channel1;// = 250;
 //                available data space
 //                TODO: What's the limit?
 //				  https://docs.google.com/spreadsheets/d/1sYXx191RtMq5Vp5PbPsq3BziWvESF9arZhEjYUMFO3Y/edit
-
 
 //Functions
 void broadcastSensorCanMessages(void);

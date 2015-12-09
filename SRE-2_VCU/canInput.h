@@ -3,8 +3,6 @@
 
 #include "can.h"
 
-//extern IO_CAN_DATA_FRAME *canMessages;
-
 void canInput_readMessages(void);
 
 

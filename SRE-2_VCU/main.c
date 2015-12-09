@@ -69,7 +69,7 @@
 //#include "IO_PWM.h"
 
 //Our code
-#include "vcu.h"
+#include "initializations.h"
 #include "sensors.h"
 #include "canInput.h"
 #include "canOutput.h"
@@ -108,6 +108,20 @@ APDB appl_db =
     , 0                      /* ubyte4 headerCRC          */
 };
 
+
+extern Sensor Sensor_TPS0;
+extern Sensor Sensor_TPS1;
+extern Sensor Sensor_BPS0;
+//extern Sensor Sensor_BPS1;
+extern Sensor Sensor_WSS_FL;
+extern Sensor Sensor_WSS_FR;
+extern Sensor Sensor_WSS_RL;
+extern Sensor Sensor_WSS_RR;
+extern Sensor Sensor_WPS_FL;
+extern Sensor Sensor_WPS_FR;
+extern Sensor Sensor_WPS_RL;
+extern Sensor Sensor_WPS_RR;
+extern Sensor Sensor_SAS;
 
 /*****************************************************************************
 * Main!

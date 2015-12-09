@@ -1,54 +1,21 @@
+//VCU initializations
+//Object (sensors, controllers, etc) instantiations
+//ONLY THIS FILE should have "true" version of object variables
+//Everything else should have "extern" declarations of variables
 
-
-
-#include "IO_Driver.h"  //Includes datatypes, constants, etc - should be included in every c file
+#include "IO_Driver.h"  //Includes datatypes, constants, etc - probably should be included in every c file
 #include "APDB.h"
 #include "IO_ADC.h"
 #include "IO_PWM.h"
 #include "IO_CAN.h"
 
-#include "sensors.c"
-#include "vcu.h"
+#include "sensors.h"
+#include "initializations.h"
 #include "can.h"
-#include "motorController.h"
 
-//Defaults
-extern MotorController MCU0;
-extern const ubyte1 canMessageLimit = 10;
-extern IO_CAN_DATA_FRAME canMessages[];
-extern const ubyte2 canMessageBaseId_VCU = 0x500;
-
-extern const ubyte2 canSpeed_Channel0 = 500;
-extern const ubyte2 canSpeed_Channel1 = 250;
-
-extern Sensor Sensor_TPS0;
-extern Sensor Sensor_TPS1;
-
-//Brake Position Sensors
-extern Sensor Sensor_BPS0;  //Brake system pressure (or front only in the future)
-                                              //Sensor Sensor_BPS1 = { 2, 0.5, 4.5 }; //Rear brake system pressure (separate address in case used for something else)
-
-                                              //Wheel Speed Sensors (like an ABS sensor)
-extern Sensor Sensor_WSS_FL;
-extern Sensor Sensor_WSS_FR;
-extern Sensor Sensor_WSS_RL;
-extern Sensor Sensor_WSS_RR;
-
-//Wheel Position Sensors (Shock pots)
-extern Sensor Sensor_WPS_FL;
-extern Sensor Sensor_WPS_FR;// = { 3 };
-extern Sensor Sensor_WPS_RL;
-extern Sensor Sensor_WPS_RR;
-
-//Steering position Sensor (SPS) - continuous rotation sensor, works like TPS, probably ratiometric
-extern Sensor Sensor_SAS;
-
-//Switches
-//precharge failure
-
-//Other
-extern Sensor Sensor_LVBattery;// = { 0xA };  //Note: There will be no init for this "sensor"
-
+/*****************************************************************************
+* ADC
+****************************************************************************/
 //Turns on the VCU's ADC channels and power supplies.
 void vcu_initializeADC(void)
 {
@@ -97,13 +64,32 @@ void vcu_initializeADC(void)
     //TODO: Read calibration data from EEPROM?
     //TODO: Run calibration functions?
     //TODO: Power-on error checking?
-
-
 }
+
+/*****************************************************************************
+* CAN
+****************************************************************************/
+//Defaults
+const ubyte1 canMessageLimit = 10;
+IO_CAN_DATA_FRAME canMessages[10]; //MUST BE THE SAME NUMBER AS ABOVE
+//extern IO_CAN_DATA_FRAME canMessages[]; //  = { { { 0 } } };
+
+//IO_CAN_DATA_FRAME canMessages[canMessageLimit];// = { { { 0 } } };
+
+const ubyte2 canMessageBaseId_VCU = 0x500;
+const ubyte2 canSpeed_Channel0 = 500;
+const ubyte2 canSpeed_Channel1 = 250;
+
+//These are our four FIFO queues.  All messages should come/go through one of these queues.
+ubyte1 canFifoHandle_HiPri_Read;
+ubyte1 canFifoHandle_HiPri_Write;
+ubyte1 canFifoHandle_LoPri_Read;
+ubyte1 canFifoHandle_LoPri_Write;
 
 //Initializes all four can FIFO queues
 void vcu_initializeCAN(void)
 {
+    IO_CAN_DATA_FRAME canMessages[canMessageLimit];// = { { { 0 } } };
     //Activate the CAN channels --------------------------------------------------
     IO_CAN_Init(IO_CAN_CHANNEL_0, canSpeed_Channel0, 0, 0, 0);
     IO_CAN_Init(IO_CAN_CHANNEL_1, canSpeed_Channel1, 0, 0, 0);
@@ -119,17 +105,31 @@ void vcu_initializeCAN(void)
     IO_CAN_ConfigFIFO(&canFifoHandle_HiPri_Write, IO_CAN_CHANNEL_0, canMessageLimit, IO_CAN_MSG_WRITE, IO_CAN_STD_FRAME, 0, 0);
     IO_CAN_ConfigFIFO(&canFifoHandle_LoPri_Read, IO_CAN_CHANNEL_1, canMessageLimit, IO_CAN_MSG_READ, IO_CAN_STD_FRAME, 0, 0);
     IO_CAN_ConfigFIFO(&canFifoHandle_LoPri_Write, IO_CAN_CHANNEL_1, canMessageLimit, IO_CAN_MSG_WRITE, IO_CAN_STD_FRAME, 0, 0);
-
-    IO_CAN_DATA_FRAME canMessages[10] = { { { 0 } } };
 }
 
+/*****************************************************************************
+* Sensors
+****************************************************************************/
+Sensor Sensor_TPS0;  // = { 0, 0.5, 4.5 };
+Sensor Sensor_TPS1;  // = { 0, 4.5, 0.5 };
+Sensor Sensor_BPS0;  // = { 1, 0.5, 4.5 };  //Brake system pressure (or front only in the future)
+//Sensor Sensor_BPS1;  // = { 2, 0.5, 4.5 }; //Rear brake system pressure (separate address in case used for something else)
+Sensor Sensor_WSS_FL;  // = { 2 };
+Sensor Sensor_WSS_FR;  // = { 2 };
+Sensor Sensor_WSS_RL;  // = { 2 };
+Sensor Sensor_WSS_RR;  // = { 2 };
+Sensor Sensor_WPS_FL;  // = { 3 };
+Sensor Sensor_WPS_FR;  // = { 3 };
+Sensor Sensor_WPS_RL;  // = { 3 };
+Sensor Sensor_WPS_RR;  // = { 3 };
+Sensor Sensor_SAS;  // = { 4 };
+Sensor Sensor_LVBattery;
 
-//Initialize the motor controllers (assign the can message IDs)
-void vcu_initializeMCU(void)
-{
-    MCU0.canMessageBaseId = 0xA0;
-}
+//Switches
+//precharge failure
 
+//Other
+extern Sensor Sensor_LVBattery; // = { 0xA };  //Note: There will be no init for this "sensor"
 
 //Initialize the sensors with default values
 void vcu_initializeSensors(void)
@@ -169,5 +169,17 @@ void vcu_initializeSensors(void)
     //Other
     Sensor_LVBattery;// = { 0xA };  //Note: There will be no init for this "sensor"
     */
+}
+
+/*****************************************************************************
+* MCU
+****************************************************************************/
+#include "motorController.h"
+
+MotorController MCU0;
+//Initialize the motor controllers (assign the can message IDs)
+void vcu_initializeMCU(void)
+{
+    MCU0.canMessageBaseId = 0xA0;
 }
 

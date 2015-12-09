@@ -27,12 +27,12 @@ ifeq ($(origin TARGET), undefined)
     TARGET=TTC60
 endif
 
-IODRIVER_DIR = ..\..\SRE-2_VCU
+IODRIVER_DIR = ..\..\..\Environment
 
 #
 # Includes
 #
-include ../build/settings.mk
+include ../../build/settings.mk
 
 INCDIRS += -I"."
 
@@ -44,7 +44,7 @@ IODRIVER_LDIR = $(subst \,/,$(IODRIVER_DIR)\lib)
 # list of source, and object files
 #
 # test module files
-FILES = $(notdir $(basename $(wildcard ../src/*.c)))
+FILES = $(notdir $(basename $(wildcard ./*.c)))
 OBJ_FILES := $(addprefix build/, $(addsuffix .obj, $(notdir $(FILES))))
 
 # bsp files
@@ -62,7 +62,7 @@ else
 	else 
 		ifeq ($(TARGET), TTC50)
 			# TTC50 
-			BSP_OBJ_FILES = $(BSP_SDIR)/bin/bsp_cstart_ttc50.obj
+			BSP_OBJ_FILES = $(BSP_SDIR)/bin/bsp_cstart_ttc50.obj    
 			DOWNLOADER_HW_TYPE = 0x00000401
 		else
 			# DEFAULT target: TTC60
@@ -82,7 +82,6 @@ all : build/main.elf postbuild
 
 # call linker
 build/main.elf : $(IODRIVER_LDIR)/$(LIB_NAME) $(BSP_OBJ_FILES) $(OBJ_FILES)
-	@echo FILES is "$(FILES)"
 	@echo linking $@
 	@"$(TSK_VIPER_LNK)" -o"$@" $(BSP_OBJ_FILES) $(OBJ_FILES) $(IODRIVER_LDIR)/$(LIB_NAME) -Wl-o"build/main.hex":IHEX -Wl-o"build/main.s19":SREC $(TSK_VIPER_LINK_FLAGS) -Wl--map-file="build/main.mapxml":XML $(BSP_SDIR)/lsl/$(TARGET)/$(LSL_FILE)
 	@echo  -------------

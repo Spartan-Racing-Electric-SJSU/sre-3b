@@ -27,18 +27,26 @@
 #include <string.h>
 #include <math.h>
 #include "IO_Driver.h"  //Includes datatypes, constants, etc - should be included in every c file
+#include "IO_RTC.h"
 
 #include "outputCalculations.h"  //Includes datatypes, constants, etc - should be included in every c file
 
 #include "sensors.h"
 
-
-
-
 extern Sensor Sensor_TPS0;
 extern Sensor Sensor_TPS1;
-
-
+extern Sensor Sensor_BPS0;
+//extern Sensor Sensor_BPS1;
+extern Sensor Sensor_WSS_FL;
+extern Sensor Sensor_WSS_FR;
+extern Sensor Sensor_WSS_RL;
+extern Sensor Sensor_WSS_RR;
+extern Sensor Sensor_WPS_FL;
+extern Sensor Sensor_WPS_FR;
+extern Sensor Sensor_WPS_RL;
+extern Sensor Sensor_WPS_RR;
+extern Sensor Sensor_SAS;
+extern Sensor Sensor_LVBattery;
 
 /*****************************************************************************
 * Helper functions

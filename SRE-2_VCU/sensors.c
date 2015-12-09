@@ -21,6 +21,21 @@
 #include "sensors.h"
 #include "outputCalculations.h"
 
+extern Sensor Sensor_TPS0;
+extern Sensor Sensor_TPS1;
+extern Sensor Sensor_BPS0;
+//extern Sensor Sensor_BPS1;
+extern Sensor Sensor_WSS_FL;
+extern Sensor Sensor_WSS_FR;
+extern Sensor Sensor_WSS_RL;
+extern Sensor Sensor_WSS_RR;
+extern Sensor Sensor_WPS_FL;
+extern Sensor Sensor_WPS_FR;
+extern Sensor Sensor_WPS_RL;
+extern Sensor Sensor_WPS_RR;
+extern Sensor Sensor_SAS;
+extern Sensor Sensor_LVBattery;
+
 /*-------------------------------------------------------------------
 * getPercent
 * Returns the % (position) of value, between min and max
@@ -87,8 +102,4 @@ void sensors_updateSensors(void)
     IO_PWM_SetDuty(IO_PWM_07, dutyHex, NULL);  //Pin 103
 
 
-}
-
-void testTorque(void) {
-//    MCU0.commands.requestedTorque = 100 * getPercent((float4)Sensor_WPS_FR.sensorValue, 500, 2500, TRUE);
 }
