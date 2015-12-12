@@ -57,7 +57,7 @@ extern Sensor Sensor_WPS_FL;
 extern Sensor Sensor_WPS_FR;
 extern Sensor Sensor_WPS_RL;
 extern Sensor Sensor_WPS_RR;
-extern Sensor Sensor_SPS;
+extern Sensor Sensor_SAS;
 extern Sensor Sensor_LVBattery;
 
 /*****************************************************************************
@@ -133,6 +133,7 @@ void canOutput_sendSensorMessages(void)
             break;
 
         case 4: //SPS ---------------------------------------------------
+
             break;
 
         } //end switch
@@ -159,13 +160,6 @@ void canOutput_sendSensorMessages(void)
 
     //Place message into CAN 1 output FIFO queue
     IO_CAN_WriteFIFO(canFifoHandle_LoPri_Write, canMessages, messageIndex + 1);
-
-    //TEMP: Send to both CAN channels
-    IO_CAN_WriteFIFO(canFifoHandle_HiPri_Write, canMessages, messageIndex + 1);
-
-    //Place message into CAN 1 output FIFO queue
-    //IO_CAN_WriteMsg(canFifoHandle_LoPri_Write, &canMessages);
-    //IO_CAN_WriteMsg(canFifoHandle_HiPri_Write, &canMessages);
 }
 
 
@@ -194,30 +188,12 @@ void canOutput_sendMCUControl(void)
     canMessages[0].data[4] = 1; //MCU0.direction;
 
     //unused/unused/unused/unused unused/unused/Discharge/Inverter Enable
-    canMessages[0].data[5] = 0; //First set whole byte to zero
-    
-    //Next add each bit one at a time, starting with the bit that belongs in the leftmost position
-    for (int bit = 7; bit >= 0; bit--)
-    {
-        canMessages[0].data[5] <<= 1;  //Always leftshift first
-        switch (bit)
-        {
-            // Then add your bit to the right (note: the order of case statements doesn't matter - it's the fact that bit-- instead of bit++;)
-            case 1: canMessages[0].data[5] |= (MCU0.commands.enableDischarge == TRUE) ? 1 : 0; break; 
-            case 0: canMessages[0].data[5] |= (MCU0.commands.enableInverter == TRUE) ? 1 : 0; break;  // Then add your bit to the right
-
-        }
-    }
+    canMessages[0].data[5] = MCU0.commands.enableInverter ? 1 : 0; // 0b00000001;
 
     //Unused (future use)
     canMessages[0].data[6] = 0;
     canMessages[0].data[7] = 0;
 
     //Place the can messsages into the FIFO queue ---------------------------------------------------
-    
-    IO_CAN_WriteFIFO(canFifoHandle_HiPri_Write, canMessages, 1);  //Important: Only transmit one message (the MCU message)
-    IO_CAN_WriteFIFO(canFifoHandle_LoPri_Write, canMessages, 1);  //Important: Only transmit one message (the MCU message)
-
-    //IO_CAN_WriteMsg(canFifoHandle_HiPri_Write, &canMessages);  //Important: Only transmit one message (the MCU message)
-    //IO_CAN_WriteMsg(canFifoHandle_LoPri_Write, &canMessages);  //Important: Only transmit one message (the MCU message)
+    IO_CAN_WriteFIFO(canFifoHandle_HiPri_Write, canMessages, 1);  //Important: Only transmit the first message
 }

@@ -78,7 +78,7 @@ IO_CAN_DATA_FRAME canMessages[10]; //MUST BE THE SAME NUMBER AS ABOVE
 
 const ubyte2 canMessageBaseId_VCU = 0x500;
 const ubyte2 canSpeed_Channel0 = 500;
-const ubyte2 canSpeed_Channel1 = 500;
+const ubyte2 canSpeed_Channel1 = 250;
 
 //These are our four FIFO queues.  All messages should come/go through one of these queues.
 ubyte1 canFifoHandle_HiPri_Read;
@@ -101,17 +101,10 @@ void vcu_initializeCAN(void)
     //, the direction of the queue (in/out)
     //, the frame size
     //, and other stuff?
-    IO_CAN_ConfigFIFO(&canFifoHandle_HiPri_Read, IO_CAN_CHANNEL_1, canMessageLimit, IO_CAN_MSG_READ, IO_CAN_STD_FRAME, 0, 0);
-    IO_CAN_ConfigFIFO(&canFifoHandle_HiPri_Write, IO_CAN_CHANNEL_1, canMessageLimit, IO_CAN_MSG_WRITE, IO_CAN_STD_FRAME, 0, 0);
-    IO_CAN_ConfigFIFO(&canFifoHandle_LoPri_Read, IO_CAN_CHANNEL_0, canMessageLimit, IO_CAN_MSG_READ, IO_CAN_STD_FRAME, 0, 0);
-    IO_CAN_ConfigFIFO(&canFifoHandle_LoPri_Write, IO_CAN_CHANNEL_0, canMessageLimit, IO_CAN_MSG_WRITE, IO_CAN_STD_FRAME, 0, 0);
-
-/*
-    IO_CAN_ConfigMsg(&canFifoHandle_HiPri_Read, IO_CAN_CHANNEL_1, IO_CAN_MSG_READ, IO_CAN_STD_FRAME, 0, 0);
-    IO_CAN_ConfigMsg(&canFifoHandle_HiPri_Write, IO_CAN_CHANNEL_1, IO_CAN_MSG_WRITE, IO_CAN_STD_FRAME, 0, 0);
-    IO_CAN_ConfigMsg(&canFifoHandle_LoPri_Read, IO_CAN_CHANNEL_0, IO_CAN_MSG_READ, IO_CAN_STD_FRAME, 0, 0);
-    IO_CAN_ConfigMsg(&canFifoHandle_LoPri_Write, IO_CAN_CHANNEL_0, IO_CAN_MSG_WRITE, IO_CAN_STD_FRAME, 0, 0);
-*/
+    IO_CAN_ConfigFIFO(&canFifoHandle_HiPri_Read, IO_CAN_CHANNEL_0, canMessageLimit, IO_CAN_MSG_READ, IO_CAN_STD_FRAME, 0, 0);
+    IO_CAN_ConfigFIFO(&canFifoHandle_HiPri_Write, IO_CAN_CHANNEL_0, canMessageLimit, IO_CAN_MSG_WRITE, IO_CAN_STD_FRAME, 0, 0);
+    IO_CAN_ConfigFIFO(&canFifoHandle_LoPri_Read, IO_CAN_CHANNEL_1, canMessageLimit, IO_CAN_MSG_READ, IO_CAN_STD_FRAME, 0, 0);
+    IO_CAN_ConfigFIFO(&canFifoHandle_LoPri_Write, IO_CAN_CHANNEL_1, canMessageLimit, IO_CAN_MSG_WRITE, IO_CAN_STD_FRAME, 0, 0);
 }
 
 /*****************************************************************************

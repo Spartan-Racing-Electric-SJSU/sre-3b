@@ -184,7 +184,7 @@ void main(void)
         //Task end function for IO Driver - This function needs to be called at the end of every SW cycle
         IO_Driver_TaskEnd();
         //wait until the cycle time is over
-        while (IO_RTC_GetTimeUS(timestamp_sensorpoll) < 10000);   // wait until 5ms (5000us) have passed
+        while (IO_RTC_GetTimeUS(timestamp_sensorpoll) < 5000);   // wait until 5ms (5000us) have passed
 
     } //end of main loop
 

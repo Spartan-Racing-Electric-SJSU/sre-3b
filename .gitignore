@@ -36,6 +36,9 @@
 SRE2
 
 #VCU build files
+*.src
+*.map
+*.mapxml
+*.mdf
+*.s19
 AddAPDB.html
-build/*
-!build/main.hex

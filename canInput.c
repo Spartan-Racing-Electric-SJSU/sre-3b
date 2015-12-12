@@ -14,12 +14,9 @@ void canInput_readMessages()
 {
     //Read messages from hipri channel 
     ubyte1 messagesReceived;
-    //IO_CAN_ReadFIFO(canFifoHandle_HiPri_Read, canMessages, 10, &messagesReceived);
-    IO_CAN_ReadFIFO(canFifoHandle_LoPri_Read, canMessages, 10, &messagesReceived);
+    IO_CAN_ReadFIFO(canFifoHandle_HiPri_Read, canMessages, 10, &messagesReceived);
 
-    //IO_CAN_ReadMsg(canFifoHandle_HiPri_Read, canMessages);
-    //messagesReceived = 1;
-    
+
     //Determine message type based on ID
     for (int currMessage = 0; currMessage < messagesReceived; currMessage++)
     { 
@@ -34,19 +31,19 @@ void canInput_readMessages()
             {
                 //Motor can only be run if inverterenabled = true and lockoutdisabled=true
                 //HUUUUUUUUUUUUGE TODO: Switch this to bit masking or something
-            case 0: // = 0b00000000 = 0x00
+            case 0:   //0b00000000 
                 MCU0.inverterEnabled = FALSE;
                 MCU0.lockoutDisabled = TRUE;
                 break;
-            case 1: // = 0b00000001 = 0x01
+            case 1:   //0b00000001
                 MCU0.inverterEnabled = TRUE;
                 MCU0.lockoutDisabled = TRUE;
                 break;
-            case 128: // = 0b10000000 = 0x80
+            case 128: //0b10000000
                 MCU0.inverterEnabled = FALSE;
                 MCU0.lockoutDisabled = FALSE;
                 break;
-            case 129: // = 0b10000000 = 0x81
+            case 129: //0b10000000
                 MCU0.inverterEnabled = TRUE;
                 MCU0.lockoutDisabled = FALSE;
                 break;
@@ -67,6 +64,5 @@ void canInput_readMessages()
     }
 
     //Echo message on lopri channel
-    IO_CAN_WriteFIFO(canFifoHandle_LoPri_Write, canMessages, messagesReceived);
-    //IO_CAN_WriteMsg(canFifoHandle_LoPri_Write, canMessages);
+
 }
