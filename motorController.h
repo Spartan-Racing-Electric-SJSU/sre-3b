@@ -11,6 +11,7 @@ typedef struct _MCUCommand {
     // These should are updated in outputCalculations.c
     //----------------------------------------------------------------------------
     ubyte2 requestedTorque;
+    ubyte2 requestedTorqueLimit;
     const ubyte1 direction;
 
     //unused/unused/unused/unused unused/unused/Discharge/Inverter Enable

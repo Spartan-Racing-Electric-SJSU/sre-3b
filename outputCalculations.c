@@ -58,12 +58,22 @@ extern Sensor Sensor_LVBattery;
 -------------------------------------------------------------------*/
 float4 getPercent(float4 value, float4 min, float4 max, bool zeroToOneOnly)
 {
+    float4 retVal;
+    if (value >= max)       { retVal = 1; }
+    else if (value <= min)  { retVal = 0; }
+    else                    { retVal = (value - min) / (max - min); }
+
+    return retVal;
+}
+
+float4 getPercentOLD(float4 value, float4 min, float4 max, bool zeroToOneOnly)
+{
     float4 retVal = (value - min) / (max - min);
 
     if (zeroToOneOnly == TRUE)
     {
-        if (retVal > 1) { retVal = 1; }
-        else if (retVal < 0) { retVal = 0; }
+        if (value > max) { retVal = 1; }
+        if (value < min) { retVal = 0; }
     }
 
     return retVal;
@@ -181,8 +191,8 @@ float4 GetThrottlePosition(void)
     float4 TPS0PedalPercent = getPercent(Sensor_TPS0.sensorValue, Sensor_TPS0.calibMin, Sensor_TPS0.calibMax, FALSE); //Analog Input 0
     float4 TPS1PedalPercent = getPercent(Sensor_TPS1.sensorValue, Sensor_TPS1.calibMin, Sensor_TPS1.calibMax, FALSE); //Analog input 1
 
-                                                                                                                      //Check for implausibility (discrepancy > 10%)
-                                                                                                                      //RULE: EV2.3.6 Implausibility is defined as a deviation of more than 10% pedal travel between the sensors.
+    //Check for implausibility (discrepancy > 10%)
+    //RULE: EV2.3.6 Implausibility is defined as a deviation of more than 10% pedal travel between the sensors.
     if (fabs(TPS1PedalPercent - TPS0PedalPercent) > .1)
     {
         //Err.Report(Err.Codes.TPSDiscrepancy, "TPS discrepancy of over 10%", Motor.Stop);

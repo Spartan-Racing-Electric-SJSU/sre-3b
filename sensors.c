@@ -89,17 +89,19 @@ void sensors_updateSensors(void)
     //      even at 0 duty cycle / DO=FALSE.  Gotta figure out why this
     //      happens and if there's a problem with the VCU.
 
+    /* Temporary comment out 
     //Hook up RTDS to pin 103
     float4 dutyPercent;  //Percent (some fraction between 0 and 1)
     ubyte2 dutyHex;      //percent * max value (FFFF)
-
-    dutyPercent = getPercent((float4)Sensor_WPS_FR.sensorValue, 50, 4550, TRUE);
+    
+    dutyPercent = getPercent((float4)Sensor_WPS_FL.sensorValue, 50, 4550, TRUE);
 
     //Set the volume level (0 to 65535.. or 0 to FFFF as seen by VCU)
-    dutyHex = 65535 * dutyPercent;       //becomes an integer
-    dutyHex = (Sensor_WPS_FR.fresh == FALSE) ? 0 : dutyHex;  //Set to 0 if sensor reading is not fresh
+    //dutyHex = 65535 * dutyPercent;       //becomes an integer
+    dutyHex = 6553 * dutyPercent;       //becomes an integer
+    dutyHex = (Sensor_WPS_FL.fresh == FALSE) ? 0 : dutyHex;  //Set to 0 if sensor reading is not fresh
 
     IO_PWM_SetDuty(IO_PWM_07, dutyHex, NULL);  //Pin 103
-
+    */
 
 }
