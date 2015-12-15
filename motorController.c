@@ -1,6 +1,6 @@
 #include "IO_Driver.h"
 #include "motorController.h"
-#include "outputCalculations.h"
+#include "mathFunctions.h"
 #include "sensors.h"
 
 //Import extrenal variables

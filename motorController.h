@@ -8,7 +8,7 @@ typedef struct _MCUCommand {
     //----------------------------------------------------------------------------
     // Control parameters
     //----------------------------------------------------------------------------
-    // These should are updated in outputCalculations.c
+    // These are set by ??????????
     //----------------------------------------------------------------------------
     ubyte2 requestedTorque;
     ubyte2 requestedTorqueLimit;
@@ -54,7 +54,7 @@ typedef struct _MotorController {
     //----------------------------------------------------------------------------
     // Control parameters
     //----------------------------------------------------------------------------
-    // These should are updated in outputCalculations.c
+    // These are set by ??????????
     //----------------------------------------------------------------------------
     MCUCommand commands;
 

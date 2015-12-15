@@ -21,6 +21,7 @@ float4 getPercent(float4 value, float4 min, float4 max, bool zeroToOneOnly)
     return retVal;
 }
 
+/*
 float4 getPercentOLD(float4 value, float4 min, float4 max, bool zeroToOneOnly)
 {
     float4 retVal = (value - min) / (max - min);
@@ -33,3 +34,4 @@ float4 getPercentOLD(float4 value, float4 min, float4 max, bool zeroToOneOnly)
 
     return retVal;
 }
+*/

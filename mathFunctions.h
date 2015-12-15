@@ -1,6 +1,9 @@
 #ifndef _MATHFUNCTIONS_H
 #define _MATHFUNCTIONS_H
 
+
+#include "IO_Driver.h"  //Includes datatypes, constants, etc - should be included in every c file
+
 /*****************************************************************************
 * Helper functions
 ****************************************************************************/

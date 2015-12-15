@@ -19,7 +19,7 @@
 //#include "IO_DIO.h"
 
 #include "sensors.h"
-#include "outputCalculations.h"
+#include "mathFunctions.h"
 
 extern Sensor Sensor_TPS0;
 extern Sensor Sensor_TPS1;
