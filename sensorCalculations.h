@@ -1,3 +1,6 @@
+#ifndef _SENSORCALCULATIONS_H
+#define _SENSORCALCULATIONS_H
+
 /*****************************************************************************
 * Output Calculations
 ******************************************************************************
@@ -17,16 +20,6 @@
 #include "IO_Driver.h"  //Includes datatypes, constants, etc - should be included in every c file
 
 #include "sensors.h"
-
-/*****************************************************************************
-* Helper functions
-****************************************************************************/
-/*-------------------------------------------------------------------
-* getPercent
-* Returns the % (position) of value, between min and max
-* If zeroToOneOnly is true, then % will be capped at 0%-100% (no negative % or > 100%)
--------------------------------------------------------------------*/
-float4 getPercent(float4 value, float4 min, float4 max, bool zeroToOneOnly);
 
 /*****************************************************************************
 * Torque Encoder (TPS) functions
@@ -170,3 +163,4 @@ double rpm_to_mph(double rpm);
 //001 = TPS1 out of range
 //}
 
+#endif //  _SENSORCALCULATIONS_H

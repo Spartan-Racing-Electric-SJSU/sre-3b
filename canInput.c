@@ -14,8 +14,8 @@ void canInput_readMessages()
 {
     //Read messages from hipri channel 
     ubyte1 messagesReceived;
-    //IO_CAN_ReadFIFO(canFifoHandle_HiPri_Read, canMessages, 10, &messagesReceived);
-    IO_CAN_ReadFIFO(canFifoHandle_LoPri_Read, canMessages, 10, &messagesReceived);
+    IO_CAN_ReadFIFO(canFifoHandle_HiPri_Read, canMessages, 10, &messagesReceived);
+    //IO_CAN_ReadFIFO(canFifoHandle_LoPri_Read, canMessages, 10, &messagesReceived);
 
     //IO_CAN_ReadMsg(canFifoHandle_HiPri_Read, canMessages);
     //messagesReceived = 1;
