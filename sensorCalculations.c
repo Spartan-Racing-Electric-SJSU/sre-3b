@@ -29,8 +29,8 @@
 #include "IO_Driver.h"  //Includes datatypes, constants, etc - should be included in every c file
 #include "IO_RTC.h"
 
-#include "sensorCalculations.h"  //Includes datatypes, constants, etc - should be included in every c file
-
+#include "sensorCalculations.h"
+#include "mathFunctions.h"
 #include "sensors.h"
 
 extern Sensor Sensor_TPS0;
