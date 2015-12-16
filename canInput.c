@@ -25,10 +25,10 @@ void canInput_readMessages()
     { 
         switch (canMessages[currMessage].id)
         {
-        case 0xAA:  //MCU Internal states
-            //-------------------------------------------------------------------------
-
-            //-------------------------------------------------------------------------
+        //-------------------------------------------------------------------------
+        //MCU Internal states
+        //-------------------------------------------------------------------------
+        case 0xAA:  
             //canInput_parseMCUMessage();
             switch (canMessages[currMessage].data[6])
             {
