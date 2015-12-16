@@ -29,12 +29,13 @@
 #include "IO_Driver.h"  //Includes datatypes, constants, etc - should be included in every c file
 #include "IO_RTC.h"
 
-<<<<<<< HEAD
+//Not sure why these 3 lines appeared in code.  I didn't add them.  Something to do with GitHub app?
+//<<<<<<< HEAD
 #include "sensorCalculations.h"
 #include "mathFunctions.h"
-=======
+//=======
 #include "sensorCalculations.h"  //Includes datatypes, constants, etc - should be included in every c file
->>>>>>> refs/heads/StatusEnum
+//>>>>>>> refs/heads/StatusEnum
 #include "sensors.h"
 #include "mathFunctions.h"
 
