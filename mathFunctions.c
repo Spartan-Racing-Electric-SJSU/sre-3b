@@ -14,9 +14,16 @@
 float4 getPercent(float4 value, float4 min, float4 max, bool zeroToOneOnly)
 {
     float4 retVal;
-    if (value >= max) { retVal = 1; }
-    else if (value <= min) { retVal = 0; }
-    else { retVal = (value - min) / (max - min); }
+    if (zeroToOneOnly == TRUE)
+    {
+        if (value >= max) { retVal = 1; }
+        else if (value <= min) { retVal = 0; }
+        else { retVal = (value - min) / (max - min); }
+    }
+    else
+    {
+        retVal = (value - min) / (max - min);
+    }
 
     return retVal;
 }

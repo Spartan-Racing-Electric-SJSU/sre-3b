@@ -2,6 +2,13 @@
 #ifndef _MOTORCONTROLLER_H
 #define _MOTORCONTROLLER_H
 
+typedef enum { ENABLED, DISABLED } Status;
+
+/*****************************************************************************
+* Motor Controller (MCU)
+******************************************************************************
+*
+****************************************************************************/
 
 typedef struct _MCUCommand {
 
@@ -10,6 +17,9 @@ typedef struct _MCUCommand {
     //----------------------------------------------------------------------------
     // These are set by ??????????
     //----------------------------------------------------------------------------
+    bool newCommand;  //Has anything been updated since the last command was sent?
+    ubyte4 timeStamp_lastCommandSent;  //from IO_RTC_StartTime(&)
+
     ubyte2 requestedTorque;
     ubyte2 requestedTorqueLimit;
     const ubyte1 direction;
@@ -21,11 +31,6 @@ typedef struct _MCUCommand {
 
 } MCUCommand;
 
-/*****************************************************************************
-* Motor Controller (MCU)
-******************************************************************************
-*
-****************************************************************************/
 typedef struct _MotorController {
     //----------------------------------------------------------------------------
     // Controller-specific properties
@@ -41,8 +46,8 @@ typedef struct _MotorController {
     // These represent the state of the controller (set at run time, not compile
     // time.)  These are updated by canInput.c
     //----------------------------------------------------------------------------
-    bool lockoutDisabled;
-    bool inverterEnabled;
+    Status lockoutStatus;
+    Status inverterStatus;
 
     ubyte4 vsmStatus0;      //0xAA Byte 0,1
     ubyte4 vsmStatus1;      //0xAA Byte 0,1
@@ -59,6 +64,7 @@ typedef struct _MotorController {
     MCUCommand commands;
 
 } MotorController;
+
 
 //----------------------------------------------------------------------------
 // Motor Controller Object Instantiations

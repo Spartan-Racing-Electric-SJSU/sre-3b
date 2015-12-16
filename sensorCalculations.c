@@ -29,9 +29,14 @@
 #include "IO_Driver.h"  //Includes datatypes, constants, etc - should be included in every c file
 #include "IO_RTC.h"
 
+<<<<<<< HEAD
 #include "sensorCalculations.h"
 #include "mathFunctions.h"
+=======
+#include "sensorCalculations.h"  //Includes datatypes, constants, etc - should be included in every c file
+>>>>>>> refs/heads/StatusEnum
 #include "sensors.h"
+#include "mathFunctions.h"
 
 extern Sensor Sensor_TPS0;
 extern Sensor Sensor_TPS1;

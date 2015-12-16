@@ -29,36 +29,25 @@ void canInput_readMessages()
         //MCU Internal states
         //-------------------------------------------------------------------------
         case 0xAA:  
-            //canInput_parseMCUMessage();
-            switch (canMessages[currMessage].data[6])
-            {
-                //Motor can only be run if inverterenabled = true and lockoutdisabled=true
-                //HUUUUUUUUUUUUGE TODO: Switch this to bit masking or something
-            case 0: // = 0b00000000 = 0x00
-                MCU0.inverterEnabled = FALSE;
-                MCU0.lockoutDisabled = TRUE;
-                break;
-            case 1: // = 0b00000001 = 0x01
-                MCU0.inverterEnabled = TRUE;
-                MCU0.lockoutDisabled = TRUE;
-                break;
-            case 128: // = 0b10000000 = 0x80
-                MCU0.inverterEnabled = FALSE;
-                MCU0.lockoutDisabled = FALSE;
-                break;
-            case 129: // = 0b10000000 = 0x81
-                MCU0.inverterEnabled = TRUE;
-                MCU0.lockoutDisabled = FALSE;
-                break;
-
-            //default:
-                
-            }
-            
+            MCU0.lockoutStatus = (canMessages[currMessage].data[6] & 0x80 == 0x80) ? DISABLED : ENABLED;
+            MCU0.inverterStatus = (canMessages[currMessage].data[6] & 1 == 1) ? ENABLED : DISABLED;    
             break;
 
-        case 0xAB:  //MCU Fault codes
-
+        //-------------------------------------------------------------------------
+        //MCU Fault codes
+        //-------------------------------------------------------------------------
+        case 0xAB:
+            //For unknown/dynamic data array sizes, use dataIndex < sizeof(canMessages[currMessage].data) / sizeof(canMessages[currMessage].data[0]
+            //for (int dataIndex = 0; dataIndex < 8; dataIndex++)
+            //{
+            //    switch (dataIndex)
+            //    {
+            //    case 6:   //Byte 6: 
+            //        break;
+            //    default:
+            //        break;
+            //    }
+            //}        
             break;
 
         //default:
