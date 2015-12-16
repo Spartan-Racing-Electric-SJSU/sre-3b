@@ -22,8 +22,7 @@ void motorController_setCommands()
     }
     else
     {
-        MCU0.commands.requestedTorque = Sensor_WPS_FL.sensorValue << 4;
-        //MCU0.commands.requestedTorque = 30 * getPercent(Sensor_WPS_FL.sensorValue, 500, 2500, TRUE);
+        MCU0.commands.requestedTorque = 30 * getPercent(Sensor_WPS_FL.sensorValue, 500, 2500, TRUE);
     }
 
     //If lockout has not been disabled
