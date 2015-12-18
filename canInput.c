@@ -27,10 +27,12 @@ void canInput_readMessages()
         {
         //-------------------------------------------------------------------------
         //MCU Internal states
+        //http://stackoverflow.com/questions/47981/how-do-you-set-clear-and-toggle-a-single-bit-in-c-c
         //-------------------------------------------------------------------------
         case 0xAA:  
+            //128 == 0x80 == 1 << 7 == the first bit is 1 and the rest are 0 == 10000000
             MCU0.lockoutStatus = (canMessages[currMessage].data[6] & 0x80 == 0x80) ? DISABLED : ENABLED;
-            MCU0.inverterStatus = (canMessages[currMessage].data[6] & 1 == 1) ? ENABLED : DISABLED;    
+            MCU0.inverterStatus = (canMessages[currMessage].data[6] & 0x01 == 0x01) ? ENABLED : DISABLED;
             break;
 
         //-------------------------------------------------------------------------

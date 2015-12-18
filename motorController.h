@@ -11,7 +11,6 @@ typedef enum { ENABLED, DISABLED } Status;
 ****************************************************************************/
 
 typedef struct _MCUCommand {
-
     //----------------------------------------------------------------------------
     // Control parameters
     //----------------------------------------------------------------------------
@@ -22,11 +21,13 @@ typedef struct _MCUCommand {
 
     ubyte2 requestedTorque;
     ubyte2 requestedTorqueLimit;
-    const ubyte1 direction;
+    ubyte1 direction;
 
     //unused/unused/unused/unused unused/unused/Discharge/Inverter Enable
     bool enableDischarge;
     bool enableInverter;
+    //bool inverterHasBeenEnableed;
+    ubyte4 timeStamp_inverterEnabled;
     //ubyte1 controlSwitches; // example: 0b00000001 = inverter is enabled, discharge is disabled.
 
 } MCUCommand;
@@ -39,7 +40,7 @@ typedef struct _MotorController {
     // controller. (We may have more than 1 controller in the future)
     //----------------------------------------------------------------------------
     ubyte2 canMessageBaseId;  //Starting message ID for messages that will come in from this controller
-        
+    
     //----------------------------------------------------------------------------
     // Controller statuses/properties
     //----------------------------------------------------------------------------

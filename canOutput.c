@@ -178,7 +178,7 @@ void canOutput_sendSensorMessages(void)
 void canOutput_sendMCUControl(bool sendEvenIfNoChanges)
 {
     //Only send a message if there's an update or it's been > .25 seconds or force=true
-    if ((sendEvenIfNoChanges == TRUE) || (MCU0.commands.updateCount > 1) || (IO_RTC_GetTimeUS(MCU0.commands.timeStamp_lastCommandSent) > 250000))
+    if ((sendEvenIfNoChanges == TRUE) || (MCU0.commands.updateCount > 1) || (IO_RTC_GetTimeUS(MCU0.commands.timeStamp_lastCommandSent) > 125000))
     {
         //Rinehart CAN control message (heartbeat) structure ----------------
         canMessages[0].length = 8; // how many bytes in the message
@@ -195,7 +195,7 @@ void canOutput_sendMCUControl(bool sendEvenIfNoChanges)
         canMessages[0].data[3] = 0;
 
         //Direction: 0=CW, 1=CCW
-        canMessages[0].data[4] = 1; //MCU0.direction;
+        canMessages[0].data[4] = MCU0.commands.direction;
 
         //unused/unused/unused/unused unused/unused/Discharge/Inverter Enable
         canMessages[0].data[5] = 0; //First set whole byte to zero

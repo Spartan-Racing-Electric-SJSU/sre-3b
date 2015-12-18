@@ -170,7 +170,7 @@ void main(void)
 
         //Drop the sensor readings into CAN (just raw data, not calculated stuff)
         canOutput_sendMCUControl(FALSE);
-        canOutput_sendSensorMessages();
+        //canOutput_sendSensorMessages();
 
 
         //----------------------------------------------------------------------------
