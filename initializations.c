@@ -4,7 +4,6 @@
 //Everything else should have "extern" declarations of variables
 
 #include "IO_Driver.h"  //Includes datatypes, constants, etc - probably should be included in every c file
-#include "APDB.h"
 #include "IO_ADC.h"
 #include "IO_PWM.h"
 #include "IO_CAN.h"
@@ -188,5 +187,7 @@ MotorController MCU0;
 void vcu_initializeMCU(void)
 {
     MCU0.canMessageBaseId = 0xA0;
+    //Dummy timestamp for last MCU message
+    IO_RTC_StartTime(&MCU0.commands.timeStamp_lastCommandSent);
 }
 

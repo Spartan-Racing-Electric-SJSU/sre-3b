@@ -169,7 +169,7 @@ void main(void)
         motorController_setCommands();
 
         //Drop the sensor readings into CAN (just raw data, not calculated stuff)
-        canOutput_sendMCUControl();
+        canOutput_sendMCUControl(FALSE);
         canOutput_sendSensorMessages();
 
 

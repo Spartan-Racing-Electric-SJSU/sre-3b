@@ -4,7 +4,7 @@
 #include "can.h"
 
 void canOutput_sendSensorMessages(void);
-void canOutput_sendMCUControl(void);
+void canOutput_sendMCUControl(bool sendEvenIfNoChanges);
 
 
 #endif //  _CANOUTPUT_H

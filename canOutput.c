@@ -34,6 +34,7 @@
 *****************************************************************************/
 
 #include "IO_CAN.h"
+#include "IO_RTC.h"
 
 #include "canOutput.h"
 #include "sensors.h"
@@ -174,50 +175,60 @@ void canOutput_sendSensorMessages(void)
 ******************************************************************************
 * TODO: Parameterize the motor controller (allow multiple motor controllers)
 ****************************************************************************/
-void canOutput_sendMCUControl(void)
+void canOutput_sendMCUControl(bool sendEvenIfNoChanges)
 {
-    //Rinehart CAN control message (heartbeat) structure ----------------
-    canMessages[0].length = 8; // how many bytes in the message
-    canMessages[0].id_format = IO_CAN_STD_FRAME;
-    canMessages[0].id = 0xC0;
-
-    //Torque (Nm * 10)
-    ubyte2 mcuTorque = 5; //In Nm * 10. 125 continuous, 240 max
-    canMessages[0].data[0] = (ubyte1)MCU0.commands.requestedTorque;
-    canMessages[0].data[1] = MCU0.commands.requestedTorque >> 8;
-
-    //Speed (RPM?) - not needed - mcu should be in torque mode
-    canMessages[0].data[2] = 0;
-    canMessages[0].data[3] = 0;
-
-    //Direction: 0=CW, 1=CCW
-    canMessages[0].data[4] = 1; //MCU0.direction;
-
-    //unused/unused/unused/unused unused/unused/Discharge/Inverter Enable
-    canMessages[0].data[5] = 0; //First set whole byte to zero
-    
-    //Next add each bit one at a time, starting with the bit that belongs in the leftmost position
-    for (int bit = 7; bit >= 0; bit--)
+    //Only send a message if there's an update or it's been > .25 seconds or force=true
+    if ((sendEvenIfNoChanges == TRUE) || (MCU0.commands.updateCount > 1) || (IO_RTC_GetTimeUS(MCU0.commands.timeStamp_lastCommandSent) > 250000))
     {
-        canMessages[0].data[5] <<= 1;  //Always leftshift first
-        switch (bit)
-        {
-            // Then add your bit to the right (note: the order of case statements doesn't matter - it's the fact that bit-- instead of bit++;)
-            case 1: canMessages[0].data[5] |= (MCU0.commands.enableDischarge == TRUE) ? 1 : 0; break; 
-            case 0: canMessages[0].data[5] |= (MCU0.commands.enableInverter == TRUE) ? 1 : 0; break;  // Then add your bit to the right
+        //Rinehart CAN control message (heartbeat) structure ----------------
+        canMessages[0].length = 8; // how many bytes in the message
+        canMessages[0].id_format = IO_CAN_STD_FRAME;
+        canMessages[0].id = 0xC0;
 
-        }
-    }
+        //Torque (Nm * 10)
+        ubyte2 mcuTorque = 5; //In Nm * 10. 125 continuous, 240 max
+        canMessages[0].data[0] = (ubyte1)MCU0.commands.requestedTorque;
+        canMessages[0].data[1] = MCU0.commands.requestedTorque >> 8;
 
-    //Unused (future use)
-    canMessages[0].data[6] = 0;
-    canMessages[0].data[7] = 0;
+        //Speed (RPM?) - not needed - mcu should be in torque mode
+        canMessages[0].data[2] = 0;
+        canMessages[0].data[3] = 0;
 
-    //Place the can messsages into the FIFO queue ---------------------------------------------------
+        //Direction: 0=CW, 1=CCW
+        canMessages[0].data[4] = 1; //MCU0.direction;
+
+        //unused/unused/unused/unused unused/unused/Discharge/Inverter Enable
+        canMessages[0].data[5] = 0; //First set whole byte to zero
     
-    IO_CAN_WriteFIFO(canFifoHandle_HiPri_Write, canMessages, 1);  //Important: Only transmit one message (the MCU message)
-    IO_CAN_WriteFIFO(canFifoHandle_LoPri_Write, canMessages, 1);  //Important: Only transmit one message (the MCU message)
+        //Next add each bit one at a time, starting with the bit that belongs in the leftmost position
+        for (int bit = 7; bit >= 0; bit--)
+        {
+            canMessages[0].data[5] <<= 1;  //Always leftshift first
+            switch (bit)
+            {
+                // Then add your bit to the right (note: the order of case statements doesn't matter - it's the fact that bit-- instead of bit++;)
+                case 1: canMessages[0].data[5] |= (MCU0.commands.enableDischarge == TRUE) ? 1 : 0; break; 
+                case 0: canMessages[0].data[5] |= (MCU0.commands.enableInverter == TRUE) ? 1 : 0; break;  // Then add your bit to the right
 
-    //IO_CAN_WriteMsg(canFifoHandle_HiPri_Write, &canMessages);  //Important: Only transmit one message (the MCU message)
-    //IO_CAN_WriteMsg(canFifoHandle_LoPri_Write, &canMessages);  //Important: Only transmit one message (the MCU message)
+            }
+        }
+
+        //Unused (future use)
+        canMessages[0].data[6] = 0;
+        canMessages[0].data[7] = 0;
+
+        //Place the can messsages into the FIFO queue ---------------------------------------------------
+        IO_CAN_WriteFIFO(canFifoHandle_HiPri_Write, canMessages, 1);  //Important: Only transmit one message (the MCU message)
+        IO_CAN_WriteFIFO(canFifoHandle_LoPri_Write, canMessages, 1);  //Important: Only transmit one message (the MCU message)
+
+        //Reset the last message count/timestamp
+        IO_RTC_StartTime(&MCU0.commands.timeStamp_lastCommandSent);
+        MCU0.commands.updateCount = 0;
+
+        //IO_CAN_WriteMsg(canFifoHandle_HiPri_Write, &canMessages);  //Important: Only transmit one message (the MCU message)
+        //IO_CAN_WriteMsg(canFifoHandle_LoPri_Write, &canMessages);  //Important: Only transmit one message (the MCU message)
+
+
+    } //end if sendEvenIfNoChanges/etc
 }
+

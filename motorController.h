@@ -17,8 +17,8 @@ typedef struct _MCUCommand {
     //----------------------------------------------------------------------------
     // These are set by ??????????
     //----------------------------------------------------------------------------
-    bool newCommand;  //Has anything been updated since the last command was sent?
     ubyte4 timeStamp_lastCommandSent;  //from IO_RTC_StartTime(&)
+    ubyte2 updateCount; //Number of updates since lastCommandSent
 
     ubyte2 requestedTorque;
     ubyte2 requestedTorqueLimit;
