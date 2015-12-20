@@ -24,8 +24,8 @@ typedef struct _MCUCommand {
     ubyte1 direction;
 
     //unused/unused/unused/unused unused/unused/Discharge/Inverter Enable
-    bool enableDischarge;
-    bool enableInverter;
+    Status setDischarge;
+    Status setInverter;
     //bool inverterHasBeenEnableed;
     ubyte4 timeStamp_inverterEnabled;
     //ubyte1 controlSwitches; // example: 0b00000001 = inverter is enabled, discharge is disabled.

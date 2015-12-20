@@ -12,7 +12,7 @@ extern MotorController MCU0;
 void motorController_setCommands() 
 {
     //Temp hardcode
-    MCU0.commands.enableDischarge = FALSE;
+    MCU0.commands.setDischarge = DISABLED;
 
     //1 = forwards for our car, 0 = reverse
     MCU0.commands.direction = 1;
@@ -41,39 +41,17 @@ void motorController_setCommands()
     }
 
 
-    if (Sensor_WPS_FL.sensorValue < 400 && MCU0.lockoutStatus == ENABLED)
+    if (Sensor_WPS_FL.sensorValue < 10 && MCU0.lockoutStatus == ENABLED)
     {
-        //MCU0.commands.setInverter = DISABLED;
-        MCU0.commands.enableInverter = FALSE;
+        MCU0.commands.setInverter = DISABLED;
     }
     else
     {
-        if (MCU0.commands.enableInverter == FALSE)
+        if (MCU0.commands.setInverter == DISABLED)
         {
-            MCU0.commands.enableInverter = TRUE;
+            MCU0.commands.setInverter = ENABLED;
             IO_RTC_StartTime(&MCU0.commands.timeStamp_inverterEnabled);
             //MCU0.commands.inverterHasBeenEnableed = TRUE;
         }
     }
-    ////If lockout has not been disabled
-    ////if (MCU0.lockoutDisabled == FALSE)
-    //if (MCU0.lockoutStatus == ENABLED) {
-    //    if (MCU0.commands.enableInverter != FALSE) MCU0.commands.updateCount++;
-    //    MCU0.commands.enableInverter = FALSE;     //This tells the MCU to disable the lockout
-
-    //}
-    //else  //Lockout has been removed
-    //{
-    //    //if (MCU0.inverterEnabled == FALSE)
-    //    if (MCU0.inverterStatus == DISABLED) {
-    //        if (MCU0.commands.enableInverter != TRUE) MCU0.commands.updateCount++;
-    //        MCU0.commands.enableInverter = TRUE;
-    //    }
-    //    else {
-    //        if (MCU0.commands.enableInverter != TRUE) MCU0.commands.updateCount++;
-    //        MCU0.commands.enableInverter = TRUE;
-    //    }
-    //}
-    
-    
 }

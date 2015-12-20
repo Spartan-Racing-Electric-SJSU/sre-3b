@@ -51,6 +51,31 @@ void canInput_readMessages()
             //    }
             //}        
             break;
+            
+        //-------------------------------------------------------------------------
+        //BMS
+        //-------------------------------------------------------------------------
+        case 0x620:
+        case 0x621:
+        case 0x622:
+        case 0x623:
+        case 0x624:
+        case 0x625:
+        case 0x626:
+        case 0x627:
+        case 0x628:
+            //For unknown/dynamic data array sizes, use dataIndex < sizeof(canMessages[currMessage].data) / sizeof(canMessages[currMessage].data[0]
+            //for (int dataIndex = 0; dataIndex < 8; dataIndex++)
+            //{
+            //    switch (dataIndex)
+            //    {
+            //    case 6:   //Byte 6: 
+            //        break;
+            //    default:
+            //        break;
+            //    }
+            //}        
+            break;
 
         //default:
 

@@ -207,8 +207,8 @@ void canOutput_sendMCUControl(bool sendEvenIfNoChanges)
             switch (bit)
             {
                 // Then add your bit to the right (note: the order of case statements doesn't matter - it's the fact that bit-- instead of bit++;)
-                case 1: canMessages[0].data[5] |= (MCU0.commands.enableDischarge == TRUE) ? 1 : 0; break; 
-                case 0: canMessages[0].data[5] |= (MCU0.commands.enableInverter == TRUE) ? 1 : 0; break;  // Then add your bit to the right
+                case 1: canMessages[0].data[5] |= (MCU0.commands.setDischarge == ENABLED) ? 1 : 0; break; 
+                case 0: canMessages[0].data[5] |= (MCU0.commands.setInverter == ENABLED) ? 1 : 0; break;  // Then add your bit to the right
 
             }
         }
