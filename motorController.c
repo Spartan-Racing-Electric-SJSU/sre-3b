@@ -25,7 +25,7 @@ void motorController_setCommands()
     }
     else
     {
-        ubyte2 torqueSetting;
+        ubyte2 torqueSetting;  //temp variable to store torque calculation
         //CURRENTLY: Don't command torque until >1s after the inverter is enabled, otherwise CAN breaks
         if (IO_RTC_GetTimeUS(MCU0.commands.timeStamp_inverterEnabled) <= 1000000)
         {
@@ -40,7 +40,7 @@ void motorController_setCommands()
         }
     }
 
-
+    //
     if (Sensor_WPS_FL.sensorValue < 10 && MCU0.lockoutStatus == ENABLED)
     {
         MCU0.commands.setInverter = DISABLED;

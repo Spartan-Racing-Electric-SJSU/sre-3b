@@ -80,4 +80,5 @@ extern MotorController MCU0; // = { 0xA0 };
 //void motorController_UpdateFromCan(IO_CAN_DATA_FRAME *canMessage); //Update the MCU object from its CAN messages
 //void motorController_SendControlMessage(IO_CAN_DATA_FRAME *canMessage); //This is an alias for canOutput_sendMcuControl
 void motorController_setCommands(void);
+
 #endif // _MOTORCONTROLLER_H
