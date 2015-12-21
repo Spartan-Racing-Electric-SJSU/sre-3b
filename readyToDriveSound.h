@@ -2,11 +2,11 @@
 #ifndef _READYTODRIVESOUND_H
 #define _READYTODRIVESOUND_H
 
-struct _ReadyToDriveSound;
+//struct _ReadyToDriveSound;
+//typedef ReadyToDriveSound struct _ReadyToDriveSound;
+typedef struct _ReadyToDriveSound ReadyToDriveSound;
 
-typedef ReadyToDriveSound struct _ReadyToDriveSound;
-
-ReadyToDriveSound* RTDS_new(char* rtds);
+ReadyToDriveSound* RTDS_new(void);
 void RTDS_delete(ReadyToDriveSound* rtds);
 
 void RTDS_setVolume(ReadyToDriveSound* rtds, float4 volumePercent);
