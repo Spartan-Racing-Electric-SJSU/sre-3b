@@ -16,7 +16,7 @@ struct _ReadyToDriveSound
 ReadyToDriveSound* RTDS_new(void)
 {
     ReadyToDriveSound* rtds = (ReadyToDriveSound*)malloc(sizeof(struct _ReadyToDriveSound));
-    RTDS_setVolume(rtds, 0)
+    RTDS_setVolume(rtds, 0);
     return rtds;
 }
 

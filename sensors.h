@@ -112,15 +112,15 @@ typedef struct _Sensor {
     //Sensor values / properties
     ubyte2 specMin;
     ubyte2 specMax;
-    bool isCalibrated;
+    
     ubyte2 calibMin;
     ubyte2 calibMax;
     ubyte2 calibNormal;  //zero value or normal position
 
+    ubyte2 calibratedValue;
     ubyte2 sensorValue;
     bool fresh;
-
-    ubyte2 calibratedValue;
+    bool isCalibrated;
 
 } Sensor;
 
