@@ -3,13 +3,14 @@
 #include "motorController.h"
 #include "mathFunctions.h"
 #include "sensors.h"
+#include "readyToDriveSound.h"
 
 //Import extrenal variables
 //extern Sensor Sensor_WPS_FR; // = { 3 };
 
 extern MotorController MCU0;
 //Update the MCU object from its CAN messages
-void motorController_setCommands() 
+void motorController_setCommands(ReadyToDriveSound* rtds) 
 {
     //Temp hardcode
     MCU0.commands.setDischarge = DISABLED;
@@ -40,7 +41,25 @@ void motorController_setCommands()
         }
     }
 
-    //
+    /*New Handshake
+    if (MCU0.lockoutStatus == ENABLED)
+    {
+        if (Sensor_WPS_FL.sensorValue < 10 && Sensor_TempBrake == ? && Sensor_RTD_Button == ? )
+        {
+
+        }
+    }
+    else
+    {
+        if (MCU0.commands.setInverter == DISABLED)
+        {
+            MCU0.commands.setInverter = ENABLED;
+            IO_RTC_StartTime(&MCU0.commands.timeStamp_inverterEnabled);
+        }
+
+        */
+
+    /*Old handshake*/
     if (Sensor_WPS_FL.sensorValue < 10 && MCU0.lockoutStatus == ENABLED)
     {
         MCU0.commands.setInverter = DISABLED;
@@ -53,5 +72,5 @@ void motorController_setCommands()
             IO_RTC_StartTime(&MCU0.commands.timeStamp_inverterEnabled);
             //MCU0.commands.inverterHasBeenEnableed = TRUE;
         }
-    }
+    }/**/
 }

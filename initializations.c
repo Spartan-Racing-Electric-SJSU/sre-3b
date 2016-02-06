@@ -51,7 +51,7 @@ void vcu_initializeADC(void)
     IO_ADC_ChannelInit(IO_ADC_5V_07, IO_ADC_RESISTIVE, 0, 0, 0, NULL);
 
     //PWD channels ---------------------------------------------------
-    //Wheel Speed Sensors (Why is this called PWD?
+    //Wheel Speed Sensors (Pulse Width Detection)
     IO_PWD_FreqInit(IO_PWD_08, IO_PWD_RISING_VAR);  //Is there a reason to look for rising vs falling edge?
     IO_PWD_FreqInit(IO_PWD_09, IO_PWD_RISING_VAR);  //Is there a reason to look for rising vs falling edge?
     IO_PWD_FreqInit(IO_PWD_10, IO_PWD_RISING_VAR);  //Is there a reason to look for rising vs falling edge?
@@ -190,4 +190,3 @@ void vcu_initializeMCU(void)
     //Dummy timestamp for last MCU message
     IO_RTC_StartTime(&MCU0.commands.timeStamp_lastCommandSent);
 }
-

@@ -11,6 +11,11 @@
 *
 ******************************************************************************
 * Revision history:
+* 2015-02-16 - Rusty Pedrosa - Added RTDS shutdown helper called in main loop
+*                            -
+*                            -
+*                            -
+*                            -
 * 2015-11-16 - Rusty Pedrosa - Fixed RTDS PWM % calculation typecasting bug
 *                            - Changed RTDS test pins around
 *                            - RTDS code tested successfully - PWM control works!
@@ -70,6 +75,7 @@
 #include "canOutput.h"
 //#include "outputCalculations.h"
 #include "motorController.h"
+#include "readyToDriveSound.h"
 
 //Application Database, needed for TTC-Downloader
 APDB appl_db =
@@ -132,7 +138,9 @@ void main(void)
     vcu_initializeCAN();
     vcu_initializeMCU();
 
+    ReadyToDriveSound* rtds = RTDS_new();
 
+    RTDS_setVolume(rtds, .005, 500000);
     /*******************************************/
     /*       PERIODIC APPLICATION CODE         */
     /*******************************************/
@@ -166,7 +174,7 @@ void main(void)
         //do actual processing work, from pedal travel calcs to traction control
         //calculations_calculateStuff();
 
-        motorController_setCommands();
+        motorController_setCommands(rtds);
 
         //Drop the sensor readings into CAN (just raw data, not calculated stuff)
         canOutput_sendMCUControl(FALSE);
@@ -176,10 +184,12 @@ void main(void)
         //----------------------------------------------------------------------------
         // Task management stuff (end)
         //----------------------------------------------------------------------------
+        RTDS_shutdownHelper(rtds); //Stops the RTDS from playing if the set time has elapsed
+
         //Task end function for IO Driver - This function needs to be called at the end of every SW cycle
         IO_Driver_TaskEnd();
         //wait until the cycle time is over
-        while (IO_RTC_GetTimeUS(timestamp_sensorpoll) < 5000);   // wait until 5ms (5000us) have passed
+        while (IO_RTC_GetTimeUS(timestamp_sensorpoll) < 1000);   // wait until 1ms (1000us) have passed
 
     } //end of main loop
 

@@ -2,6 +2,8 @@
 #ifndef _MOTORCONTROLLER_H
 #define _MOTORCONTROLLER_H
 
+#include "readyToDriveSound.h"
+
 typedef enum { ENABLED, DISABLED } Status;
 
 /*****************************************************************************
@@ -79,6 +81,6 @@ extern MotorController MCU0; // = { 0xA0 };
 //----------------------------------------------------------------------------
 //void motorController_UpdateFromCan(IO_CAN_DATA_FRAME *canMessage); //Update the MCU object from its CAN messages
 //void motorController_SendControlMessage(IO_CAN_DATA_FRAME *canMessage); //This is an alias for canOutput_sendMcuControl
-void motorController_setCommands(void);
+void motorController_setCommands(ReadyToDriveSound* rtds);
 
 #endif // _MOTORCONTROLLER_H

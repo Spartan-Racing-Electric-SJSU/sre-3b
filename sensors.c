@@ -36,6 +36,11 @@ extern Sensor Sensor_WPS_RR;
 extern Sensor Sensor_SAS;
 extern Sensor Sensor_LVBattery;
 
+extern Sensor Sensor_RTD_Button;
+//TEMP BENCH SWITCHES
+extern Sensor Sensor_TEMP_BrakingSwitch;
+
+
 /*-------------------------------------------------------------------
 * getPercent
 * Returns the % (position) of value, between min and max

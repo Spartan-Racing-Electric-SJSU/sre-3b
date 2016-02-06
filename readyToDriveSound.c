@@ -9,14 +9,14 @@
 struct _ReadyToDriveSound
 {
     ubyte4 timeStamp_soundStarted;  //from IO_RTC_StartTime(&)
-    ubyte2 timeToSound;
+    ubyte4 timeToSound;  //in microseconds: 1000 = 1ms, limit 4294967295 means 4294 sec max = about 71min max
     ubyte2 volumePercent;
 };
 
 ReadyToDriveSound* RTDS_new(void)
 {
     ReadyToDriveSound* rtds = (ReadyToDriveSound*)malloc(sizeof(struct _ReadyToDriveSound));
-    RTDS_setVolume(rtds, 0);
+    RTDS_setVolume(rtds, 0, 0);
     return rtds;
 }
 
@@ -28,7 +28,17 @@ void RTDS_delete(ReadyToDriveSound* rtds)
     free(rtds);
 }
 
-void RTDS_setVolume(ReadyToDriveSound* rtds, float4 volumePercent)
+void RTDS_setVolume(ReadyToDriveSound* rtds, float4 volumePercent, ubyte4 timeToPlay)
 {
     IO_PWM_SetDuty(IO_PWM_07, 65535 * volumePercent, NULL);  //Pin 103
+    IO_RTC_StartTime(&(rtds->timeStamp_soundStarted));
+    rtds->timeToSound = timeToPlay;
+}
+
+void RTDS_shutdownHelper(ReadyToDriveSound* rtds)
+{
+    if (IO_RTC_GetTimeUS(rtds->timeStamp_soundStarted) > rtds->timeToSound)
+    {
+        RTDS_setVolume(rtds, 0, 0);
+    }
 }
