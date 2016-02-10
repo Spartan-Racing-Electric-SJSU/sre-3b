@@ -16,7 +16,7 @@
 #include "IO_ADC.h"
 #include "IO_PWD.h"
 #include "IO_PWM.h"
-//#include "IO_DIO.h"
+#include "IO_DIO.h"
 
 #include "sensors.h"
 #include "mathFunctions.h"
@@ -79,6 +79,10 @@ void sensors_updateSensors(void)
     IO_PWD_FreqGet(IO_PWD_09, &Sensor_WSS_FR.sensorValue);
     IO_PWD_FreqGet(IO_PWD_10, &Sensor_WSS_RL.sensorValue);
     IO_PWD_FreqGet(IO_PWD_11, &Sensor_WSS_RR.sensorValue);
+
+    //Switches / Digital ---------------------------------------------------
+    IO_DI_Get(IO_DI_04, &Sensor_RTD_Button.sensorValue);
+    IO_DI_Get(IO_DI_05, &Sensor_TEMP_BrakingSwitch.sensorValue);
 
     //Other stuff ---------------------------------------------------
     //Battery voltage (at VCU internal electronics supply input)

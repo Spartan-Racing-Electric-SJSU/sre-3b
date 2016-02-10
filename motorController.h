@@ -62,7 +62,7 @@ typedef struct _MotorController {
     //----------------------------------------------------------------------------
     // Control parameters
     //----------------------------------------------------------------------------
-    // These are set by ??????????
+    // These are updated by ??? and will be sent to the VCU over CAN
     //----------------------------------------------------------------------------
     MCUCommand commands;
 

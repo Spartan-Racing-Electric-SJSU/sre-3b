@@ -123,6 +123,9 @@ extern Sensor Sensor_WPS_FR;
 extern Sensor Sensor_WPS_RL;
 extern Sensor Sensor_WPS_RR;
 extern Sensor Sensor_SAS;
+ 
+extern Sensor Sensor_RTD_Button;
+extern Sensor Sensor_TEMP_BrakingSwitch;
 
 /*****************************************************************************
 * Main!
@@ -131,16 +134,28 @@ extern Sensor Sensor_SAS;
 ****************************************************************************/
 void main(void)
 {
-    /* Initialize the IO driver (without safety functions) */
-    //TODO: What does the VCU IO Driver do?
-    IO_Driver_Init(NULL);
-    vcu_initializeADC();  //Activate the VCU's analog-digital I/O
-    vcu_initializeCAN();
+    //----------------------------------------------------------------------------
+    // VCU Subsystem Initializations
+    //----------------------------------------------------------------------------
+    IO_Driver_Init(NULL); //Handles basic startup for all VCU subsystems
+    vcu_initializeADC();  //Configure and activate all I/O pins on the VCU
+    vcu_initializeCAN();  
     vcu_initializeMCU();
 
-    ReadyToDriveSound* rtds = RTDS_new();
+    vcu_ADCWasteLoop();   //Do some loops until the ADC stops outputting garbage values
 
-    RTDS_setVolume(rtds, .005, 500000);
+    //Play a brief, quiet startup beep
+    ReadyToDriveSound* rtds = RTDS_new();
+    RTDS_setVolume(rtds, .005, 100000);
+
+
+    //----------------------------------------------------------------------------
+    // TODO: Additional Initial Power-up functions
+    //----------------------------------------------------------------------------
+    //TODO: Read calibration data from EEPROM?
+    //TODO: Run calibration functions?
+    //TODO: Power-on error checking?
+
     /*******************************************/
     /*       PERIODIC APPLICATION CODE         */
     /*******************************************/

@@ -22,4 +22,5 @@ void vcu_initializeVCU(void);
 void vcu_initializeADC(void);
 void vcu_initializeCAN(void);
 void vcu_initializeMCU(void);
+void vcu_ADCWasteLoop(void);
 #endif //  _INITIALIZEVCU_H

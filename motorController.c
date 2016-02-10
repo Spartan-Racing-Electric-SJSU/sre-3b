@@ -41,13 +41,11 @@ void motorController_setCommands(ReadyToDriveSound* rtds)
         }
     }
 
-    /*New Handshake
-    if (MCU0.lockoutStatus == ENABLED)
+    //New Handshake NOTE: Switches connected to ground.. TRUE = high = off = disconnected = open circuit, FALSE = low = grounded = on = connected = closed circuit
+    if (MCU0.lockoutStatus == ENABLED && Sensor_WPS_FL.sensorValue < 10 && Sensor_TEMP_BrakingSwitch.sensorValue == FALSE && Sensor_RTD_Button.sensorValue == FALSE)
     {
-        if (Sensor_WPS_FL.sensorValue < 10 && Sensor_TempBrake == ? && Sensor_RTD_Button == ? )
-        {
-
-        }
+        MCU0.commands.setInverter = DISABLED;
+        RTDS_setVolume(rtds, .005, 15000);
     }
     else
     {
@@ -56,10 +54,9 @@ void motorController_setCommands(ReadyToDriveSound* rtds)
             MCU0.commands.setInverter = ENABLED;
             IO_RTC_StartTime(&MCU0.commands.timeStamp_inverterEnabled);
         }
+    }
 
-        */
-
-    /*Old handshake*/
+    /*Old handshake
     if (Sensor_WPS_FL.sensorValue < 10 && MCU0.lockoutStatus == ENABLED)
     {
         MCU0.commands.setInverter = DISABLED;
@@ -72,5 +69,5 @@ void motorController_setCommands(ReadyToDriveSound* rtds)
             IO_RTC_StartTime(&MCU0.commands.timeStamp_inverterEnabled);
             //MCU0.commands.inverterHasBeenEnableed = TRUE;
         }
-    }/**/
+    }*/
 }

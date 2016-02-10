@@ -7,6 +7,7 @@
 #include "IO_ADC.h"
 #include "IO_PWM.h"
 #include "IO_CAN.h"
+#include "IO_DIO.h"
 
 #include "sensors.h"
 #include "initializations.h"
@@ -57,12 +58,34 @@ void vcu_initializeADC(void)
     IO_PWD_FreqInit(IO_PWD_10, IO_PWD_RISING_VAR);  //Is there a reason to look for rising vs falling edge?
     IO_PWD_FreqInit(IO_PWD_11, IO_PWD_RISING_VAR);  //Is there a reason to look for rising vs falling edge?
 
-    //----------------------------------------------------------------------------
-    // TODO: Initial Power-up functions
-    //----------------------------------------------------------------------------
-    //TODO: Read calibration data from EEPROM?
-    //TODO: Run calibration functions?
-    //TODO: Power-on error checking?
+    //Switches ---------------------------------------------------
+    IO_DI_Init(IO_DI_04, IO_DI_PU_10K); //RTD Button
+    IO_DI_Init(IO_DI_05, IO_DI_PU_10K); //TEMP Stepping on brake switch
+
+}
+
+//----------------------------------------------------------------------------
+// Waste CPU cycles until we have valid data
+//----------------------------------------------------------------------------
+void vcu_ADCWasteLoop(void)
+{
+    bool tempFresh = FALSE;
+    ubyte2 tempData;
+    ubyte4 timestamp_sensorpoll = 0;
+    IO_RTC_StartTime(&timestamp_sensorpoll);
+    while (IO_RTC_GetTimeUS(timestamp_sensorpoll) < 500000 && tempFresh == FALSE)
+    {
+        IO_Driver_TaskBegin();
+        //IO_DI (digital inputs) supposed to take 2 cycles before they return valid data
+        IO_DI_Get(IO_DI_04, &tempData);
+        IO_DI_Get(IO_DI_04, &tempData);
+        //TODO: Find out if EACH pin needs 2 cycles or just the entire DIO unit
+        IO_DI_Get(IO_DI_05, &tempData);
+        IO_DI_Get(IO_DI_05, &tempData);
+
+        IO_ADC_Get(IO_ADC_5V_00, &tempData, &tempFresh);
+        IO_Driver_TaskEnd();
+    }
 }
 
 /*****************************************************************************
@@ -130,6 +153,9 @@ Sensor Sensor_WPS_RL;  // = { 3 };
 Sensor Sensor_WPS_RR;  // = { 3 };
 Sensor Sensor_SAS;  // = { 4 };
 Sensor Sensor_LVBattery;
+
+Sensor Sensor_RTD_Button;
+Sensor Sensor_TEMP_BrakingSwitch;
 
 //Switches
 //precharge failure
