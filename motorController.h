@@ -51,6 +51,7 @@ typedef struct _MotorController {
     //----------------------------------------------------------------------------
     Status lockoutStatus;
     Status inverterStatus;
+    bool startRTDS;
 
     ubyte4 vsmStatus0;      //0xAA Byte 0,1
     ubyte4 vsmStatus1;      //0xAA Byte 0,1

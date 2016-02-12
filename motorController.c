@@ -45,6 +45,7 @@ void motorController_setCommands(ReadyToDriveSound* rtds)
     if (MCU0.lockoutStatus == ENABLED && Sensor_WPS_FL.sensorValue < 10 && Sensor_TEMP_BrakingSwitch.sensorValue == FALSE && Sensor_RTD_Button.sensorValue == FALSE)
     {
         MCU0.commands.setInverter = DISABLED;
+        MCU0.startRTDS = FALSE;
     }
     else
     {
@@ -52,11 +53,15 @@ void motorController_setCommands(ReadyToDriveSound* rtds)
         {
             MCU0.commands.setInverter = ENABLED;
             IO_RTC_StartTime(&MCU0.commands.timeStamp_inverterEnabled);
-            RTDS_setVolume(rtds, .005, 15000);
+            MCU0.startRTDS = TRUE;
         }
         else
         {
-
+            if (MCU0.startRTDS == TRUE)
+            {
+                RTDS_setVolume(rtds, .005, 15000);
+                MCU0.startRTDS = FALSE;
+            }
         }
     }
 }
