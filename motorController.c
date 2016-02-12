@@ -52,7 +52,7 @@ void motorController_setCommands(ReadyToDriveSound* rtds)
         {
             MCU0.commands.setInverter = ENABLED;
             IO_RTC_StartTime(&MCU0.commands.timeStamp_inverterEnabled);
-            RTDS_setVolume(rtds, .005, 1500000);
+            RTDS_setVolume(rtds, .005, 15000);
         }
         else
         {
