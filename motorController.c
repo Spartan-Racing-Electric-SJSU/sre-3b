@@ -54,5 +54,9 @@ void motorController_setCommands(ReadyToDriveSound* rtds)
             IO_RTC_StartTime(&MCU0.commands.timeStamp_inverterEnabled);
             RTDS_setVolume(rtds, .005, 1500000);
         }
+        else
+        {
+
+        }
     }
 }
