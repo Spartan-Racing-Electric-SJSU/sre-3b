@@ -28,7 +28,7 @@ void motorController_setCommands(ReadyToDriveSound* rtds)
     {
         ubyte2 torqueSetting;  //temp variable to store torque calculation
         //CURRENTLY: Don't command torque until >1s after the inverter is enabled, otherwise CAN breaks
-        if (IO_RTC_GetTimeUS(MCU0.commands.timeStamp_inverterEnabled) <= 1000000)
+        if (IO_RTC_GetTimeUS(MCU0.timeStamp_inverterEnabled) <= 1000000)
         {
             torqueSetting = 0;
             if (MCU0.commands.requestedTorque != torqueSetting) MCU0.commands.updateCount++;
@@ -42,25 +42,31 @@ void motorController_setCommands(ReadyToDriveSound* rtds)
     }
 
     //New Handshake NOTE: Switches connected to ground.. TRUE = high = off = disconnected = open circuit, FALSE = low = grounded = on = connected = closed circuit
-    if (MCU0.lockoutStatus == ENABLED && Sensor_WPS_FL.sensorValue < 10 && Sensor_TEMP_BrakingSwitch.sensorValue == FALSE && Sensor_RTD_Button.sensorValue == FALSE)
+    if (MCU0.lockoutStatus == ENABLED)
     {
-        MCU0.commands.setInverter = DISABLED;
-        MCU0.startRTDS = FALSE;
+        //If not on gas and YES on break and RTD is pressed
+        if (Sensor_WPS_FL.sensorValue < 10 && Sensor_TEMP_BrakingSwitch.sensorValue == FALSE && Sensor_RTD_Button.sensorValue == FALSE)
+        {
+            //Begin the startup sequence, but don't start the RTDS yet
+            MCU0.commands.setInverter = DISABLED;
+            MCU0.startRTDS = FALSE;
+        }
     }
-    else
+    else  //Lockout has already been disabled
     {
-        if (MCU0.commands.setInverter == DISABLED)
+        if (MCU0.inverterStatus == DISABLED)
         {
             MCU0.commands.setInverter = ENABLED;
-            IO_RTC_StartTime(&MCU0.commands.timeStamp_inverterEnabled);
+            IO_RTC_StartTime(&MCU0.timeStamp_inverterEnabled);
             MCU0.startRTDS = TRUE;
         }
-        else
+        else  
         {
+            //If the inverter was successfully enabled AND we haven't started the RTDS yet
             if (MCU0.startRTDS == TRUE)
             {
                 RTDS_setVolume(rtds, .005, 1500000);
-                MCU0.startRTDS = FALSE;
+                MCU0.startRTDS = FALSE;                
             }
         }
     }

@@ -145,9 +145,9 @@ void main(void)
     //Do some loops until the ADC stops outputting garbage values
     vcu_ADCWasteLoop();
 
-    //Play a brief, quiet startup beep
+    //Create the RTDS object
     ReadyToDriveSound* rtds = RTDS_new();
-    RTDS_setVolume(rtds, .005, 100000);
+    //RTDS_setVolume(rtds, .005, 100000);  //Play a brief, quiet startup beep
 
 
     //----------------------------------------------------------------------------

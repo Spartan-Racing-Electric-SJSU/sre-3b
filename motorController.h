@@ -28,9 +28,7 @@ typedef struct _MCUCommand {
     //unused/unused/unused/unused unused/unused/Discharge/Inverter Enable
     Status setDischarge;
     Status setInverter;
-    //bool inverterHasBeenEnableed;
-    ubyte4 timeStamp_inverterEnabled;
-    //ubyte1 controlSwitches; // example: 0b00000001 = inverter is enabled, discharge is disabled.
+   //ubyte1 controlSwitches; // example: 0b00000001 = inverter is enabled, discharge is disabled.
 
 } MCUCommand;
 
@@ -43,29 +41,33 @@ typedef struct _MotorController {
     //----------------------------------------------------------------------------
     ubyte2 canMessageBaseId;  //Starting message ID for messages that will come in from this controller
     
-    //----------------------------------------------------------------------------
-    // Controller statuses/properties
-    //----------------------------------------------------------------------------
-    // These represent the state of the controller (set at run time, not compile
-    // time.)  These are updated by canInput.c
-    //----------------------------------------------------------------------------
-    Status lockoutStatus;
-    Status inverterStatus;
-    bool startRTDS;
 
-    ubyte4 vsmStatus0;      //0xAA Byte 0,1
-    ubyte4 vsmStatus1;      //0xAA Byte 0,1
-    ubyte4 vsmStatus2;      //0xAA Byte 0,1
-    ubyte4 vsmStatus3;      //0xAA Byte 0,1
-    ubyte4 faultCodesPOST; //0xAB Byte 0-3
-    ubyte4 faultCodesRUN;  //0xAB Byte 4-7
-    
     //----------------------------------------------------------------------------
     // Control parameters
     //----------------------------------------------------------------------------
     // These are updated by ??? and will be sent to the VCU over CAN
     //----------------------------------------------------------------------------
     MCUCommand commands;
+
+    //----------------------------------------------------------------------------
+    // Controller statuses/properties
+    //----------------------------------------------------------------------------
+    // These represent the state of the controller (set at run time, not compile
+    // time.)  These are updated by canInput.c
+    //----------------------------------------------------------------------------
+    ubyte4 timeStamp_inverterEnabled;
+    Status lockoutStatus;
+    Status inverterStatus;
+    bool startRTDS;
+    
+    /*
+    ubyte4 vsmStatus0;      //0xAA Byte 0,1
+    ubyte4 vsmStatus1;      //0xAA Byte 0,1
+    ubyte4 vsmStatus2;      //0xAA Byte 0,1
+    ubyte4 vsmStatus3;      //0xAA Byte 0,1
+    ubyte4 faultCodesPOST; //0xAB Byte 0-3
+    ubyte4 faultCodesRUN;  //0xAB Byte 4-7
+    */
 
 } MotorController;
 
