@@ -4,7 +4,7 @@
 
 #include "readyToDriveSound.h"
 
-typedef enum { ENABLED, DISABLED } Status;
+typedef enum { ENABLED, DISABLED, UNKNOWN } Status;
 
 /*****************************************************************************
 * Motor Controller (MCU)

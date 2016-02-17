@@ -215,4 +215,8 @@ void vcu_initializeMCU(void)
     MCU0.canMessageBaseId = 0xA0;
     //Dummy timestamp for last MCU message
     IO_RTC_StartTime(&MCU0.commands.timeStamp_lastCommandSent);
+
+    MCU0.lockoutStatus = UNKNOWN;
+    MCU0.inverterStatus = UNKNOWN;
+    MCU0.startRTDS = FALSE;
 }

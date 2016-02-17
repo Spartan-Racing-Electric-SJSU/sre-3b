@@ -143,7 +143,7 @@ void main(void)
     vcu_initializeMCU();
 
     //Do some loops until the ADC stops outputting garbage values
-    //vcu_ADCWasteLoop();
+    vcu_ADCWasteLoop();
 
     //Play a brief, quiet startup beep
     ReadyToDriveSound* rtds = RTDS_new();

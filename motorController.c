@@ -59,7 +59,7 @@ void motorController_setCommands(ReadyToDriveSound* rtds)
         {
             if (MCU0.startRTDS == TRUE)
             {
-                RTDS_setVolume(rtds, .005, 15000);
+                RTDS_setVolume(rtds, .005, 1500000);
                 MCU0.startRTDS = FALSE;
             }
         }
