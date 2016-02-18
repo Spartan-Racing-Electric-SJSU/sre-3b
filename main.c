@@ -190,7 +190,7 @@ void main(void)
         //do actual processing work, from pedal travel calcs to traction control
         //calculations_calculateStuff();
 
-        motorController_setCommands(rtds);
+        //motorController_setCommands(rtds);
 
         //Drop the sensor readings into CAN (just raw data, not calculated stuff)
         canOutput_sendMCUControl(FALSE);

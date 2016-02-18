@@ -2,88 +2,33 @@
 #ifndef _MOTORCONTROLLER_H
 #define _MOTORCONTROLLER_H
 
+#include "IO_Driver.h"
 #include "readyToDriveSound.h"
 
 typedef enum { ENABLED, DISABLED, UNKNOWN } Status;
 
-/*****************************************************************************
-* Motor Controller (MCU)
-******************************************************************************
-*
-****************************************************************************/
+//Rotation direction as viewed from shaft end of motor
+//0 = CW = REVERSE (for our car)
+//1 = CCW = FORWARD (for our car)
+typedef enum { CLOCKWISE, COUNTERCLOCKWISE, FORWARD, REVERSE, _0, _1 } Direction;
 
-typedef struct _MCUCommand {
-    //----------------------------------------------------------------------------
-    // Control parameters
-    //----------------------------------------------------------------------------
-    // These are set by ??????????
-    //----------------------------------------------------------------------------
-    ubyte4 timeStamp_lastCommandSent;  //from IO_RTC_StartTime(&)
-    ubyte2 updateCount; //Number of updates since lastCommandSent
+typedef struct _MotorController MotorController;
 
-    ubyte2 requestedTorque;
-    ubyte2 requestedTorqueLimit;
-    ubyte1 direction;
-
-    //unused/unused/unused/unused unused/unused/Discharge/Inverter Enable
-    Status setDischarge;
-    Status setInverter;
-   //ubyte1 controlSwitches; // example: 0b00000001 = inverter is enabled, discharge is disabled.
-
-} MCUCommand;
-
-typedef struct _MotorController {
-    //----------------------------------------------------------------------------
-    // Controller-specific properties
-    //----------------------------------------------------------------------------
-    // These should be identified at compile time (hard coded) for each motor
-    // controller. (We may have more than 1 controller in the future)
-    //----------------------------------------------------------------------------
-    ubyte2 canMessageBaseId;  //Starting message ID for messages that will come in from this controller
-    
-
-    //----------------------------------------------------------------------------
-    // Control parameters
-    //----------------------------------------------------------------------------
-    // These are updated by ??? and will be sent to the VCU over CAN
-    //----------------------------------------------------------------------------
-    MCUCommand commands;
-
-    //----------------------------------------------------------------------------
-    // Controller statuses/properties
-    //----------------------------------------------------------------------------
-    // These represent the state of the controller (set at run time, not compile
-    // time.)  These are updated by canInput.c
-    //----------------------------------------------------------------------------
-    ubyte4 timeStamp_inverterEnabled;
-    Status lockoutStatus;
-    Status inverterStatus;
-    bool startRTDS;
-    
-    /*
-    ubyte4 vsmStatus0;      //0xAA Byte 0,1
-    ubyte4 vsmStatus1;      //0xAA Byte 0,1
-    ubyte4 vsmStatus2;      //0xAA Byte 0,1
-    ubyte4 vsmStatus3;      //0xAA Byte 0,1
-    ubyte4 faultCodesPOST; //0xAB Byte 0-3
-    ubyte4 faultCodesRUN;  //0xAB Byte 4-7
-    */
-
-} MotorController;
-
-
-//----------------------------------------------------------------------------
-// Motor Controller Object Instantiations
-//----------------------------------------------------------------------------
-//CAN Message ID should be defined for each motor controller here.
-extern MotorController MCU0; // = { 0xA0 };
-
+MotorController* MotorController_new(ubyte2 canMessageBaseID, Direction initialDirection);
 
 //----------------------------------------------------------------------------
 // Functions
 //----------------------------------------------------------------------------
+//CAN Message Parameters
+//Note: Speed Command (angular velocity) not used when in torque mode
+void motorController_setTorque(MotorController* me, ubyte2 torque); //Will be divided by 10 e.g. pass in 100 for 10.0 Nm
+void motorController_setDirection(MotorController* me, Direction rotation);
+void motorController_setInverter(MotorController* me, Status inverterState);
+void motorController_setDischarge(MotorController* me, Status dischargeState);
+void motorController_setTorqueLimit(MotorController* me, ubyte2 torqueLimit);
+
 //void motorController_UpdateFromCan(IO_CAN_DATA_FRAME *canMessage); //Update the MCU object from its CAN messages
 //void motorController_SendControlMessage(IO_CAN_DATA_FRAME *canMessage); //This is an alias for canOutput_sendMcuControl
-void motorController_setCommands(ReadyToDriveSound* rtds);
+void motorController_setAllCommands(ReadyToDriveSound* rtds);
 
 #endif // _MOTORCONTROLLER_H
