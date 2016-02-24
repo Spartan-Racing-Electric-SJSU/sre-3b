@@ -25,10 +25,11 @@ void vcu_initializeADC(void)
     IO_POWER_Set(IO_ADC_SENSOR_SUPPLY_1, IO_POWER_ON);
 
     //Variable power supply (used by BPS)
-    IO_POWER_Set(IO_SENSOR_SUPPLY_VAR, IO_POWER_14_5_V);    //IO_POWER_Set(IO_PIN_269, IO_POWER_8_5_V);
+    //IO_POWER_Set(IO_SENSOR_SUPPLY_VAR, IO_POWER_14_5_V);    //IO_POWER_Set(IO_PIN_269, IO_POWER_8_5_V);
 
-    //Digital outputs ---------------------------------------------------
-    //IO_DO_Init(IO_DO_00);
+    //Digital/power outputs ---------------------------------------------------
+    IO_DO_Init(IO_DO_06);
+    IO_DO_Init(IO_DO_07);
 
     //Digital PWM outputs ---------------------------------------------------
     //We're not using these
@@ -62,8 +63,6 @@ void vcu_initializeADC(void)
     IO_DI_Init(IO_DI_04, IO_DI_PU_10K); //RTD Button
     IO_DI_Init(IO_DI_05, IO_DI_PU_10K); //TEMP Stepping on brake switch
 
-    //Power Outputs ---------------------------------------------------
-    //IO_DO_Init(); MCM power control relay
 }
 
 //----------------------------------------------------------------------------
@@ -81,7 +80,13 @@ void vcu_ADCWasteLoop(void)
         //IO_DI (digital inputs) supposed to take 2 cycles before they return valid data
         IO_DI_Get(IO_DI_04, &tempData);
         IO_DI_Get(IO_DI_04, &tempData);
+        IO_ADC_Get(IO_ADC_5V_00, &tempData, &tempFresh);
+
+        IO_Driver_TaskEnd();
         //TODO: Find out if EACH pin needs 2 cycles or just the entire DIO unit
+
+        IO_Driver_TaskBegin();
+
         IO_DI_Get(IO_DI_05, &tempData);
         IO_DI_Get(IO_DI_05, &tempData);
 
