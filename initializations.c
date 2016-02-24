@@ -28,8 +28,13 @@ void vcu_initializeADC(void)
     //IO_POWER_Set(IO_SENSOR_SUPPLY_VAR, IO_POWER_14_5_V);    //IO_POWER_Set(IO_PIN_269, IO_POWER_8_5_V);
 
     //Digital/power outputs ---------------------------------------------------
-    IO_DO_Init(IO_DO_06);
-    IO_DO_Init(IO_DO_07);
+    //Relay power outputs
+    IO_DO_Init(IO_DO_00); //mcm0 Relay
+    IO_DO_Init(IO_DO_01); //HVIL shutdown relay
+
+    //Wheel Speed Sensor supplies
+    IO_DO_Init(IO_DO_06); //Front x2
+    IO_DO_Init(IO_DO_07); //Rear  x2
 
     //Digital PWM outputs ---------------------------------------------------
     //We're not using these
@@ -77,21 +82,22 @@ void vcu_ADCWasteLoop(void)
     while (IO_RTC_GetTimeUS(timestamp_sensorpoll) < 500000 && tempFresh == FALSE)
     {
         IO_Driver_TaskBegin();
+
+        IO_PWM_SetDuty(IO_PWM_07, 0, NULL);  //Pin 103
+
+        IO_DO_Set(IO_DO_00, FALSE); //False = low
+        IO_DO_Set(IO_DO_01, FALSE); //HVIL shutdown relay
+        IO_DO_Set(IO_DO_06, FALSE); //Front x2
+        IO_DO_Set(IO_DO_07, FALSE); //Rear  x2
+
         //IO_DI (digital inputs) supposed to take 2 cycles before they return valid data
         IO_DI_Get(IO_DI_04, &tempData);
-        IO_DI_Get(IO_DI_04, &tempData);
+        IO_DI_Get(IO_DI_05, &tempData);
         IO_ADC_Get(IO_ADC_5V_00, &tempData, &tempFresh);
 
         IO_Driver_TaskEnd();
         //TODO: Find out if EACH pin needs 2 cycles or just the entire DIO unit
-
-        IO_Driver_TaskBegin();
-
-        IO_DI_Get(IO_DI_05, &tempData);
-        IO_DI_Get(IO_DI_05, &tempData);
-
-        IO_ADC_Get(IO_ADC_5V_00, &tempData, &tempFresh);
-        IO_Driver_TaskEnd();
+        while (IO_RTC_GetTimeUS(timestamp_sensorpoll) < 125000);   // wait until 1/8s (125ms) have passed
     }
 }
 
