@@ -308,30 +308,24 @@ void setMCMCommands(MotorController* mcm, ReadyToDriveSound* rtds)
 //See diagram at https://onedrive.live.com/redir?resid=F9BB8F0F8FDB5CF8!30410&authkey=!ABSF-uVH-VxQRAs&ithint=file%2chtml
 void MotorControllerPowerManagement(MotorController* mcm, ReadyToDriveSound* rtds)
 {
-/*
-
     //----------------------------------------------------------------------------
     // Determine inverter state
     //----------------------------------------------------------------------------
     //New Handshake NOTE: Switches connected to ground.. TRUE = high = off = disconnected = open circuit, FALSE = low = grounded = on = connected = closed circuit
     if (mcm_getLockoutStatus(mcm) == ENABLED)
     {
-        //If not on gas and YES on break and RTD is pressed
-        if (Sensor_WPS_FL.sensorValue < 10 && Sensor_TEMP_BrakingSwitch.sensorValue == FALSE && Sensor_RTD_Button.sensorValue == FALSE)
-        {
-            //Begin the startup sequence, but don't start the RTDS yet
-            mcm_commands_setInverter(mcm, DISABLED);
-            mcm_setRTDSFlag(mcm, FALSE);
-        }
+        mcm_commands_setInverter(mcm, DISABLED);
     }
     else  //Lockout has already been disabled
     {
         if (mcm_getInverterStatus(mcm) == DISABLED)
         {
-            mcm_commands_setInverter(mcm, ENABLED);
-            //IO_RTC_StartTime(&mcm.timeStamp_inverterEnabled); //No longer needed
-            mcm_setRTDSFlag(mcm, TRUE);  //Now, start the RTDS if the inverter is successfully enabled
-
+            //If not on gas and YES on break and RTD is pressed
+            if (Sensor_WPS_FL.sensorValue < 10 && Sensor_TEMP_BrakingSwitch.sensorValue == FALSE && Sensor_RTD_Button.sensorValue == FALSE)
+            {
+                mcm_commands_setInverter(mcm, ENABLED);
+                mcm_setRTDSFlag(mcm, TRUE);  //Now, start the RTDS if the inverter is successfully enabled
+            }
         }
         else
         {
@@ -343,7 +337,7 @@ void MotorControllerPowerManagement(MotorController* mcm, ReadyToDriveSound* rtd
             }
         }
     }
- */
+/*
     //TEMPORARY Eco Switch startup code
     if (Sensor_TEMP_BrakingSwitch.sensorValue == FALSE)
     {
@@ -365,6 +359,6 @@ void MotorControllerPowerManagement(MotorController* mcm, ReadyToDriveSound* rtd
         RTDS_setVolume(rtds, .005, 1500000);
         mcm_setRTDSFlag(mcm, FALSE);  //RTDS started, so don't restart it next loop
     }
-
+*/
 
 }
