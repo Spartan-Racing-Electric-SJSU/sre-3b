@@ -41,7 +41,6 @@
 #include "motorController.h"
 #include "can.h"
 
-extern MotorController MCU0;
 //extern const ubyte1 canMessageLimit = 10;
 extern IO_CAN_DATA_FRAME canMessages[];
 //extern const ubyte2 canMessageBaseId_VCU = 0x500;
@@ -175,10 +174,10 @@ void canOutput_sendSensorMessages(void)
 ******************************************************************************
 * TODO: Parameterize the motor controller (allow multiple motor controllers)
 ****************************************************************************/
-void canOutput_sendMCUControl(bool sendEvenIfNoChanges)
+void canOutput_sendMCUControl(MotorController* mcm, bool sendEvenIfNoChanges)
 {
     //Only send a message if there's an update or it's been > .25 seconds or force=true
-    if ((sendEvenIfNoChanges == TRUE) || (MCU0.commands.updateCount > 1) || (IO_RTC_GetTimeUS(MCU0.commands.timeStamp_lastCommandSent) > 125000))
+    if ((sendEvenIfNoChanges == TRUE) || (mcm_commands_getUpdateCount(mcm) > 0) || (mcm_commands_getTimeSinceLastCommandSent(mcm) > 125000))
     {
         //Rinehart CAN control message (heartbeat) structure ----------------
         canMessages[0].length = 8; // how many bytes in the message
@@ -187,15 +186,15 @@ void canOutput_sendMCUControl(bool sendEvenIfNoChanges)
 
         //Torque (Nm * 10)
         ubyte2 mcuTorque = 5; //In Nm * 10. 125 continuous, 240 max
-        canMessages[0].data[0] = (ubyte1)MCU0.commands.requestedTorque;
-        canMessages[0].data[1] = MCU0.commands.requestedTorque >> 8;
+        canMessages[0].data[0] = (ubyte1)mcm_commands_getTorque(mcm);
+        canMessages[0].data[1] = mcm_commands_getTorque(mcm) >> 8;
 
         //Speed (RPM?) - not needed - mcu should be in torque mode
         canMessages[0].data[2] = 0;
         canMessages[0].data[3] = 0;
 
         //Direction: 0=CW, 1=CCW
-        canMessages[0].data[4] = MCU0.commands.direction;
+        canMessages[0].data[4] = mcm_commands_getDirection(mcm);
 
         //unused/unused/unused/unused unused/unused/Discharge/Inverter Enable
         canMessages[0].data[5] = 0; //First set whole byte to zero
@@ -207,8 +206,8 @@ void canOutput_sendMCUControl(bool sendEvenIfNoChanges)
             switch (bit)
             {
                 // Then add your bit to the right (note: the order of case statements doesn't matter - it's the fact that bit-- instead of bit++;)
-                case 1: canMessages[0].data[5] |= (MCU0.commands.setDischarge == ENABLED) ? 1 : 0; break; 
-                case 0: canMessages[0].data[5] |= (MCU0.commands.setInverter == ENABLED) ? 1 : 0; break;  // Then add your bit to the right
+                case 1: canMessages[0].data[5] |= (mcm_commands_getDischarge(mcm) == ENABLED) ? 1 : 0; break; 
+                case 0: canMessages[0].data[5] |= (mcm_commands_getInverter(mcm) == ENABLED) ? 1 : 0; break;  // Then add your bit to the right
 
             }
         }
@@ -222,8 +221,9 @@ void canOutput_sendMCUControl(bool sendEvenIfNoChanges)
         IO_CAN_WriteFIFO(canFifoHandle_LoPri_Write, canMessages, 1);  //Important: Only transmit one message (the MCU message)
 
         //Reset the last message count/timestamp
-        IO_RTC_StartTime(&MCU0.commands.timeStamp_lastCommandSent);
-        MCU0.commands.updateCount = 0;
+        mcm_commands_resetUpdateCountAndTime(mcm);
+        //IO_RTC_StartTime(&mcm.commands.timeStamp_lastCommandSent);
+        //mcm.commands.updateCount = 0;
 
         //IO_CAN_WriteMsg(canFifoHandle_HiPri_Write, &canMessages);  //Important: Only transmit one message (the MCU message)
         //IO_CAN_WriteMsg(canFifoHandle_LoPri_Write, &canMessages);  //Important: Only transmit one message (the MCU message)

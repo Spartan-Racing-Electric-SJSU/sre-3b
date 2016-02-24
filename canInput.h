@@ -2,8 +2,9 @@
 #define _CANINPUT_H
 
 #include "can.h"
+#include "motorController.h"
 
-void canInput_readMessages(void);
+void canInput_readMessages(MotorController* mcm);
 
 
 

@@ -5,12 +5,10 @@
 #include "canInput.h"
 #include "motorController.h"
 
-extern MotorController MCU0;
-
 //extern const ubyte1 canMessageLimit = 10;
 extern IO_CAN_DATA_FRAME canMessages[];
 
-void canInput_readMessages()
+void canInput_readMessages(MotorController* mcm)
 {
     //Read messages from hipri channel 
     ubyte1 messagesReceived;
@@ -31,8 +29,8 @@ void canInput_readMessages()
         //-------------------------------------------------------------------------
         case 0xAA:  
             //128 == 0x80 == 1 << 7 == the first bit is 1 and the rest are 0 == 10000000
-            MCU0.lockoutStatus = (canMessages[currMessage].data[6] & 0x80 == 0x80) ? DISABLED : ENABLED;
-            MCU0.inverterStatus = (canMessages[currMessage].data[6] & 0x01 == 0x01) ? ENABLED : DISABLED;
+            mcm_updateLockoutStatus(mcm, (canMessages[currMessage].data[6] & 0x80 == 0x80) ? DISABLED : ENABLED);
+            mcm_updateInverterStatus(mcm, ((canMessages[currMessage].data[6] & 0x01 == 0x01) ? ENABLED : DISABLED));
             break;
 
         //-------------------------------------------------------------------------

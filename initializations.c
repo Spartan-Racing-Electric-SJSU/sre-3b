@@ -57,11 +57,13 @@ void vcu_initializeADC(void)
     IO_PWD_FreqInit(IO_PWD_09, IO_PWD_RISING_VAR);  //Is there a reason to look for rising vs falling edge?
     IO_PWD_FreqInit(IO_PWD_10, IO_PWD_RISING_VAR);  //Is there a reason to look for rising vs falling edge?
     IO_PWD_FreqInit(IO_PWD_11, IO_PWD_RISING_VAR);  //Is there a reason to look for rising vs falling edge?
-
+    
     //Switches ---------------------------------------------------
     IO_DI_Init(IO_DI_04, IO_DI_PU_10K); //RTD Button
     IO_DI_Init(IO_DI_05, IO_DI_PU_10K); //TEMP Stepping on brake switch
 
+    //Power Outputs ---------------------------------------------------
+    //IO_DO_Init(); MCM power control relay
 }
 
 //----------------------------------------------------------------------------
@@ -207,7 +209,7 @@ void vcu_initializeSensors(void)
 * MCU
 ****************************************************************************/
 #include "motorController.h"
-
+/*
 MotorController MCU0;
 //Initialize the motor controllers (assign the can message IDs)
 void vcu_initializeMCU(void)
@@ -220,3 +222,4 @@ void vcu_initializeMCU(void)
     MCU0.inverterStatus = UNKNOWN;
     MCU0.startRTDS = FALSE;
 }
+*/

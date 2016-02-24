@@ -159,6 +159,9 @@ extern Sensor Sensor_RTD_Button;
 //TEMP BENCH SWITCHES
 extern Sensor Sensor_TEMP_BrakingSwitch;
 
+extern Sensor Sensor_HVILTerminationSense;
+
+
 //Other
 extern Sensor Sensor_LVBattery; // = { 0xA };  //Note: There will be no init for this "sensor"
 

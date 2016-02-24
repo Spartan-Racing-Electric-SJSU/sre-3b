@@ -140,15 +140,16 @@ void main(void)
     IO_Driver_Init(NULL); //Handles basic startup for all VCU subsystems
     vcu_initializeADC();  //Configure and activate all I/O pins on the VCU
     vcu_initializeCAN();  
-    vcu_initializeMCU();
+    //vcu_initializeMCU();
 
     //Do some loops until the ADC stops outputting garbage values
     vcu_ADCWasteLoop();
 
-    //Create the RTDS object
+    //----------------------------------------------------------------------------
+    // External Device Object Initializations
+    //----------------------------------------------------------------------------
     ReadyToDriveSound* rtds = RTDS_new();
-    //RTDS_setVolume(rtds, .005, 100000);  //Play a brief, quiet startup beep
-
+    MotorController* mcm0 = MotorController_new(0xA0, FORWARD);
 
     //----------------------------------------------------------------------------
     // TODO: Additional Initial Power-up functions
@@ -176,24 +177,37 @@ void main(void)
 
 
         //----------------------------------------------------------------------------
-        // DO STUFF!!!!!!!!!!
+        // Handle data input streams
         //----------------------------------------------------------------------------
         //Get readings from our sensors and other local devices (buttons, 12v battery, etc)
         sensors_updateSensors();
 
         //canInput - pull messages from CAN FIFO and update our object representations.
         //Also echo can0 messages to can1 for DAQ.
-        canInput_readMessages();
+        canInput_readMessages(mcm0);
 
-
+        //----------------------------------------------------------------------------
+        // Calculations
+        //----------------------------------------------------------------------------
         //calculations - Now that we have local sensor data and external data from CAN, we can
         //do actual processing work, from pedal travel calcs to traction control
         //calculations_calculateStuff();
 
+        //----------------------------------------------------------------------------
+        // Motor Controller Output Calculations
+        //----------------------------------------------------------------------------
+        //Handle motor startup procedures
+        MotorControllerPowerManagement(mcm0, rtds);
+
+        //Assign motor controls to MCM command message
         //motorController_setCommands(rtds);
+        //DOES NOT set inverter command or rtds flag
+        setMCMCommands(mcm0, rtds);
+
+
 
         //Drop the sensor readings into CAN (just raw data, not calculated stuff)
-        canOutput_sendMCUControl(FALSE);
+        canOutput_sendMCUControl(mcm0, FALSE);
         //canOutput_sendSensorMessages();
 
 
