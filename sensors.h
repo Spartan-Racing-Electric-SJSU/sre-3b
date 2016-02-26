@@ -172,4 +172,8 @@ extern Sensor Sensor_LVBattery; // = { 0xA };  //Note: There will be no init for
 void sensors_initializeSensors(void);
 void sensors_updateSensors(void);
 
+
+void setMCMRelay(bool turnOn);
+
+
 #endif // _SENSORS_H

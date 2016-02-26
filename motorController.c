@@ -32,6 +32,8 @@ struct _MotorController {
     ubyte4 faultCodesPOST; //0xAB Byte 0-3
     ubyte4 faultCodesRUN;  //0xAB Byte 4-7*/
 
+    ubyte1 startupStage;
+
     //----------------------------------------------------------------------------
     // Control parameters
     //----------------------------------------------------------------------------
@@ -230,6 +232,10 @@ ubyte4 mcm_commands_getTimeSinceLastCommandSent(MotorController* me)
 
 
 
+bool mcm_getStartupStage(MotorController* me)
+{
+    return me->startupStage;
+}
 
 
 
@@ -308,6 +314,17 @@ void setMCMCommands(MotorController* mcm, ReadyToDriveSound* rtds)
 //See diagram at https://onedrive.live.com/redir?resid=F9BB8F0F8FDB5CF8!30410&authkey=!ABSF-uVH-VxQRAs&ithint=file%2chtml
 void MotorControllerPowerManagement(MotorController* mcm, ReadyToDriveSound* rtds)
 {
+    mcm->startupStage = 0; //Off
+    //if (Sensor_HVILTerminationSense.sensorValue == TRUE)
+    if (Sensor_TEMP_BrakingSwitch.sensorValue == TRUE)
+    {
+        setMCMRelay(TRUE);
+    }
+    else //REMOVE THIS
+    {
+        setMCMRelay(FALSE);
+    }
+    
     //----------------------------------------------------------------------------
     // Determine inverter state
     //----------------------------------------------------------------------------
@@ -315,16 +332,20 @@ void MotorControllerPowerManagement(MotorController* mcm, ReadyToDriveSound* rtd
     if (mcm_getLockoutStatus(mcm) == ENABLED)
     {
         mcm_commands_setInverter(mcm, DISABLED);
+        mcm->startupStage = 1; //on, locked out
     }
     else  //Lockout has already been disabled
     {
         if (mcm_getInverterStatus(mcm) == DISABLED)
         {
-            //If not on gas and YES on break and RTD is pressed
-            if (Sensor_WPS_FL.sensorValue < 10 && Sensor_TEMP_BrakingSwitch.sensorValue == FALSE && Sensor_RTD_Button.sensorValue == FALSE)
+            mcm->startupStage = 2; //Lockout disabled, waiting for RTD procedure
+            //If not on gas and YES on brake and RTD is pressed
+            //BRAKE CODE NEEDS TO BE ADDED HERE
+            if (Sensor_WPS_FL.sensorValue < 10 && Sensor_RTD_Button.sensorValue == FALSE)
             {
                 mcm_commands_setInverter(mcm, ENABLED);
                 mcm_setRTDSFlag(mcm, TRUE);  //Now, start the RTDS if the inverter is successfully enabled
+                mcm->startupStage = 3; //RTD complete, waiting for confirmation
             }
         }
         else
@@ -334,6 +355,11 @@ void MotorControllerPowerManagement(MotorController* mcm, ReadyToDriveSound* rtd
             {
                 RTDS_setVolume(rtds, .005, 1500000);
                 mcm_setRTDSFlag(mcm, FALSE);  //RTDS started, so don't restart it next loop
+                mcm->startupStage = 4; //RTD confirmed
+            }
+            else
+            {
+                mcm->startupStage = 5; //Driving
             }
         }
     }

@@ -216,9 +216,17 @@ void canOutput_sendMCUControl(MotorController* mcm, bool sendEvenIfNoChanges)
         canMessages[0].data[6] = 0;
         canMessages[0].data[7] = 0;
 
+        //----------------------------------------------------------------------------
+        // MCM Stage Message (DOES NOT BELONG HERE
+        //----------------------------------------------------------------------------
+        canMessages[1].length = 8; // how many bytes in the message
+        canMessages[1].id_format = IO_CAN_STD_FRAME;
+        canMessages[1].id = 0x508;
+        canMessages[1].data[0] = mcm_getStartupStage(mcm);
+
         //Place the can messsages into the FIFO queue ---------------------------------------------------
-        IO_CAN_WriteFIFO(canFifoHandle_HiPri_Write, canMessages, 1);  //Important: Only transmit one message (the MCU message)
-        IO_CAN_WriteFIFO(canFifoHandle_LoPri_Write, canMessages, 1);  //Important: Only transmit one message (the MCU message)
+        IO_CAN_WriteFIFO(canFifoHandle_HiPri_Write, canMessages, 2);  //Important: Only transmit one message (the MCU message)
+        IO_CAN_WriteFIFO(canFifoHandle_LoPri_Write, canMessages, 2);  //Important: Only transmit one message (the MCU message)
 
         //Reset the last message count/timestamp
         mcm_commands_resetUpdateCountAndTime(mcm);
@@ -231,4 +239,3 @@ void canOutput_sendMCUControl(MotorController* mcm, bool sendEvenIfNoChanges)
 
     } //end if sendEvenIfNoChanges/etc
 }
-

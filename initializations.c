@@ -29,8 +29,8 @@ void vcu_initializeADC(void)
 
     //Digital/power outputs ---------------------------------------------------
     //Relay power outputs
-    IO_DO_Init(IO_DO_00); //mcm0 Relay
-    IO_DO_Init(IO_DO_01); //HVIL shutdown relay
+    IO_DO_Init(IO_DO_00); IO_DO_Set(IO_DO_00, FALSE); //mcm0 Relay
+    IO_DO_Init(IO_DO_01); IO_DO_Set(IO_DO_01, FALSE); //HVIL shutdown relay
 
     //Wheel Speed Sensor supplies
     IO_DO_Init(IO_DO_06); //Front x2
@@ -67,6 +67,9 @@ void vcu_initializeADC(void)
     //Switches ---------------------------------------------------
     IO_DI_Init(IO_DI_04, IO_DI_PU_10K); //RTD Button
     IO_DI_Init(IO_DI_05, IO_DI_PU_10K); //TEMP Stepping on brake switch
+    IO_DI_Init(IO_DI_07, IO_DI_PD_10K); //HVIL Term sense, high = HV present
+
+    //
 
 }
 
@@ -169,6 +172,7 @@ Sensor Sensor_LVBattery;
 
 Sensor Sensor_RTD_Button;
 Sensor Sensor_TEMP_BrakingSwitch;
+Sensor Sensor_HVILTerminationSense;
 
 //Switches
 //precharge failure

@@ -29,7 +29,7 @@ void canInput_readMessages(MotorController* mcm)
         //-------------------------------------------------------------------------
         case 0xAA:  
             //128 == 0x80 == 1 << 7 == the first bit is 1 and the rest are 0 == 10000000
-            mcm_updateLockoutStatus(mcm, (canMessages[currMessage].data[6] & 0x80 == 0x80) ? DISABLED : ENABLED);
+            mcm_updateLockoutStatus(mcm, (canMessages[currMessage].data[6] & 0x80 == 0x80) ? ENABLED : DISABLED);
             mcm_updateInverterStatus(mcm, ((canMessages[currMessage].data[6] & 0x01 == 0x01) ? ENABLED : DISABLED));
             break;
 

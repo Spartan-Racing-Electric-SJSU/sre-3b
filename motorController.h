@@ -58,6 +58,7 @@ bool mcm_getRTDSFlag(MotorController* me);
 //void motorController_SendControlMessage(IO_CAN_DATA_FRAME *canMessage); //This is an alias for canOutput_sendMcuControl
 //void motorController_setAllCommands(ReadyToDriveSound* rtds);
 
+ubyte1 mcm_getStartupStage(MotorController* me);
 
 //----------------------------------------------------------------------------
 //----------------------------------------------------------------------------

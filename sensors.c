@@ -52,7 +52,6 @@ extern Sensor Sensor_TEMP_BrakingSwitch;
 //----------------------------------------------------------------------------
 void sensors_updateSensors(void)
 {
-
     //TODO: Handle errors (using the return values for these Get functions)
 
     //TODO: RTDS
@@ -83,34 +82,19 @@ void sensors_updateSensors(void)
     //Switches / Digital ---------------------------------------------------
     IO_DI_Get(IO_DI_04, &Sensor_RTD_Button.sensorValue);
     IO_DI_Get(IO_DI_05, &Sensor_TEMP_BrakingSwitch.sensorValue);
+    IO_DI_Get(IO_DI_07, &Sensor_HVILTerminationSense.sensorValue);
 
     //Other stuff ---------------------------------------------------
     //Battery voltage (at VCU internal electronics supply input)
     IO_ADC_Get(IO_ADC_UBAT, &Sensor_LVBattery.sensorValue, &Sensor_LVBattery.fresh);
 
 
-    //----------------------------------------------------------------------------
-    //RTDS test - Temporary code only
-    //----------------------------------------------------------------------------
-    //Control the RTDS with a pot
-    //Pot goes from 2.2 ohm to 4930 ohm
-    //Note: There's a problem with the old RTDS where it plays sound
-    //      even at 0 duty cycle / DO=FALSE.  Gotta figure out why this
-    //      happens and if there's a problem with the VCU.
+}
 
-    /* Temporary comment out 
-    //Hook up RTDS to pin 103
-    float4 dutyPercent;  //Percent (some fraction between 0 and 1)
-    ubyte2 dutyHex;      //percent * max value (FFFF)
-    
-    dutyPercent = getPercent((float4)Sensor_WPS_FL.sensorValue, 50, 4550, TRUE);
-
-    //Set the volume level (0 to 65535.. or 0 to FFFF as seen by VCU)
-    //dutyHex = 65535 * dutyPercent;       //becomes an integer
-    dutyHex = 6553 * dutyPercent;       //becomes an integer
-    dutyHex = (Sensor_WPS_FL.fresh == FALSE) ? 0 : dutyHex;  //Set to 0 if sensor reading is not fresh
-
-    IO_PWM_SetDuty(IO_PWM_07, dutyHex, NULL);  //Pin 103
-    */
-
+//----------------------------------------------------------------------------
+//Testing MCM relay control
+//----------------------------------------------------------------------------
+void setMCMRelay(bool turnOn)
+{
+    IO_DO_Set(IO_DI_07, turnOn);
 }
