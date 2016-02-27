@@ -31,6 +31,8 @@ void vcu_initializeADC(void)
     //Relay power outputs
     IO_DO_Init(IO_DO_00); IO_DO_Set(IO_DO_00, FALSE); //mcm0 Relay
     IO_DO_Init(IO_DO_01); IO_DO_Set(IO_DO_01, FALSE); //HVIL shutdown relay
+    IO_DO_Init(IO_DO_02); IO_DO_Set(IO_DO_02, FALSE); //Water pump relay
+    IO_DO_Init(IO_DO_03); IO_DO_Set(IO_DO_03, FALSE); //Motor fan relay
 
     //Wheel Speed Sensor supplies
     IO_DO_Init(IO_DO_06); //Front x2
@@ -39,18 +41,23 @@ void vcu_initializeADC(void)
     //Digital PWM outputs ---------------------------------------------------
     //We're not using these
     IO_PWM_Init(IO_PWM_07, 700, TRUE, FALSE, 0, FALSE, NULL);  //Temporary RTDS output
+    IO_PWM_Init(IO_PWM_07, 700, TRUE, FALSE, 0, FALSE, NULL);  //Temporary RTDS output
 
     //ADC channels ---------------------------------------------------
     //TPS
-    IO_ADC_ChannelInit(IO_ADC_5V_00, IO_ADC_RATIOMETRIC, 0, 0, IO_ADC_SENSOR_SUPPLY_0, NULL);
-    IO_ADC_ChannelInit(IO_ADC_5V_01, IO_ADC_RATIOMETRIC, 0, 0, IO_ADC_SENSOR_SUPPLY_1, NULL);
+    //IO_ADC_ChannelInit(IO_ADC_5V_00, IO_ADC_RATIOMETRIC, 0, 0, IO_ADC_SENSOR_SUPPLY_0, NULL);
+    //IO_ADC_ChannelInit(IO_ADC_5V_01, IO_ADC_RATIOMETRIC, 0, 0, IO_ADC_SENSOR_SUPPLY_1, NULL);
 
     //BPS
     IO_ADC_ChannelInit(IO_ADC_5V_02, IO_ADC_RATIOMETRIC, 0, 0, IO_ADC_SENSOR_SUPPLY_0, NULL);
 
     //Unused
     //IO_ADC_ChannelInit(IO_ADC_5V_03, IO_ADC_RATIOMETRIC, 0, 0, IO_ADC_SENSOR_SUPPLY_0, NULL);
-    
+
+    //Bench TPS
+    IO_ADC_ChannelInit(IO_ADC_5V_00, IO_ADC_RESISTIVE, 0, 0, 0, NULL);
+    IO_ADC_ChannelInit(IO_ADC_5V_01, IO_ADC_RESISTIVE, 0, 0, 0, NULL);
+
     //Shockpots
     IO_ADC_ChannelInit(IO_ADC_5V_04, IO_ADC_RESISTIVE, 0, 0, 0, NULL);
     IO_ADC_ChannelInit(IO_ADC_5V_05, IO_ADC_RESISTIVE, 0, 0, 0, NULL);
@@ -58,6 +65,9 @@ void vcu_initializeADC(void)
     IO_ADC_ChannelInit(IO_ADC_5V_07, IO_ADC_RESISTIVE, 0, 0, 0, NULL);
 
     //PWD channels ---------------------------------------------------
+    //TPS
+    IO_PWD_FreqInit(IO_PWM_00, IO_PWD_RISING_VAR);
+    IO_PWD_FreqInit(IO_PWM_01, IO_PWD_RISING_VAR);
     //Wheel Speed Sensors (Pulse Width Detection)
     IO_PWD_FreqInit(IO_PWD_08, IO_PWD_RISING_VAR);  //Is there a reason to look for rising vs falling edge?
     IO_PWD_FreqInit(IO_PWD_09, IO_PWD_RISING_VAR);  //Is there a reason to look for rising vs falling edge?
@@ -65,8 +75,10 @@ void vcu_initializeADC(void)
     IO_PWD_FreqInit(IO_PWD_11, IO_PWD_RISING_VAR);  //Is there a reason to look for rising vs falling edge?
     
     //Switches ---------------------------------------------------
-    IO_DI_Init(IO_DI_04, IO_DI_PU_10K); //RTD Button
-    IO_DI_Init(IO_DI_05, IO_DI_PU_10K); //TEMP Stepping on brake switch
+    IO_DI_Init(IO_DI_00, IO_DI_PU_10K); //RTD Button
+    IO_DI_Init(IO_DI_01, IO_DI_PU_10K); //Eco Button
+    IO_DI_Init(IO_DI_02, IO_DI_PU_10K); //TCS Switch A
+    IO_DI_Init(IO_DI_03, IO_DI_PU_10K); //TCS Switch B
     IO_DI_Init(IO_DI_07, IO_DI_PD_10K); //HVIL Term sense, high = HV present
 
     //
@@ -163,6 +175,8 @@ Sensor Sensor_WSS_FL;  // = { 2 };
 Sensor Sensor_WSS_FR;  // = { 2 };
 Sensor Sensor_WSS_RL;  // = { 2 };
 Sensor Sensor_WSS_RR;  // = { 2 };
+Sensor Sensor_BenchTPS0;
+Sensor Sensor_BenchTPS1;
 Sensor Sensor_WPS_FL;  // = { 3 };
 Sensor Sensor_WPS_FR;  // = { 3 };
 Sensor Sensor_WPS_RL;  // = { 3 };
@@ -170,8 +184,10 @@ Sensor Sensor_WPS_RR;  // = { 3 };
 Sensor Sensor_SAS;  // = { 4 };
 Sensor Sensor_LVBattery;
 
-Sensor Sensor_RTD_Button;
-Sensor Sensor_TEMP_BrakingSwitch;
+Sensor Sensor_RTDButton;
+Sensor Sensor_EcoButton;
+Sensor Sensor_TCSSwitchA;
+Sensor Sensor_TCSSwitchB;
 Sensor Sensor_HVILTerminationSense;
 
 //Switches

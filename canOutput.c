@@ -60,6 +60,15 @@ extern Sensor Sensor_WPS_RR;
 extern Sensor Sensor_SPS;
 extern Sensor Sensor_LVBattery;
 
+extern Sensor Sensor_BenchTPS0;
+extern Sensor Sensor_BenchTPS1;
+
+extern Sensor Sensor_RTDButton;
+extern Sensor Sensor_EcoButton;
+extern Sensor Sensor_TCSSwitchA;
+extern Sensor Sensor_TCSSwitchB;
+extern Sensor Sensor_HVILTerminationSense;
+
 /*****************************************************************************
 * Standalone Sensor messages
 ******************************************************************************
@@ -223,6 +232,11 @@ void canOutput_sendMCUControl(MotorController* mcm, bool sendEvenIfNoChanges)
         canMessages[1].id_format = IO_CAN_STD_FRAME;
         canMessages[1].id = 0x508;
         canMessages[1].data[0] = mcm_getStartupStage(mcm);
+        canMessages[1].data[1] = Sensor_EcoButton.sensorValue;
+        canMessages[1].data[4] = Sensor_BenchTPS0.sensorValue;
+        canMessages[1].data[5] = Sensor_BenchTPS0.sensorValue >> 8;;
+        canMessages[1].data[6] = Sensor_BenchTPS1.sensorValue;
+        canMessages[1].data[7] = Sensor_BenchTPS1.sensorValue >> 8;;
 
         //Place the can messsages into the FIFO queue ---------------------------------------------------
         IO_CAN_WriteFIFO(canFifoHandle_HiPri_Write, canMessages, 2);  //Important: Only transmit one message (the MCU message)

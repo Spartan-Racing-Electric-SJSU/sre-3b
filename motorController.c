@@ -6,6 +6,16 @@
 #include "sensors.h"
 #include "readyToDriveSound.h"
 
+
+extern Sensor Sensor_BenchTPS0;
+extern Sensor Sensor_BenchTPS1;
+
+extern Sensor Sensor_RTDButton;
+extern Sensor Sensor_EcoButton;
+extern Sensor Sensor_TCSSwitchA;
+extern Sensor Sensor_TCSSwitchB;
+extern Sensor Sensor_HVILTerminationSense;
+
 /*****************************************************************************
 * Motor Controller (MCU)
 ******************************************************************************
@@ -316,40 +326,38 @@ void MotorControllerPowerManagement(MotorController* mcm, ReadyToDriveSound* rtd
 {
     mcm->startupStage = 0; //Off
     //if (Sensor_HVILTerminationSense.sensorValue == TRUE)
-    if (Sensor_TEMP_BrakingSwitch.sensorValue == TRUE)
+    if (Sensor_HVILTerminationSense.sensorValue == TRUE)
     {
         setMCMRelay(TRUE);
-    }
-    else //REMOVE THIS
-    {
-        setMCMRelay(FALSE);
     }
     
     //----------------------------------------------------------------------------
     // Determine inverter state
     //----------------------------------------------------------------------------
     //New Handshake NOTE: Switches connected to ground.. TRUE = high = off = disconnected = open circuit, FALSE = low = grounded = on = connected = closed circuit
-    if (mcm_getLockoutStatus(mcm) == ENABLED)
+    switch (mcm_getLockoutStatus(mcm))
     {
+    case ENABLED:
         mcm_commands_setInverter(mcm, DISABLED);
         mcm->startupStage = 1; //on, locked out
-    }
-    else  //Lockout has already been disabled
-    {
-        if (mcm_getInverterStatus(mcm) == DISABLED)
+        break;
+
+    case DISABLED: //Lockout is disabled
+        switch (mcm_getInverterStatus(mcm))
         {
+        case DISABLED:
             mcm->startupStage = 2; //Lockout disabled, waiting for RTD procedure
             //If not on gas and YES on brake and RTD is pressed
             //BRAKE CODE NEEDS TO BE ADDED HERE
-            if (Sensor_WPS_FL.sensorValue < 10 && Sensor_RTD_Button.sensorValue == FALSE)
+            if (Sensor_WPS_FL.sensorValue < 10 && Sensor_RTDButton.sensorValue == FALSE)
             {
                 mcm_commands_setInverter(mcm, ENABLED);
                 mcm_setRTDSFlag(mcm, TRUE);  //Now, start the RTDS if the inverter is successfully enabled
                 mcm->startupStage = 3; //RTD complete, waiting for confirmation
             }
-        }
-        else
-        {
+            break;
+
+        case ENABLED:
             //If the inverter was successfully enabled AND we haven't started the RTDS yet
             if (mcm_getRTDSFlag(mcm) == TRUE)
             {
@@ -361,7 +369,16 @@ void MotorControllerPowerManagement(MotorController* mcm, ReadyToDriveSound* rtd
             {
                 mcm->startupStage = 5; //Driving
             }
+            break;
+
+        case UNKNOWN: default:
+            break;
         }
+
+        break;
+
+    case UNKNOWN: default:
+        break;
     }
 /*
     //TEMPORARY Eco Switch startup code

@@ -36,9 +36,14 @@ extern Sensor Sensor_WPS_RR;
 extern Sensor Sensor_SAS;
 extern Sensor Sensor_LVBattery;
 
-extern Sensor Sensor_RTD_Button;
-//TEMP BENCH SWITCHES
-extern Sensor Sensor_TEMP_BrakingSwitch;
+extern Sensor Sensor_BenchTPS0;
+extern Sensor Sensor_BenchTPS1;
+
+extern Sensor Sensor_RTDButton;
+extern Sensor Sensor_EcoButton;
+extern Sensor Sensor_TCSSwitchA;
+extern Sensor Sensor_TCSSwitchB;
+extern Sensor Sensor_HVILTerminationSense;
 
 
 /*-------------------------------------------------------------------
@@ -57,8 +62,8 @@ void sensors_updateSensors(void)
     //TODO: RTDS
 
     //Torque Encoders ---------------------------------------------------
-    IO_ADC_Get(IO_ADC_5V_00, &Sensor_TPS0.sensorValue, &Sensor_TPS0.fresh);
-    IO_ADC_Get(IO_ADC_5V_01, &Sensor_TPS1.sensorValue, &Sensor_TPS1.fresh);
+    IO_PWD_FreqGet(IO_PWM_00, &Sensor_TPS0.sensorValue);
+    IO_PWD_FreqGet(IO_PWM_01, &Sensor_TPS1.sensorValue);
 
     //Brake Position Sensor ---------------------------------------------------
     IO_ADC_Get(IO_ADC_5V_02, &Sensor_BPS0.sensorValue, &Sensor_BPS0.fresh);
@@ -66,12 +71,15 @@ void sensors_updateSensors(void)
     //?? - For future use ---------------------------------------------------
     //IO_ADC_Get(IO_ADC_5V_03, &Sensor_BPS1.sensorValue, &Sensor_BPS1.fresh);
 
+    //Bench TPS ---------------------------------------------------
+    IO_ADC_Get(IO_ADC_5V_00, &Sensor_BenchTPS0.sensorValue, &Sensor_BenchTPS0.fresh);
+    IO_ADC_Get(IO_ADC_5V_01, &Sensor_BenchTPS1.sensorValue, &Sensor_BenchTPS1.fresh);
+
     //Shock pots ---------------------------------------------------
     IO_ADC_Get(IO_ADC_5V_04, &Sensor_WPS_FL.sensorValue, &Sensor_WPS_FL.fresh);
     IO_ADC_Get(IO_ADC_5V_05, &Sensor_WPS_FR.sensorValue, &Sensor_WPS_FR.fresh);
     IO_ADC_Get(IO_ADC_5V_06, &Sensor_WPS_RL.sensorValue, &Sensor_WPS_RL.fresh);
     IO_ADC_Get(IO_ADC_5V_07, &Sensor_WPS_RL.sensorValue, &Sensor_WPS_RR.fresh);
-
 
     //Wheel speed sensors ---------------------------------------------------
     IO_PWD_FreqGet(IO_PWD_08, &Sensor_WSS_FL.sensorValue);
@@ -80,8 +88,10 @@ void sensors_updateSensors(void)
     IO_PWD_FreqGet(IO_PWD_11, &Sensor_WSS_RR.sensorValue);
 
     //Switches / Digital ---------------------------------------------------
-    IO_DI_Get(IO_DI_04, &Sensor_RTD_Button.sensorValue);
-    IO_DI_Get(IO_DI_05, &Sensor_TEMP_BrakingSwitch.sensorValue);
+    IO_DI_Get(IO_DI_00, &Sensor_RTDButton.sensorValue);
+    IO_DI_Get(IO_DI_01, &Sensor_EcoButton.sensorValue);
+    IO_DI_Get(IO_DI_02, &Sensor_TCSSwitchA.sensorValue);
+    IO_DI_Get(IO_DI_03, &Sensor_TCSSwitchB.sensorValue);
     IO_DI_Get(IO_DI_07, &Sensor_HVILTerminationSense.sensorValue);
 
     //Other stuff ---------------------------------------------------
@@ -96,5 +106,5 @@ void sensors_updateSensors(void)
 //----------------------------------------------------------------------------
 void setMCMRelay(bool turnOn)
 {
-    IO_DO_Set(IO_DI_07, turnOn);
+    IO_DO_Set(IO_DO_00, turnOn);
 }
