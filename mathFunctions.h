@@ -12,7 +12,7 @@
 * Returns the % (position) of value, between min and max
 * If zeroToOneOnly is true, then % will be capped at 0%-100% (no negative % or > 100%)
 -------------------------------------------------------------------*/
-float4 getPercent(float4 value, float4 min, float4 max, bool zeroToOneOnly);
+float4 getPercent(float4 value, float4 start, float4 end, bool zeroToOneOnly);
 
 
 

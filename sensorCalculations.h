@@ -40,7 +40,7 @@
 * Notes:
 * Throws:
 -------------------------------------------------------------------*/
-void calibrateTPS(ubyte1 secondsToRunCalibration);
+void calibrateTPS(bool bench, ubyte1 secondsToRunCalibration);
 
 /*-------------------------------------------------------------------
 * GetThrottlePosition
@@ -52,7 +52,7 @@ void calibrateTPS(ubyte1 secondsToRunCalibration);
 * Throws:      000 - TPS0 voltage out of range
 *              001 - TPS1 voltage out of range, 002
 -------------------------------------------------------------------*/
-float4 GetThrottlePosition(void);
+float4 getThrottlePercent(bool bench, ubyte1* errorCount);
 
 /*****************************************************************************
 * BPS (Brake Pressure Sensor) functions

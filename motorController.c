@@ -4,6 +4,7 @@
 #include "motorController.h"
 #include "mathFunctions.h"
 #include "sensors.h"
+#include "sensorCalculations.h"
 #include "readyToDriveSound.h"
 
 
@@ -31,6 +32,7 @@ struct _MotorController {
     //----------------------------------------------------------------------------
     ubyte2 canMessageBaseId;  //Starting message ID for messages that will come in from this controller
     ubyte4 timeStamp_inverterEnabled;
+    ubyte2 torqueMaximum;  //Max torque that can be commanded in deciNewton*meters ("100" = 10.0 Nm)
 
     Status lockoutStatus;
     Status inverterStatus;
@@ -91,11 +93,11 @@ struct _MotorController {
 };
 
 
-MotorController* MotorController_new(ubyte2 newCanMessageBaseID, Direction initialDirection)
+MotorController* MotorController_new(ubyte2 canMessageBaseID, Direction initialDirection, ubyte2 torqueMaxInDNm)
 {
     MotorController* me = (MotorController*)malloc(sizeof(struct _MotorController));
 
-    me->canMessageBaseId = newCanMessageBaseID;
+    me->canMessageBaseId = canMessageBaseID;
     //Dummy timestamp for last MCU message
     mcm_commands_resetUpdateCountAndTime(me);
 
@@ -103,9 +105,10 @@ MotorController* MotorController_new(ubyte2 newCanMessageBaseID, Direction initi
     me->inverterStatus = UNKNOWN;
     me->startRTDS = FALSE;
 
+    me->commands_direction = initialDirection;
+    me->torqueMaximum = torqueMaxInDNm;
 /*
     me->setTorque = &setTorque;
-    me->setDirection = &setDirection;
     me->setInverter = &setInverter;
     me->setDischarge = &setDischarge;
     me->setTorqueLimit = &setTorqueLimit;
@@ -239,6 +242,10 @@ ubyte4 mcm_commands_getTimeSinceLastCommandSent(MotorController* me)
 }
 
 
+ubyte2 mcm_getTorqueMax(MotorController* me)
+{
+    return me->torqueMaximum;
+}
 
 
 
@@ -296,7 +303,8 @@ void setMCMCommands(MotorController* mcm, ReadyToDriveSound* rtds)
     }
     else
     {
-        mcm_commands_setTorque(mcm, 100 * getPercent(Sensor_WPS_FL.sensorValue, 500, 2500, TRUE));
+        //mcm_commands_setTorque(mcm, 100 * getPercent(Sensor_WPS_FL.sensorValue, 500, 2500, TRUE));
+        mcm_commands_setTorque(mcm, mcm_getTorqueMax(mcm) * getThrottlePercent(TRUE, 0));
         /*        ubyte2 torqueSetting;  //temp variable to store torque calculation
         //CURRENTLY: Don't command torque until >1s after the inverter is enabled, otherwise CAN breaks
         if (IO_RTC_GetTimeUS(mcm.timeStamp_inverterEnabled) <= 1000000)

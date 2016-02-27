@@ -206,6 +206,15 @@ void vcu_initializeSensors(void)
     Sensor_TPS1.specMin = 4.5;
     Sensor_TPS1.specMax = 0.5;
 
+    Sensor_BenchTPS0.specMin = 1;
+    Sensor_BenchTPS0.specMax = 5001;
+    Sensor_BenchTPS1.specMin = 5001;
+    Sensor_BenchTPS1.specMax = 1;
+    Sensor_BenchTPS0.calibMin = 2000;
+    Sensor_BenchTPS0.calibMax = 3000;
+    Sensor_BenchTPS1.calibMin = 3000;
+    Sensor_BenchTPS1.calibMax = 2000;
+
     //Brake Position Sensors
     Sensor_BPS0.specMin = 0.5;
     Sensor_BPS0.specMax = 4.5;

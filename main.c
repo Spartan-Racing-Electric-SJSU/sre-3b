@@ -77,6 +77,8 @@
 #include "motorController.h"
 #include "readyToDriveSound.h"
 
+#include "sensorCalculations.h"
+
 //Application Database, needed for TTC-Downloader
 APDB appl_db =
     { 0                      /* ubyte4 versionAPDB        */
@@ -137,9 +139,11 @@ void main(void)
     //----------------------------------------------------------------------------
     // VCU Subsystem Initializations
     //----------------------------------------------------------------------------
+
     IO_Driver_Init(NULL); //Handles basic startup for all VCU subsystems
     vcu_initializeADC();  //Configure and activate all I/O pins on the VCU
-    vcu_initializeCAN();  
+    vcu_initializeCAN();
+    vcu_initializeSensors();
     //vcu_initializeMCU();
 
     //Do some loops until the ADC stops outputting garbage values
@@ -149,7 +153,7 @@ void main(void)
     // External Device Object Initializations
     //----------------------------------------------------------------------------
     ReadyToDriveSound* rtds = RTDS_new();
-    MotorController* mcm0 = MotorController_new(0xA0, FORWARD);
+    MotorController* mcm0 = MotorController_new(0xA0, FORWARD, 100);
 
     //----------------------------------------------------------------------------
     // TODO: Additional Initial Power-up functions
@@ -164,6 +168,8 @@ void main(void)
     /* main loop, executed periodically with a defined cycle time (here: 5 ms) */
 
 	ubyte4 timestamp_sensorpoll = 0;
+    ubyte4 timestamp_calibStart = 0;
+    IO_RTC_StartTime(&timestamp_calibStart);
     while (1)
     {
         //----------------------------------------------------------------------------
@@ -174,7 +180,11 @@ void main(void)
         //Mark the beginning of a task - what does this actually do?
         IO_Driver_TaskBegin();
 
-
+        //Run calibration if commanded
+        if (IO_RTC_GetTimeUS(timestamp_calibStart) < 5000000)
+        {
+            calibrateTPS(TRUE, 5);
+        }
 
         //----------------------------------------------------------------------------
         // Handle data input streams
