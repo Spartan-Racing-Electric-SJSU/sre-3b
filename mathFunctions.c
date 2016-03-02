@@ -15,20 +15,26 @@ float4 getPercent(float4 value, float4 start, float4 end, bool zeroToOneOnly)
 {
     float4 retVal;
 
-    //First of all, flip the start/end around if the values go backwards
-    float4 min = start; //(start < end) ? start : end;
-    float4 max = end; //(start < end) ? end : start;
-    float4 val = value; //fabs(max - value);
+    //Flip values and start at 0
+    float4 min = (start < end) ? start : end;
+    float4 max = (start < end) ? end : start;
+    //float4 offset = (start < end) ? value - start : end - value; //fabs(max - value);
+    
+    float4 range = fabs(start - end); //(start < end) ? end : start;
+    float4 offset = (start < end) ? value - start : end - value; //fabs(max - value);
 
     if (zeroToOneOnly == TRUE)
     {
-            if (value >= max) { retVal = 1; }
+/*            if (value >= max) { retVal = 1; }
             else if (value <= min) { retVal = 0; }
-            else { retVal = (value - min) / (max - min); }
+            else { retVal = offset / (max - min); */
+        if (offset < 0) { retVal = 0; }
+        else if (offset > range) { retVal = 1; }
+        else { retVal = offset / range; }
     }
     else
     {
-        retVal = (value - min) / (max - min);
+        retVal = (offset) / range; //(max - min);
     }
 
     return retVal;

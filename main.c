@@ -1,58 +1,21 @@
 /*****************************************************************************
-* VCU Logic
+* SRE-2 Vehicle Control Firmware for the TTTech HY-TTC 50 Controller (VCU)
 ******************************************************************************
+* For project info and history, see https://github.com/spartanracingelectric/SRE-2
+* For software/development questions, email rusty@pedrosatech.com
+******************************************************************************
+* Files
+* The Git repository does not contain the complete firmware for SRE-2.  Modules
+* provided by TTTech can be found on the CD that accompanied the VCU. These 
+* files can be identified by our naming convetion: TTTech files start with a
+* prefix in all caps (such as IO_Driver.h), except for ptypes_xe167.h which
+* they also provided.
+* For instructions on setting up a build environment, see the SRE-2 getting-
+* started document, Programming for the HY-TTC 50, at http://1drv.ms/1NQUppu
+******************************************************************************
+* Organization
+* Our code is laid out in the following manner:
 * 
-*
-******************************************************************************
-* To-do:
-* - Get CAN_FIFO working
-* - Read calibration data from EEPROM on startup
-* - Save calibration data to EEPROM from calibration function
-*
-******************************************************************************
-* Revision history:
-* 2015-02-16 - Rusty Pedrosa - Added RTDS shutdown helper called in main loop
-*                            -
-*                            -
-*                            -
-*                            -
-* 2015-11-16 - Rusty Pedrosa - Fixed RTDS PWM % calculation typecasting bug
-*                            - Changed RTDS test pins around
-*                            - RTDS code tested successfully - PWM control works!
-*                            - Added CAN message definition for Rinehart
-*                            - Added TPS calibration check to GetThrottlePosition
-*                            - Fixed some comments
-* 2015-11-16 - Rusty Pedrosa - Fixed shock pot ADC channel numbers
-*                            - Added IO_DO test code (for driving RTDS):
-*                              RTDS will be turned on when WPS_FR (shock pot)
-*                              is above 1000 ohms.  Turn knob to test output.
-*                            - Updated this file's description (above)
-*                            - Added more RTDS test outputs
-*                              - On/off at 1000 ohms on pins:
-*                                  117, 118, 144
-*                              - Variable output from 100-1500 ohms:
-*                                  105, 106
-*                              - Variable output from 250-1000 ohms:
-*                                  103, 104, 115, 116
-* 2015-11-15 - Rusty Pedrosa - Disabled CAN_FIFO temporarily to fix compile issues
-*                            - Disabled unused sensors temporarily
-* 2015-11-07 - Rusty Pedrosa - Fixed data splitting into bytes for CAN messages
-*                            - Changed all sensors to a single Sensor struct/datatype
-*                            - Defined all external sensors for the car
-*                            - Added CAN_FIFO functions
-* 2015-11-04 - Rusty Pedrosa - Bugfixes, migrated test code into this file
-* 2015-10-28 - Rusty Pedrosa - Moved from pseudocode to actual VCU code
-* 2015-10-21 - Rusty Pedrosa - Pseudocode complete
-* 2015-09-29 - Rusty Pedrosa - Updated file description (this section)
-*                            - Colored comments in green
-*                            - Clarified some comments about rules
-*                            - Added TPSErrorState flag
-*                            - Check TPSErrorState before returning pedal %
-*                            - Use TPSErrorState in rest of GetTPSValue
-*                            - Added pedal % calculations w/calibration
-*                            - TODO: Publish calibration excel sheet to group
-* 2015-09-28 - Rusty Pedrosa - Created this file.  Working on
-*                              calculations for throttle position and calibration.
 *****************************************************************************/
 
 //-------------------------------------------------------------------
@@ -126,8 +89,9 @@ extern Sensor Sensor_WPS_RL;
 extern Sensor Sensor_WPS_RR;
 extern Sensor Sensor_SAS;
  
-extern Sensor Sensor_RTD_Button;
+extern Sensor Sensor_RTDButton;
 extern Sensor Sensor_TEMP_BrakingSwitch;
+extern Sensor Sensor_EcoButton;
 
 /*****************************************************************************
 * Main!
@@ -154,6 +118,7 @@ void main(void)
     //----------------------------------------------------------------------------
     ReadyToDriveSound* rtds = RTDS_new();
     MotorController* mcm0 = MotorController_new(0xA0, FORWARD, 100);
+    TorqueEncoder* tps = TorqueEncoder_new(TRUE);
 
     //----------------------------------------------------------------------------
     // TODO: Additional Initial Power-up functions
@@ -181,7 +146,8 @@ void main(void)
         IO_Driver_TaskBegin();
 
         //Run calibration if commanded
-        if (IO_RTC_GetTimeUS(timestamp_calibStart) < 5000000)
+        //if (IO_RTC_GetTimeUS(timestamp_calibStart) < (ubyte4)5000000)
+        if (Sensor_EcoButton.sensorValue)
         {
             calibrateTPS(TRUE, 5);
         }

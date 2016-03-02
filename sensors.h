@@ -98,6 +98,14 @@
 
 #include "IO_Driver.h"
 
+
+
+
+
+
+
+
+
 //----------------------------------------------------------------------------
 // Sensor Object Definitions
 //----------------------------------------------------------------------------
@@ -113,16 +121,52 @@ typedef struct _Sensor {
     ubyte2 specMin;
     ubyte2 specMax;
     
-    ubyte2 calibMin;
-    ubyte2 calibMax;
-    ubyte2 calibNormal;  //zero value or normal position
+    //ubyte2 calibMin;
+    //ubyte2 calibMax;
+    //ubyte2 calibNormal;  //zero value or normal position
 
-    ubyte2 calibratedValue;
+    //ubyte2 calibratedValue;
     ubyte2 sensorValue;
     bool fresh;
-    bool isCalibrated;
+    //bool isCalibrated;
 
 } Sensor;
+
+typedef struct _TorqueEncoder
+{
+    bool bench;
+
+    Sensor* tps0;
+    Sensor* tps1;
+
+    ubyte2 TPS0_rawCalibMin;
+    ubyte2 TPS0_rawCalibMax;
+    ubyte2 TPS0_calibMin;
+    ubyte2 TPS0_calibMax;
+    float4 TPS0_percent;
+
+    ubyte2 TPS1_rawCalibMin;
+    ubyte2 TPS1_rawCalibMax;
+    ubyte2 TPS1_calibMin;
+    ubyte2 TPS1_calibMax;
+    float4 TPS1_percent;
+
+    bool runCalibration;
+    ubyte4 timestamp_calibrationStart;
+    ubyte1 calibrationRunTime;
+
+    bool calibrated;
+    float4 percent;
+} TorqueEncoder;
+
+TorqueEncoder* TorqueEncoder_new(bool benchMode);
+void TorqueEncoder_resetCalibration(TorqueEncoder* me);
+void TorqueEncoder_saveCalibrationToEEPROM(TorqueEncoder* me);
+void TorqueEncoder_loadCalibrationFromEEPROM(TorqueEncoder* me);
+void TorqueEncoder_startCalibration(TorqueEncoder* me, ubyte1 secondsToRun);
+void TorqueEncoder_calibrationCycle(TorqueEncoder* me, ubyte1* errorCount);
+void TorqueEncoder_getPedalTravel(TorqueEncoder* me, ubyte1* errorCount, float4* pedalPercent);
+void TorqueEncoder_plausibilityCheck(TorqueEncoder* me, ubyte1* errorCount, bool* fail);
 
 //----------------------------------------------------------------------------
 // Sensor Object Declarations

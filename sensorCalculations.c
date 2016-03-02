@@ -81,7 +81,7 @@ void calibrateTPS(bool bench, ubyte1 secondsToRunCalibration)
     Sensor* tps1;
     //TODO: Make sure the main loop is running before doing this
     tps0 = (bench == TRUE) ? &Sensor_BenchTPS0 : &Sensor_TPS0;
-    tps1 = (bench == TRUE) ? &Sensor_BenchTPS0 : &Sensor_TPS0;
+    tps1 = (bench == TRUE) ? &Sensor_BenchTPS1 : &Sensor_TPS1;
 
     //Reset calibration data
  /*   tps0->calibMin = tps0->specMax;
@@ -101,18 +101,10 @@ void calibrateTPS(bool bench, ubyte1 secondsToRunCalibration)
         //      Once calibration data makes sense, show pedal location (0-10%, 10-90%, 90-100%) with bars
 
         //Record min/max voltages
-        if (tps0->sensorValue < tps0->calibMin) {
-            tps0->calibMin = tps0->sensorValue;
-        }
-        if (tps0->sensorValue > tps0->calibMax) {
-            tps0->calibMax = tps0->sensorValue;
-        }
-        if (tps1->sensorValue < tps1->calibMin) {
-            tps1->calibMin = tps1->sensorValue;
-        }
-        if (tps1->sensorValue > tps1->calibMax) {
-            tps1->calibMax = tps1->sensorValue;
-        }
+        if (tps0->sensorValue < tps0->calibMin) { tps0->calibMin = tps0->sensorValue; }
+        if (tps0->sensorValue > tps0->calibMax) { tps0->calibMax = tps0->sensorValue; }
+        if (tps1->sensorValue < tps1->calibMin) { tps1->calibMin = tps1->sensorValue; }
+        if (tps1->sensorValue > tps1->calibMax) { tps1->calibMax = tps1->sensorValue; }
 
 //    }
 

@@ -94,7 +94,7 @@ void vcu_ADCWasteLoop(void)
     ubyte2 tempData;
     ubyte4 timestamp_sensorpoll = 0;
     IO_RTC_StartTime(&timestamp_sensorpoll);
-    while (IO_RTC_GetTimeUS(timestamp_sensorpoll) < 500000 && tempFresh == FALSE)
+    while (IO_RTC_GetTimeUS(timestamp_sensorpoll) < 1000000)
     {
         IO_Driver_TaskBegin();
 
@@ -109,6 +109,7 @@ void vcu_ADCWasteLoop(void)
         IO_DI_Get(IO_DI_04, &tempData);
         IO_DI_Get(IO_DI_05, &tempData);
         IO_ADC_Get(IO_ADC_5V_00, &tempData, &tempFresh);
+        IO_ADC_Get(IO_ADC_5V_01, &tempData, &tempFresh);
 
         IO_Driver_TaskEnd();
         //TODO: Find out if EACH pin needs 2 cycles or just the entire DIO unit
@@ -210,10 +211,6 @@ void vcu_initializeSensors(void)
     Sensor_BenchTPS0.specMax = 5001;
     Sensor_BenchTPS1.specMin = 5001;
     Sensor_BenchTPS1.specMax = 1;
-    Sensor_BenchTPS0.calibMin = 2000;
-    Sensor_BenchTPS0.calibMax = 3000;
-    Sensor_BenchTPS1.calibMin = 3000;
-    Sensor_BenchTPS1.calibMax = 2000;
 
     //Brake Position Sensors
     Sensor_BPS0.specMin = 0.5;

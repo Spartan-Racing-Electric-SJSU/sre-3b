@@ -231,11 +231,12 @@ void canOutput_sendMCUControl(MotorController* mcm, bool sendEvenIfNoChanges)
         // MCM Stage Message (DOES NOT BELONG HERE
         //----------------------------------------------------------------------------
         ubyte1 errorCount;
+        float4 pedalPercent;
         ubyte2 bench0Percent = 100 * getPercent(Sensor_BenchTPS0.sensorValue, Sensor_BenchTPS0.calibMin, Sensor_BenchTPS0.calibMax, TRUE);
         ubyte2 bench1Percent = 100 * getPercent(Sensor_BenchTPS1.sensorValue, Sensor_BenchTPS1.calibMin, Sensor_BenchTPS1.calibMax, TRUE);
-        ubyte2 throttlePercent = 100 * getThrottlePercent(TRUE, &errorCount);
-
-
+        
+        TorqueEncoder_getPedalTravel(tps, errorCount, pedalPercent); //getThrottlePercent(TRUE, &errorCount);
+        ubyte2 throttlePercent = 100 * pedalPercent;
         
         canMessages[1].length = 8; // how many bytes in the message
         canMessages[1].id_format = IO_CAN_STD_FRAME;
