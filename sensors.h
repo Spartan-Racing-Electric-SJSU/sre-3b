@@ -100,10 +100,7 @@
 
 
 
-
-
-
-
+typedef enum { dash_EcoLight, dash_ErrorLight, dash_RTDLight, dash_TCSLight} DashLight;
 
 
 //----------------------------------------------------------------------------
@@ -131,42 +128,6 @@ typedef struct _Sensor {
     //bool isCalibrated;
 
 } Sensor;
-
-typedef struct _TorqueEncoder
-{
-    bool bench;
-
-    Sensor* tps0;
-    Sensor* tps1;
-
-    ubyte2 TPS0_rawCalibMin;
-    ubyte2 TPS0_rawCalibMax;
-    ubyte2 TPS0_calibMin;
-    ubyte2 TPS0_calibMax;
-    float4 TPS0_percent;
-
-    ubyte2 TPS1_rawCalibMin;
-    ubyte2 TPS1_rawCalibMax;
-    ubyte2 TPS1_calibMin;
-    ubyte2 TPS1_calibMax;
-    float4 TPS1_percent;
-
-    bool runCalibration;
-    ubyte4 timestamp_calibrationStart;
-    ubyte1 calibrationRunTime;
-
-    bool calibrated;
-    float4 percent;
-} TorqueEncoder;
-
-TorqueEncoder* TorqueEncoder_new(bool benchMode);
-void TorqueEncoder_resetCalibration(TorqueEncoder* me);
-void TorqueEncoder_saveCalibrationToEEPROM(TorqueEncoder* me);
-void TorqueEncoder_loadCalibrationFromEEPROM(TorqueEncoder* me);
-void TorqueEncoder_startCalibration(TorqueEncoder* me, ubyte1 secondsToRun);
-void TorqueEncoder_calibrationCycle(TorqueEncoder* me, ubyte1* errorCount);
-void TorqueEncoder_getPedalTravel(TorqueEncoder* me, ubyte1* errorCount, float4* pedalPercent);
-void TorqueEncoder_plausibilityCheck(TorqueEncoder* me, ubyte1* errorCount, bool* fail);
 
 //----------------------------------------------------------------------------
 // Sensor Object Declarations
@@ -219,5 +180,10 @@ void sensors_updateSensors(void);
 
 void setMCMRelay(bool turnOn);
 
+
+//----------------------------------------------------------------------------
+// Outputs
+//----------------------------------------------------------------------------
+void dashLight_set(DashLight light, bool turnOn);
 
 #endif // _SENSORS_H

@@ -39,9 +39,11 @@ void vcu_initializeADC(void)
     IO_DO_Init(IO_DO_07); //Rear  x2
 
     //Digital PWM outputs ---------------------------------------------------
-    //We're not using these
-    IO_PWM_Init(IO_PWM_07, 700, TRUE, FALSE, 0, FALSE, NULL);  //Temporary RTDS output
-    IO_PWM_Init(IO_PWM_07, 700, TRUE, FALSE, 0, FALSE, NULL);  //Temporary RTDS output
+    IO_PWM_Init(IO_PWM_03, 500, TRUE, FALSE, 0, FALSE, NULL);  //TCS Light
+    IO_PWM_Init(IO_PWM_04, 500, TRUE, FALSE, 0, FALSE, NULL);  //Eco Light
+    IO_PWM_Init(IO_PWM_05, 500, TRUE, FALSE, 0, FALSE, NULL);  //Error Light
+    IO_PWM_Init(IO_PWM_06, 500, TRUE, FALSE, 0, FALSE, NULL);  //RTD Light
+    IO_PWM_Init(IO_PWM_07, 750, TRUE, FALSE, 0, FALSE, NULL);  //Temporary RTDS output
 
     //ADC channels ---------------------------------------------------
     //TPS

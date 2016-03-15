@@ -39,6 +39,7 @@
 //#include "outputCalculations.h"
 #include "motorController.h"
 #include "readyToDriveSound.h"
+#include "torqueEncoder.h"
 
 #include "sensorCalculations.h"
 
@@ -100,11 +101,13 @@ extern Sensor Sensor_EcoButton;
 ****************************************************************************/
 void main(void)
 {
+    IO_Driver_Init(NULL); //Handles basic startup for all VCU subsystems
+
     //----------------------------------------------------------------------------
     // VCU Subsystem Initializations
+    // Eventually, all of these functions should be made obsolete by creating
+    // objects instead, like the RTDS/MCM/TPS objects below
     //----------------------------------------------------------------------------
-
-    IO_Driver_Init(NULL); //Handles basic startup for all VCU subsystems
     vcu_initializeADC();  //Configure and activate all I/O pins on the VCU
     vcu_initializeCAN();
     vcu_initializeSensors();
@@ -114,11 +117,12 @@ void main(void)
     vcu_ADCWasteLoop();
 
     //----------------------------------------------------------------------------
-    // External Device Object Initializations
+    // External Devices - Object Initializations
     //----------------------------------------------------------------------------
     ReadyToDriveSound* rtds = RTDS_new();
     MotorController* mcm0 = MotorController_new(0xA0, FORWARD, 100);
     TorqueEncoder* tps = TorqueEncoder_new(TRUE);
+    //BatteryManagementSystem* bms = BMS_new();
 
     //----------------------------------------------------------------------------
     // TODO: Additional Initial Power-up functions
@@ -133,8 +137,9 @@ void main(void)
     /* main loop, executed periodically with a defined cycle time (here: 5 ms) */
 
 	ubyte4 timestamp_sensorpoll = 0;
-    ubyte4 timestamp_calibStart = 0;
-    IO_RTC_StartTime(&timestamp_calibStart);
+    ubyte1 calibrationErrors;
+
+    //IO_RTC_StartTime(&timestamp_calibStart);
     while (1)
     {
         //----------------------------------------------------------------------------
@@ -149,8 +154,11 @@ void main(void)
         //if (IO_RTC_GetTimeUS(timestamp_calibStart) < (ubyte4)5000000)
         if (Sensor_EcoButton.sensorValue)
         {
-            calibrateTPS(TRUE, 5);
+            //calibrateTPS(TRUE, 5);
+            TorqueEncoder_startCalibration(tps, 5);
+            //DIGITAL OUTPUT 4 for STATUS LED
         }
+        TorqueEncoder_calibrationCycle(tps, &calibrationErrors);
 
         //----------------------------------------------------------------------------
         // Handle data input streams
@@ -184,6 +192,7 @@ void main(void)
 
         //Drop the sensor readings into CAN (just raw data, not calculated stuff)
         canOutput_sendMCUControl(mcm0, FALSE);
+        canOutput_sendDebugMessage(tps);
         //canOutput_sendSensorMessages();
         //canOutput_sendStatusMessages(mcm0);
 
@@ -204,6 +213,7 @@ void main(void)
     // VCU Subsystem Deinitializations
     //----------------------------------------------------------------------------
     //IO_ADC_ChannelDeInit(IO_ADC_5V_00);
+    //Free memory if object won't be used anymore
 
 }
 
