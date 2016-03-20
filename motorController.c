@@ -341,20 +341,26 @@ void MotorControllerPowerManagement(MotorController* mcm, TorqueEncoder* tps, Re
     {
 		//TODO: Don't turn off the MCM if calibration is started again
         setMCMRelay(TRUE);
+		mcm->startupStage = 1; //on, locked out
     }
     
     //----------------------------------------------------------------------------
     // Determine inverter state
     //----------------------------------------------------------------------------
     //New Handshake NOTE: Switches connected to ground.. TRUE = high = off = disconnected = open circuit, FALSE = low = grounded = on = connected = closed circuit
-    switch (mcm_getLockoutStatus(mcm))
-    {
-    case ENABLED:
-        mcm_commands_setInverter(mcm, DISABLED);
-        mcm->startupStage = 1; //on, locked out
-        break;
+    //switch (mcm_getLockoutStatus(mcm))
+	//{
+	//case ENABLED:
+        //mcm_commands_setInverter(mcm, DISABLED);
+		//mcm->startupStage = 1; //on, locked out
+    //    break;
 
-    case DISABLED: //Lockout is disabled
+	if (mcm->startupStage == 1)
+	{
+		mcm_commands_setInverter(mcm, DISABLED);
+	}
+
+	//case DISABLED: //Lockout is disabled
         switch (mcm_getInverterStatus(mcm))
         {
         case DISABLED:
@@ -387,11 +393,10 @@ void MotorControllerPowerManagement(MotorController* mcm, TorqueEncoder* tps, Re
             break;
         }
 
-        break;
-
-    case UNKNOWN: default:
-        break;
-    }
+        //break;
+    //case UNKNOWN: default:
+	//    break;
+	//}
 /*
     //TEMPORARY Eco Switch startup code
     if (Sensor_TEMP_BrakingSwitch.sensorValue == FALSE)

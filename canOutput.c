@@ -249,7 +249,7 @@ void canOutput_sendMCUControl(MotorController* mcm, bool sendEvenIfNoChanges)
 //----------------------------------------------------------------------------
 // 
 //----------------------------------------------------------------------------
-void canOutput_sendDebugMessage(TorqueEncoder* tps)
+void canOutput_sendDebugMessage(TorqueEncoder* tps, MotorController* mcm)
 {
     ubyte1 errorCount;
     float4 pedalPercent;   //Pedal percent float (a decimal between 0 and 1
@@ -271,10 +271,10 @@ void canOutput_sendDebugMessage(TorqueEncoder* tps)
     canMessages[0].data[1] = throttlePercent >> 8;
     canMessages[0].data[2] = 0;
     canMessages[0].data[3] = errorCount;
-    canMessages[0].data[4] = 0;
-    canMessages[0].data[5] = 0;
-    canMessages[0].data[6] = 0;
-    canMessages[0].data[7] = 0;
+    canMessages[0].data[4] = mcm_getStartupStage(mcm);
+    canMessages[0].data[5] = mcm_getStartupStage(mcm);
+    canMessages[0].data[6] = mcm_getStartupStage(mcm);
+    canMessages[0].data[7] = mcm_getStartupStage(mcm); 
 
     canMessages[1].length = 8; // how many bytes in the message
     canMessages[1].id_format = IO_CAN_STD_FRAME;
