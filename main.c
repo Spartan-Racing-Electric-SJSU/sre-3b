@@ -1,58 +1,21 @@
 /*****************************************************************************
-* VCU Logic
+* SRE-2 Vehicle Control Firmware for the TTTech HY-TTC 50 Controller (VCU)
 ******************************************************************************
+* For project info and history, see https://github.com/spartanracingelectric/SRE-2
+* For software/development questions, email rusty@pedrosatech.com
+******************************************************************************
+* Files
+* The Git repository does not contain the complete firmware for SRE-2.  Modules
+* provided by TTTech can be found on the CD that accompanied the VCU. These 
+* files can be identified by our naming convetion: TTTech files start with a
+* prefix in all caps (such as IO_Driver.h), except for ptypes_xe167.h which
+* they also provided.
+* For instructions on setting up a build environment, see the SRE-2 getting-
+* started document, Programming for the HY-TTC 50, at http://1drv.ms/1NQUppu
+******************************************************************************
+* Organization
+* Our code is laid out in the following manner:
 * 
-*
-******************************************************************************
-* To-do:
-* - Get CAN_FIFO working
-* - Read calibration data from EEPROM on startup
-* - Save calibration data to EEPROM from calibration function
-*
-******************************************************************************
-* Revision history:
-* 2015-02-16 - Rusty Pedrosa - Added RTDS shutdown helper called in main loop
-*                            -
-*                            -
-*                            -
-*                            -
-* 2015-11-16 - Rusty Pedrosa - Fixed RTDS PWM % calculation typecasting bug
-*                            - Changed RTDS test pins around
-*                            - RTDS code tested successfully - PWM control works!
-*                            - Added CAN message definition for Rinehart
-*                            - Added TPS calibration check to GetThrottlePosition
-*                            - Fixed some comments
-* 2015-11-16 - Rusty Pedrosa - Fixed shock pot ADC channel numbers
-*                            - Added IO_DO test code (for driving RTDS):
-*                              RTDS will be turned on when WPS_FR (shock pot)
-*                              is above 1000 ohms.  Turn knob to test output.
-*                            - Updated this file's description (above)
-*                            - Added more RTDS test outputs
-*                              - On/off at 1000 ohms on pins:
-*                                  117, 118, 144
-*                              - Variable output from 100-1500 ohms:
-*                                  105, 106
-*                              - Variable output from 250-1000 ohms:
-*                                  103, 104, 115, 116
-* 2015-11-15 - Rusty Pedrosa - Disabled CAN_FIFO temporarily to fix compile issues
-*                            - Disabled unused sensors temporarily
-* 2015-11-07 - Rusty Pedrosa - Fixed data splitting into bytes for CAN messages
-*                            - Changed all sensors to a single Sensor struct/datatype
-*                            - Defined all external sensors for the car
-*                            - Added CAN_FIFO functions
-* 2015-11-04 - Rusty Pedrosa - Bugfixes, migrated test code into this file
-* 2015-10-28 - Rusty Pedrosa - Moved from pseudocode to actual VCU code
-* 2015-10-21 - Rusty Pedrosa - Pseudocode complete
-* 2015-09-29 - Rusty Pedrosa - Updated file description (this section)
-*                            - Colored comments in green
-*                            - Clarified some comments about rules
-*                            - Added TPSErrorState flag
-*                            - Check TPSErrorState before returning pedal %
-*                            - Use TPSErrorState in rest of GetTPSValue
-*                            - Added pedal % calculations w/calibration
-*                            - TODO: Publish calibration excel sheet to group
-* 2015-09-28 - Rusty Pedrosa - Created this file.  Working on
-*                              calculations for throttle position and calibration.
 *****************************************************************************/
 
 //-------------------------------------------------------------------
@@ -76,6 +39,9 @@
 //#include "outputCalculations.h"
 #include "motorController.h"
 #include "readyToDriveSound.h"
+#include "torqueEncoder.h"
+
+#include "sensorCalculations.h"
 
 //Application Database, needed for TTC-Downloader
 APDB appl_db =
@@ -124,8 +90,9 @@ extern Sensor Sensor_WPS_RL;
 extern Sensor Sensor_WPS_RR;
 extern Sensor Sensor_SAS;
  
-extern Sensor Sensor_RTD_Button;
+extern Sensor Sensor_RTDButton;
 extern Sensor Sensor_TEMP_BrakingSwitch;
+extern Sensor Sensor_EcoButton;
 
 /*****************************************************************************
 * Main!
@@ -134,20 +101,28 @@ extern Sensor Sensor_TEMP_BrakingSwitch;
 ****************************************************************************/
 void main(void)
 {
+    IO_Driver_Init(NULL); //Handles basic startup for all VCU subsystems
+
     //----------------------------------------------------------------------------
     // VCU Subsystem Initializations
+    // Eventually, all of these functions should be made obsolete by creating
+    // objects instead, like the RTDS/MCM/TPS objects below
     //----------------------------------------------------------------------------
-    IO_Driver_Init(NULL); //Handles basic startup for all VCU subsystems
     vcu_initializeADC();  //Configure and activate all I/O pins on the VCU
-    vcu_initializeCAN();  
-    vcu_initializeMCU();
+    vcu_initializeCAN();
+    vcu_initializeSensors();
+    //vcu_initializeMCU();
 
-    vcu_ADCWasteLoop();   //Do some loops until the ADC stops outputting garbage values
+    //Do some loops until the ADC stops outputting garbage values
+    vcu_ADCWasteLoop();
 
-    //Play a brief, quiet startup beep
+    //----------------------------------------------------------------------------
+    // External Devices - Object Initializations
+    //----------------------------------------------------------------------------
     ReadyToDriveSound* rtds = RTDS_new();
-    RTDS_setVolume(rtds, .005, 100000);
-
+    MotorController* mcm0 = MotorController_new(0xA0, FORWARD, 100);
+    TorqueEncoder* tps = TorqueEncoder_new(TRUE);
+    //BatteryManagementSystem* bms = BMS_new();
 
     //----------------------------------------------------------------------------
     // TODO: Additional Initial Power-up functions
@@ -162,6 +137,9 @@ void main(void)
     /* main loop, executed periodically with a defined cycle time (here: 5 ms) */
 
 	ubyte4 timestamp_sensorpoll = 0;
+    ubyte1 calibrationErrors;
+
+    //IO_RTC_StartTime(&timestamp_calibStart);
     while (1)
     {
         //----------------------------------------------------------------------------
@@ -173,27 +151,54 @@ void main(void)
         IO_Driver_TaskBegin();
 
 
-
         //----------------------------------------------------------------------------
-        // DO STUFF!!!!!!!!!!
+        // Handle data input streams
         //----------------------------------------------------------------------------
         //Get readings from our sensors and other local devices (buttons, 12v battery, etc)
-        sensors_updateSensors();
+		sensors_updateSensors();
 
         //canInput - pull messages from CAN FIFO and update our object representations.
         //Also echo can0 messages to can1 for DAQ.
-        canInput_readMessages();
+        canInput_readMessages(mcm0);
 
-
+        //----------------------------------------------------------------------------
+        // Calculations
+        //----------------------------------------------------------------------------
         //calculations - Now that we have local sensor data and external data from CAN, we can
         //do actual processing work, from pedal travel calcs to traction control
         //calculations_calculateStuff();
 
-        motorController_setCommands(rtds);
+		//Run calibration if commanded
+		//if (IO_RTC_GetTimeUS(timestamp_calibStart) < (ubyte4)5000000)
+		if (Sensor_EcoButton.sensorValue)
+		{
+			//calibrateTPS(TRUE, 5);
+			TorqueEncoder_startCalibration(tps, 5);
+			//DIGITAL OUTPUT 4 for STATUS LED
+		}
+		TorqueEncoder_update(tps);
+		//Every cycle: if the calibration was started and hasn't finished, check the values again
+		TorqueEncoder_calibrationCycle(tps, &calibrationErrors);
+
+
+        //----------------------------------------------------------------------------
+        // Motor Controller Output Calculations
+        //----------------------------------------------------------------------------
+        //Handle motor startup procedures
+        MotorControllerPowerManagement(mcm0, tps, rtds);
+
+        //Assign motor controls to MCM command message
+        //motorController_setCommands(rtds);
+        //DOES NOT set inverter command or rtds flag
+        setMCMCommands(mcm0, tps, rtds);
+
+
 
         //Drop the sensor readings into CAN (just raw data, not calculated stuff)
-        canOutput_sendMCUControl(FALSE);
+        canOutput_sendMCUControl(mcm0, FALSE);
+        canOutput_sendDebugMessage(tps);
         //canOutput_sendSensorMessages();
+        //canOutput_sendStatusMessages(mcm0);
 
 
         //----------------------------------------------------------------------------
@@ -212,6 +217,7 @@ void main(void)
     // VCU Subsystem Deinitializations
     //----------------------------------------------------------------------------
     //IO_ADC_ChannelDeInit(IO_ADC_5V_00);
+    //Free memory if object won't be used anymore
 
 }
 

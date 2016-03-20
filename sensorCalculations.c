@@ -28,14 +28,7 @@
 #include <math.h>
 #include "IO_Driver.h"  //Includes datatypes, constants, etc - should be included in every c file
 #include "IO_RTC.h"
-
-//Not sure why these 3 lines appeared in code.  I didn't add them.  Something to do with GitHub app?
-//<<<<<<< HEAD
 #include "sensorCalculations.h"
-#include "mathFunctions.h"
-//=======
-#include "sensorCalculations.h"  //Includes datatypes, constants, etc - should be included in every c file
-//>>>>>>> refs/heads/StatusEnum
 #include "sensors.h"
 #include "mathFunctions.h"
 
@@ -54,6 +47,15 @@ extern Sensor Sensor_WPS_RR;
 extern Sensor Sensor_SAS;
 extern Sensor Sensor_LVBattery;
 
+extern Sensor Sensor_BenchTPS0;
+extern Sensor Sensor_BenchTPS1;
+
+extern Sensor Sensor_RTDButton;
+extern Sensor Sensor_EcoButton;
+extern Sensor Sensor_TCSSwitchA;
+extern Sensor Sensor_TCSSwitchB;
+extern Sensor Sensor_HVILTerminationSense;
+
 /*****************************************************************************
 * Torque Encoder (TPS) functions
 * RULE EV2.3.5:
@@ -64,137 +66,146 @@ extern Sensor Sensor_LVBattery;
 // Physical pedal travel will only occur across the center (about 1/2) of the actual sensor's range of travel
 // The rules (especially EV2.3.6) are written about % of PEDAL travel, not percent of sensor range, so we must calculate pedal travel by recording the min/max voltages at min/max throttle positions
 
-/*-------------------------------------------------------------------
-* CalibrateTPS
-* Description: Records TPS minimum/maximum voltages (when?) and stores them (where?)
-* Parameters:
-* Inputs:
-* Returns:
-* Notes:
-* Throws:
--------------------------------------------------------------------*/
-void calibrateTPS(ubyte1 secondsToRunCalibration)
-{
-    //TODO: Make sure the main loop is running before doing this
+///*-------------------------------------------------------------------
+//* CalibrateTPS
+//* Description: Records TPS minimum/maximum voltages (when?) and stores them (where?)
+//* Parameters:
+//* Inputs:
+//* Returns:
+//* Notes:
+//* Throws:
+//-------------------------------------------------------------------*/
+//void calibrateTPS(bool bench, ubyte1 secondsToRunCalibration)
+//{
+//    Sensor* tps0;
+//    Sensor* tps1;
+//    //TODO: Make sure the main loop is running before doing this
+//    tps0 = (bench == TRUE) ? &Sensor_BenchTPS0 : &Sensor_TPS0;
+//    tps1 = (bench == TRUE) ? &Sensor_BenchTPS1 : &Sensor_TPS1;
+//
+//    //Reset calibration data
+// /*   tps0->calibMin = tps0->specMax;
+//    tps0->calibMax = tps0->specMin;
+//    tps0->isCalibrated = FALSE;
+//    tps1->calibMin = tps1->specMax;
+//    tps1->calibMax = tps1->specMin;
+//    tps1->isCalibrated = FALSE;
+//*/
+////    ubyte4 timestamp_calibrationstart = 0;
+////    IO_RTC_StartTime(&timestamp_calibrationstart);  //Get a timestamp of when this task started from the Real Time Clock
+////                                                    //TODO: Don't start coundown until values have been set
+////    while (IO_RTC_GetTimeUS(timestamp_calibrationstart) < (ubyte4)secondsToRunCalibration * 1000 * 1000)   // Give the user # seconds to do this
+////    {
+//        //TODO: Do something on the display to show that voltages are being recorded
+//        //Idea: Display "bars" filling up on right segment (for gas pedal) _=E=_=E...
+//        //      Once calibration data makes sense, show pedal location (0-10%, 10-90%, 90-100%) with bars
+//
+//        //Record min/max voltages
+//        if (tps0->sensorValue < tps0->calibMin) { tps0->calibMin = tps0->sensorValue; }
+//        if (tps0->sensorValue > tps0->calibMax) { tps0->calibMax = tps0->sensorValue; }
+//        if (tps1->sensorValue < tps1->calibMin) { tps1->calibMin = tps1->sensorValue; }
+//        if (tps1->sensorValue > tps1->calibMax) { tps1->calibMax = tps1->sensorValue; }
+//
+////    }
+//
+//    //TODO: Write calibration data to EEPROM
+//
+//    //TODO: Check for valid/reasonable calibration data
+//    tps0->isCalibrated = TRUE;
+//    tps1->isCalibrated = TRUE;
+//
+//    //TODO: Return the display to normal
+//}
 
-    //Reset calibration data
-    Sensor_TPS0.calibMin = Sensor_TPS0.specMax;
-    Sensor_TPS0.calibMax = Sensor_TPS0.specMin;
-    Sensor_TPS0.isCalibrated = FALSE;
-    Sensor_TPS1.calibMin = Sensor_TPS1.specMax;
-    Sensor_TPS1.calibMax = Sensor_TPS1.specMin;
-    Sensor_TPS1.isCalibrated = FALSE;
-
-    ubyte4 timestamp_calibrationstart = 0;
-    IO_RTC_StartTime(&timestamp_calibrationstart);  //Get a timestamp of when this task started from the Real Time Clock
-                                                    //TODO: Don't start coundown until values have been set
-    while (IO_RTC_GetTimeUS(timestamp_calibrationstart) < (ubyte4)secondsToRunCalibration * 1000 * 1000)   // Give the user # seconds to do this
-    {
-        //TODO: Do something on the display to show that voltages are being recorded
-        //Idea: Display "bars" filling up on right segment (for gas pedal) _=E=_=E...
-        //      Once calibration data makes sense, show pedal location (0-10%, 10-90%, 90-100%) with bars
-
-        //Record min/max voltages
-        if (Sensor_TPS0.sensorValue < Sensor_TPS0.calibMin) {
-            Sensor_TPS0.calibMin = Sensor_TPS0.sensorValue;
-        }
-        if (Sensor_TPS0.sensorValue > Sensor_TPS0.calibMax) {
-            Sensor_TPS0.calibMax = Sensor_TPS0.sensorValue;
-        }
-        if (Sensor_TPS1.sensorValue < Sensor_TPS1.calibMin) {
-            Sensor_TPS1.calibMin = Sensor_TPS1.sensorValue;
-        }
-        if (Sensor_TPS1.sensorValue > Sensor_TPS1.calibMax) {
-            Sensor_TPS1.calibMax = Sensor_TPS1.sensorValue;
-        }
-
-    }
-
-    //TODO: Write calibration data to EEPROM
-
-    //TODO: Check for valid/reasonable calibration data
-    Sensor_TPS0.isCalibrated = TRUE;
-    Sensor_TPS1.isCalibrated = TRUE;
-
-    //TODO: Return the display to normal
-}
-
-/*-------------------------------------------------------------------
-* GetThrottlePosition
-* Description: Reads TPS Pin voltages and returns % of throttle pedal travel.
-* Parameters:  None
-* Inputs:      Assumes TPS#.sensorValue has been set by main loop
-* Returns:     Throttle value in percent (from 0 to 1)
-* Notes:       Valid pedal travel is from 10% (0.10) to 90% (0.90), not including mechanical limits.
-* Throws:      000 - TPS0 voltage out of range
-*              001 - TPS1 voltage out of range, 002
--------------------------------------------------------------------*/
-float4 GetThrottlePosition(void)
-{
-    //TODO: Should we calculate this during the main loop? (probably not - what if it's not calibrated?)
-    //      or should we only run this when someone specifically asks for throttle position? (probably)
-
-    ubyte1 TPSErrorState = 0; //No errors have been detected so far.
-
-                              //-------------------------------------------------------------------
-                              //First check for implausibility at the pin level
-                              //USE SPEC SHEET VALUES, NOT CALIBRATION VALUES
-                              //RULE: EV2.3.10 - signal outside of operating range is considered a failure
-                              //Note: IC cars may continue to drive for up to 100ms until valid readings are restored, but EVs must immediately cut power
-                              //Note: We need to decide how to report errors and how to perform actions when those errors occur.  For now, I'm calling an imaginary Err.Report function
-                              //-------------------------------------------------------------------
-    if ((Sensor_TPS0.sensorValue < Sensor_TPS0.specMin) || (Sensor_TPS0.sensorValue > Sensor_TPS0.specMax))
-    {
-        //TODO: Err.Report(Err.Codes.TPS0Range, "TPS0 out of range:" & TPS0.sensorValue, Motor.Disable);
-        //Note: We want to continue to run the rest of the code in this function to detect additional errors which we can report back to the dash.  To prevent the rest of the code from applying throttle, we take note that an error has occurred
-        TPSErrorState++;
-    }
-
-    if ((Sensor_TPS1.sensorValue < Sensor_TPS1.specMin) || (Sensor_TPS1.sensorValue > Sensor_TPS1.specMax))
-    {
-        //TODO: Err.Report(Err.Codes.TPS1Range, "TPS1 out of range" & Pin140.sensorValue, Motor.Disable);
-        TPSErrorState++;
-
-    }
-
-    //-------------------------------------------------------------------
-    // If there are no issues at the pin level, then the next step
-    // is to make sure the sensors actually agree with each other
-    //-------------------------------------------------------------------
-    //Calculate individual throttle percentages
-    //Percent = (Voltage - CalibMin) / (CalibMax - CalibMin)
-    float4 TPS0PedalPercent = getPercent(Sensor_TPS0.sensorValue, Sensor_TPS0.calibMin, Sensor_TPS0.calibMax, FALSE); //Analog Input 0
-    float4 TPS1PedalPercent = getPercent(Sensor_TPS1.sensorValue, Sensor_TPS1.calibMin, Sensor_TPS1.calibMax, FALSE); //Analog input 1
-
-    //Check for implausibility (discrepancy > 10%)
-    //RULE: EV2.3.6 Implausibility is defined as a deviation of more than 10% pedal travel between the sensors.
-    if (fabs(TPS1PedalPercent - TPS0PedalPercent) > .1)
-    {
-        //Err.Report(Err.Codes.TPSDiscrepancy, "TPS discrepancy of over 10%", Motor.Stop);
-        TPSErrorState++;
-    }
-
-    //-------------------------------------------------------------------
-    //Make sure the sensors have been calibrated
-    //-------------------------------------------------------------------
-    if ((Sensor_TPS0.isCalibrated == FALSE) || (Sensor_TPS1.isCalibrated == FALSE))
-    {
-        TPSErrorState++;
-    }
-
-    //What about other error states?
-    //Voltage outside of calibration range
-    //Voltages off center
-
-    if (TPSErrorState > 0)
-    {
-        return 0;
-    }
-    else
-    {
-        return (TPS0PedalPercent + TPS1PedalPercent) / 2;
-    }
-}
+///*-------------------------------------------------------------------
+//* GetThrottlePosition
+//* Description: Reads TPS Pin voltages and returns % of throttle pedal travel.
+//* Parameters:  None
+//* Inputs:      Assumes TPS#.sensorValue has been set by main loop
+//* Returns:     Throttle value in percent (from 0 to 1)
+//* Notes:       Valid pedal travel is from 10% (0.10) to 90% (0.90), not including mechanical limits.
+//* Throws:      000 - TPS0 voltage out of range
+//*              001 - TPS1 voltage out of range, 002
+//-------------------------------------------------------------------*/
+//float4 getThrottlePercent(bool bench, ubyte1* errorCount)
+//{
+//    ubyte2 TPS0_Val = bench ? Sensor_BenchTPS0.sensorValue : Sensor_TPS0.sensorValue;
+//    ubyte2 TPS1_Val = bench ? Sensor_BenchTPS1.sensorValue : Sensor_TPS1.sensorValue;
+//
+//    ubyte2 TPS0_Min = bench ? Sensor_BenchTPS0.specMin : Sensor_TPS0.specMin;
+//    ubyte2 TPS0_Max = bench ? Sensor_BenchTPS0.specMax : Sensor_TPS0.specMax;
+//    ubyte2 TPS1_Min = bench ? Sensor_BenchTPS1.specMin : Sensor_TPS1.specMin;
+//    ubyte2 TPS1_Max = bench ? Sensor_BenchTPS1.specMax : Sensor_TPS1.specMax;
+//
+//    ubyte2 TPS0_CalMin = bench ? Sensor_BenchTPS0.calibMin : Sensor_TPS0.calibMin;
+//    ubyte2 TPS0_CalMax = bench ? Sensor_BenchTPS0.calibMax : Sensor_TPS0.calibMax;
+//    ubyte2 TPS1_CalMin = bench ? Sensor_BenchTPS1.calibMin : Sensor_TPS1.calibMin;
+//    ubyte2 TPS1_CalMax = bench ? Sensor_BenchTPS1.calibMax : Sensor_TPS1.calibMax;
+//
+//    //TODO: Should we calculate this during the main loop? (probably not - what if it's not calibrated?)
+//    //      or should we only run this when someone specifically asks for throttle position? (probably)
+//
+//    *errorCount = 0; //No errors have been detected so far.
+//
+//    //-------------------------------------------------------------------
+//    //First check for implausibility at the pin level
+//    //USE SPEC SHEET VALUES, NOT CALIBRATION VALUES
+//    //RULE: EV2.3.10 - signal outside of operating range is considered a failure
+//    //Note: IC cars may continue to drive for up to 100ms until valid readings are restored, but EVs must immediately cut power
+//    //Note: We need to decide how to report errors and how to perform actions when those errors occur.  For now, I'm calling an imaginary Err.Report function
+//    //-------------------------------------------------------------------
+//    if ((TPS0_Val < TPS0_Min) || (TPS0_Val > TPS0_Max))
+//    {
+//        //TODO: Err.Report(Err.Codes.TPS0Range, "TPS0 out of range:" & TPS0.sensorValue, Motor.Disable);
+//        //Note: We want to continue to run the rest of the code in this function to detect additional errors which we can report back to the dash.  To prevent the rest of the code from applying throttle, we take note that an error has occurred
+//        (*errorCount)++;
+//    }
+//
+//    if ((TPS1_Val < TPS1_Min) || (TPS1_Val > TPS1_Max))
+//    {
+//        //TODO: Err.Report(Err.Codes.TPS1Range, "TPS1 out of range" & Pin140.sensorValue, Motor.Disable);
+//        (*errorCount)++;
+//
+//    }
+//
+//    //-------------------------------------------------------------------
+//    // If there are no issues at the pin level, then the next step
+//    // is to make sure the sensors actually agree with each other
+//    //-------------------------------------------------------------------
+//    //Calculate individual throttle percentages
+//    //Percent = (Voltage - CalibMin) / (CalibMax - CalibMin)
+//    float4 TPS0PedalPercent = getPercent(TPS0_Val, TPS0_CalMin, TPS0_CalMax, TRUE); //Analog Input 0
+//    float4 TPS1PedalPercent = getPercent(TPS1_Val, TPS1_CalMin, TPS1_CalMax, TRUE); //Analog input 1
+//
+//    //Check for implausibility (discrepancy > 10%)
+//    //RULE: EV2.3.6 Implausibility is defined as a deviation of more than 10% pedal travel between the sensors.
+//    if (fabs(TPS1PedalPercent - TPS0PedalPercent) > .1)
+//    {
+//        //Err.Report(Err.Codes.TPSDiscrepancy, "TPS discrepancy of over 10%", Motor.Stop);
+//        (*errorCount)++;
+//    }
+//
+//    //-------------------------------------------------------------------
+//    //Make sure the sensors have been calibrated
+//    //-------------------------------------------------------------------
+//    if ((Sensor_TPS0.isCalibrated == FALSE) || (Sensor_TPS1.isCalibrated == FALSE))
+//    {
+//        (*errorCount)++;
+//    }
+//
+//    //What about other error states?
+//    //Voltage outside of calibration range
+//    //Voltages off center
+//
+////    if (errorCount > 0)
+////    {
+////        return 0;
+////    }
+////    else
+////    {
+//        return (TPS0PedalPercent + TPS1PedalPercent) / 2;
+////    }
+//}
 
 
 

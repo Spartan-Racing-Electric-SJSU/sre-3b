@@ -7,6 +7,7 @@
 typedef struct _ReadyToDriveSound ReadyToDriveSound;
 
 ReadyToDriveSound* RTDS_new(void);
+
 void RTDS_delete(ReadyToDriveSound* rtds);
 
 void RTDS_setVolume(ReadyToDriveSound* rtds, float4 volumePercent, ubyte4 timeToPlay);

@@ -98,6 +98,11 @@
 
 #include "IO_Driver.h"
 
+
+
+typedef enum { dash_EcoLight, dash_ErrorLight, dash_RTDLight, dash_TCSLight} DashLight;
+
+
 //----------------------------------------------------------------------------
 // Sensor Object Definitions
 //----------------------------------------------------------------------------
@@ -110,17 +115,17 @@
 //----------------------------------------------------------------------------
 typedef struct _Sensor {
     //Sensor values / properties
-    ubyte2 specMin;
-    ubyte2 specMax;
+    ubyte4 specMin;
+    ubyte4 specMax;
     
-    ubyte2 calibMin;
-    ubyte2 calibMax;
-    ubyte2 calibNormal;  //zero value or normal position
+    //ubyte2 calibMin;
+    //ubyte2 calibMax;
+    //ubyte2 calibNormal;  //zero value or normal position
 
-    ubyte2 calibratedValue;
-    ubyte2 sensorValue;
+    //ubyte2 calibratedValue;
+    ubyte4 sensorValue;
     bool fresh;
-    bool isCalibrated;
+    //bool isCalibrated;
 
 } Sensor;
 
@@ -159,6 +164,9 @@ extern Sensor Sensor_RTD_Button;
 //TEMP BENCH SWITCHES
 extern Sensor Sensor_TEMP_BrakingSwitch;
 
+extern Sensor Sensor_HVILTerminationSense;
+
+
 //Other
 extern Sensor Sensor_LVBattery; // = { 0xA };  //Note: There will be no init for this "sensor"
 
@@ -168,5 +176,14 @@ extern Sensor Sensor_LVBattery; // = { 0xA };  //Note: There will be no init for
 //----------------------------------------------------------------------------
 void sensors_initializeSensors(void);
 void sensors_updateSensors(void);
+
+
+void setMCMRelay(bool turnOn);
+
+
+//----------------------------------------------------------------------------
+// Outputs
+//----------------------------------------------------------------------------
+void dashLight_set(DashLight light, bool turnOn);
 
 #endif // _SENSORS_H

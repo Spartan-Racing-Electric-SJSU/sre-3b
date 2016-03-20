@@ -36,10 +36,14 @@ extern Sensor Sensor_WPS_RR;
 extern Sensor Sensor_SAS;
 extern Sensor Sensor_LVBattery;
 
-extern Sensor Sensor_RTD_Button;
-//TEMP BENCH SWITCHES
-extern Sensor Sensor_TEMP_BrakingSwitch;
+extern Sensor Sensor_BenchTPS0;
+extern Sensor Sensor_BenchTPS1;
 
+extern Sensor Sensor_RTDButton;
+extern Sensor Sensor_EcoButton;
+extern Sensor Sensor_TCSSwitchA;
+extern Sensor Sensor_TCSSwitchB;
+extern Sensor Sensor_HVILTerminationSense;
 
 /*-------------------------------------------------------------------
 * getPercent
@@ -52,14 +56,13 @@ extern Sensor Sensor_TEMP_BrakingSwitch;
 //----------------------------------------------------------------------------
 void sensors_updateSensors(void)
 {
-
     //TODO: Handle errors (using the return values for these Get functions)
 
     //TODO: RTDS
 
     //Torque Encoders ---------------------------------------------------
-    IO_ADC_Get(IO_ADC_5V_00, &Sensor_TPS0.sensorValue, &Sensor_TPS0.fresh);
-    IO_ADC_Get(IO_ADC_5V_01, &Sensor_TPS1.sensorValue, &Sensor_TPS1.fresh);
+    IO_PWD_FreqGet(IO_PWM_00, &Sensor_TPS0.sensorValue);
+    IO_PWD_FreqGet(IO_PWM_01, &Sensor_TPS1.sensorValue);
 
     //Brake Position Sensor ---------------------------------------------------
     IO_ADC_Get(IO_ADC_5V_02, &Sensor_BPS0.sensorValue, &Sensor_BPS0.fresh);
@@ -67,12 +70,17 @@ void sensors_updateSensors(void)
     //?? - For future use ---------------------------------------------------
     //IO_ADC_Get(IO_ADC_5V_03, &Sensor_BPS1.sensorValue, &Sensor_BPS1.fresh);
 
+    //Bench TPS ---------------------------------------------------
+    //Read TPS values in from sensor/ADC
+    IO_ADC_Get(IO_ADC_5V_00, &Sensor_BenchTPS0.sensorValue, &Sensor_BenchTPS0.fresh);
+    IO_ADC_Get(IO_ADC_5V_01, &Sensor_BenchTPS1.sensorValue, &Sensor_BenchTPS1.fresh);
+    //Give TPS values to TPS object
+
     //Shock pots ---------------------------------------------------
     IO_ADC_Get(IO_ADC_5V_04, &Sensor_WPS_FL.sensorValue, &Sensor_WPS_FL.fresh);
     IO_ADC_Get(IO_ADC_5V_05, &Sensor_WPS_FR.sensorValue, &Sensor_WPS_FR.fresh);
     IO_ADC_Get(IO_ADC_5V_06, &Sensor_WPS_RL.sensorValue, &Sensor_WPS_RL.fresh);
     IO_ADC_Get(IO_ADC_5V_07, &Sensor_WPS_RL.sensorValue, &Sensor_WPS_RR.fresh);
-
 
     //Wheel speed sensors ---------------------------------------------------
     IO_PWD_FreqGet(IO_PWD_08, &Sensor_WSS_FL.sensorValue);
@@ -81,36 +89,71 @@ void sensors_updateSensors(void)
     IO_PWD_FreqGet(IO_PWD_11, &Sensor_WSS_RR.sensorValue);
 
     //Switches / Digital ---------------------------------------------------
-    IO_DI_Get(IO_DI_04, &Sensor_RTD_Button.sensorValue);
-    IO_DI_Get(IO_DI_05, &Sensor_TEMP_BrakingSwitch.sensorValue);
+    IO_DI_Get(IO_DI_00, &Sensor_RTDButton.sensorValue);
+    IO_DI_Get(IO_DI_01, &Sensor_EcoButton.sensorValue);
+    IO_DI_Get(IO_DI_02, &Sensor_TCSSwitchA.sensorValue);
+    IO_DI_Get(IO_DI_03, &Sensor_TCSSwitchB.sensorValue);
+    IO_DI_Get(IO_DI_07, &Sensor_HVILTerminationSense.sensorValue);
 
     //Other stuff ---------------------------------------------------
     //Battery voltage (at VCU internal electronics supply input)
     IO_ADC_Get(IO_ADC_UBAT, &Sensor_LVBattery.sensorValue, &Sensor_LVBattery.fresh);
 
 
-    //----------------------------------------------------------------------------
-    //RTDS test - Temporary code only
-    //----------------------------------------------------------------------------
-    //Control the RTDS with a pot
-    //Pot goes from 2.2 ohm to 4930 ohm
-    //Note: There's a problem with the old RTDS where it plays sound
-    //      even at 0 duty cycle / DO=FALSE.  Gotta figure out why this
-    //      happens and if there's a problem with the VCU.
-
-    /* Temporary comment out 
-    //Hook up RTDS to pin 103
-    float4 dutyPercent;  //Percent (some fraction between 0 and 1)
-    ubyte2 dutyHex;      //percent * max value (FFFF)
-    
-    dutyPercent = getPercent((float4)Sensor_WPS_FL.sensorValue, 50, 4550, TRUE);
-
-    //Set the volume level (0 to 65535.. or 0 to FFFF as seen by VCU)
-    //dutyHex = 65535 * dutyPercent;       //becomes an integer
-    dutyHex = 6553 * dutyPercent;       //becomes an integer
-    dutyHex = (Sensor_WPS_FL.fresh == FALSE) ? 0 : dutyHex;  //Set to 0 if sensor reading is not fresh
-
-    IO_PWM_SetDuty(IO_PWM_07, dutyHex, NULL);  //Pin 103
-    */
-
 }
+
+//----------------------------------------------------------------------------
+//Testing MCM relay control
+//----------------------------------------------------------------------------
+void setMCMRelay(bool turnOn)
+{
+    IO_DO_Set(IO_DO_00, turnOn);
+}
+
+void dashLight_set(DashLight light, bool turnOn)
+{
+    ubyte2 duty = turnOn ? 65535 : 0;
+
+    switch (light)
+    {
+    case dash_EcoLight:
+        IO_PWM_SetDuty(IO_PWM_04, duty, NULL);  //Pin 103
+        break;
+
+    case dash_ErrorLight:
+        IO_PWM_SetDuty(IO_PWM_05, duty, NULL);  //Pin 103
+        break;
+
+    case dash_RTDLight:
+        IO_PWM_SetDuty(IO_PWM_06, duty, NULL);  //Pin 103
+        break;
+
+    case dash_TCSLight:
+        IO_PWM_SetDuty(IO_PWM_03, duty, NULL);  //Pin 103
+        break;
+    }
+}
+
+/*****************************************************************************
+* Output Calculations
+******************************************************************************
+* Takes properties from devices (such as raw sensor values [ohms, voltage],
+* MCU/BMS CAN messages, etc), performs calculations with that data, and updates
+* the relevant objects' properties.
+*
+* This includes sensor calculations, motor controller control calculations,
+* traction control, BMS/safety calculations, etc.
+* (May need to split this up later)
+*
+* For example: GetThrottlePosition() takes the raw TPS voltages from the TPS
+* sensor objects and returns the throttle pedal percent.  This function does
+* NOT update the sensor objects, but it would be acceptable for another
+* function in this file to do so.
+*
+******************************************************************************
+* To-do:
+*
+******************************************************************************
+* Revision history:
+* 2015-11-16 - Rusty Pedrosa -
+*****************************************************************************/
