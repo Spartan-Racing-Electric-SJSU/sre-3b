@@ -339,6 +339,7 @@ void MotorControllerPowerManagement(MotorController* mcm, TorqueEncoder* tps, Re
     //if (Sensor_HVILTerminationSense.sensorValue == TRUE)
     if (Sensor_HVILTerminationSense.sensorValue == TRUE && tps->calibrated == TRUE)
     {
+		//TODO: Don't turn off the MCM if calibration is started again
         setMCMRelay(TRUE);
     }
     
