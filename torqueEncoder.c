@@ -1,5 +1,5 @@
 #include <stdlib.h>  //Needed for malloc
-
+#include <math.h>
 #include "IO_RTC.h"
 
 #include "torqueEncoder.h"
@@ -23,6 +23,10 @@ TorqueEncoder* TorqueEncoder_new(bool benchMode)
     //TODO: Make sure the main loop is running before doing this
     me->tps0 = (benchMode == TRUE) ? &Sensor_BenchTPS0 : &Sensor_TPS0;
     me->tps1 = (benchMode == TRUE) ? &Sensor_BenchTPS1 : &Sensor_TPS1;
+	
+	//Where/should these be hardcoded?
+	me->tps0_reverse = FALSE;
+	me->tps1_reverse = TRUE;
 
     me->percent = 0;
     me->runCalibration = FALSE;  //Do not run the calibration at the next main loop cycle
@@ -33,40 +37,77 @@ TorqueEncoder* TorqueEncoder_new(bool benchMode)
     return me;
 }
 
-void TorqueEncoder_getIndividualSensorPercent(TorqueEncoder* me, ubyte1 sensorNumber, float4* percent)
+//Updates all values based on sensor readings, safety checks, etc
+void TorqueEncoder_update(TorqueEncoder* me)
 {
-    Sensor* tps;
-    ubyte2 calMin;
-    ubyte2 calMax;
+	me->tps0_value = me->tps0->sensorValue;
+	me->tps1_value = me->tps1->sensorValue;
 
-    switch (sensorNumber)
-    {
-    case 0:
-        tps = me->tps0;
-        calMin = me->tps0_calibMin;
-        calMax = me->tps0_calibMax;
-        break;
-    case 1:
-        tps = me->tps1;
-        calMin = me->tps1_calibMin;
-        calMax = me->tps1_calibMax;
-        break;
-    }
-    float4 TPS0PedalPercent = getPercent(me->tps0->sensorValue, calMin, calMax, TRUE); //Analog Input 0
+	me->percent = 0;
+	ubyte2 errorCount = 0;
+	
+	//This function runs before the calibration cycle function.  If calibration is currently
+	//running, then set the percentage to zero for safety purposes.
+	if (me->runCalibration == TRUE)
+	{
+		errorCount++;  //DO SOMETHING WITH THIS
+	}
+	else
+	{
+
+		//getPedalTravel = 0;
+
+		//-------------------------------------------------------------------
+		// Make sure the sensors have been calibrated
+		//-------------------------------------------------------------------
+		//if ((Sensor_TPS0.isCalibrated == FALSE) || (Sensor_TPS1.isCalibrated == FALSE))
+		if (me->calibrated == FALSE)
+		{
+			(errorCount)++;  //DO SOMETHING WITH THIS
+		}
+		else
+		{
+			me->tps0_percent = getPercent(me->tps0_value, me->tps0_calibMin, me->tps0_calibMax, TRUE);
+
+			//me->tps1_percent = getPercent(me->tps1_value, me->tps1_calibMin, me->tps1_calibMax, TRUE);
+			float4 range = me->tps1_calibMax - me->tps1_calibMin;
+			float4 travel = me->tps1_calibMax - me->tps1_value;
+			
+			me->tps1_percent = travel / range;
+			if (travel > range) { me->tps1_percent = 1; }
+			if (travel > me->tps1_calibMax) { me->tps1_percent = 0; }
+
+
+
+			TorqueEncoder_plausibilityCheck(me, 0, &me->implausibility);
+			/*if (me->implausibility == TRUE)
+			{
+				me->percent = 0;
+			}
+			else
+			{*/
+				me->percent = (me->tps0_percent + me->tps1_percent) / 2;
+			//}
+		}
+	}
 }
 
 void TorqueEncoder_resetCalibration(TorqueEncoder* me)
 {
     me->calibrated = FALSE;
-    me->tps0_rawCalibMin = me->tps0->specMax;
-    me->tps0_rawCalibMax = me->tps0->specMin;
-    me->tps0_calibMin = me->tps0->specMax;
-    me->tps0_calibMax = me->tps0->specMin;
-    
-    me->tps1_rawCalibMin = me->tps1->specMax;
-    me->tps1_rawCalibMax = me->tps1->specMin;
-    me->tps1_calibMin = me->tps1->specMax;
-    me->tps1_calibMax = me->tps1->specMin;
+    //me->tps0_rawCalibMin = me->tps0->specMax;
+    //me->tps0_rawCalibMax = me->tps0->specMin;
+    //me->tps0_calibMin = me->tps0->specMax;
+	//me->tps0_calibMax = me->tps0->specMin;
+	me->tps0_calibMin = me->tps0->sensorValue;
+	me->tps0_calibMax = me->tps0->sensorValue;
+
+    //me->tps1_rawCalibMin = me->tps1->specMax;
+    //me->tps1_rawCalibMax = me->tps1->specMin;
+	//me->tps1_calibMin = me->tps1->specMax;
+	//me->tps1_calibMax = me->tps1->specMin;
+	me->tps1_calibMin = me->tps1->sensorValue;
+	me->tps1_calibMax = me->tps1->sensorValue;
 }
 
 void TorqueEncoder_saveCalibrationToEEPROM(TorqueEncoder* me)
@@ -89,18 +130,13 @@ void TorqueEncoder_startCalibration(TorqueEncoder* me, ubyte1 secondsToRun)
         IO_RTC_StartTime(&(me->timestamp_calibrationStart));
         me->calibrationRunTime = secondsToRun;
 
-        dashLight_set(dash_EcoLight, TRUE);
+		dashLight_set(dash_EcoLight, TRUE);
     }
-}
-
-void TorqueEncoder_getPercent(TorqueEncoder* me)
-{
-    //Return the average of the two sensors 
 }
 
 /*-------------------------------------------------------------------
 * CalibrateTPS
-* Description: Records TPS minimum/maximum voltages (when?) and stores them (where?)
+* Description: Records TPS minimum/maximum voltages (when?) and stores them (where?), or flags that calibration is complete
 * Parameters:
 * Inputs:
 * Returns:
@@ -114,20 +150,38 @@ void TorqueEncoder_calibrationCycle(TorqueEncoder* me, ubyte1* errorCount)
 {
     if (me->runCalibration == TRUE)
     {
-        if (IO_RTC_GetTimeUS(me->timestamp_calibrationStart) > me->calibrationRunTime * 1000 * 1000)
+        if (IO_RTC_GetTimeUS(me->timestamp_calibrationStart) < (ubyte4)(me->calibrationRunTime) * 1000 * 1000)
         {
-            //Calibration shutdown:
-            me->runCalibration = FALSE;
-            me->calibrated = TRUE;
-            dashLight_set(dash_EcoLight, FALSE);
+			//The calibration itself
+			if (me->tps0->sensorValue < me->tps0_calibMin) { me->tps0_calibMin = me->tps0->sensorValue; }
+			if (me->tps0->sensorValue > me->tps0_calibMax) { me->tps0_calibMax = me->tps0->sensorValue; }
+
+			if (me->tps1->sensorValue < me->tps1_calibMin) { me->tps1_calibMin = me->tps1->sensorValue; }
+			if (me->tps1->sensorValue > me->tps1_calibMax) { me->tps1_calibMax = me->tps1->sensorValue; }
+
         }
-        else
+        else  //Calibration shutdown
         {
-            //The calibration itself
-            if (me->tps0->sensorValue < me->tps0_calibMin) { me->tps0_calibMin = me->tps0->sensorValue; }
-            if (me->tps0->sensorValue > me->tps0_calibMax) { me->tps0_calibMax = me->tps0->sensorValue; }
-            if (me->tps1->sensorValue < me->tps1_calibMin) { me->tps1_calibMin = me->tps1->sensorValue; }
-            if (me->tps1->sensorValue > me->tps1_calibMax) { me->tps1_calibMax = me->tps1->sensorValue; }
+			////If the sensor goes in reverse direction then flip the min/max values
+			//if (me->tps0_reverse == TRUE)
+			//{
+			//	float4 temp = me->tps0_calibMin;
+			//	me->tps0_calibMin = me->tps0_calibMax;
+			//	me->tps0_calibMax = temp;
+			//}
+
+			//if (me->tps1_reverse == TRUE)
+			//{
+			//	float4 temp = me->tps1_calibMin;
+			//	me->tps1_calibMin = me->tps1_calibMax;
+			//	me->tps1_calibMax = temp;
+			//}
+
+			me->runCalibration = FALSE;
+			me->calibrated = TRUE;
+			dashLight_set(dash_EcoLight, FALSE);
+			
+
         }
 
     }
@@ -148,6 +202,31 @@ void TorqueEncoder_calibrationCycle(TorqueEncoder* me, ubyte1* errorCount)
 }
 
 
+void TorqueEncoder_getIndividualSensorPercent(TorqueEncoder* me, ubyte1 sensorNumber, float4* percent)
+{
+	//Sensor* tps;
+	//ubyte2 calMin;
+	//ubyte2 calMax;
+
+	switch (sensorNumber)
+	{
+	case 0:
+		*percent = me->tps0_percent;
+		//tps = me->tps0;
+		//calMin = me->tps0_calibMin;
+		//calMax = me->tps0_calibMax;
+		break;
+	case 1:
+		*percent = me->tps1_percent;
+		//tps = me->tps1;
+		//calMin = me->tps1_calibMin;
+		//calMax = me->tps1_calibMax;
+		break;
+	}
+	//float4 TPS0PedalPercent = getPercent(me->tps0->sensorValue, calMin, calMax, TRUE); //Analog Input 0
+}
+
+
 /*-------------------------------------------------------------------
 * GetThrottlePosition
 * Description: Reads TPS Pin voltages and returns % of throttle pedal travel.
@@ -160,33 +239,7 @@ void TorqueEncoder_calibrationCycle(TorqueEncoder* me, ubyte1* errorCount)
 -------------------------------------------------------------------*/
 void TorqueEncoder_getPedalTravel(TorqueEncoder* me, ubyte1* errorCount, float4* pedalPercent)
 {
-    *errorCount = 0; //No errors have been detected so far.
-    //getPedalTravel = 0;
-    bool implausibility;
-
-    //-------------------------------------------------------------------
-    // Make sure the sensors have been calibrated
-    //-------------------------------------------------------------------
-    if ((Sensor_TPS0.isCalibrated == FALSE) || (Sensor_TPS1.isCalibrated == FALSE))
-    {
-        (*errorCount)++;
-    }
-    else
-    {
-        me->tps0_percent = getPercent(me->tps0->sensorValue, me->tps0_calibMin, me->tps0_calibMax, TRUE);
-        me->tps1_percent = getPercent(me->tps0->sensorValue, me->tps1_calibMin, me->tps1_calibMax, TRUE);
-
-        TorqueEncoder_plausibilityCheck(me, &implausibility);
-        if (implausibility == TRUE)
-        {
-            getPedalTravel = 0;
-        }
-        else
-        {
-
-        }
-    }
-
+	*pedalPercent = me->percent;
 
     //What about other error states?
     //Voltage outside of calibration range
@@ -198,12 +251,13 @@ void TorqueEncoder_getPedalTravel(TorqueEncoder* me, ubyte1* errorCount, float4*
     //    }
     //    else
     //    {
-    return (TPS0PedalPercent + TPS1PedalPercent) / 2;
+    //return (TPS0PedalPercent + TPS1PedalPercent) / 2;
     //    }
 }
 
-void TorqueEncoder_plausibilityCheck(TorqueEncoder* me, ubyte1* errorCount, bool* fail)
+void TorqueEncoder_plausibilityCheck(TorqueEncoder* me, ubyte1* errorCount, bool* implausibility)
 {
+	*implausibility = TRUE;
     //-------------------------------------------------------------------
     //First check for implausibility at the pin level
     //USE SPEC SHEET VALUES, NOT CALIBRATION VALUES
@@ -211,19 +265,19 @@ void TorqueEncoder_plausibilityCheck(TorqueEncoder* me, ubyte1* errorCount, bool
     //Note: IC cars may continue to drive for up to 100ms until valid readings are restored, but EVs must immediately cut power
     //Note: We need to decide how to report errors and how to perform actions when those errors occur.  For now, I'm calling an imaginary Err.Report function
     //-------------------------------------------------------------------
-    if ((TPS0_Val < TPS0_Min) || (TPS0_Val > TPS0_Max))
-    {
-        //TODO: Err.Report(Err.Codes.TPS0Range, "TPS0 out of range:" & TPS0.sensorValue, Motor.Disable);
-        //Note: We want to continue to run the rest of the code in this function to detect additional errors which we can report back to the dash.  To prevent the rest of the code from applying throttle, we take note that an error has occurred
-        (*errorCount)++;
-    }
+    //if ((TPS0_Val < TPS0_Min) || (TPS0_Val > TPS0_Max))
+    //{
+    //    //TODO: Err.Report(Err.Codes.TPS0Range, "TPS0 out of range:" & TPS0.sensorValue, Motor.Disable);
+    //    //Note: We want to continue to run the rest of the code in this function to detect additional errors which we can report back to the dash.  To prevent the rest of the code from applying throttle, we take note that an error has occurred
+    //    (*errorCount)++;
+    //}
 
-    if ((TPS1_Val < TPS1_Min) || (TPS1_Val > TPS1_Max))
-    {
-        //TODO: Err.Report(Err.Codes.TPS1Range, "TPS1 out of range" & Pin140.sensorValue, Motor.Disable);
-        (*errorCount)++;
+    //if ((TPS1_Val < TPS1_Min) || (TPS1_Val > TPS1_Max))
+    //{
+    //    //TODO: Err.Report(Err.Codes.TPS1Range, "TPS1 out of range" & Pin140.sensorValue, Motor.Disable);
+    //    (*errorCount)++;
 
-    }
+    //}
 
     //-------------------------------------------------------------------
     // If there are no issues at the pin level, then the next step
@@ -231,16 +285,19 @@ void TorqueEncoder_plausibilityCheck(TorqueEncoder* me, ubyte1* errorCount, bool
     //-------------------------------------------------------------------
     //Calculate individual throttle percentages
     //Percent = (Voltage - CalibMin) / (CalibMax - CalibMin)
-    float4 TPS0PedalPercent = getPercent(TPS0_Val, TPS0_CalMin, TPS0_CalMax, TRUE); //Analog Input 0
-    float4 TPS1PedalPercent = getPercent(TPS1_Val, TPS1_CalMin, TPS1_CalMax, TRUE); //Analog input 1
+    //float4 TPS0PedalPercent = getPercent(TPS0_Val, TPS0_CalMin, TPS0_CalMax, TRUE); //Analog Input 0
+    //float4 TPS1PedalPercent = getPercent(TPS1_Val, TPS1_CalMin, TPS1_CalMax, TRUE); //Analog input 1
 
-                                                                                    //Check for implausibility (discrepancy > 10%)
-                                                                                    //RULE: EV2.3.6 Implausibility is defined as a deviation of more than 10% pedal travel between the sensors.
-    if (fabs(TPS1PedalPercent - TPS0PedalPercent) > .1)
+    //Check for implausibility (discrepancy > 10%)
+    //RULE: EV2.3.6 Implausibility is defined as a deviation of more than 10% pedal travel between the sensors.
+    if (fabs(me->tps0_percent - me->tps1_percent) > .1)
     {
         //Err.Report(Err.Codes.TPSDiscrepancy, "TPS discrepancy of over 10%", Motor.Stop);
         (*errorCount)++;
     }
 
-    return FALSE;
+	if (*errorCount == 0)
+	{
+		*implausibility = FALSE;
+	}
 }

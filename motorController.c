@@ -5,6 +5,8 @@
 #include "mathFunctions.h"
 #include "sensors.h"
 #include "sensorCalculations.h"
+
+#include "torqueEncoder.h"
 #include "readyToDriveSound.h"
 
 
@@ -285,7 +287,7 @@ bool mcm_getStartupStage(MotorController* me)
 * > Enable inverter
 * > Play RTDS
 ****************************************************************************/
-void setMCMCommands(MotorController* mcm, ReadyToDriveSound* rtds)
+void setMCMCommands(MotorController* mcm, TorqueEncoder* tps, ReadyToDriveSound* rtds)
 {
     //----------------------------------------------------------------------------
     // Control commands
@@ -297,15 +299,16 @@ void setMCMCommands(MotorController* mcm, ReadyToDriveSound* rtds)
     mcm_commands_setDirection(mcm, FORWARD);
 
     //Set Torque/Inverter control
-    if (Sensor_WPS_FL.fresh == FALSE)
+    /*if (Sensor_WPS_FL.fresh == FALSE)
     {
         mcm_commands_setTorque(mcm, 0);
     }
     else
-    {
+    {*/
         //mcm_commands_setTorque(mcm, 100 * getPercent(Sensor_WPS_FL.sensorValue, 500, 2500, TRUE));
-        mcm_commands_setTorque(mcm, mcm_getTorqueMax(mcm) * getThrottlePercent(TRUE, 0));
-        /*        ubyte2 torqueSetting;  //temp variable to store torque calculation
+        //mcm_commands_setTorque(mcm, mcm_getTorqueMax(mcm) * getThrottlePercent(TRUE, 0));
+		mcm_commands_setTorque(mcm, mcm_getTorqueMax(mcm) * tps->percent);
+		/*        ubyte2 torqueSetting;  //temp variable to store torque calculation
         //CURRENTLY: Don't command torque until >1s after the inverter is enabled, otherwise CAN breaks
         if (IO_RTC_GetTimeUS(mcm.timeStamp_inverterEnabled) <= 1000000)
         {
@@ -319,7 +322,7 @@ void setMCMCommands(MotorController* mcm, ReadyToDriveSound* rtds)
         mcm.commands.requestedTorque = torqueSetting;
         }
         */
-    }
+    //}
 }
 
 

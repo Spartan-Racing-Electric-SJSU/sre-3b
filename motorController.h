@@ -3,6 +3,7 @@
 #define _MOTORCONTROLLER_H
 
 #include "IO_Driver.h"
+#include "torqueEncoder.h"
 #include "readyToDriveSound.h"
 
 //typedef enum { TORQUE, DIRECTION, INVERTER, DISCHARGE, TORQUELIMIT} MCMCommand;
@@ -67,7 +68,7 @@ ubyte1 mcm_getStartupStage(MotorController* me);
 //----------------------------------------------------------------------------
 //Non-object-related functions
 //----------------------------------------------------------------------------
-void setMCMCommands(MotorController* mcm, ReadyToDriveSound* rtds);
+void setMCMCommands(MotorController* mcm, TorqueEncoder* tps, ReadyToDriveSound* rtds);
 void MotorControllerPowerManagement(MotorController* mcm, ReadyToDriveSound* rtds);
 
 

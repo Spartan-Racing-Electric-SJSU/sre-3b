@@ -109,7 +109,8 @@ void setMCMRelay(bool turnOn)
 {
     IO_DO_Set(IO_DO_00, turnOn);
 }
-void dashLight_Set(DashLight light, bool turnOn)
+
+void dashLight_set(DashLight light, bool turnOn)
 {
     ubyte2 duty = turnOn ? 65535 : 0;
 

@@ -150,21 +150,12 @@ void main(void)
         //Mark the beginning of a task - what does this actually do?
         IO_Driver_TaskBegin();
 
-        //Run calibration if commanded
-        //if (IO_RTC_GetTimeUS(timestamp_calibStart) < (ubyte4)5000000)
-        if (Sensor_EcoButton.sensorValue)
-        {
-            //calibrateTPS(TRUE, 5);
-            TorqueEncoder_startCalibration(tps, 5);
-            //DIGITAL OUTPUT 4 for STATUS LED
-        }
-        TorqueEncoder_calibrationCycle(tps, &calibrationErrors);
 
         //----------------------------------------------------------------------------
         // Handle data input streams
         //----------------------------------------------------------------------------
         //Get readings from our sensors and other local devices (buttons, 12v battery, etc)
-        sensors_updateSensors();
+		sensors_updateSensors();
 
         //canInput - pull messages from CAN FIFO and update our object representations.
         //Also echo can0 messages to can1 for DAQ.
@@ -176,6 +167,19 @@ void main(void)
         //calculations - Now that we have local sensor data and external data from CAN, we can
         //do actual processing work, from pedal travel calcs to traction control
         //calculations_calculateStuff();
+
+		//Run calibration if commanded
+		//if (IO_RTC_GetTimeUS(timestamp_calibStart) < (ubyte4)5000000)
+		if (Sensor_EcoButton.sensorValue)
+		{
+			//calibrateTPS(TRUE, 5);
+			TorqueEncoder_startCalibration(tps, 5);
+			//DIGITAL OUTPUT 4 for STATUS LED
+		}
+		TorqueEncoder_update(tps);
+		//Every cycle: if the calibration was started and hasn't finished, check the values again
+		TorqueEncoder_calibrationCycle(tps, &calibrationErrors);
+
 
         //----------------------------------------------------------------------------
         // Motor Controller Output Calculations

@@ -68,9 +68,9 @@ void vcu_initializeADC(void)
 
     //PWD channels ---------------------------------------------------
     //TPS
-    IO_PWD_FreqInit(IO_PWM_00, IO_PWD_RISING_VAR);
-    IO_PWD_FreqInit(IO_PWM_01, IO_PWD_RISING_VAR);
-    //Wheel Speed Sensors (Pulse Width Detection)
+	IO_PWD_PulseInit(IO_PWM_00, IO_PWD_HIGH_TIME);
+	IO_PWD_PulseInit(IO_PWM_01, IO_PWD_HIGH_TIME);
+	//Wheel Speed Sensors (Pulse Width Detection)
     IO_PWD_FreqInit(IO_PWD_08, IO_PWD_RISING_VAR);  //Is there a reason to look for rising vs falling edge?
     IO_PWD_FreqInit(IO_PWD_09, IO_PWD_RISING_VAR);  //Is there a reason to look for rising vs falling edge?
     IO_PWD_FreqInit(IO_PWD_10, IO_PWD_RISING_VAR);  //Is there a reason to look for rising vs falling edge?
@@ -204,12 +204,26 @@ void vcu_initializeSensors(void)
 {
     //Torque Encoders (TPS is not really accurate since there's no throttle to position in an EV)
     //TODO: specMin/specMax are ints, won't store decimal values!!!!!!!
-    Sensor_TPS0.specMin = 0.5;
-    Sensor_TPS0.specMax = 4.5;
-    Sensor_TPS1.specMin = 4.5;
-    Sensor_TPS1.specMax = 0.5;
 
-    Sensor_BenchTPS0.specMin = 1;
+	//TPS: Ratiometric voltage sensor
+	//Sensor_TPS0.specMin = 0.5;
+	//Sensor_TPS0.specMax = 4.5;
+	//Sensor_TPS1.specMin = 4.5;
+	//Sensor_TPS1.specMax = 0.5;
+
+	//TPS: PWM
+	//1kHz frequency = 1ms period (high + low time), 5-95% duty cycle
+	//VCU max frequency = 10kHz
+	//VCU max sensible pulse: 100ms
+	//Sensor min: 1ms * 5% = .000050 = 50 microseconds
+	//Sensor max: 1ms * 95% = .000950 = 950 microseconds
+	Sensor_TPS0.specMin = .001 * .05;  //1kHz = .001s/cycle...
+	Sensor_TPS0.specMax = .001 * .95;
+	Sensor_TPS1.specMin = .001 * .95;
+	Sensor_TPS1.specMax = .001 * .05;
+
+	//TPS: Pot
+	Sensor_BenchTPS0.specMin = 1;
     Sensor_BenchTPS0.specMax = 5001;
     Sensor_BenchTPS1.specMin = 5001;
     Sensor_BenchTPS1.specMax = 1;

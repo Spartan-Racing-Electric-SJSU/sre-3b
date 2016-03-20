@@ -115,15 +115,15 @@ typedef enum { dash_EcoLight, dash_ErrorLight, dash_RTDLight, dash_TCSLight} Das
 //----------------------------------------------------------------------------
 typedef struct _Sensor {
     //Sensor values / properties
-    ubyte2 specMin;
-    ubyte2 specMax;
+    ubyte4 specMin;
+    ubyte4 specMax;
     
     //ubyte2 calibMin;
     //ubyte2 calibMax;
     //ubyte2 calibNormal;  //zero value or normal position
 
     //ubyte2 calibratedValue;
-    ubyte2 sensorValue;
+    ubyte4 sensorValue;
     bool fresh;
     //bool isCalibrated;
 

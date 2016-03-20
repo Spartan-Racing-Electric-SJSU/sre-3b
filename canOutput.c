@@ -257,47 +257,51 @@ void canOutput_sendDebugMessage(TorqueEncoder* tps)
     ubyte2 bench1Percent;
 
     TorqueEncoder_getIndividualSensorPercent(tps, 0, &pedalPercent); //borrow the pedal percent variable
-    bench0Percent = 100 * pedalPercent;
+    bench0Percent = 0xFF * pedalPercent;
     TorqueEncoder_getIndividualSensorPercent(tps, 1, &pedalPercent);
-    bench1Percent = 100 * pedalPercent;
+    bench1Percent = 0xFF * pedalPercent;
 
     TorqueEncoder_getPedalTravel(tps, &errorCount, &pedalPercent); //getThrottlePercent(TRUE, &errorCount);
     ubyte2 throttlePercent = 100 * pedalPercent;
 
+    canMessages[0].length = 8; // how many bytes in the message
+    canMessages[0].id_format = IO_CAN_STD_FRAME;
+    canMessages[0].id = 0x508;
+    canMessages[0].data[0] = throttlePercent; //mcm_getStartupStage(mcm);
+    canMessages[0].data[1] = throttlePercent >> 8;
+    canMessages[0].data[2] = 0;
+    canMessages[0].data[3] = errorCount;
+    canMessages[0].data[4] = 0;
+    canMessages[0].data[5] = 0;
+    canMessages[0].data[6] = 0;
+    canMessages[0].data[7] = 0;
+
     canMessages[1].length = 8; // how many bytes in the message
     canMessages[1].id_format = IO_CAN_STD_FRAME;
-    canMessages[1].id = 0x508;
-    canMessages[1].data[0] = throttlePercent; //mcm_getStartupStage(mcm);
-    canMessages[1].data[1] = throttlePercent >> 8;
-    canMessages[1].data[2] = 0;
-    canMessages[1].data[3] = errorCount;
-    canMessages[1].data[4] = 0;
-    canMessages[1].data[5] = 0;
-    canMessages[1].data[6] = 0;
-    canMessages[1].data[7] = 0;
+    canMessages[1].id = 0x509;
+	canMessages[1].data[0] = tps->tps0_value;
+	canMessages[1].data[1] = tps->tps0_value >> 8;
+	canMessages[1].data[2] = bench0Percent;
+    canMessages[1].data[3] = bench0Percent >> 8;
+    canMessages[1].data[4] = tps->tps0_calibMin;
+    canMessages[1].data[5] = tps->tps0_calibMin >> 8;
+    canMessages[1].data[6] = tps->tps0_calibMax;
+    canMessages[1].data[7] = tps->tps0_calibMax >> 8;
 
     canMessages[2].length = 8; // how many bytes in the message
     canMessages[2].id_format = IO_CAN_STD_FRAME;
-    canMessages[2].id = 0x509;
-    canMessages[2].data[0] = bench0Percent;
-    canMessages[2].data[1] = bench0Percent >> 8;
-    canMessages[2].data[2] = Sensor_BenchTPS0.sensorValue;
-    canMessages[2].data[3] = Sensor_BenchTPS0.sensorValue >> 8;
-    canMessages[2].data[4] = tps->TPS0_calibMin;
-    canMessages[2].data[5] = tps->TPS0_calibMin >> 8;
-    canMessages[2].data[6] = tps->TPS0_calibMax;
-    canMessages[2].data[7] = tps->TPS0_calibMax >> 8;
+    canMessages[2].id = 0x510;
+	canMessages[2].data[0] = tps->tps1_value;
+	canMessages[2].data[1] = tps->tps1_value >> 8;
+    canMessages[2].data[2] = bench1Percent;
+    canMessages[2].data[3] = bench1Percent >> 8;
+    canMessages[2].data[4] = tps->tps1_calibMin;
+    canMessages[2].data[5] = tps->tps1_calibMin >> 8;
+    canMessages[2].data[6] = tps->tps1_calibMax;
+    canMessages[2].data[7] = tps->tps1_calibMax >> 8;
 
-    canMessages[3].length = 8; // how many bytes in the message
-    canMessages[3].id_format = IO_CAN_STD_FRAME;
-    canMessages[3].id = 0x510;
-    canMessages[3].data[0] = bench1Percent;
-    canMessages[3].data[1] = bench1Percent >> 8;
-    canMessages[3].data[2] = Sensor_BenchTPS1.sensorValue;
-    canMessages[3].data[3] = Sensor_BenchTPS1.sensorValue >> 8;
-    canMessages[3].data[4] = tps->TPS1_calibMin;
-    canMessages[3].data[5] = tps->TPS1_calibMin >> 8;
-    canMessages[3].data[6] = tps->TPS1_calibMax;
-    canMessages[3].data[7] = tps->TPS1_calibMax >> 8;
+	//Place the can messsages into the FIFO queue ---------------------------------------------------
+	IO_CAN_WriteFIFO(canFifoHandle_HiPri_Write, canMessages, 3);  //Important: Only transmit one message (the MCU message)
+	IO_CAN_WriteFIFO(canFifoHandle_LoPri_Write, canMessages, 3);  //Important: Only transmit one message (the MCU message)
 
 }

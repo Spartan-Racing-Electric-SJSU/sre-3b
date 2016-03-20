@@ -9,6 +9,7 @@
 /*-------------------------------------------------------------------
 * getPercent
 * Returns the % (position) of value, between min and max
+* Automatically compensates for reverse-direction values: When min > max, value is assumed to travel in reverse direction.
 * If zeroToOneOnly is true, then % will be capped at 0%-100% (no negative % or > 100%)
 -------------------------------------------------------------------*/
 float4 getPercent(float4 value, float4 start, float4 end, bool zeroToOneOnly)
