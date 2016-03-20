@@ -185,12 +185,12 @@ void main(void)
         // Motor Controller Output Calculations
         //----------------------------------------------------------------------------
         //Handle motor startup procedures
-        MotorControllerPowerManagement(mcm0, rtds);
+        MotorControllerPowerManagement(mcm0, tps, rtds);
 
         //Assign motor controls to MCM command message
         //motorController_setCommands(rtds);
         //DOES NOT set inverter command or rtds flag
-        setMCMCommands(mcm0, rtds);
+        setMCMCommands(mcm0, tps, rtds);
 
 
 

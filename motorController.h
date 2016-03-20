@@ -69,7 +69,7 @@ ubyte1 mcm_getStartupStage(MotorController* me);
 //Non-object-related functions
 //----------------------------------------------------------------------------
 void setMCMCommands(MotorController* mcm, TorqueEncoder* tps, ReadyToDriveSound* rtds);
-void MotorControllerPowerManagement(MotorController* mcm, ReadyToDriveSound* rtds);
+void MotorControllerPowerManagement(MotorController* mcm, TorqueEncoder* tps, ReadyToDriveSound* rtds);
 
 
 

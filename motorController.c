@@ -333,11 +333,11 @@ void setMCMCommands(MotorController* mcm, TorqueEncoder* tps, ReadyToDriveSound*
 
 
 //See diagram at https://onedrive.live.com/redir?resid=F9BB8F0F8FDB5CF8!30410&authkey=!ABSF-uVH-VxQRAs&ithint=file%2chtml
-void MotorControllerPowerManagement(MotorController* mcm, ReadyToDriveSound* rtds)
+void MotorControllerPowerManagement(MotorController* mcm, TorqueEncoder* tps, ReadyToDriveSound* rtds)
 {
     mcm->startupStage = 0; //Off
     //if (Sensor_HVILTerminationSense.sensorValue == TRUE)
-    if (Sensor_HVILTerminationSense.sensorValue == TRUE)
+    if (Sensor_HVILTerminationSense.sensorValue == TRUE && tps->calibrated == TRUE)
     {
         setMCMRelay(TRUE);
     }
@@ -360,7 +360,7 @@ void MotorControllerPowerManagement(MotorController* mcm, ReadyToDriveSound* rtd
             mcm->startupStage = 2; //Lockout disabled, waiting for RTD procedure
             //If not on gas and YES on brake and RTD is pressed
             //BRAKE CODE NEEDS TO BE ADDED HERE
-            if (Sensor_WPS_FL.sensorValue < 10 && Sensor_RTDButton.sensorValue == FALSE)
+            if (tps->percent < .05 && Sensor_RTDButton.sensorValue == FALSE)
             {
                 mcm_commands_setInverter(mcm, ENABLED);
                 mcm_setRTDSFlag(mcm, TRUE);  //Now, start the RTDS if the inverter is successfully enabled
