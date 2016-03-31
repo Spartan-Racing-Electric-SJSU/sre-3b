@@ -1,6 +1,7 @@
 #include <stdlib.h>  //Needed for malloc
 #include <math.h>
 #include "IO_RTC.h"
+#include "IO_DIO.h"
 
 #include "wheelSpeeds.h"
 #include "mathFunctions.h"
@@ -50,6 +51,10 @@ WheelSpeeds* WheelSpeeds_new(float4 tireDiameterInches_F, float4 tireDiameterInc
 	me->speed_FR = 0;
 	me->speed_RL = 0;
 	me->speed_RR = 0;
+
+	//Turn on WSS power pins
+	IO_DO_Set(IO_DO_06, TRUE); //Front WSS x2
+	IO_DO_Set(IO_DO_07, TRUE); //Rear  WSS x2
 
 	return me;
 }

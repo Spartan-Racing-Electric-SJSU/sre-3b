@@ -18,8 +18,12 @@
 ****************************************************************************/
 struct _SafetyChecker {
 	bool tpsOutOfRange;
-	bool bpsOutOfRange;
+	bool tpsCalibrated;
 	bool tpsOutOfSync;
+
+	bool bpsOutOfRange;
+	bool bpsCalibrated;
+
 	bool tpsbpsImplausible;
 };
 
@@ -46,6 +50,12 @@ SafetyChecker* SafetyChecker_new(void)
 //Updates all values based on sensor readings, safety checks, etc
 void SafetyChecker_update(SafetyChecker* me, TorqueEncoder* tps, BrakePressureSensor* bps)
 {
+	//===================================================================
+	//Get calibration status
+	//===================================================================
+	me->tpsCalibrated = tps->calibrated;
+	me->bpsCalibrated = bps->calibrated;
+
 	//===================================================================
 	//Make sure raw sensor readings are within operating range
 	//===================================================================
@@ -132,7 +142,12 @@ void SafetyChecker_update(SafetyChecker* me, TorqueEncoder* tps, BrakePressureSe
 bool SafetyChecker_allSafe(SafetyChecker* me)
 {
 	bool allSafe = FALSE;
-	if (me->tpsOutOfRange == FALSE && me->bpsOutOfRange == FALSE && me->tpsOutOfSync == FALSE && me->tpsbpsImplausible == FALSE)
+	if (me->tpsOutOfRange == FALSE 
+		&& me->bpsOutOfRange == FALSE 
+		&& me->tpsOutOfSync == FALSE 
+		&& me->tpsbpsImplausible == FALSE
+		&& me->tpsCalibrated == TRUE
+		&& me->bpsCalibrated == TRUE)
 	{
 		allSafe = TRUE;
 	}
