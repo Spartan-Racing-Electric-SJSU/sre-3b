@@ -41,6 +41,7 @@
 #include "motorController.h"
 #include "sensorCalculations.h"
 #include "torqueEncoder.h"
+#include "wheelSpeeds.h"
 #include "mathFunctions.h"
 #include "can.h"
 
@@ -249,59 +250,90 @@ void canOutput_sendMCUControl(MotorController* mcm, bool sendEvenIfNoChanges)
 //----------------------------------------------------------------------------
 // 
 //----------------------------------------------------------------------------
-void canOutput_sendDebugMessage(TorqueEncoder* tps, MotorController* mcm)
+void canOutput_sendDebugMessage(TorqueEncoder* tps, MotorController* mcm, WheelSpeeds* wss, SafetyChecker* sc)
 {
     ubyte1 errorCount;
     float4 pedalPercent;   //Pedal percent float (a decimal between 0 and 1
-    ubyte2 bench0Percent;  //Pedal percent int   (a number from 0 to 100)
-    ubyte2 bench1Percent;
+    ubyte2 tps0Percent;  //Pedal percent int   (a number from 0 to 100)
+    ubyte2 tps1Percent;
+	ubyte2 canMessageCount = 0;
+	ubyte2 canMessageID = 0x508;
 
     TorqueEncoder_getIndividualSensorPercent(tps, 0, &pedalPercent); //borrow the pedal percent variable
-    bench0Percent = 0xFF * pedalPercent;
+    tps0Percent = 0xFF * pedalPercent;
     TorqueEncoder_getIndividualSensorPercent(tps, 1, &pedalPercent);
-    bench1Percent = 0xFF * pedalPercent;
+    tps1Percent = 0xFF * (1-pedalPercent);
 
     TorqueEncoder_getPedalTravel(tps, &errorCount, &pedalPercent); //getThrottlePercent(TRUE, &errorCount);
-    ubyte2 throttlePercent = 100 * pedalPercent;
+    ubyte2 throttlePercent = 0xFF * pedalPercent;
+	
+	canMessageCount++;
+    canMessages[canMessageCount - 1].length = 8; // how many bytes in the message
+    canMessages[canMessageCount - 1].id_format = IO_CAN_STD_FRAME;
+    canMessages[canMessageCount - 1].id = canMessageID + canMessageCount - 1;
+    canMessages[canMessageCount - 1].data[0] = throttlePercent; //mcm_getStartupStage(mcm);
+    canMessages[canMessageCount - 1].data[1] = tps0Percent;
+    canMessages[canMessageCount - 1].data[2] = tps1Percent;
+    canMessages[canMessageCount - 1].data[3] = errorCount;
+    canMessages[canMessageCount - 1].data[4] = mcm_getStartupStage(mcm);
+    canMessages[canMessageCount - 1].data[5] = mcm_getStartupStage(mcm);
+    canMessages[canMessageCount - 1].data[6] = mcm_getStartupStage(mcm);
+    canMessages[canMessageCount - 1].data[7] = mcm_getStartupStage(mcm); 
 
-    canMessages[0].length = 8; // how many bytes in the message
-    canMessages[0].id_format = IO_CAN_STD_FRAME;
-    canMessages[0].id = 0x508;
-    canMessages[0].data[0] = throttlePercent; //mcm_getStartupStage(mcm);
-    canMessages[0].data[1] = throttlePercent >> 8;
-    canMessages[0].data[2] = 0;
-    canMessages[0].data[3] = errorCount;
-    canMessages[0].data[4] = mcm_getStartupStage(mcm);
-    canMessages[0].data[5] = mcm_getStartupStage(mcm);
-    canMessages[0].data[6] = mcm_getStartupStage(mcm);
-    canMessages[0].data[7] = mcm_getStartupStage(mcm); 
+	canMessageCount++;
+    canMessages[canMessageCount - 1].length = 8; // how many bytes in the message
+    canMessages[canMessageCount - 1].id_format = IO_CAN_STD_FRAME;
+    canMessages[canMessageCount - 1].id = canMessageID + canMessageCount - 1;
+	canMessages[canMessageCount - 1].data[0] = tps->tps0_value;
+	canMessages[canMessageCount - 1].data[1] = tps->tps0_value >> 8;
+	canMessages[canMessageCount - 1].data[2] = tps0Percent;
+    canMessages[canMessageCount - 1].data[3] = tps0Percent >> 8;
+    canMessages[canMessageCount - 1].data[4] = tps->tps0_calibMin;
+    canMessages[canMessageCount - 1].data[5] = tps->tps0_calibMin >> 8;
+    canMessages[canMessageCount - 1].data[6] = tps->tps0_calibMax;
+    canMessages[canMessageCount - 1].data[7] = tps->tps0_calibMax >> 8;
 
-    canMessages[1].length = 8; // how many bytes in the message
-    canMessages[1].id_format = IO_CAN_STD_FRAME;
-    canMessages[1].id = 0x509;
-	canMessages[1].data[0] = tps->tps0_value;
-	canMessages[1].data[1] = tps->tps0_value >> 8;
-	canMessages[1].data[2] = bench0Percent;
-    canMessages[1].data[3] = bench0Percent >> 8;
-    canMessages[1].data[4] = tps->tps0_calibMin;
-    canMessages[1].data[5] = tps->tps0_calibMin >> 8;
-    canMessages[1].data[6] = tps->tps0_calibMax;
-    canMessages[1].data[7] = tps->tps0_calibMax >> 8;
+	canMessageCount++;
+	canMessages[canMessageCount - 1].length = 8; // how many bytes in the message
+	canMessages[canMessageCount - 1].id_format = IO_CAN_STD_FRAME;
+	canMessages[canMessageCount - 1].id = canMessageID + canMessageCount - 1;
+	canMessages[canMessageCount - 1].data[0] = tps->tps1_value;
+	canMessages[canMessageCount - 1].data[1] = tps->tps1_value >> 8;
+	canMessages[canMessageCount - 1].data[2] = tps1Percent;
+	canMessages[canMessageCount - 1].data[3] = tps1Percent >> 8;
+	canMessages[canMessageCount - 1].data[4] = tps->tps1_calibMin;
+	canMessages[canMessageCount - 1].data[5] = tps->tps1_calibMin >> 8;
+	canMessages[canMessageCount - 1].data[6] = tps->tps1_calibMax;
+	canMessages[canMessageCount - 1].data[7] = tps->tps1_calibMax >> 8;
 
-    canMessages[2].length = 8; // how many bytes in the message
-    canMessages[2].id_format = IO_CAN_STD_FRAME;
-    canMessages[2].id = 0x510;
-	canMessages[2].data[0] = tps->tps1_value;
-	canMessages[2].data[1] = tps->tps1_value >> 8;
-    canMessages[2].data[2] = bench1Percent;
-    canMessages[2].data[3] = bench1Percent >> 8;
-    canMessages[2].data[4] = tps->tps1_calibMin;
-    canMessages[2].data[5] = tps->tps1_calibMin >> 8;
-    canMessages[2].data[6] = tps->tps1_calibMax;
-    canMessages[2].data[7] = tps->tps1_calibMax >> 8;
+	canMessageCount++;
+	canMessages[canMessageCount - 1].length = 8; // how many bytes in the message
+	canMessages[canMessageCount - 1].id_format = IO_CAN_STD_FRAME;
+	canMessages[canMessageCount - 1].id = canMessageID + canMessageCount - 1;
+	canMessages[canMessageCount - 1].data[0] = (ubyte2)(WheelSpeeds_getWheelSpeed(wss, FL) + 0.5);
+	canMessages[canMessageCount - 1].data[1] = (ubyte2)(WheelSpeeds_getWheelSpeed(wss, FL) + 0.5) >> 8;
+	canMessages[canMessageCount - 1].data[2] = (ubyte2)(WheelSpeeds_getWheelSpeed(wss, FR) + 0.5);
+	canMessages[canMessageCount - 1].data[3] = (ubyte2)(WheelSpeeds_getWheelSpeed(wss, FR) + 0.5) >> 8;
+	canMessages[canMessageCount - 1].data[4] = (ubyte2)(WheelSpeeds_getWheelSpeed(wss, RL) + 0.5);
+	canMessages[canMessageCount - 1].data[5] = (ubyte2)(WheelSpeeds_getWheelSpeed(wss, RL) + 0.5) >> 8;
+	canMessages[canMessageCount - 1].data[6] = (ubyte2)(WheelSpeeds_getWheelSpeed(wss, RR) + 0.5);
+	canMessages[canMessageCount - 1].data[7] = (ubyte2)(WheelSpeeds_getWheelSpeed(wss, RR) + 0.5) >> 8;
+
+	canMessageCount++;
+	canMessages[canMessageCount - 1].length = 8; // how many bytes in the message
+	canMessages[canMessageCount - 1].id_format = IO_CAN_STD_FRAME;
+	canMessages[canMessageCount - 1].id = canMessageID + canMessageCount - 1;
+	canMessages[canMessageCount - 1].data[0] = 0;
+	canMessages[canMessageCount - 1].data[1] = 1;
+	canMessages[canMessageCount - 1].data[2] = 2;
+	canMessages[canMessageCount - 1].data[3] = 3;
+	canMessages[canMessageCount - 1].data[4] = 4;
+	canMessages[canMessageCount - 1].data[5] = 5;
+	canMessages[canMessageCount - 1].data[6] = 6;
+	canMessages[canMessageCount - 1].data[7] = 7;
 
 	//Place the can messsages into the FIFO queue ---------------------------------------------------
-	IO_CAN_WriteFIFO(canFifoHandle_HiPri_Write, canMessages, 3);  //Important: Only transmit one message (the MCU message)
-	IO_CAN_WriteFIFO(canFifoHandle_LoPri_Write, canMessages, 3);  //Important: Only transmit one message (the MCU message)
+	IO_CAN_WriteFIFO(canFifoHandle_HiPri_Write, canMessages, canMessageCount);  //Important: Only transmit one message (the MCU message)
+	IO_CAN_WriteFIFO(canFifoHandle_LoPri_Write, canMessages, canMessageCount);  //Important: Only transmit one message (the MCU message)
 
 }

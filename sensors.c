@@ -132,6 +132,7 @@ void dashLight_set(DashLight light, bool turnOn)
         IO_PWM_SetDuty(IO_PWM_03, duty, NULL);  //Pin 103
         break;
     }
+
 }
 
 /*****************************************************************************

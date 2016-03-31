@@ -4,7 +4,9 @@
 
 #include "IO_Driver.h"
 #include "torqueEncoder.h"
+#include "brakePressureSensor.h"
 #include "readyToDriveSound.h"
+#include "safety.h"
 
 //typedef enum { TORQUE, DIRECTION, INVERTER, DISCHARGE, TORQUELIMIT} MCMCommand;
 typedef enum { ENABLED, DISABLED, UNKNOWN } Status;
@@ -60,6 +62,7 @@ bool mcm_getRTDSFlag(MotorController* me);
 //void motorController_setAllCommands(ReadyToDriveSound* rtds);
 
 ubyte1 mcm_getStartupStage(MotorController* me);
+void mcm_setStartupStage(MotorController* me, ubyte1 stage);
 
 //----------------------------------------------------------------------------
 //----------------------------------------------------------------------------
@@ -68,7 +71,7 @@ ubyte1 mcm_getStartupStage(MotorController* me);
 //----------------------------------------------------------------------------
 //Non-object-related functions
 //----------------------------------------------------------------------------
-void setMCMCommands(MotorController* mcm, TorqueEncoder* tps, ReadyToDriveSound* rtds);
+void setMCMCommands(MotorController* mcm, TorqueEncoder* tps, BrakePressureSensor* bps, ReadyToDriveSound* rtds, SafetyChecker* sc);
 void MotorControllerPowerManagement(MotorController* mcm, TorqueEncoder* tps, ReadyToDriveSound* rtds);
 
 

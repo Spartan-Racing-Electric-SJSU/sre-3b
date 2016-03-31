@@ -40,6 +40,9 @@
 #include "motorController.h"
 #include "readyToDriveSound.h"
 #include "torqueEncoder.h"
+#include "brakePressureSensor.h"
+#include "wheelSpeeds.h"
+#include "safety.h"
 
 #include "sensorCalculations.h"
 
@@ -117,12 +120,15 @@ void main(void)
     vcu_ADCWasteLoop();
 
     //----------------------------------------------------------------------------
-    // External Devices - Object Initializations
+    // External Devices - Object Initializations (including default values)
     //----------------------------------------------------------------------------
     ReadyToDriveSound* rtds = RTDS_new();
-    MotorController* mcm0 = MotorController_new(0xA0, FORWARD, 100);
-    TorqueEncoder* tps = TorqueEncoder_new(TRUE);
-    //BatteryManagementSystem* bms = BMS_new();
+	//BatteryManagementSystem* bms = BMS_new();
+    MotorController* mcm0 = MotorController_new(0xA0, FORWARD, 100); //CAN addr, direction, torque limit x10 (100 = 10Nm)
+	TorqueEncoder* tps = TorqueEncoder_new(TRUE);
+	BrakePressureSensor* bps = BrakePressureSensor_new();
+	WheelSpeeds* wss = WheelSpeeds_new(18, 18, 16, 16);
+	SafetyChecker* sc = SafetyChecker_new();
 
     //----------------------------------------------------------------------------
     // TODO: Additional Initial Power-up functions
@@ -174,11 +180,35 @@ void main(void)
 		{
 			//calibrateTPS(TRUE, 5);
 			TorqueEncoder_startCalibration(tps, 5);
+			BrakePressureSensor_startCalibration(bps, 5);
 			//DIGITAL OUTPUT 4 for STATUS LED
 		}
 		TorqueEncoder_update(tps);
+		TorqueEncoder_calibrationCycle(tps, &calibrationErrors); //Todo: deal with calibration errors
+		BrakePressureSensor_update(bps);
+		BrakePressureSensor_calibrationCycle(bps, &calibrationErrors);
+
+		//TractionControl_update(tps, mcm0, wss, daq);
+
+		SafetyChecker_update(sc, tps, bps);
+		WheelSpeeds_update(wss);
+		//WheelSpeeds_update();
+		//DataAquisition_update(); //includes accelerometer
+		//TireModel_update()
+		//ControlLaw_update();
+		
+
+
+
+		/*
+		ControlLaw //Tq command
+			TireModel //used by control law -> read from WSS, accelerometer
+			StateObserver //choose driver command or ctrl law
+		*/	
+
+
+
 		//Every cycle: if the calibration was started and hasn't finished, check the values again
-		TorqueEncoder_calibrationCycle(tps, &calibrationErrors);
 
 
         //----------------------------------------------------------------------------
@@ -190,13 +220,13 @@ void main(void)
         //Assign motor controls to MCM command message
         //motorController_setCommands(rtds);
         //DOES NOT set inverter command or rtds flag
-        setMCMCommands(mcm0, tps, rtds);
+        setMCMCommands(mcm0, tps, bps, rtds, sc);
 
 
 
         //Drop the sensor readings into CAN (just raw data, not calculated stuff)
         canOutput_sendMCUControl(mcm0, FALSE);
-        canOutput_sendDebugMessage(tps);
+        canOutput_sendDebugMessage(tps, mcm0, wss, sc);
         //canOutput_sendSensorMessages();
         //canOutput_sendStatusMessages(mcm0);
 
