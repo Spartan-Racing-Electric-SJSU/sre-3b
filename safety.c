@@ -17,12 +17,17 @@
 *
 ****************************************************************************/
 struct _SafetyChecker {
+	//Problems that require motor torque to be disabled
 	bool tpsOutOfRange;
-	bool tpsCalibrated;
-	bool tpsOutOfSync;
-
 	bool bpsOutOfRange;
-	bool bpsCalibrated;
+
+	//bool tpsOpenOrShort;
+	//bool bpsOpenOrShort;
+
+	bool tpsNotCalibrated;
+	bool bpsNotCalibrated;
+
+	bool tpsOutOfSync;
 
 	bool tpsbpsImplausible;
 };
@@ -39,8 +44,14 @@ SafetyChecker* SafetyChecker_new(void)
 
 	//Initialize all safety checks to FAIL 
 	me->tpsOutOfRange = TRUE;
+	//me->tpsOpenOrShort = TRUE;
 	me->tpsOutOfSync = TRUE; //Torque Encoder Plausibility Check
+	me->tpsNotCalibrated = TRUE;
+
 	me->bpsOutOfRange = TRUE;
+	//me->bpsOpenOrShort = TRUE;
+	me->bpsNotCalibrated = TRUE;
+
 	me->tpsbpsImplausible = TRUE;
 
 
@@ -53,8 +64,8 @@ void SafetyChecker_update(SafetyChecker* me, TorqueEncoder* tps, BrakePressureSe
 	//===================================================================
 	//Get calibration status
 	//===================================================================
-	me->tpsCalibrated = tps->calibrated;
-	me->bpsCalibrated = bps->calibrated;
+	me->tpsNotCalibrated = !(tps->calibrated);
+	me->bpsNotCalibrated = !(bps->calibrated);
 
 	//===================================================================
 	//Make sure raw sensor readings are within operating range
@@ -142,14 +153,56 @@ void SafetyChecker_update(SafetyChecker* me, TorqueEncoder* tps, BrakePressureSe
 bool SafetyChecker_allSafe(SafetyChecker* me)
 {
 	bool allSafe = FALSE;
-	if (me->tpsOutOfRange == FALSE 
-		&& me->bpsOutOfRange == FALSE 
-		&& me->tpsOutOfSync == FALSE 
-		&& me->tpsbpsImplausible == FALSE
-		&& me->tpsCalibrated == TRUE
-		&& me->bpsCalibrated == TRUE)
+	if (
+		me->tpsOutOfRange == FALSE
+	 && me->bpsOutOfRange == FALSE
+	 //&& me->tpsOpenOrShort == FALSE
+	 //&& me->bpsOpenOrShort == FALSE
+	 && me->tpsNotCalibrated == FALSE
+	 && me->bpsNotCalibrated == FALSE
+	 && me->tpsOutOfSync == FALSE 
+	 && me->tpsbpsImplausible == FALSE
+		)
 	{
 		allSafe = TRUE;
 	}
 	return allSafe;
+}
+
+//Updates all values based on sensor readings, safety checks, etc
+bool SafetyChecker_getError(SafetyChecker* me, SafetyCheck check)
+{
+	bool status;
+	switch (check)
+	{
+	case CHECK_tpsOutOfRange:
+		status = me->tpsOutOfRange;
+		break;
+
+	case CHECK_bpsOutOfRange:
+		status = me->bpsOutOfRange;
+		break;
+
+	case CHECK_tpsNotCalibrated:
+		status = me->tpsNotCalibrated;
+		break;
+
+	case CHECK_bpsNotCalibrated:
+		status = me->bpsNotCalibrated;
+		break;
+
+	case CHECK_tpsOutOfSync:
+		status = me->tpsOutOfSync;
+		break;
+
+	case CHECK_tpsbpsImplausible:
+		status = me->tpsbpsImplausible;
+		break;
+
+	default:
+		status = TRUE; //error
+		break;
+	}
+
+	return status;
 }

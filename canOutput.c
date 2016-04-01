@@ -323,14 +323,14 @@ void canOutput_sendDebugMessage(TorqueEncoder* tps, MotorController* mcm, WheelS
 	canMessages[canMessageCount - 1].length = 8; // how many bytes in the message
 	canMessages[canMessageCount - 1].id_format = IO_CAN_STD_FRAME;
 	canMessages[canMessageCount - 1].id = canMessageID + canMessageCount - 1;
-	canMessages[canMessageCount - 1].data[0] = 0;
-	canMessages[canMessageCount - 1].data[1] = 1;
-	canMessages[canMessageCount - 1].data[2] = 2;
-	canMessages[canMessageCount - 1].data[3] = 3;
-	canMessages[canMessageCount - 1].data[4] = 4;
-	canMessages[canMessageCount - 1].data[5] = 5;
-	canMessages[canMessageCount - 1].data[6] = 6;
-	canMessages[canMessageCount - 1].data[7] = 7;
+	canMessages[canMessageCount - 1].data[0] = SafetyChecker_allSafe(sc) == TRUE ? 0xFF : 0;
+	canMessages[canMessageCount - 1].data[1] = SafetyChecker_getError(sc, CHECK_tpsOutOfRange) ? 1 : 0;
+	canMessages[canMessageCount - 1].data[2] = SafetyChecker_getError(sc, CHECK_tpsOutOfRange) ? 1 : 0;
+	canMessages[canMessageCount - 1].data[3] = SafetyChecker_getError(sc, CHECK_tpsOutOfRange) ? 1 : 0;
+	canMessages[canMessageCount - 1].data[4] = SafetyChecker_getError(sc, CHECK_tpsOutOfRange) ? 1 : 0;
+	canMessages[canMessageCount - 1].data[5] = SafetyChecker_getError(sc, CHECK_tpsOutOfRange) ? 1 : 0;
+	canMessages[canMessageCount - 1].data[6] = SafetyChecker_getError(sc, CHECK_tpsOutOfRange) ? 1 : 0;
+	canMessages[canMessageCount - 1].data[7] = SafetyChecker_getError(sc, CHECK_tpsOutOfRange) ? 1 : 0;
 
 	//Place the can messsages into the FIFO queue ---------------------------------------------------
 	IO_CAN_WriteFIFO(canFifoHandle_HiPri_Write, canMessages, canMessageCount);  //Important: Only transmit one message (the MCU message)
