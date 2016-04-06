@@ -18,5 +18,6 @@ SafetyChecker* SafetyChecker_new(void);
 void SafetyChecker_update(SafetyChecker* me, TorqueEncoder* tps, BrakePressureSensor* bps);
 bool SafetyChecker_allSafe(SafetyChecker* me);
 bool SafetyChecker_getError(SafetyChecker* me, SafetyCheck check);
+bool SafetyChecker_getErrorByte(SafetyChecker* me, ubyte1* errorByte);
 
 #endif //  _TORQUEENCODER_H

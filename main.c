@@ -176,12 +176,17 @@ void main(void)
 
 		//Run calibration if commanded
 		//if (IO_RTC_GetTimeUS(timestamp_calibStart) < (ubyte4)5000000)
-		if (Sensor_EcoButton.sensorValue)
+		if (Sensor_EcoButton.sensorValue == FALSE)
 		{
 			//calibrateTPS(TRUE, 5);
 			TorqueEncoder_startCalibration(tps, 5);
 			BrakePressureSensor_startCalibration(bps, 5);
+			//dashLight_set(dash_ErrorLight, TRUE);
 			//DIGITAL OUTPUT 4 for STATUS LED
+		}
+		else
+		{
+			//dashLight_set(dash_ErrorLight, FALSE);
 		}
 		TorqueEncoder_update(tps);
 		TorqueEncoder_calibrationCycle(tps, &calibrationErrors); //Todo: deal with calibration errors
@@ -191,6 +196,15 @@ void main(void)
 		//TractionControl_update(tps, mcm0, wss, daq);
 
 		SafetyChecker_update(sc, tps, bps);
+		if(SafetyChecker_allSafe(sc) == TRUE)
+		{
+			dashLight_set(dash_ErrorLight, FALSE);
+		}
+		else
+		{
+			dashLight_set(dash_ErrorLight, TRUE);
+		}
+
 		WheelSpeeds_update(wss);
 		//WheelSpeeds_update();
 		//DataAquisition_update(); //includes accelerometer

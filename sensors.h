@@ -126,7 +126,9 @@ typedef struct _Sensor {
     ubyte4 sensorValue;
     bool fresh;
     //bool isCalibrated;
-
+	IO_ErrorType ioErr_power;
+	IO_ErrorType ioErr_init;
+	IO_ErrorType ioErr_signal;
 } Sensor;
 
 //----------------------------------------------------------------------------

@@ -206,3 +206,37 @@ bool SafetyChecker_getError(SafetyChecker* me, SafetyCheck check)
 
 	return status;
 }
+
+//Updates all values based on sensor readings, safety checks, etc
+ubyte1 SafetyChecker_getErrorByte(SafetyChecker* me, ubyte1* errorSet)
+{
+	ubyte1 errorByte = 0;
+	switch ((ubyte2)errorSet)
+	{
+	case 0:
+		for (int bit = 7; bit >= 0; bit--)
+		{
+			errorByte <<= 1;  //Always leftshift first
+			switch (bit)
+			{
+			case 0: errorByte |= me->tpsOutOfRange ? 1 : 0; break;
+			case 1: errorByte |= me->tpsNotCalibrated ? 1 : 0; break;
+			case 2: errorByte |= me->tpsOutOfSync ? 1 : 0; break;
+			case 3: errorByte |= 0; break;
+			case 4: errorByte |= me->bpsOutOfRange ? 1 : 0; break;
+			case 5: errorByte |= me->bpsNotCalibrated ? 1 : 0; break;
+			case 6: errorByte |= 0; break;
+			case 7: errorByte |= me->tpsbpsImplausible ? 1 : 0; break;
+			default: break;
+			}
+		}
+		break;
+
+	default:
+		errorByte = 0xFF; //error
+		break;
+	}
+
+	return errorByte;
+}
+

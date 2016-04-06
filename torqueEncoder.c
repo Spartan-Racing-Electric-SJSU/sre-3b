@@ -63,6 +63,8 @@ void TorqueEncoder_update(TorqueEncoder* me)
 		//if ((Sensor_TPS0.isCalibrated == FALSE) || (Sensor_TPS1.isCalibrated == FALSE))
 		if (me->calibrated == FALSE)
 		{
+			me->tps0_percent = 0;
+			me->tps1_percent = 0;
 			(errorCount)++;  //DO SOMETHING WITH THIS
 		}
 		else
@@ -74,6 +76,7 @@ void TorqueEncoder_update(TorqueEncoder* me)
 
 			me->tps0_percent = getPercent(me->tps0_value, me->tps0_calibMin, me->tps0_calibMax, TRUE);
 
+			//Todo: Fix percent calculator to make this work
 			//me->tps1_percent = getPercent(me->tps1_value, me->tps1_calibMin, me->tps1_calibMax, TRUE);
 			float4 range = me->tps1_calibMax - me->tps1_calibMin;
 			float4 travel = me->tps1_calibMax - me->tps1_value;
@@ -135,7 +138,7 @@ void TorqueEncoder_startCalibration(TorqueEncoder* me, ubyte1 secondsToRun)
         IO_RTC_StartTime(&(me->timestamp_calibrationStart));
         me->calibrationRunTime = secondsToRun;
 
-		dashLight_set(dash_TCSLight, TRUE);
+		dashLight_set(dash_EcoLight, TRUE);
     }
 }
 
@@ -184,7 +187,7 @@ void TorqueEncoder_calibrationCycle(TorqueEncoder* me, ubyte1* errorCount)
 
 			me->runCalibration = FALSE;
 			me->calibrated = TRUE;
-			dashLight_set(dash_TCSLight, FALSE);
+			dashLight_set(dash_EcoLight, FALSE);
 			
 
         }
