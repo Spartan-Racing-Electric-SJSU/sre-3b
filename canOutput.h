@@ -8,7 +8,7 @@
 
 void canOutput_sendSensorMessages(void);
 void canOutput_sendMCUControl(MotorController* mcm, bool sendEvenIfNoChanges);
-void canOutput_sendDebugMessage(TorqueEncoder* tps, MotorController* mcm, WheelSpeeds* wss, SafetyChecker* sc);
+void canOutput_sendDebugMessage(TorqueEncoder* tps, BrakePressureSensor* bps, MotorController* mcm, WheelSpeeds* wss, SafetyChecker* sc);
 //void canOutput_sendStatusMessages(MotorController* mcm);
 
 #endif //  _CANOUTPUT_H

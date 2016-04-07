@@ -55,7 +55,8 @@ void vcu_initializeADC(void)
     //IO_ADC_ChannelInit(IO_ADC_5V_01, IO_ADC_RATIOMETRIC, 0, 0, IO_ADC_SENSOR_SUPPLY_1, NULL);
 
     //BPS
-    Sensor_BPS0.ioErr_init = IO_ADC_ChannelInit(IO_ADC_5V_02, IO_ADC_RATIOMETRIC, 0, 0, IO_ADC_SENSOR_SUPPLY_0, NULL);
+	//Sensor_BPS0.ioErr_init = IO_ADC_ChannelInit(IO_ADC_5V_02, IO_ADC_RATIOMETRIC, 0, 0, IO_ADC_SENSOR_SUPPLY_0, NULL);
+	Sensor_BPS0.ioErr_init = IO_ADC_ChannelInit(IO_ADC_5V_02, IO_ADC_RESISTIVE, 0, 0, 0, NULL);
 
     //Unused
     //IO_ADC_ChannelInit(IO_ADC_5V_03, IO_ADC_RATIOMETRIC, 0, 0, IO_ADC_SENSOR_SUPPLY_0, NULL);
@@ -237,13 +238,15 @@ void vcu_initializeSensors(void)
 	//TPS: Pot
 	Sensor_BenchTPS0.specMin = 1;
     Sensor_BenchTPS0.specMax = 5001;
-    Sensor_BenchTPS1.specMin = 5001;
-    Sensor_BenchTPS1.specMax = 1;
+    Sensor_BenchTPS1.specMin = 1;
+    Sensor_BenchTPS1.specMax = 5001;
 
     //Brake Position Sensors
-    Sensor_BPS0.specMin = 0.5;
-    Sensor_BPS0.specMax = 4.5;
-    //Sensor_BPS1.specMin = 0.5;
+	Sensor_BPS0.specMin = 1;
+	Sensor_BPS0.specMax = 10000;
+	//Sensor_BPS0.specMin = 0.5;
+	//Sensor_BPS0.specMax = 4.5;
+	//Sensor_BPS1.specMin = 0.5;
     //Sensor_BPS1.specMax = 4.5;
 
     /*

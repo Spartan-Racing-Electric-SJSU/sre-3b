@@ -250,32 +250,35 @@ void canOutput_sendMCUControl(MotorController* mcm, bool sendEvenIfNoChanges)
 //----------------------------------------------------------------------------
 // 
 //----------------------------------------------------------------------------
-void canOutput_sendDebugMessage(TorqueEncoder* tps, MotorController* mcm, WheelSpeeds* wss, SafetyChecker* sc)
+void canOutput_sendDebugMessage(TorqueEncoder* tps, BrakePressureSensor* bps, MotorController* mcm, WheelSpeeds* wss, SafetyChecker* sc)
 {
     ubyte1 errorCount;
-    float4 pedalPercent;   //Pedal percent float (a decimal between 0 and 1
+    float4 tempPedalPercent;   //Pedal percent float (a decimal between 0 and 1
     ubyte2 tps0Percent;  //Pedal percent int   (a number from 0 to 100)
     ubyte2 tps1Percent;
 	ubyte2 canMessageCount = 0;
 	ubyte2 canMessageID = 0x508;
 	ubyte1 byteNum;
 
-    TorqueEncoder_getIndividualSensorPercent(tps, 0, &pedalPercent); //borrow the pedal percent variable
-    tps0Percent = 0xFF * pedalPercent;
-    TorqueEncoder_getIndividualSensorPercent(tps, 1, &pedalPercent);
-    tps1Percent = 0xFF * (1-pedalPercent);
+    TorqueEncoder_getIndividualSensorPercent(tps, 0, &tempPedalPercent); //borrow the pedal percent variable
+    tps0Percent = 0xFF * tempPedalPercent;
+    TorqueEncoder_getIndividualSensorPercent(tps, 1, &tempPedalPercent);
+    tps1Percent = 0xFF * (1-tempPedalPercent);
 
-    TorqueEncoder_getPedalTravel(tps, &errorCount, &pedalPercent); //getThrottlePercent(TRUE, &errorCount);
-    ubyte2 throttlePercent = 0xFF * pedalPercent;
+	TorqueEncoder_getPedalTravel(tps, &errorCount, &tempPedalPercent); //getThrottlePercent(TRUE, &errorCount);
+	ubyte2 throttlePercent = 0xFF * tempPedalPercent;
+
+	BrakePressureSensor_getPedalTravel(bps, &errorCount, &tempPedalPercent); //getThrottlePercent(TRUE, &errorCount);
+	ubyte2 brakePercent = 0xFF * tempPedalPercent;
 
 	canMessageCount++;
 	byteNum = 0;
     canMessages[canMessageCount - 1].length = 8; // how many bytes in the message
     canMessages[canMessageCount - 1].id_format = IO_CAN_STD_FRAME;
     canMessages[canMessageCount - 1].id = canMessageID + canMessageCount - 1;
+	canMessages[canMessageCount - 1].data[byteNum++] = throttlePercent; //mcm_getStartupStage(mcm);
 	canMessages[canMessageCount - 1].data[byteNum++] = tps0Percent;
 	canMessages[canMessageCount - 1].data[byteNum++] = tps1Percent;
-	canMessages[canMessageCount - 1].data[byteNum++] = throttlePercent; //mcm_getStartupStage(mcm);
     canMessages[canMessageCount - 1].data[byteNum++] = errorCount;
     canMessages[canMessageCount - 1].data[byteNum++] = mcm_getStartupStage(mcm);
     canMessages[canMessageCount - 1].data[byteNum++] = mcm_getStartupStage(mcm);
@@ -309,6 +312,20 @@ void canOutput_sendDebugMessage(TorqueEncoder* tps, MotorController* mcm, WheelS
 	canMessages[canMessageCount - 1].data[byteNum++] = 0;
 	canMessages[canMessageCount - 1].data[byteNum++] = tps->tps1_calibMax;
 	canMessages[canMessageCount - 1].data[byteNum++] = tps->tps1_calibMax >> 8;
+
+	canMessageCount++;
+	byteNum = 0;
+	canMessages[canMessageCount - 1].length = 8; // how many bytes in the message
+	canMessages[canMessageCount - 1].id_format = IO_CAN_STD_FRAME;
+	canMessages[canMessageCount - 1].id = canMessageID + canMessageCount - 1;
+	canMessages[canMessageCount - 1].data[byteNum++] = brakePercent;
+	canMessages[canMessageCount - 1].data[byteNum++] = 0;
+	canMessages[canMessageCount - 1].data[byteNum++] = bps->bps0_value;
+	canMessages[canMessageCount - 1].data[byteNum++] = bps->bps0_value >> 8;
+	canMessages[canMessageCount - 1].data[byteNum++] = bps->bps0_calibMin;
+	canMessages[canMessageCount - 1].data[byteNum++] = bps->bps0_calibMin >> 8;
+	canMessages[canMessageCount - 1].data[byteNum++] = bps->bps0_calibMax;
+	canMessages[canMessageCount - 1].data[byteNum++] = bps->bps0_calibMax >> 8;
 
 	canMessageCount++;
 	byteNum = 0;

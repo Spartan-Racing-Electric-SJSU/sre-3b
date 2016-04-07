@@ -64,17 +64,15 @@ void sensors_updateSensors(void)
 	Sensor_TPS0.ioErr_signal = IO_PWD_FreqGet(IO_PWM_00, &Sensor_TPS0.sensorValue);
 	Sensor_TPS1.ioErr_signal = IO_PWD_FreqGet(IO_PWM_01, &Sensor_TPS1.sensorValue);
 
-    //Brake Position Sensor ---------------------------------------------------
+	//Bench TPS ---------------------------------------------------
+	Sensor_BenchTPS0.ioErr_signal = IO_ADC_Get(IO_ADC_5V_00, &Sensor_BenchTPS0.sensorValue, &Sensor_BenchTPS0.fresh);
+	Sensor_BenchTPS1.ioErr_signal = IO_ADC_Get(IO_ADC_5V_01, &Sensor_BenchTPS1.sensorValue, &Sensor_BenchTPS1.fresh);
+	
+	//Brake Position Sensor ---------------------------------------------------
 	Sensor_BPS0.ioErr_signal = IO_ADC_Get(IO_ADC_5V_02, &Sensor_BPS0.sensorValue, &Sensor_BPS0.fresh);
 
     //?? - For future use ---------------------------------------------------
     //IO_ADC_Get(IO_ADC_5V_03, &Sensor_BPS1.sensorValue, &Sensor_BPS1.fresh);
-
-    //Bench TPS ---------------------------------------------------
-    //Read TPS values in from sensor/ADC
-	Sensor_BenchTPS0.ioErr_signal = IO_ADC_Get(IO_ADC_5V_00, &Sensor_BenchTPS0.sensorValue, &Sensor_BenchTPS0.fresh);
-	Sensor_BenchTPS1.ioErr_signal = IO_ADC_Get(IO_ADC_5V_01, &Sensor_BenchTPS1.sensorValue, &Sensor_BenchTPS1.fresh);
-    //Give TPS values to TPS object
 
     //Shock pots ---------------------------------------------------
     /*IO_ADC_Get(IO_ADC_5V_04, &Sensor_WPS_FL.sensorValue, &Sensor_WPS_FL.fresh);

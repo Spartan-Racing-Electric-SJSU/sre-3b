@@ -162,7 +162,7 @@ extern Sensor Sensor_SAS;  // = { 4 };
 
 //Switches
 //precharge failure
-extern Sensor Sensor_RTD_Button;
+extern Sensor Sensor_RTDButton;
 //TEMP BENCH SWITCHES
 extern Sensor Sensor_TEMP_BrakingSwitch;
 

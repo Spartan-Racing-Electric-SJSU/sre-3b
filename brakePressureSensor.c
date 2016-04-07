@@ -50,6 +50,7 @@ void BrakePressureSensor_update(BrakePressureSensor* me)
 	//running, then set the percentage to zero for safety purposes.
 	if (me->runCalibration == TRUE)
 	{
+		me->bps0_percent = 0;
 		errorCount++;  //DO SOMETHING WITH THIS
 	}
 	else
@@ -68,25 +69,7 @@ void BrakePressureSensor_update(BrakePressureSensor* me)
 		else
 		{
 			me->bps0_percent = getPercent(me->bps0_value, me->bps0_calibMin, me->bps0_calibMax, TRUE);
-
-			//me->bps1_percent = getPercent(me->bps1_value, me->bps1_calibMin, me->bps1_calibMax, TRUE);
-			/*float4 range = me->bps1_calibMax - me->bps1_calibMin;
-			float4 travel = me->bps1_calibMax - me->bps1_value;
-			
-			me->bps1_percent = travel / range;
-			if (travel > range) { me->bps1_percent = 1; }
-			if (travel > me->bps1_calibMax) { me->bps1_percent = 0; }
-			*/
-
-
-			//BrakePressureSensor_plausibilityCheck(me, 0, &me->implausibility);
-			/*if (me->implausibility == TRUE)
-			{
-				me->percent = 0;
-			}
-			else
-			{*/
-			me->percent = me->bps0_percent; //(me->bps0_percent + me->bps1_percent) / 2;
+			me->percent = me->bps0_percent;
 			//}
 		}
 	}

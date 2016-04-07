@@ -184,10 +184,6 @@ void main(void)
 			//dashLight_set(dash_ErrorLight, TRUE);
 			//DIGITAL OUTPUT 4 for STATUS LED
 		}
-		else
-		{
-			//dashLight_set(dash_ErrorLight, FALSE);
-		}
 		TorqueEncoder_update(tps);
 		TorqueEncoder_calibrationCycle(tps, &calibrationErrors); //Todo: deal with calibration errors
 		BrakePressureSensor_update(bps);
@@ -240,7 +236,7 @@ void main(void)
 
         //Drop the sensor readings into CAN (just raw data, not calculated stuff)
         canOutput_sendMCUControl(mcm0, FALSE);
-        canOutput_sendDebugMessage(tps, mcm0, wss, sc);
+        canOutput_sendDebugMessage(tps, bps, mcm0, wss, sc);
         //canOutput_sendSensorMessages();
         //canOutput_sendStatusMessages(mcm0);
 

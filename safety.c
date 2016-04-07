@@ -111,6 +111,7 @@ void SafetyChecker_update(SafetyChecker* me, TorqueEncoder* tps, BrakePressureSe
 	float4 tps1 = 99;
 	TorqueEncoder_getIndividualSensorPercent(tps, 0, &tps0);
 	TorqueEncoder_getIndividualSensorPercent(tps, 1, &tps1);
+	tps1 = 1 - tps1;
 	if (fabs(tps0 - tps1) > .1)  //Note: Individual TPS readings don't go negative, otherwise this wouldn't work
 	{
 		//Err.Report(Err.Codes.TPSDiscrepancy, "TPS discrepancy of over 10%", Motor.Stop);
@@ -214,7 +215,7 @@ ubyte1 SafetyChecker_getErrorByte(SafetyChecker* me, ubyte1* errorSet)
 	switch ((ubyte2)errorSet)
 	{
 	case 0:
-		for (int bit = 7; bit >= 0; bit--)
+		for (int bit = 0; bit <= 7; bit++)
 		{
 			errorByte <<= 1;  //Always leftshift first
 			switch (bit)
