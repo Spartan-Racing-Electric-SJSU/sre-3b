@@ -1,3 +1,20 @@
+ /**************************************************************************
+ * 	REVISION HISTORY:
+ *
+ *
+ *	2016-4-6  - Rabeel Elahi - Added constructor and BMS data struct
+ *							 - Initially added helper functions to update variables,
+ *							   but decided to update variables by passing BMS pointer to
+ *							   canInput_readMesagges(BMS* bms). Commented out for future use.
+ *							 - Added functions to help with endian conversion.
+ *							   Possibly move to mathFunctions?
+ *
+ *	2016-3-28 - Rabeel Elahi - Created this file.
+ *
+ *
+ **************************************************************************/
+
+
 #include <stdio.h>
 #include <stdint.h>
 
@@ -5,8 +22,31 @@
 #ifndef _BATTERYMANAGEMENTSYSTEM_H
 #define _BATTERYMANAGEMENTSYSTEM_H
 
+typedef struct _BMS BMS;
 
-enum _FaultOptions
+BMS* BMS_new(int canMessageBaseID);
+
+/*
+ *  Functions for endian conversion
+ */
+uint8_t swap_uint8(uint8_t val);
+int8_t swap_int8(int8_t val);
+uint16_t swap_uint16(uint16_t val);
+int16_t swap_int16(int16_t val);
+uint32_t swap_uint32(uint32_t val);
+int32_t swap_int32(int32_t val);
+
+typedef enum
+{
+	relayFault = 0x08,
+	contactorK3Status = 0x04,
+	contactorK2Status = 0x02,
+	contactorK1Status = 0x01,
+	faultState = 0x00,
+
+} systemState;
+
+typedef enum
 {
 	DrivingOffWhilePluggedIn = 0x01,	// Driving off while plugged in
 	InterlockTripped = 0x02,			// Inter-lock is tripped
@@ -21,11 +61,12 @@ enum _FaultOptions
 
 	BMSNotDetected = 0x100,
 	InitFailed = 0x200,
-};
-typedef uint16_t FaultOptions; 			// FaultOptions is now a variable type -- uint16_t //
+
+} faultOptions;
 
 
-enum _StoredFaults
+
+typedef enum
 {
 	StoredNoFault = 0x0,						// No fault
 	StoredDrivingOffWhilePluggedIn = 0x01,		// Driving off while plugged in
@@ -37,7 +78,7 @@ enum _StoredFaults
 	StoredUnderVoltage = 0x07,					// Under voltage
 	StoredOverVoltage = 0x08,					// Over voltage
 
-	StoredNoBatteryVoltage = 0x09,              // No batter voltage
+	StoredNoBatteryVoltage = 0x09,              // No battery voltage
 	StoredHighVoltageBMinusLeak = 0xA,			// High voltage B- leak to chassis
 	StoredHighVoltageBPlusLeak = 0xB,			// High voltage B+ leak to chassis
 	StoredContactorK1Shorted = 0xC,				// Contactor K1 shorted
@@ -48,11 +89,11 @@ enum _StoredFaults
 	StoredExcessivePrechargeTime = 0x11,		// Excessive precharge time
 	StoredEEPROMStackOverflow = 0x12,			// EEPROM stack overflow
 
-};
+} storedFaults;
 
-typedef uint8_t StoredFault;
 
-enum _IOFlags{
+
+typedef enum {
 
 	/*
 	 * Using hex to represent each bit position
@@ -67,12 +108,12 @@ enum _IOFlags{
 	IOFlagLowLimitSet = 0x40,					// The LLIM is set
 	IOFlagFanIsOn = 0x80,						// The fan is on
 
-};
-
-typedef uint8_t IOFlags;
+} IOFlags;
 
 
-enum _LimitCause{
+
+
+typedef enum LimitCause{
 
 	LimitCauseErrorReadingValue = -1,
 	LimitCauseNone = 0,							// No limit
@@ -86,9 +127,8 @@ enum _LimitCause{
 	LimitCauseTempTooLowToDischarge,			// Temperature too low for discharging
 	LimitCauseChargingCurrentPeakTooLong,		// Charging current peak lasting too long
 	LimitCauseDischargingCurrentPeakTooLong,	// Discharging current peak lasted too long
-};
 
-typedef int8_t LimitCause;
+} LimitCause;
 
 #define ERROR_READING_LIMIT_VALUE = -1
 
@@ -97,61 +137,70 @@ typedef int8_t LimitCause;
 
 
 
-typedef struct _BMS *BMS;
+//
+//// ELITHION BMS OPTIONS //
+//
+//uint8_t  updateState();
+//uint16_t updateTimer();
+//uint8_t  updateFlags();
+//uint8_t  updateFaultCode();
+//uint8_t  updateLevelFaults();
+//
+//// PACK //
+//
+//uint16_t updatePackVoltage(); 	// volts
+//uint8_t  updateMinVtg(); 		// volts; individual cell voltage
+//uint8_t  updateMaxVtg();
+//uint8_t  updateMinVtgCell();
+//uint8_t  updateMaxVtgCell();
+//
+//
+//// CURRENT //
+//
+//int16_t  updatePackCurrent(); 	 			// amps
+//uint16_t updateChargeLimit();				// 0-100 percent; returns EROR_READING_LIMIT_VALUE on error
+//uint16_t updateDischargeLimit();			// 0-100 percent; returns EROR_READING_LIMIT_VALUE on error
+//
+//// BATTERY //
+//
+//uint32_t batteryEnergyIn();
+//uint32_t batteryEnergyOut();
+//
+//
+//uint8_t  updateSOC();
+//uint16_t updateDOD();
+//uint16_t updateCapacity();
+//uint8_t  updateSOH();
+//
+//// TEMP //
+//
+//int8_t  updatePackTemp();			     // average pack temperature
+//int8_t  updateMinTemp();			     // Temperature of coldest sensor
+//int8_t  updateMinTempCell(); 		     // ID of cell with lowest temperature
+//int8_t  updateMaxTemp();			     // Temperature of hottest sensor
+//int8_t  updateMaxTempCell(); 		     // ID of cell with highest temperature
+//
+//
+//// RESISTANCE //
+//
+//uint16_t updatePackRes();				// resistance of entire pack
+//uint8_t  updateMinRes();  			// resistance of lowest resistance cells
+//uint8_t  updateMinResCell();          // ID of cell with lowest resistance
+//uint8_t  updateMaxRes();				// resistance of highest resistance cells
+//uint8_t  updateMaxResCell();			// ID of cell with highest resistance
+//
+//LimitCause updateChargeLimitCause();
+//LimitCause updateDischargeLimitCause();
 
-	BMS newBMSObj();
-
-	// ELITHION BMS OPTIONS //
-
-	uint8_t getStateOfCharge();			// Returns a value from 0-100
-	uint16_t getDepthOfDischarge();		// (Ah)
-
-	LimitCause getChargeLimitCause();
-	LimitCause getDischargeLimitCause();
-
-	int8_t getChargeLimitValue(); 		// 0-100 percent; returns EROR_READING_LIMIT_VALUE on error
-	int8_t getDishargeLimitValue(); 	// 0-100 percent; returns EROR_READING_LIMIT_VALUE on error
-
-	// PACK //
-
-	float getPackVoltage(); 	// volts
-	float getMinVolage(); 		// volts; individual cell voltage
-	float getAvgVoltage();
-	float getMaxVoltage();
-	uint8_t getMinVoltageCellNumber();
-	uint8_t getAvgVoltageCellNumber();
-	uint8_t getMaxVoltageCellNUmber();
-
-	int getNumberOfCells();
-	float getVoltageForCell(int cell);
-
-	// CURRENT //
-
-	float getPackCurrent(); 	 			// amps
-	float getAverageSourceCurrent();		// amps
-	float getAverageLoadCurrent(); 			// amps
-	float getSourceCurrent(); 				// amps
-	float getLoadCurrent(); 				// amps
-
-	void getFaults(FaultOptions *presentFaults, StoredFault *storedFault, FaultOptions *presentWarnings);
-	void clearStoredFault();
-
-	IOFlags getIOFlags();
-
+//
+////void getFaults(FaultOptions *presentFaults, StoredFault *storedFault, FaultOptions *presentWarnings);
+//void clearStoredFault();
+//
+//IOFlags getIOFlags();
+//
 
 
 #endif // _BATTERYMANAGEMENTSYSTEM_H
-
-//
-//	typedef struct _BatteryManagementSystem BatteryManagementSystem;
-//
-//	BatteryManagementSystem* bms_new(int canMessageBaseID); // initializing other variables?
-//
-//	void bms_updateFromCAN(int* CAN_Message);
-//	//
-//	// recieving message from CANinput function
-//	// taking message and im storing into variables so they can be used later and can be
-//	//
 
 
 
