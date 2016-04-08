@@ -3,8 +3,9 @@
 
 #include "can.h"
 #include "motorController.h"
+#include "bms.h"
 
-void canInput_readMessages(MotorController* mcm);
+void canInput_readMessages(MotorController* mcm, BatteryManagementSystem* bms);
 
 
 

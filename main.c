@@ -111,7 +111,9 @@ void main(void)
     // Eventually, all of these functions should be made obsolete by creating
     // objects instead, like the RTDS/MCM/TPS objects below
     //----------------------------------------------------------------------------
-    vcu_initializeADC();  //Configure and activate all I/O pins on the VCU
+	bool bench = TRUE;
+
+    vcu_initializeADC(bench);  //Configure and activate all I/O pins on the VCU
     vcu_initializeCAN();
     vcu_initializeSensors();
     //vcu_initializeMCU();
@@ -125,10 +127,11 @@ void main(void)
     ReadyToDriveSound* rtds = RTDS_new();
 	//BatteryManagementSystem* bms = BMS_new();
     MotorController* mcm0 = MotorController_new(0xA0, FORWARD, 100); //CAN addr, direction, torque limit x10 (100 = 10Nm)
-	TorqueEncoder* tps = TorqueEncoder_new(TRUE);
+	TorqueEncoder* tps = TorqueEncoder_new(bench);
 	BrakePressureSensor* bps = BrakePressureSensor_new();
 	WheelSpeeds* wss = WheelSpeeds_new(18, 18, 16, 16);
 	SafetyChecker* sc = SafetyChecker_new();
+	BatteryManagementSystem* bms = bms_new(0x620);
 
     //----------------------------------------------------------------------------
     // TODO: Additional Initial Power-up functions
@@ -165,7 +168,7 @@ void main(void)
 
         //canInput - pull messages from CAN FIFO and update our object representations.
         //Also echo can0 messages to can1 for DAQ.
-        canInput_readMessages(mcm0);
+        canInput_readMessages(mcm0, bms);
 
         //----------------------------------------------------------------------------
         // Calculations

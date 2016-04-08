@@ -4,11 +4,12 @@
 #include "can.h"
 #include "canInput.h"
 #include "motorController.h"
+#include "bms.h"
 
 //extern const ubyte1 canMessageLimit = 10;
 extern IO_CAN_DATA_FRAME canMessages[];
 
-void canInput_readMessages(MotorController* mcm)
+void canInput_readMessages(MotorController* mcm, BatteryManagementSystem* bms)
 {
     //Read messages from hipri channel 
     ubyte1 messagesReceived;
@@ -62,17 +63,7 @@ void canInput_readMessages(MotorController* mcm)
         case 0x626:
         case 0x627:
         case 0x628:
-            //For unknown/dynamic data array sizes, use dataIndex < sizeof(canMessages[currMessage].data) / sizeof(canMessages[currMessage].data[0]
-            //for (int dataIndex = 0; dataIndex < 8; dataIndex++)
-            //{
-            //    switch (dataIndex)
-            //    {
-            //    case 6:   //Byte 6: 
-            //        break;
-            //    default:
-            //        break;
-            //    }
-            //}        
+			bms_parseCanMessage(bms, &canMessages[currMessage]);
             break;
 
         //default:

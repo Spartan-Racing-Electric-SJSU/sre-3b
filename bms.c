@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include "bms.h"
 #include <stdlib.h>
+#include "IO_CAN.h"
 
 /**************************************************************************
 * 	REVISION HISTORY:
@@ -25,7 +26,7 @@
 
 
 
-struct _BMS{
+struct _BatteryManagementSystem {
 
 	uint16_t canMessageBaseId;
 
@@ -90,9 +91,9 @@ struct _BMS{
 
 };
 
-BMS* BMS_new(int canMessageBaseID){
+BatteryManagementSystem* bms_new(int canMessageBaseID) {
 
-	BMS* BMS_obj = (BMS*)malloc(sizeof(struct _BMS));
+	BatteryManagementSystem* BMS_obj = (BatteryManagementSystem*)malloc(sizeof(struct _BatteryManagementSystem));
 	BMS_obj->canMessageBaseId = canMessageBaseID;
 	return BMS_obj;
 
@@ -106,86 +107,103 @@ BMS* BMS_new(int canMessageBaseID){
  *
  * NOTE: MULTI-BYTE VALUES ARE BIG ENDIAN!
  */
-void canInput_readMesagges(BMS* bms){
+void bms_parseCanMessage(BatteryManagementSystem* bms, IO_CAN_DATA_FRAME* bmsCanMessage){
 	uint16_t utemp16;
 	int16_t  temp16;
 	uint32_t utemp32;
 
-case 0x622:
+	switch (bmsCanMessage->id)
+	{
 
-	bms->state = canMessages[currMessage].data[0];
-	utemp16 = ((canMessages[currMessage].data[1] << 8) | (canMessages[currMessage].data[2]));
-	bms->timer = swap_uint16(temp);
-	bms->flags = canMessages[currMessage].data[3];
-	bms->faultCode = canMessages[currMessage].data[4];
-	bms->levelFaults = canMessages[currMessage].data[5];
-	bms->warnings = canMessages[currMessage].data[6]
+	case 0x622:
 
-case 0x623:
+		bms->state = bmsCanMessage->data[0];
+		utemp16 = ((bmsCanMessage->data[1] << 8) | (bmsCanMessage->data[2]));
+		bms->timer = swap_uint16(utemp16);
+		bms->flags = bmsCanMessage->data[3];
+		bms->faultCode = bmsCanMessage->data[4];
+		bms->levelFaults = bmsCanMessage->data[5];
+		bms->warnings = bmsCanMessage->data[6];
 
-	utemp16 = ((canMessages[currMessage].data[0] << 8) | (canMessages[currMessage].data[1]));
-	bms->packVoltage = swap_uint16(temp);
-	bms->minVtg = canMessages[currMessage].data[2];
-	bms->minVtgCell = canMessages[currMessage].data[3];
-	bms->maxVtg = canMessages[currMessage].data[4];
-	bms->maxVtgCell = canMessages[currMessage].data[5];
+		break;
 
-case 0x624:
+	case 0x623:
 
-	temp16 = ((canMessages[currMessage].data[0] << 8) | (canMessages[currMessage].data[1]));
-	bms->packCurrent = swap_int16(temp16);
+		utemp16 = ((bmsCanMessage->data[0] << 8) | (bmsCanMessage->data[1]));
+		bms->packVoltage = swap_uint16(utemp16);
+		bms->minVtg = bmsCanMessage->data[2];
+		bms->minVtgCell = bmsCanMessage->data[3];
+		bms->maxVtg = bmsCanMessage->data[4];
+		bms->maxVtgCell = bmsCanMessage->data[5];
 
-	utemp16 = ((canMessages[currMessage].data[2] << 8) | (canMessages[currMessage].data[3]));
-	bms->chargeLimit  = swap_uint16(utemp16);
+		break;
 
-	utemp16 = ((canMessages[currMessage].data[4] << 8) | (canMessages[currMessage].data[5]));
-	bms->dischargeLimit = swap_uint16(utemp16);
+	case 0x624:
 
-case 0x625:
+		temp16 = ((bmsCanMessage->data[0] << 8) | (bmsCanMessage->data[1]));
+		bms->packCurrent = swap_int16(temp16);
 
-	utemp32 = (((canMessages[currMessage].data[0] << 24) |
-			(canMessages[currMessage].data[1] << 16) |
-			(canMessages[currMessage].data[2] << 8)  |
-			(canMessages[currMessage].data[3])));
-	bms->batteryEnergyIn = swap_uint32(utemp32);
+		utemp16 = ((bmsCanMessage->data[2] << 8) | (bmsCanMessage->data[3]));
+		bms->chargeLimit = swap_uint16(utemp16);
 
-	utemp32 = (((canMessages[currMessage].data[4] << 24) |
-			(canMessages[currMessage].data[5] << 16) |
-			(canMessages[currMessage].data[6] << 8)  |
-			(canMessages[currMessage].data[7])));
-	bms->batteryEnergyOut = swap_uint32(utemp32);
+		utemp16 = ((bmsCanMessage->data[4] << 8) | (bmsCanMessage->data[5]));
+		bms->dischargeLimit = swap_uint16(utemp16);
 
-case 0x626:
+		break;
 
-	bms->SOC = canMessages[currMessage].data[0];
+	case 0x625:
 
-	utemp16 = ((canMessages[currMessage].data[1] << 8) | (canMessages[currMessage].data[2]));
-	bms->DOD = swap_uint16(utemp16);
+		utemp32 = (((bmsCanMessage->data[0] << 24) |
+			(bmsCanMessage->data[1] << 16) |
+			(bmsCanMessage->data[2] << 8) |
+			(bmsCanMessage->data[3])));
+		bms->batteryEnergyIn = swap_uint32(utemp32);
 
-	utemp16 = ((canMessages[currMessage].data[3] << 8) | (canMessages[currMessage].data[4]));
-	bms->capacity = swap_uint16(utemp16);
+		utemp32 = (((bmsCanMessage->data[4] << 24) |
+			(bmsCanMessage->data[5] << 16) |
+			(bmsCanMessage->data[6] << 8) |
+			(bmsCanMessage->data[7])));
+		bms->batteryEnergyOut = swap_uint32(utemp32);
 
-	bms->SOH = canMessages[currMessage].data[6];
+		break;
 
+	case 0x626:
 
-case 0x627:
+		bms->SOC = bmsCanMessage->data[0];
 
-	bms->packTemp = canMessages[currMessage].data[0];
-	bms->minTemp = canMessages[currMessage].data[2];
-	bms->minTempCell = canMessages[currMessage].data[3];
-	bms->maxTemp = canMessages[currMessage].data[4];
-	bms->maxTempCell canMessages[currMessage].data[5];
+		utemp16 = ((bmsCanMessage->data[1] << 8) | (bmsCanMessage->data[2]));
+		bms->DOD = swap_uint16(utemp16);
 
-case 0x628:
+		utemp16 = ((bmsCanMessage->data[3] << 8) | (bmsCanMessage->data[4]));
+		bms->capacity = swap_uint16(utemp16);
 
-	utemp16 = ((canMessages[currMessage].data[0] << 8) | (canMessages[currMessage].data[1]));
-	bms->packRes = swap_uint16(utemp16);
+		bms->SOH = bmsCanMessage->data[6];
 
-	bms->minRes = canMessages[currMessage].data[2];
-	bms->minResCell = canMessages[currMessage].data[3];
-	bms->maxRes = canMessages[currMessage].data[4];
-	bms->maxResCell = canMessages[currMessage].data[5];
+		break;
 
+	case 0x627:
+
+		bms->packTemp = bmsCanMessage->data[0];
+		bms->minTemp = bmsCanMessage->data[2];
+		bms->minTempCell = bmsCanMessage->data[3];
+		bms->maxTemp = bmsCanMessage->data[4];
+		bms->maxTempCell = bmsCanMessage->data[5];
+
+		break;
+
+	case 0x628:
+
+		utemp16 = ((bmsCanMessage->data[0] << 8) | (bmsCanMessage->data[1]));
+		bms->packRes = swap_uint16(utemp16);
+
+		bms->minRes = bmsCanMessage->data[2];
+		bms->minResCell = bmsCanMessage->data[3];
+		bms->maxRes = bmsCanMessage->data[4];
+		bms->maxResCell = bmsCanMessage->data[5];
+
+		break;
+
+	}
 }
 
 

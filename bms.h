@@ -17,14 +17,16 @@
 
 #include <stdio.h>
 #include <stdint.h>
+#include "IO_CAN.h"
 
 
 #ifndef _BATTERYMANAGEMENTSYSTEM_H
 #define _BATTERYMANAGEMENTSYSTEM_H
 
-typedef struct _BMS BMS;
+typedef struct _BatteryManagementSystem BatteryManagementSystem;
 
-BMS* BMS_new(int canMessageBaseID);
+BatteryManagementSystem* bms_new(int canMessageBaseID);
+void bms_parseCanMessage(BatteryManagementSystem* bms, IO_CAN_DATA_FRAME* bmsCanMessage);
 
 /*
  *  Functions for endian conversion

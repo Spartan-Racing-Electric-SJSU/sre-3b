@@ -17,7 +17,7 @@
 * ADC
 ****************************************************************************/
 //Turns on the VCU's ADC channels and power supplies.
-void vcu_initializeADC(void)
+void vcu_initializeADC(bool benchMode)
 {
 	//----------------------------------------------------------------------------
 	//Power supplies/outputs
@@ -35,6 +35,9 @@ void vcu_initializeADC(void)
     IO_DO_Init(IO_DO_01); IO_DO_Set(IO_DO_01, FALSE); //HVIL shutdown relay
     IO_DO_Init(IO_DO_02); IO_DO_Set(IO_DO_02, FALSE); //Water pump relay
     IO_DO_Init(IO_DO_03); IO_DO_Set(IO_DO_03, FALSE); //Motor fan relay
+
+	//BMS supply - always on
+	IO_DO_Init(IO_DO_04); IO_DO_Set(IO_DO_04, TRUE); //BMS power / Fault LED
 
     //Wheel Speed Sensor supplies
     Sensor_WSS_FL.ioErr_powerInit = Sensor_WSS_FR.ioErr_powerInit = IO_DO_Init(IO_DO_06); //Front x2
