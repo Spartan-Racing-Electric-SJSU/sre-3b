@@ -61,43 +61,42 @@ void sensors_updateSensors(void)
     //TODO: RTDS
 
     //Torque Encoders ---------------------------------------------------
-    IO_PWD_FreqGet(IO_PWM_00, &Sensor_TPS0.sensorValue);
-    IO_PWD_FreqGet(IO_PWM_01, &Sensor_TPS1.sensorValue);
+	Sensor_TPS0.ioErr_signalGet = IO_PWD_FreqGet(IO_PWM_00, &Sensor_TPS0.sensorValue);
+	Sensor_TPS1.ioErr_signalGet = IO_PWD_FreqGet(IO_PWM_01, &Sensor_TPS1.sensorValue);
 
-    //Brake Position Sensor ---------------------------------------------------
-    IO_ADC_Get(IO_ADC_5V_02, &Sensor_BPS0.sensorValue, &Sensor_BPS0.fresh);
+	//Bench TPS ---------------------------------------------------
+	Sensor_BenchTPS0.ioErr_signalGet = IO_ADC_Get(IO_ADC_5V_00, &Sensor_BenchTPS0.sensorValue, &Sensor_BenchTPS0.fresh);
+	Sensor_BenchTPS1.ioErr_signalGet = IO_ADC_Get(IO_ADC_5V_01, &Sensor_BenchTPS1.sensorValue, &Sensor_BenchTPS1.fresh);
+	
+	//Brake Position Sensor ---------------------------------------------------
+	Sensor_BPS0.ioErr_signalGet = IO_ADC_Get(IO_ADC_5V_02, &Sensor_BPS0.sensorValue, &Sensor_BPS0.fresh);
 
     //?? - For future use ---------------------------------------------------
     //IO_ADC_Get(IO_ADC_5V_03, &Sensor_BPS1.sensorValue, &Sensor_BPS1.fresh);
 
-    //Bench TPS ---------------------------------------------------
-    //Read TPS values in from sensor/ADC
-    IO_ADC_Get(IO_ADC_5V_00, &Sensor_BenchTPS0.sensorValue, &Sensor_BenchTPS0.fresh);
-    IO_ADC_Get(IO_ADC_5V_01, &Sensor_BenchTPS1.sensorValue, &Sensor_BenchTPS1.fresh);
-    //Give TPS values to TPS object
-
     //Shock pots ---------------------------------------------------
-    IO_ADC_Get(IO_ADC_5V_04, &Sensor_WPS_FL.sensorValue, &Sensor_WPS_FL.fresh);
+    /*IO_ADC_Get(IO_ADC_5V_04, &Sensor_WPS_FL.sensorValue, &Sensor_WPS_FL.fresh);
     IO_ADC_Get(IO_ADC_5V_05, &Sensor_WPS_FR.sensorValue, &Sensor_WPS_FR.fresh);
     IO_ADC_Get(IO_ADC_5V_06, &Sensor_WPS_RL.sensorValue, &Sensor_WPS_RL.fresh);
-    IO_ADC_Get(IO_ADC_5V_07, &Sensor_WPS_RL.sensorValue, &Sensor_WPS_RR.fresh);
+    IO_ADC_Get(IO_ADC_5V_07, &Sensor_WPS_RR.sensorValue, &Sensor_WPS_RR.fresh);
+	*/
 
     //Wheel speed sensors ---------------------------------------------------
-    IO_PWD_FreqGet(IO_PWD_08, &Sensor_WSS_FL.sensorValue);
-    IO_PWD_FreqGet(IO_PWD_09, &Sensor_WSS_FR.sensorValue);
-    IO_PWD_FreqGet(IO_PWD_10, &Sensor_WSS_RL.sensorValue);
-    IO_PWD_FreqGet(IO_PWD_11, &Sensor_WSS_RR.sensorValue);
+	Sensor_WSS_FL.ioErr_signalGet = IO_PWD_FreqGet(IO_PWD_08, &Sensor_WSS_FL.sensorValue);
+	Sensor_WSS_FR.ioErr_signalGet = IO_PWD_FreqGet(IO_PWD_09, &Sensor_WSS_FR.sensorValue);
+	Sensor_WSS_RL.ioErr_signalGet = IO_PWD_FreqGet(IO_PWD_10, &Sensor_WSS_RL.sensorValue);
+	Sensor_WSS_RR.ioErr_signalGet = IO_PWD_FreqGet(IO_PWD_11, &Sensor_WSS_RR.sensorValue);
 
     //Switches / Digital ---------------------------------------------------
-    IO_DI_Get(IO_DI_00, &Sensor_RTDButton.sensorValue);
-    IO_DI_Get(IO_DI_01, &Sensor_EcoButton.sensorValue);
-    IO_DI_Get(IO_DI_02, &Sensor_TCSSwitchA.sensorValue);
-    IO_DI_Get(IO_DI_03, &Sensor_TCSSwitchB.sensorValue);
-    IO_DI_Get(IO_DI_07, &Sensor_HVILTerminationSense.sensorValue);
+	Sensor_RTDButton.ioErr_signalGet = IO_DI_Get(IO_DI_00, &Sensor_RTDButton.sensorValue);
+	Sensor_EcoButton.ioErr_signalGet = IO_DI_Get(IO_DI_01, &Sensor_EcoButton.sensorValue);
+	Sensor_TCSSwitchA.ioErr_signalGet = IO_DI_Get(IO_DI_02, &Sensor_TCSSwitchA.sensorValue);
+	Sensor_TCSSwitchB.ioErr_signalGet = IO_DI_Get(IO_DI_03, &Sensor_TCSSwitchB.sensorValue);
+	Sensor_HVILTerminationSense.ioErr_signalGet = IO_DI_Get(IO_DI_07, &Sensor_HVILTerminationSense.sensorValue);
 
     //Other stuff ---------------------------------------------------
     //Battery voltage (at VCU internal electronics supply input)
-    IO_ADC_Get(IO_ADC_UBAT, &Sensor_LVBattery.sensorValue, &Sensor_LVBattery.fresh);
+	Sensor_LVBattery.ioErr_signalGet = IO_ADC_Get(IO_ADC_UBAT, &Sensor_LVBattery.sensorValue, &Sensor_LVBattery.fresh);
 
 
 }
@@ -117,21 +116,22 @@ void dashLight_set(DashLight light, bool turnOn)
     switch (light)
     {
     case dash_EcoLight:
-        IO_PWM_SetDuty(IO_PWM_04, duty, NULL);  //Pin 103
+        IO_PWM_SetDuty(IO_PWM_04, duty, NULL);  //Pin 116
         break;
 
     case dash_ErrorLight:
-        IO_PWM_SetDuty(IO_PWM_05, duty, NULL);  //Pin 103
+        IO_PWM_SetDuty(IO_PWM_05, duty, NULL);  //Pin 104
         break;
 
     case dash_RTDLight:
-        IO_PWM_SetDuty(IO_PWM_06, duty, NULL);  //Pin 103
+        IO_PWM_SetDuty(IO_PWM_06, duty, NULL);  //Pin 115
         break;
 
     case dash_TCSLight:
-        IO_PWM_SetDuty(IO_PWM_03, duty, NULL);  //Pin 103
+        IO_PWM_SetDuty(IO_PWM_03, duty, NULL);  //Pin 105
         break;
     }
+
 }
 
 /*****************************************************************************

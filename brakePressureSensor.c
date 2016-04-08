@@ -2,12 +2,12 @@
 #include <math.h>
 #include "IO_RTC.h"
 
-#include "torqueEncoder.h"
+#include "brakePressureSensor.h"
 #include "mathFunctions.h"
 
 #include "sensors.h"
-extern Sensor Sensor_BenchTPS0;
-extern Sensor Sensor_BenchTPS1;
+//extern Sensor Sensor_BPS0;
+//extern Sensor Sensor_BenchTPS1;
 
 /*****************************************************************************
 * Torque Encoder (TPS) functions
@@ -15,33 +15,33 @@ extern Sensor Sensor_BenchTPS1;
 * If an implausibility occurs between the values of these two sensors the power to the motor(s) must be immediately shut down completely.
 * It is not necessary to completely deactivate the tractive system, the motor controller(s) shutting down the power to the motor(s) is sufficient.
 ****************************************************************************/
-TorqueEncoder* TorqueEncoder_new(bool benchMode)
+BrakePressureSensor* BrakePressureSensor_new(void)
 {
-    TorqueEncoder* me = (TorqueEncoder*)malloc(sizeof(struct _TorqueEncoder));
+    BrakePressureSensor* me = (BrakePressureSensor*)malloc(sizeof(struct _BrakePressureSensor));
     //me->bench = benchMode;
-	
+
     //TODO: Make sure the main loop is running before doing this
-    me->tps0 = (benchMode == TRUE) ? &Sensor_BenchTPS0 : &Sensor_TPS0;
-    me->tps1 = (benchMode == TRUE) ? &Sensor_BenchTPS1 : &Sensor_TPS1;
+    me->bps0 = &Sensor_BPS0;
+    //me->tps1 = (benchMode == TRUE) ? &Sensor_BenchTPS1 : &Sensor_TPS1;
 	
 	//Where/should these be hardcoded?
-	me->tps0_reverse = FALSE;
-	me->tps1_reverse = TRUE;
+	me->bps0_reverse = FALSE;
+	//me->bps1_reverse = TRUE;
 
     me->percent = 0;
     me->runCalibration = FALSE;  //Do not run the calibration at the next main loop cycle
 
     //me->calibrated = FALSE;
-    TorqueEncoder_resetCalibration(me);
+    BrakePressureSensor_resetCalibration(me);
 
     return me;
 }
 
 //Updates all values based on sensor readings, safety checks, etc
-void TorqueEncoder_update(TorqueEncoder* me)
+void BrakePressureSensor_update(BrakePressureSensor* me)
 {
-	me->tps0_value = me->tps0->sensorValue;
-	me->tps1_value = me->tps1->sensorValue;
+	me->bps0_value = me->bps0->sensorValue;
+	//me->bps1_value = me->bps1->sensorValue;
 
 	me->percent = 0;
 	ubyte2 errorCount = 0;
@@ -50,6 +50,7 @@ void TorqueEncoder_update(TorqueEncoder* me)
 	//running, then set the percentage to zero for safety purposes.
 	if (me->runCalibration == TRUE)
 	{
+		me->bps0_percent = 0;
 		errorCount++;  //DO SOMETHING WITH THIS
 	}
 	else
@@ -63,76 +64,51 @@ void TorqueEncoder_update(TorqueEncoder* me)
 		//if ((Sensor_TPS0.isCalibrated == FALSE) || (Sensor_TPS1.isCalibrated == FALSE))
 		if (me->calibrated == FALSE)
 		{
-			me->tps0_percent = 0;
-			me->tps1_percent = 0;
 			(errorCount)++;  //DO SOMETHING WITH THIS
 		}
 		else
 		{
-			//Calculate individual throttle percentages
-			//Percent = (Voltage - CalibMin) / (CalibMax - CalibMin)
-			//float4 TPS0PedalPercent = getPercent(TPS0_Val, TPS0_CalMin, TPS0_CalMax, TRUE); //Analog Input 0
-			//float4 TPS1PedalPercent = getPercent(TPS1_Val, TPS1_CalMin, TPS1_CalMax, TRUE); //Analog input 1
-
-			me->tps0_percent = getPercent(me->tps0_value, me->tps0_calibMin, me->tps0_calibMax, TRUE);
-
-			//Todo: Fix percent calculator to make this work
-			//me->tps1_percent = getPercent(me->tps1_value, me->tps1_calibMin, me->tps1_calibMax, TRUE);
-			float4 range = me->tps1_calibMax - me->tps1_calibMin;
-			float4 travel = me->tps1_calibMax - me->tps1_value;
-			
-			me->tps1_percent = travel / range;
-			if (travel > range) { me->tps1_percent = 1; }
-			if (travel > me->tps1_calibMax) { me->tps1_percent = 0; }
-
-
-			//TorqueEncoder_plausibilityCheck(me, 0, &me->implausibility);
-			/*if (me->implausibility == TRUE)
-			{
-				me->percent = 0;
-			}
-			else
-			{*/
-				me->percent = (me->tps0_percent + me->tps1_percent) / 2;
+			me->bps0_percent = getPercent(me->bps0_value, me->bps0_calibMin, me->bps0_calibMax, TRUE);
+			me->percent = me->bps0_percent;
 			//}
 		}
 	}
 }
 
-void TorqueEncoder_resetCalibration(TorqueEncoder* me)
+void BrakePressureSensor_resetCalibration(BrakePressureSensor* me)
 {
     me->calibrated = FALSE;
-    //me->tps0_rawCalibMin = me->tps0->specMax;
-    //me->tps0_rawCalibMax = me->tps0->specMin;
-    //me->tps0_calibMin = me->tps0->specMax;
-	//me->tps0_calibMax = me->tps0->specMin;
-	me->tps0_calibMin = me->tps0->sensorValue;
-	me->tps0_calibMax = me->tps0->sensorValue;
+    //me->bps0_rawCalibMin = me->bps0->specMax;
+    //me->bps0_rawCalibMax = me->bps0->specMin;
+    //me->bps0_calibMin = me->bps0->specMax;
+	//me->bps0_calibMax = me->bps0->specMin;
+	me->bps0_calibMin = me->bps0->sensorValue;
+	me->bps0_calibMax = me->bps0->sensorValue;
 
-    //me->tps1_rawCalibMin = me->tps1->specMax;
-    //me->tps1_rawCalibMax = me->tps1->specMin;
-	//me->tps1_calibMin = me->tps1->specMax;
-	//me->tps1_calibMax = me->tps1->specMin;
-	me->tps1_calibMin = me->tps1->sensorValue;
-	me->tps1_calibMax = me->tps1->sensorValue;
+    //me->bps1_rawCalibMin = me->bps1->specMax;
+    //me->bps1_rawCalibMax = me->bps1->specMin;
+	//me->bps1_calibMin = me->bps1->specMax;
+	//me->bps1_calibMax = me->bps1->specMin;
+//	me->bps1_calibMin = me->bps1->sensorValue;
+//	me->bps1_calibMax = me->bps1->sensorValue;
 }
 
-void TorqueEncoder_saveCalibrationToEEPROM(TorqueEncoder* me)
+void BrakePressureSensor_saveCalibrationToEEPROM(BrakePressureSensor* me)
 {
 
 }
 
-void TorqueEncoder_loadCalibrationFromEEPROM(TorqueEncoder* me)
+void BrakePressureSensor_loadCalibrationFromEEPROM(BrakePressureSensor* me)
 {
 
 }
 
-void TorqueEncoder_startCalibration(TorqueEncoder* me, ubyte1 secondsToRun)
+void BrakePressureSensor_startCalibration(BrakePressureSensor* me, ubyte1 secondsToRun)
 {
     if (me->runCalibration == FALSE) //Ignore the button if calibration is already running
     {
         me->runCalibration = TRUE;
-        TorqueEncoder_resetCalibration(me);
+        BrakePressureSensor_resetCalibration(me);
         me->calibrated = FALSE;
         IO_RTC_StartTime(&(me->timestamp_calibrationStart));
         me->calibrationRunTime = secondsToRun;
@@ -152,41 +128,40 @@ void TorqueEncoder_startCalibration(TorqueEncoder* me, ubyte1 secondsToRun)
 -------------------------------------------------------------------*/
 // Physical pedal travel will only occur across the center (about 1/2) of the actual sensor's range of travel
 // The rules (especially EV2.3.6) are written about % of PEDAL travel, not percent of sensor range, so we must calculate pedal travel by recording the min/max voltages at min/max throttle positions
-void TorqueEncoder_calibrationCycle(TorqueEncoder* me, ubyte1* errorCount)
-//THIS FUNCTION SHOULD NOT BE CALLED FROM MAIN
+void BrakePressureSensor_calibrationCycle(BrakePressureSensor* me, ubyte1* errorCount)
 {
     if (me->runCalibration == TRUE)
     {
         if (IO_RTC_GetTimeUS(me->timestamp_calibrationStart) < (ubyte4)(me->calibrationRunTime) * 1000 * 1000)
         {
 			//The calibration itself
-			if (me->tps0->sensorValue < me->tps0_calibMin) { me->tps0_calibMin = me->tps0->sensorValue; }
-			if (me->tps0->sensorValue > me->tps0_calibMax) { me->tps0_calibMax = me->tps0->sensorValue; }
+			if (me->bps0->sensorValue < me->bps0_calibMin) { me->bps0_calibMin = me->bps0->sensorValue; }
+			if (me->bps0->sensorValue > me->bps0_calibMax) { me->bps0_calibMax = me->bps0->sensorValue; }
 
-			if (me->tps1->sensorValue < me->tps1_calibMin) { me->tps1_calibMin = me->tps1->sensorValue; }
-			if (me->tps1->sensorValue > me->tps1_calibMax) { me->tps1_calibMax = me->tps1->sensorValue; }
+			//if (me->bps1->sensorValue < me->bps1_calibMin) { me->bps1_calibMin = me->bps1->sensorValue; }
+			//if (me->bps1->sensorValue > me->bps1_calibMax) { me->bps1_calibMax = me->bps1->sensorValue; }
 
         }
         else  //Calibration shutdown
         {
 			////If the sensor goes in reverse direction then flip the min/max values
-			//if (me->tps0_reverse == TRUE)
+			//if (me->bps0_reverse == TRUE)
 			//{
-			//	float4 temp = me->tps0_calibMin;
-			//	me->tps0_calibMin = me->tps0_calibMax;
-			//	me->tps0_calibMax = temp;
+			//	float4 temp = me->bps0_calibMin;
+			//	me->bps0_calibMin = me->bps0_calibMax;
+			//	me->bps0_calibMax = temp;
 			//}
 
-			//if (me->tps1_reverse == TRUE)
+			//if (me->bps1_reverse == TRUE)
 			//{
-			//	float4 temp = me->tps1_calibMin;
-			//	me->tps1_calibMin = me->tps1_calibMax;
-			//	me->tps1_calibMax = temp;
+			//	float4 temp = me->bps1_calibMin;
+			//	me->bps1_calibMin = me->bps1_calibMax;
+			//	me->bps1_calibMax = temp;
 			//}
 
 			me->runCalibration = FALSE;
 			me->calibrated = TRUE;
-			dashLight_set(dash_EcoLight, FALSE);
+			dashLight_set(dash_TCSLight, FALSE);
 			
 
         }
@@ -209,25 +184,25 @@ void TorqueEncoder_calibrationCycle(TorqueEncoder* me, ubyte1* errorCount)
 }
 
 
-void TorqueEncoder_getIndividualSensorPercent(TorqueEncoder* me, ubyte1 sensorNumber, float4* percent)
+void BrakePressureSensor_getIndividualSensorPercent(BrakePressureSensor* me, ubyte1 sensorNumber, float4* percent)
 {
-	//Sensor* tps;
+	//Sensor* bps;
 	//ubyte2 calMin;
 	//ubyte2 calMax;
 
 	switch (sensorNumber)
 	{
 	case 0:
-		*percent = me->tps0_percent;
-		//tps = me->tps0;
-		//calMin = me->tps0_calibMin;
-		//calMax = me->tps0_calibMax;
+		*percent = me->bps0_percent;
+		//bps = me->bps0;
+		//calMin = me->bps0_calibMin;
+		//calMax = me->bps0_calibMax;
 		break;
 	case 1:
-		*percent = me->tps1_percent;
-		//tps = me->tps1;
-		//calMin = me->tps1_calibMin;
-		//calMax = me->tps1_calibMax;
+		*percent = 0;//me->bps1_percent;
+		//bps = me->bps1;
+		//calMin = me->bps1_calibMin;
+		//calMax = me->bps1_calibMax;
 		break;
 	}
 	//float4 TPS0PedalPercent = getPercent(me->tps0->sensorValue, calMin, calMax, TRUE); //Analog Input 0
@@ -244,7 +219,7 @@ void TorqueEncoder_getIndividualSensorPercent(TorqueEncoder* me, ubyte1 sensorNu
 * Throws:      000 - TPS0 voltage out of range
 *              001 - TPS1 voltage out of range, 002
 -------------------------------------------------------------------*/
-void TorqueEncoder_getPedalTravel(TorqueEncoder* me, ubyte1* errorCount, float4* pedalPercent)
+void BrakePressureSensor_getPedalTravel(BrakePressureSensor* me, ubyte1* errorCount, float4* pedalPercent)
 {
 	*pedalPercent = me->percent;
 
