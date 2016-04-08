@@ -334,6 +334,9 @@ void setMCMCommands(MotorController* mcm, TorqueEncoder* tps, BrakePressureSenso
 //See diagram at https://onedrive.live.com/redir?resid=F9BB8F0F8FDB5CF8!30410&authkey=!ABSF-uVH-VxQRAs&ithint=file%2chtml
 void MotorControllerPowerManagement(MotorController* mcm, TorqueEncoder* tps, ReadyToDriveSound* rtds)
 {
+
+
+	
 	//If HVIL Term Sense is high, then set MCM relay high
 	if (Sensor_HVILTerminationSense.sensorValue == FALSE)
 	{
@@ -343,31 +346,34 @@ void MotorControllerPowerManagement(MotorController* mcm, TorqueEncoder* tps, Re
 	else
 	{
 		//If the motor controller is off, don't turn it on until the pedals are calibrated
-		if (tps->calibrated == TRUE && mcm_getStartupStage(mcm) == 0)
-		{
+		//if (mcm_getStartupStage(mcm) == 0)
+		//{
 			setMCMRelay(TRUE);
-			mcm_setStartupStage(mcm, 1);
-		}
+			//mcm_setStartupStage(mcm, 1);
+		//}
 	}
-    
+
 	//----------------------------------------------------------------------------
     // Determine inverter state
     //----------------------------------------------------------------------------
     //New Handshake NOTE: Switches connected to ground.. TRUE = high = off = disconnected = open circuit, FALSE = low = grounded = on = connected = closed circuit
-    switch (mcm_getLockoutStatus(mcm))
-	{
-	case ENABLED:
-        mcm_commands_setInverter(mcm, DISABLED);
-		mcm_setStartupStage(mcm, 2);
-		break;
-
-	/*if (mcm_getStartupStage(mcm) == 1 && mcm_getRTDSFlag(mcm) == )
+	//if (mcm_getLockoutStatus(mcm) == ENABLED)
+	
+	//Set inverter to disabled until RTD procedure is done.
+	//This disables the lockout ahead of time.
+	if (mcm_getStartupStage(mcm) < 3)
 	{
 		mcm_commands_setInverter(mcm, DISABLED);
-		mcm_setStartupStage(mcm, 2);
-	}*/
+		//mcm_setStartupStage(mcm, 2);
+	}
 
-	case DISABLED: //Lockout is disabled
+	//if (mcm_getStartupStage(mcm) == 1 && mcm_getRTDSFlag(mcm) == )
+	//{
+	//	mcm_commands_setInverter(mcm, DISABLED);
+	//	mcm_setStartupStage(mcm, 2);
+	//}
+
+	//case DISABLED: //Lockout is disabled
         switch (mcm_getInverterStatus(mcm))
         {
         case DISABLED:
@@ -387,7 +393,7 @@ void MotorControllerPowerManagement(MotorController* mcm, TorqueEncoder* tps, Re
             //if (mcm_getRTDSFlag(mcm) == TRUE)
             if (mcm_getStartupStage(mcm) == 4) //If we're waiting to start the motor controller
 			{
-                RTDS_setVolume(rtds, .005, 1500000);
+                RTDS_setVolume(rtds, .01, 1500000);
                 //mcm_setRTDSFlag(mcm, FALSE);  //RTDS started, so don't restart it next loop
                 mcm_setStartupStage(mcm, 5); //RTD confirmed
             }
@@ -401,15 +407,14 @@ void MotorControllerPowerManagement(MotorController* mcm, TorqueEncoder* tps, Re
             break;
         }
 
-        break;
-    case UNKNOWN: default:
-	    break;
-	}
-
+        //break;
+    //case UNKNOWN: default:
+	//    break;
+	//}
 	
 	/*
     //TEMPORARY Eco Switch startup code
-    if (Sensor_TEMP_BrakingSwitch.sensorValue == FALSE)
+    if (Sensor_EcoButton.sensorValue == FALSE)
     {
         mcm_commands_setInverter(mcm, DISABLED);
     }
@@ -429,6 +434,6 @@ void MotorControllerPowerManagement(MotorController* mcm, TorqueEncoder* tps, Re
         RTDS_setVolume(rtds, .005, 1500000);
         mcm_setRTDSFlag(mcm, FALSE);  //RTDS started, so don't restart it next loop
     }
-*/
+	*/
 
 }

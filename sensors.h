@@ -126,9 +126,10 @@ typedef struct _Sensor {
     ubyte4 sensorValue;
     bool fresh;
     //bool isCalibrated;
-	IO_ErrorType ioErr_power;
-	IO_ErrorType ioErr_init;
-	IO_ErrorType ioErr_signal;
+	IO_ErrorType ioErr_powerInit;
+	IO_ErrorType ioErr_powerSet;
+	IO_ErrorType ioErr_signalInit;
+	IO_ErrorType ioErr_signalGet;
 } Sensor;
 
 //----------------------------------------------------------------------------
@@ -163,6 +164,9 @@ extern Sensor Sensor_SAS;  // = { 4 };
 //Switches
 //precharge failure
 extern Sensor Sensor_RTDButton;
+extern Sensor Sensor_EcoButton;
+extern Sensor Sensor_TCSSwitchA;
+extern Sensor Sensor_TCSSwitchB;
 //TEMP BENCH SWITCHES
 extern Sensor Sensor_TEMP_BrakingSwitch;
 

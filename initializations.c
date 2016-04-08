@@ -23,8 +23,8 @@ void vcu_initializeADC(void)
 	//Power supplies/outputs
 	//----------------------------------------------------------------------------
 	//Analog sensor supplies
-    Sensor_TPS0.ioErr_power = Sensor_BPS0.ioErr_power = IO_POWER_Set(IO_ADC_SENSOR_SUPPLY_0, IO_POWER_ON);
-	Sensor_TPS1.ioErr_power = IO_POWER_Set(IO_ADC_SENSOR_SUPPLY_1, IO_POWER_ON);
+    Sensor_TPS0.ioErr_powerSet = Sensor_BPS0.ioErr_powerSet = IO_POWER_Set(IO_ADC_SENSOR_SUPPLY_0, IO_POWER_ON);
+	Sensor_TPS1.ioErr_powerSet = IO_POWER_Set(IO_ADC_SENSOR_SUPPLY_1, IO_POWER_ON);
 
     //Variable power supply (used by BPS)
     //IO_POWER_Set(IO_SENSOR_SUPPLY_VAR, IO_POWER_14_5_V);    //IO_POWER_Set(IO_PIN_269, IO_POWER_8_5_V);
@@ -37,8 +37,8 @@ void vcu_initializeADC(void)
     IO_DO_Init(IO_DO_03); IO_DO_Set(IO_DO_03, FALSE); //Motor fan relay
 
     //Wheel Speed Sensor supplies
-    Sensor_WSS_FL.ioErr_power = Sensor_WSS_FR.ioErr_power = IO_DO_Init(IO_DO_06); //Front x2
-	Sensor_WSS_RL.ioErr_power = Sensor_WSS_RR.ioErr_power = IO_DO_Init(IO_DO_07); //Rear  x2
+    Sensor_WSS_FL.ioErr_powerInit = Sensor_WSS_FR.ioErr_powerInit = IO_DO_Init(IO_DO_06); //Front x2
+	Sensor_WSS_RL.ioErr_powerInit = Sensor_WSS_RR.ioErr_powerInit = IO_DO_Init(IO_DO_07); //Rear  x2
 
     //Digital PWM outputs ---------------------------------------------------
     IO_PWM_Init(IO_PWM_03, 500, TRUE, FALSE, 0, FALSE, NULL);  //TCS Light
@@ -56,7 +56,7 @@ void vcu_initializeADC(void)
 
     //BPS
 	//Sensor_BPS0.ioErr_init = IO_ADC_ChannelInit(IO_ADC_5V_02, IO_ADC_RATIOMETRIC, 0, 0, IO_ADC_SENSOR_SUPPLY_0, NULL);
-	Sensor_BPS0.ioErr_init = IO_ADC_ChannelInit(IO_ADC_5V_02, IO_ADC_RESISTIVE, 0, 0, 0, NULL);
+	Sensor_BPS0.ioErr_signalInit = IO_ADC_ChannelInit(IO_ADC_5V_02, IO_ADC_RESISTIVE, 0, 0, 0, NULL);
 
     //Unused
     //IO_ADC_ChannelInit(IO_ADC_5V_03, IO_ADC_RATIOMETRIC, 0, 0, IO_ADC_SENSOR_SUPPLY_0, NULL);
@@ -64,8 +64,8 @@ void vcu_initializeADC(void)
     //Bench TPS
 	extern Sensor Sensor_BenchTPS0;
 	extern Sensor Sensor_BenchTPS1;
-    Sensor_BenchTPS0.ioErr_init = IO_ADC_ChannelInit(IO_ADC_5V_00, IO_ADC_RESISTIVE, 0, 0, 0, NULL);
-	Sensor_BenchTPS1.ioErr_init = IO_ADC_ChannelInit(IO_ADC_5V_01, IO_ADC_RESISTIVE, 0, 0, 0, NULL);
+    Sensor_BenchTPS0.ioErr_signalInit = IO_ADC_ChannelInit(IO_ADC_5V_00, IO_ADC_RESISTIVE, 0, 0, 0, NULL);
+	Sensor_BenchTPS1.ioErr_signalInit = IO_ADC_ChannelInit(IO_ADC_5V_01, IO_ADC_RESISTIVE, 0, 0, 0, NULL);
 
     //TCS Pot
     IO_ADC_ChannelInit(IO_ADC_5V_04, IO_ADC_RESISTIVE, 0, 0, 0, NULL);
@@ -78,23 +78,23 @@ void vcu_initializeADC(void)
 	//PWD channels
 	//----------------------------------------------------------------------------
 	//TPS
-	Sensor_TPS0.ioErr_init = IO_PWD_PulseInit(IO_PWM_00, IO_PWD_HIGH_TIME);
-	Sensor_TPS1.ioErr_init = IO_PWD_PulseInit(IO_PWM_01, IO_PWD_HIGH_TIME);
+	Sensor_TPS0.ioErr_signalInit = IO_PWD_PulseInit(IO_PWM_00, IO_PWD_HIGH_TIME);
+	Sensor_TPS1.ioErr_signalInit = IO_PWD_PulseInit(IO_PWM_01, IO_PWD_HIGH_TIME);
 	
 	//Wheel Speed Sensors (Pulse Width Detection)
-    Sensor_WSS_FR.ioErr_init = IO_PWD_FreqInit(IO_PWD_08, IO_PWD_RISING_VAR);  //Is there a reason to look for rising vs falling edge?
-	Sensor_WSS_RR.ioErr_init = IO_PWD_FreqInit(IO_PWD_09, IO_PWD_RISING_VAR);  //Is there a reason to look for rising vs falling edge?
-	Sensor_WSS_FL.ioErr_init = IO_PWD_FreqInit(IO_PWD_10, IO_PWD_RISING_VAR);  //Is there a reason to look for rising vs falling edge?
-	Sensor_WSS_RL.ioErr_init = IO_PWD_FreqInit(IO_PWD_11, IO_PWD_RISING_VAR);  //Is there a reason to look for rising vs falling edge?
+    Sensor_WSS_FR.ioErr_signalInit = IO_PWD_FreqInit(IO_PWD_08, IO_PWD_RISING_VAR);  //Is there a reason to look for rising vs falling edge?
+	Sensor_WSS_RR.ioErr_signalInit = IO_PWD_FreqInit(IO_PWD_09, IO_PWD_RISING_VAR);  //Is there a reason to look for rising vs falling edge?
+	Sensor_WSS_FL.ioErr_signalInit = IO_PWD_FreqInit(IO_PWD_10, IO_PWD_RISING_VAR);  //Is there a reason to look for rising vs falling edge?
+	Sensor_WSS_RL.ioErr_signalInit = IO_PWD_FreqInit(IO_PWD_11, IO_PWD_RISING_VAR);  //Is there a reason to look for rising vs falling edge?
     
     //----------------------------------------------------------------------------
 	//Switches
 	//----------------------------------------------------------------------------
-	IO_DI_Init(IO_DI_00, IO_DI_PU_10K); //RTD Button
-    IO_DI_Init(IO_DI_01, IO_DI_PU_10K); //Eco Button
-    IO_DI_Init(IO_DI_02, IO_DI_PU_10K); //TCS Switch A
-    IO_DI_Init(IO_DI_03, IO_DI_PU_10K); //TCS Switch B
-    IO_DI_Init(IO_DI_07, IO_DI_PD_10K); //HVIL Term sense, high = HV present
+	Sensor_RTDButton.ioErr_signalInit = IO_DI_Init(IO_DI_00, IO_DI_PU_10K); //RTD Button
+    Sensor_EcoButton.ioErr_signalInit = IO_DI_Init(IO_DI_01, IO_DI_PU_10K); //Eco Button
+    Sensor_TCSSwitchA.ioErr_signalInit = IO_DI_Init(IO_DI_02, IO_DI_PU_10K); //TCS Switch A
+	Sensor_TCSSwitchB.ioErr_signalInit = IO_DI_Init(IO_DI_03, IO_DI_PU_10K); //TCS Switch B
+    Sensor_HVILTerminationSense.ioErr_signalInit = IO_DI_Init(IO_DI_07, IO_DI_PD_10K); //HVIL Term sense, high = HV present
 
     //
 

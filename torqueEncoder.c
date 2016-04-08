@@ -86,7 +86,6 @@ void TorqueEncoder_update(TorqueEncoder* me)
 			if (travel > me->tps1_calibMax) { me->tps1_percent = 0; }
 
 
-
 			//TorqueEncoder_plausibilityCheck(me, 0, &me->implausibility);
 			/*if (me->implausibility == TRUE)
 			{

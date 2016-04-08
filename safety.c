@@ -107,15 +107,18 @@ void SafetyChecker_update(SafetyChecker* me, TorqueEncoder* tps, BrakePressureSe
 	
 	//Check for implausibility (discrepancy > 10%)
 	//RULE: EV2.3.6 Implausibility is defined as a deviation of more than 10% pedal travel between the sensors.
-	float4 tps0 = -10;  //Set invalid values just in case
-	float4 tps1 = 99;
-	TorqueEncoder_getIndividualSensorPercent(tps, 0, &tps0);
+	float4 tps0;   //Pedal percent float (a decimal between 0 and 1
+	float4 tps1;
+
+	TorqueEncoder_getIndividualSensorPercent(tps, 0, &tps0); //borrow the pedal percent variable
 	TorqueEncoder_getIndividualSensorPercent(tps, 1, &tps1);
 	tps1 = 1 - tps1;
-	if (fabs(tps0 - tps1) > .1)  //Note: Individual TPS readings don't go negative, otherwise this wouldn't work
+
+	me->tpsOutOfSync = TRUE;
+	if (fabs(tps0 - tps1) < 0x19)  //Note: Individual TPS readings don't go negative, otherwise this wouldn't work
 	{
 		//Err.Report(Err.Codes.TPSDiscrepancy, "TPS discrepancy of over 10%", Motor.Stop);
-		me->tpsOutOfSync = TRUE;
+		me->tpsOutOfSync = FALSE;
 	}
 
 

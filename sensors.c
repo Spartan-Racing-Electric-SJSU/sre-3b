@@ -61,15 +61,15 @@ void sensors_updateSensors(void)
     //TODO: RTDS
 
     //Torque Encoders ---------------------------------------------------
-	Sensor_TPS0.ioErr_signal = IO_PWD_FreqGet(IO_PWM_00, &Sensor_TPS0.sensorValue);
-	Sensor_TPS1.ioErr_signal = IO_PWD_FreqGet(IO_PWM_01, &Sensor_TPS1.sensorValue);
+	Sensor_TPS0.ioErr_signalGet = IO_PWD_FreqGet(IO_PWM_00, &Sensor_TPS0.sensorValue);
+	Sensor_TPS1.ioErr_signalGet = IO_PWD_FreqGet(IO_PWM_01, &Sensor_TPS1.sensorValue);
 
 	//Bench TPS ---------------------------------------------------
-	Sensor_BenchTPS0.ioErr_signal = IO_ADC_Get(IO_ADC_5V_00, &Sensor_BenchTPS0.sensorValue, &Sensor_BenchTPS0.fresh);
-	Sensor_BenchTPS1.ioErr_signal = IO_ADC_Get(IO_ADC_5V_01, &Sensor_BenchTPS1.sensorValue, &Sensor_BenchTPS1.fresh);
+	Sensor_BenchTPS0.ioErr_signalGet = IO_ADC_Get(IO_ADC_5V_00, &Sensor_BenchTPS0.sensorValue, &Sensor_BenchTPS0.fresh);
+	Sensor_BenchTPS1.ioErr_signalGet = IO_ADC_Get(IO_ADC_5V_01, &Sensor_BenchTPS1.sensorValue, &Sensor_BenchTPS1.fresh);
 	
 	//Brake Position Sensor ---------------------------------------------------
-	Sensor_BPS0.ioErr_signal = IO_ADC_Get(IO_ADC_5V_02, &Sensor_BPS0.sensorValue, &Sensor_BPS0.fresh);
+	Sensor_BPS0.ioErr_signalGet = IO_ADC_Get(IO_ADC_5V_02, &Sensor_BPS0.sensorValue, &Sensor_BPS0.fresh);
 
     //?? - For future use ---------------------------------------------------
     //IO_ADC_Get(IO_ADC_5V_03, &Sensor_BPS1.sensorValue, &Sensor_BPS1.fresh);
@@ -82,21 +82,21 @@ void sensors_updateSensors(void)
 	*/
 
     //Wheel speed sensors ---------------------------------------------------
-	Sensor_WSS_FL.ioErr_signal = IO_PWD_FreqGet(IO_PWD_08, &Sensor_WSS_FL.sensorValue);
-	Sensor_WSS_FR.ioErr_signal = IO_PWD_FreqGet(IO_PWD_09, &Sensor_WSS_FR.sensorValue);
-	Sensor_WSS_RL.ioErr_signal = IO_PWD_FreqGet(IO_PWD_10, &Sensor_WSS_RL.sensorValue);
-	Sensor_WSS_RR.ioErr_signal = IO_PWD_FreqGet(IO_PWD_11, &Sensor_WSS_RR.sensorValue);
+	Sensor_WSS_FL.ioErr_signalGet = IO_PWD_FreqGet(IO_PWD_08, &Sensor_WSS_FL.sensorValue);
+	Sensor_WSS_FR.ioErr_signalGet = IO_PWD_FreqGet(IO_PWD_09, &Sensor_WSS_FR.sensorValue);
+	Sensor_WSS_RL.ioErr_signalGet = IO_PWD_FreqGet(IO_PWD_10, &Sensor_WSS_RL.sensorValue);
+	Sensor_WSS_RR.ioErr_signalGet = IO_PWD_FreqGet(IO_PWD_11, &Sensor_WSS_RR.sensorValue);
 
     //Switches / Digital ---------------------------------------------------
-	Sensor_RTDButton.ioErr_signal = IO_DI_Get(IO_DI_00, &Sensor_RTDButton.sensorValue);
-	Sensor_EcoButton.ioErr_signal = IO_DI_Get(IO_DI_01, &Sensor_EcoButton.sensorValue);
-	Sensor_TCSSwitchA.ioErr_signal = IO_DI_Get(IO_DI_02, &Sensor_TCSSwitchA.sensorValue);
-	Sensor_TCSSwitchB.ioErr_signal = IO_DI_Get(IO_DI_03, &Sensor_TCSSwitchB.sensorValue);
-	Sensor_HVILTerminationSense.ioErr_signal = IO_DI_Get(IO_DI_07, &Sensor_HVILTerminationSense.sensorValue);
+	Sensor_RTDButton.ioErr_signalGet = IO_DI_Get(IO_DI_00, &Sensor_RTDButton.sensorValue);
+	Sensor_EcoButton.ioErr_signalGet = IO_DI_Get(IO_DI_01, &Sensor_EcoButton.sensorValue);
+	Sensor_TCSSwitchA.ioErr_signalGet = IO_DI_Get(IO_DI_02, &Sensor_TCSSwitchA.sensorValue);
+	Sensor_TCSSwitchB.ioErr_signalGet = IO_DI_Get(IO_DI_03, &Sensor_TCSSwitchB.sensorValue);
+	Sensor_HVILTerminationSense.ioErr_signalGet = IO_DI_Get(IO_DI_07, &Sensor_HVILTerminationSense.sensorValue);
 
     //Other stuff ---------------------------------------------------
     //Battery voltage (at VCU internal electronics supply input)
-	Sensor_LVBattery.ioErr_signal = IO_ADC_Get(IO_ADC_UBAT, &Sensor_LVBattery.sensorValue, &Sensor_LVBattery.fresh);
+	Sensor_LVBattery.ioErr_signalGet = IO_ADC_Get(IO_ADC_UBAT, &Sensor_LVBattery.sensorValue, &Sensor_LVBattery.fresh);
 
 
 }

@@ -356,7 +356,7 @@ void canOutput_sendDebugMessage(TorqueEncoder* tps, BrakePressureSensor* bps, Mo
 	canMessages[canMessageCount - 1].data[byteNum++] = 7;
 
 	//Place the can messsages into the FIFO queue ---------------------------------------------------
-	IO_CAN_WriteFIFO(canFifoHandle_HiPri_Write, canMessages, canMessageCount);  //Important: Only transmit one message (the MCU message)
+	//IO_CAN_WriteFIFO(canFifoHandle_HiPri_Write, canMessages, canMessageCount);  //Important: Only transmit one message (the MCU message)
 	IO_CAN_WriteFIFO(canFifoHandle_LoPri_Write, canMessages, canMessageCount);  //Important: Only transmit one message (the MCU message)
 
 }
