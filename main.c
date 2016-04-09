@@ -189,7 +189,7 @@ void main(void)
 		}
 		TorqueEncoder_update(tps);
 		TorqueEncoder_calibrationCycle(tps, &calibrationErrors); //Todo: deal with calibration errors
-		BrakePressureSensor_update(bps);
+		BrakePressureSensor_update(bps, bench);
 		BrakePressureSensor_calibrationCycle(bps, &calibrationErrors);
 
 		//TractionControl_update(tps, mcm0, wss, daq);
