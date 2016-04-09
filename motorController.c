@@ -364,6 +364,7 @@ void MotorControllerPowerManagement(MotorController* mcm, TorqueEncoder* tps, Re
 	if (mcm_getStartupStage(mcm) < 3)
 	{
 		mcm_commands_setInverter(mcm, DISABLED);
+		Light_set(Light_dashRTD, 0);
 		//mcm_setStartupStage(mcm, 2);
 	}
 
@@ -389,6 +390,7 @@ void MotorControllerPowerManagement(MotorController* mcm, TorqueEncoder* tps, Re
             break;
 
         case ENABLED:
+			Light_set(Light_dashRTD, 1);
             //If the inverter was successfully enabled AND we haven't started the RTDS yet
             //if (mcm_getRTDSFlag(mcm) == TRUE)
             if (mcm_getStartupStage(mcm) == 4) //If we're waiting to start the motor controller

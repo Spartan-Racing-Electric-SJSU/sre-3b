@@ -44,11 +44,12 @@ void vcu_initializeADC(bool benchMode)
 	Sensor_WSS_RL.ioErr_powerInit = Sensor_WSS_RR.ioErr_powerInit = IO_DO_Init(IO_DO_07); //Rear  x2
 
     //Digital PWM outputs ---------------------------------------------------
-    IO_PWM_Init(IO_PWM_03, 500, TRUE, FALSE, 0, FALSE, NULL);  //TCS Light
-    IO_PWM_Init(IO_PWM_04, 500, TRUE, FALSE, 0, FALSE, NULL);  //Eco Light
-    IO_PWM_Init(IO_PWM_05, 500, TRUE, FALSE, 0, FALSE, NULL);  //Error Light
-    IO_PWM_Init(IO_PWM_06, 500, TRUE, FALSE, 0, FALSE, NULL);  //RTD Light
-    IO_PWM_Init(IO_PWM_07, 750, TRUE, FALSE, 0, FALSE, NULL);  //RTD Sound
+	IO_PWM_Init(IO_PWM_02, 500, TRUE, FALSE, 0, FALSE, NULL); IO_PWM_SetDuty(IO_PWM_02, 0, NULL);  //TCS Light
+	IO_PWM_Init(IO_PWM_03, 500, TRUE, FALSE, 0, FALSE, NULL); IO_PWM_SetDuty(IO_PWM_03, 0, NULL);  //TCS Light
+	IO_PWM_Init(IO_PWM_04, 500, TRUE, FALSE, 0, FALSE, NULL); IO_PWM_SetDuty(IO_PWM_04, 0, NULL);  //Eco Light
+    IO_PWM_Init(IO_PWM_05, 500, TRUE, FALSE, 0, FALSE, NULL); IO_PWM_SetDuty(IO_PWM_05, 0, NULL);  //Error Light
+    IO_PWM_Init(IO_PWM_06, 500, TRUE, FALSE, 0, FALSE, NULL); IO_PWM_SetDuty(IO_PWM_06, 0, NULL);  //RTD Light
+    IO_PWM_Init(IO_PWM_07, 750, TRUE, FALSE, 0, FALSE, NULL); IO_PWM_SetDuty(IO_PWM_07, 0, NULL);  //RTD Sound
 
     //----------------------------------------------------------------------------
 	//ADC channels

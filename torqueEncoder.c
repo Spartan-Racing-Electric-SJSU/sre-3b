@@ -137,7 +137,7 @@ void TorqueEncoder_startCalibration(TorqueEncoder* me, ubyte1 secondsToRun)
         IO_RTC_StartTime(&(me->timestamp_calibrationStart));
         me->calibrationRunTime = secondsToRun;
 
-		dashLight_set(dash_EcoLight, TRUE);
+		Light_set(Light_dashEco, 1);
     }
 }
 
@@ -186,7 +186,7 @@ void TorqueEncoder_calibrationCycle(TorqueEncoder* me, ubyte1* errorCount)
 
 			me->runCalibration = FALSE;
 			me->calibrated = TRUE;
-			dashLight_set(dash_EcoLight, FALSE);
+			Light_set(Light_dashEco, 0);
 			
 
         }

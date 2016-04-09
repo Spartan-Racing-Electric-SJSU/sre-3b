@@ -100,7 +100,7 @@
 
 
 
-typedef enum { dash_EcoLight, dash_ErrorLight, dash_RTDLight, dash_TCSLight} DashLight;
+typedef enum { Light_dashEco, Light_dashError, Light_dashRTD, Light_dashTCS, Light_brake} Light;
 
 
 //----------------------------------------------------------------------------
@@ -190,6 +190,6 @@ void setMCMRelay(bool turnOn);
 //----------------------------------------------------------------------------
 // Outputs
 //----------------------------------------------------------------------------
-void dashLight_set(DashLight light, bool turnOn);
+void Light_set(Light light, float4 percent);
 
 #endif // _SENSORS_H

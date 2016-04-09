@@ -184,7 +184,7 @@ void main(void)
 			//calibrateTPS(TRUE, 5);
 			TorqueEncoder_startCalibration(tps, 5);
 			BrakePressureSensor_startCalibration(bps, 5);
-			//dashLight_set(dash_ErrorLight, TRUE);
+			//Light_set(Light_dashError, 1);
 			//DIGITAL OUTPUT 4 for STATUS LED
 		}
 		TorqueEncoder_update(tps);
@@ -197,11 +197,11 @@ void main(void)
 		SafetyChecker_update(sc, tps, bps);
 		if(SafetyChecker_allSafe(sc) == TRUE)
 		{
-			dashLight_set(dash_ErrorLight, FALSE);
+			Light_set(Light_dashError, 0);
 		}
 		else
 		{
-			dashLight_set(dash_ErrorLight, TRUE);
+			Light_set(Light_dashError, 1);
 		}
 
 		WheelSpeeds_update(wss);

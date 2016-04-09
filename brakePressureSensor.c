@@ -48,30 +48,32 @@ void BrakePressureSensor_update(BrakePressureSensor* me)
 	
 	//This function runs before the calibration cycle function.  If calibration is currently
 	//running, then set the percentage to zero for safety purposes.
-	if (me->runCalibration == TRUE)
+	if (me->runCalibration == TRUE || me->calibrated == FALSE)
 	{
 		me->bps0_percent = 0;
 		errorCount++;  //DO SOMETHING WITH THIS
 	}
 	else
 	{
+		me->bps0_percent = getPercent(me->bps0_value, me->bps0_calibMin, me->bps0_calibMax, TRUE);
+		me->percent = me->bps0_percent;
+	}
 
-		//getPedalTravel = 0;
-
-		//-------------------------------------------------------------------
-		// Make sure the sensors have been calibrated
-		//-------------------------------------------------------------------
-		//if ((Sensor_TPS0.isCalibrated == FALSE) || (Sensor_TPS1.isCalibrated == FALSE))
-		if (me->calibrated == FALSE)
-		{
-			(errorCount)++;  //DO SOMETHING WITH THIS
-		}
-		else
-		{
-			me->bps0_percent = getPercent(me->bps0_value, me->bps0_calibMin, me->bps0_calibMax, TRUE);
-			me->percent = me->bps0_percent;
-			//}
-		}
+	if (me->percent <= 0)
+	{
+		Light_set(Light_brake, 0);
+	}
+	else if (me->percent > 0 && me->percent < .02)
+	{
+		Light_set(Light_brake, .20);
+	}
+	else if (me->percent >= .02 && me->percent < .30)
+	{
+		Light_set(Light_brake, .30);
+	}
+	else if (me->percent >= .30)
+	{
+		Light_set(Light_brake, me->percent);
 	}
 }
 
@@ -113,7 +115,7 @@ void BrakePressureSensor_startCalibration(BrakePressureSensor* me, ubyte1 second
         IO_RTC_StartTime(&(me->timestamp_calibrationStart));
         me->calibrationRunTime = secondsToRun;
 
-		dashLight_set(dash_EcoLight, TRUE);
+		Light_set(Light_dashEco, 1);
     }
 }
 
@@ -161,7 +163,7 @@ void BrakePressureSensor_calibrationCycle(BrakePressureSensor* me, ubyte1* error
 
 			me->runCalibration = FALSE;
 			me->calibrated = TRUE;
-			dashLight_set(dash_TCSLight, FALSE);
+			Light_set(Light_dashTCS, 0);
 			
 
         }
