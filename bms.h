@@ -1,7 +1,9 @@
  /**************************************************************************
  * 	REVISION HISTORY:
  *
- *
+ *	2016-4-8 - Rabeel Elahi  - Moved endian conversion functions to canInput.h
+							 - Changed uints to ubytes
+							 
  *	2016-4-6  - Rabeel Elahi - Added constructor and BMS data struct
  *							 - Initially added helper functions to update variables,
  *							   but decided to update variables by passing BMS pointer to
@@ -26,15 +28,6 @@ typedef struct _BMS BMS;
 
 BMS* BMS_new(int canMessageBaseID);
 
-/*
- *  Functions for endian conversion
- */
-uint8_t swap_uint8(uint8_t val);
-int8_t swap_int8(int8_t val);
-uint16_t swap_uint16(uint16_t val);
-int16_t swap_int16(int16_t val);
-uint32_t swap_uint32(uint32_t val);
-int32_t swap_int32(int32_t val);
 
 typedef enum
 {
@@ -140,54 +133,54 @@ typedef enum LimitCause{
 //
 //// ELITHION BMS OPTIONS //
 //
-//uint8_t  updateState();
-//uint16_t updateTimer();
-//uint8_t  updateFlags();
-//uint8_t  updateFaultCode();
-//uint8_t  updateLevelFaults();
+//ubyte1  updateState();
+//ubyte2 updateTimer();
+//ubyte1  updateFlags();
+//ubyte1  updateFaultCode();
+//ubyte1  updateLevelFaults();
 //
 //// PACK //
 //
-//uint16_t updatePackVoltage(); 	// volts
-//uint8_t  updateMinVtg(); 		// volts; individual cell voltage
-//uint8_t  updateMaxVtg();
-//uint8_t  updateMinVtgCell();
-//uint8_t  updateMaxVtgCell();
+//ubyte2 updatePackVoltage(); 	// volts
+//ubyte1  updateMinVtg(); 		// volts; individual cell voltage
+//ubyte1  updateMaxVtg();
+//ubyte1  updateMinVtgCell();
+//ubyte1  updateMaxVtgCell();
 //
 //
 //// CURRENT //
 //
-//int16_t  updatePackCurrent(); 	 			// amps
-//uint16_t updateChargeLimit();				// 0-100 percent; returns EROR_READING_LIMIT_VALUE on error
-//uint16_t updateDischargeLimit();			// 0-100 percent; returns EROR_READING_LIMIT_VALUE on error
+//sbyte2  updatePackCurrent(); 	 			// amps
+//ubyte2 updateChargeLimit();				// 0-100 percent; returns EROR_READING_LIMIT_VALUE on error
+//ubyte2 updateDischargeLimit();			// 0-100 percent; returns EROR_READING_LIMIT_VALUE on error
 //
 //// BATTERY //
 //
-//uint32_t batteryEnergyIn();
-//uint32_t batteryEnergyOut();
+//ubyte4 batteryEnergyIn();
+//ubyte4 batteryEnergyOut();
 //
 //
-//uint8_t  updateSOC();
-//uint16_t updateDOD();
-//uint16_t updateCapacity();
-//uint8_t  updateSOH();
+//ubyte1  updateSOC();
+//ubyte2 updateDOD();
+//ubyte2 updateCapacity();
+//ubyte1  updateSOH();
 //
 //// TEMP //
 //
-//int8_t  updatePackTemp();			     // average pack temperature
-//int8_t  updateMinTemp();			     // Temperature of coldest sensor
-//int8_t  updateMinTempCell(); 		     // ID of cell with lowest temperature
-//int8_t  updateMaxTemp();			     // Temperature of hottest sensor
-//int8_t  updateMaxTempCell(); 		     // ID of cell with highest temperature
+//sbyte1  updatePackTemp();			     // average pack temperature
+//sbyte1  updateMinTemp();			     // Temperature of coldest sensor
+//sbyte1  updateMinTempCell(); 		     // ID of cell with lowest temperature
+//sbyte1  updateMaxTemp();			     // Temperature of hottest sensor
+//sbyte1  updateMaxTempCell(); 		     // ID of cell with highest temperature
 //
 //
 //// RESISTANCE //
 //
-//uint16_t updatePackRes();				// resistance of entire pack
-//uint8_t  updateMinRes();  			// resistance of lowest resistance cells
-//uint8_t  updateMinResCell();          // ID of cell with lowest resistance
-//uint8_t  updateMaxRes();				// resistance of highest resistance cells
-//uint8_t  updateMaxResCell();			// ID of cell with highest resistance
+//ubyte2 updatePackRes();				// resistance of entire pack
+//ubyte1  updateMinRes();  			// resistance of lowest resistance cells
+//ubyte1  updateMinResCell();          // ID of cell with lowest resistance
+//ubyte1  updateMaxRes();				// resistance of highest resistance cells
+//ubyte1  updateMaxResCell();			// ID of cell with highest resistance
 //
 //LimitCause updateChargeLimitCause();
 //LimitCause updateDischargeLimitCause();
