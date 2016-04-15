@@ -21,8 +21,11 @@ struct _SafetyChecker {
 	bool tpsOutOfRange;
 	bool bpsOutOfRange;
 
-	//bool tpsOpenOrShort;
-	//bool bpsOpenOrShort;
+	bool tpsPowerFailure;
+	bool bpsPowerFailure;
+
+	bool tpsSignalFailure;
+	bool bpsSignalFailure;
 
 	bool tpsNotCalibrated;
 	bool bpsNotCalibrated;
@@ -43,8 +46,8 @@ SafetyChecker* SafetyChecker_new(void)
     SafetyChecker* me = (SafetyChecker*)malloc(sizeof(struct _SafetyChecker));
 
 	//Initialize all safety checks to FAIL 
+	me->tpsPowerFailure = TRUE;
 	me->tpsOutOfRange = TRUE;
-	//me->tpsOpenOrShort = TRUE;
 	me->tpsOutOfSync = TRUE; //Torque Encoder Plausibility Check
 	me->tpsNotCalibrated = TRUE;
 
@@ -62,13 +65,49 @@ SafetyChecker* SafetyChecker_new(void)
 void SafetyChecker_update(SafetyChecker* me, TorqueEncoder* tps, BrakePressureSensor* bps)
 {
 	//===================================================================
-	//Get calibration status
+	// Get calibration status
 	//===================================================================
 	me->tpsNotCalibrated = !(tps->calibrated);
 	me->bpsNotCalibrated = !(bps->calibrated);
 
 	//===================================================================
-	//Make sure raw sensor readings are within operating range
+	// Check if VCU was able to get a reading
+	//===================================================================
+	me->tpsPowerFailure = TRUE;
+	if (tps->tps0->ioErr_powerInit == IO_E_OK
+		&& tps->tps1->ioErr_powerInit == IO_E_OK
+		&& tps->tps0->ioErr_powerSet == IO_E_OK
+		&& tps->tps1->ioErr_powerSet == IO_E_OK)
+	{
+		me->tpsPowerFailure = FALSE;
+	}
+
+	me->tpsSignalFailure = TRUE;
+	if (tps->tps0->ioErr_signalInit == IO_E_OK
+		&& tps->tps1->ioErr_signalInit == IO_E_OK
+		&& tps->tps0->ioErr_signalGet == IO_E_OK
+		&& tps->tps1->ioErr_signalGet == IO_E_OK)
+	{
+		me->tpsSignalFailure = FALSE;
+	}
+
+	me->bpsPowerFailure = TRUE;
+	if (bps->bps0->ioErr_powerInit == IO_E_OK
+		&& bps->bps0->ioErr_powerSet == IO_E_OK)
+	{
+		me->bpsPowerFailure = FALSE;
+	}
+
+	me->bpsSignalFailure = TRUE;
+	if (bps->bps0->ioErr_signalInit == IO_E_OK
+		&& bps->bps0->ioErr_signalGet == IO_E_OK)
+	{
+		me->bpsSignalFailure = FALSE;
+	}
+
+
+	//===================================================================
+	// Make sure raw sensor readings are within operating range
 	//===================================================================
 	//RULE: EV2.3.10 - signal outside of operating range is considered a failure
 	//  This refers to SPEC SHEET values, not calibration values
@@ -160,8 +199,10 @@ bool SafetyChecker_allSafe(SafetyChecker* me)
 	if (
 		me->tpsOutOfRange == FALSE
 	 && me->bpsOutOfRange == FALSE
-	 //&& me->tpsOpenOrShort == FALSE
-	 //&& me->bpsOpenOrShort == FALSE
+	 && me->tpsPowerFailure == FALSE
+	 && me->bpsPowerFailure == FALSE
+	 && me->tpsSignalFailure == FALSE
+	 && me->bpsSignalFailure == FALSE
 	 && me->tpsNotCalibrated == FALSE
 	 && me->bpsNotCalibrated == FALSE
 	 && me->tpsOutOfSync == FALSE 
