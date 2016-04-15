@@ -14,6 +14,8 @@
 -------------------------------------------------------------------*/
 float4 getPercent(float4 value, float4 start, float4 end, bool zeroToOneOnly);
 
+// A utility function to get maximum of two integers
+ubyte2 max(ubyte2 a, ubyte2 b);
 
 
 #endif //  _MATHFUNCTIONS_H

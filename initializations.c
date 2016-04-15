@@ -140,8 +140,8 @@ void vcu_ADCWasteLoop(void)
 * CAN
 ****************************************************************************/
 //Defaults
-const ubyte1 canMessageLimit = 10;
-IO_CAN_DATA_FRAME canMessages[10]; //MUST BE THE SAME NUMBER AS ABOVE
+const ubyte1 canMessageLimit = 25;
+IO_CAN_DATA_FRAME canMessages[25]; //MUST BE THE SAME NUMBER AS ABOVE
 //extern IO_CAN_DATA_FRAME canMessages[]; //  = { { { 0 } } };
 
 //IO_CAN_DATA_FRAME canMessages[canMessageLimit];// = { { { 0 } } };
