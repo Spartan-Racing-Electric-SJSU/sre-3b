@@ -107,9 +107,9 @@ BMS* BMS_new(int canMessageBaseID){
 }
 
 void bms_parseCanMessage(BatteryManagementSystem* bms, IO_CAN_DATA_FRAME* bmsCanMessage){
-	uint16_t utemp16;
-	int16_t  temp16;
-	uint32_t utemp32;
+	ubyte2 utemp16;
+	sbyte1  temp16;
+	ubyte4 utemp32;
 
 	switch (bmsCanMessage->id)
 	{
