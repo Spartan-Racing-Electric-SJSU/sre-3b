@@ -1,7 +1,7 @@
 #include "IO_Driver.h" 
 #include "IO_CAN.h"
 
-#include "canManager.h""
+#include "canManager.h"
 #include "motorController.h"
 #include "bms.h"
 
@@ -25,7 +25,7 @@ struct _CanMessageNode
 	canHistoryNode* right;
 };
 
-CanManager* CanManager_new(ubyte4 defaultMinSendDelay, ubyte4 defaultMaxSendDelay)
+CanManager* CanManager_new()//ubyte4 defaultMinSendDelay, ubyte4 defaultMaxSendDelay)
 {
 	CanManager* me = (CanManager*)malloc(sizeof(struct _CanManager));
 
