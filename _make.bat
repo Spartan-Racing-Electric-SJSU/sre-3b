@@ -7,6 +7,9 @@ set batpath=%~dp0
 cls
 make
 
+pause >nul
+
+goto doitagain
 
 CHOICE /C qwertyuiopasdfghjklzxcvbnm1234567890 /N /M "[Q]uit?"
 IF ERRORLEVEL 1 SET M=1

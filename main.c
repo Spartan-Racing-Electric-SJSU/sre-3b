@@ -170,7 +170,7 @@ void main(void)
 
         //canInput - pull messages from CAN FIFO and update our object representations.
         //Also echo can0 messages to can1 for DAQ.
-        canInput_readMessages(mcm0, bms);
+        CanManager_read(canMan, CAN0_HIPRI, mcm0, bms);
 
         //----------------------------------------------------------------------------
         // Calculations

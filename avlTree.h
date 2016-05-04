@@ -26,8 +26,8 @@ typedef struct AVLNode
 } AVLNode;
 
 //Note on passing arrays: http://stackoverflow.com/questions/5573310/difference-between-passing-array-and-array-pointer-into-function-in-c
-AVLNode* AVL_insert(AVLNode *t, ubyte4 messageID, ubyte1 messageData[8], ubyte2 timeBetweenMessages_Min, ubyte2 timeBetweenMessages_Max, bool required);
-AVLNode* AVL_find(int e, AVLNode *t);
+AVLNode* AVL_insert(AVLNode *t, ubyte4 messageID, ubyte1 messageData[8], ubyte4 timeBetweenMessages_Min, ubyte4 timeBetweenMessages_Max, bool required);
+AVLNode* AVL_find(AVLNode *t, ubyte4 messageID);
 //int AVL_getData(AVLNode* n);
 //AVLNode* AVL_findMin(AVLNode *t);
 //AVLNode* AVL_findMax(AVLNode *t);

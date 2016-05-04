@@ -1,108 +1,11 @@
 //http://www.zentut.com/c-tutorial/c-avl-tree/
 
-#include <stdio.h>
+#include <string.h> //memcpy
+#include <stdlib.h> //malloc
+
 #include "IO_Driver.h"
-
+#include "mathFunctions.h"
 #include "avlTree.h"
-
-/*
-insert a new node into the tree
-*/
-AVLNode* AVL_insert(AVLNode* t, ubyte4 messageID, ubyte1 messageData[8], ubyte4 minTime, ubyte4 maxTime, Direction dir, bool req)
-{
-	if (t == NULL) //If the tree is empty
-	{
-		/* Create and return a one-node tree */
-		t = (AVLNode*)malloc(sizeof(AVLNode));
-		if (t == NULL)
-		{
-			//fprintf(stderr, "Out of memory!!! (insert)\n");
-			//exit(1);
-		}
-		else
-		{
-			t->id = messageID;
-            t->timeBetweenMessages_Min = minTime;
-            t->timeBetweenMessages_Max = maxTime;
-            memcpy(
-            ubyte4 lastMessage_timeStamp;
-
-			t->height = 0;
-			t->left = t->right = NULL;
-		}
-	}
-    else if (messageID < t->id)
-	{
-		t->left = AVL_insert(messageID, t->left);
-		if (AVL_getHeight(t->left) - AVL_getHeight(t->right) == 2)
-			if (messageID < t->left->id)
-				t = AVL_singleRotateWithLeft(t);
-			else
-				t = AVL_doubleRotateWithLeft(t);
-	}
-	else if (messageID > t->id)
-	{
-		t->right = AVL_insert(messageID t->right);
-		if (AVL_getHeight(t->right) - AVL_getHeight(t->left) == 2)
-			if (messageID > t->right->id)
-				t = AVL_singleRotateWithRight(t);
-			else
-				t = AVL_doubleRotateWithRight(t);
-	}
-	/* Else X is in the tree already; we'll do nothing */
-
-	t->height = max(AVL_getHeight(t->left), AVL_getHeight(t->right)) + 1;
-	return t;
-}
-
-/*
-find a specific node's key in the tree
-*/
-AVLNode* AVL_find(int messageID, AVLNode* t)
-{
-    if (t == NULL)
-        return NULL;
-    if (messageID < t->id)
-        return AVL_find(messageID, t->left);
-    else if (messageID > t->id)
-        return AVL_find(messageID, t->right);
-    else
-        return t;
-}
-
-///*
-//data data of a node
-//*/
-//int AVL_getData(AVLNode* n)
-//{
-//	return n->id;
-//}
-//
-///*
-//find minimum node's key
-//*/
-//AVLNode* AVL_findMin(AVLNode* t)
-//{
-//    if (t == NULL)
-//        return NULL;
-//    else if (t->left == NULL)
-//        return t;
-//    else
-//        return AVL_findMin(t->left);
-//}
-//
-///*
-//find maximum node's key
-//*/
-//AVLNode* AVL_findMax(AVLNode* t)
-//{
-//    if (t != NULL)
-//        while (t->right != NULL)
-//            t = t->right;
-//
-//    return t;
-//}
-
 
 //-------------------------------------------------------------------
 //Private functions
@@ -114,9 +17,13 @@ get the height of a node
 static int AVL_getHeight(AVLNode* n)
 {
     if (n == NULL)
+    {
         return -1;
+    }
     else
+    {
         return n->height;
+    }
 }
 
 /*
@@ -208,18 +115,18 @@ static AVLNode* AVL_doubleRotateWithRight(AVLNode* k1)
 Recursively display AVL tree or subtree
 void display_avl(AVLNode* t)
 {
-	if (t == NULL)
-		return;
-	printf("%d", t->id);
+if (t == NULL)
+return;
+printf("%d", t->id);
 
-	if (t->left != NULL)
-		printf("(L:%d)", t->left->id);
-	if (t->right != NULL)
-		printf("(R:%d)", t->right->id);
-	printf("\n");
+if (t->left != NULL)
+printf("(L:%d)", t->left->id);
+if (t->right != NULL)
+printf("(R:%d)", t->right->id);
+printf("\n");
 
-	display_avl(t->left);
-	display_avl(t->right);
+display_avl(t->left);
+display_avl(t->right);
 }
 */
 
@@ -227,12 +134,12 @@ void display_avl(AVLNode* t)
 remove all nodes of an AVL tree
 void dispose(AVLNode* t)
 {
-	if (t != NULL)
-	{
-		dispose(t->left);
-		dispose(t->right);
-		free(t);
-	}
+if (t != NULL)
+{
+dispose(t->left);
+dispose(t->right);
+free(t);
+}
 }
 */
 
@@ -240,8 +147,8 @@ void dispose(AVLNode* t)
 remove a node in the tree
 AVLNode* delete(int e, AVLNode* t)
 {
-	printf("Sorry; Delete is unimplemented; %d remains\n", e);
-	return t;
+printf("Sorry; Delete is unimplemented; %d remains\n", e);
+return t;
 }
 */
 /*
@@ -334,3 +241,128 @@ return leftRotate(root);
 return root;
 }
 */
+
+//-------------------------------------------------------------------
+//Public functions
+//-------------------------------------------------------------------
+
+/*
+insert a new node into the tree
+*/
+AVLNode* AVL_insert(AVLNode* t, ubyte4 messageID, ubyte1 messageData[8], ubyte4 minTime, ubyte4 maxTime, bool req)
+{
+	if (t == NULL) //If the tree is empty
+	{
+		/* Create and return a one-node tree */
+		t = (AVLNode*)malloc(sizeof(AVLNode));
+		if (t == NULL)
+		{
+			//fprintf(stderr, "Out of memory!!! (insert)\n");
+			//exit(1);
+		}
+		else
+		{
+			t->id = messageID;
+            t->timeBetweenMessages_Min = minTime;
+            t->timeBetweenMessages_Max = maxTime;
+            //To copy an entire array, http://stackoverflow.com/questions/9262784/array-equal-another-array
+            memcpy(messageData, t->data, sizeof(messageData));
+            t->lastMessage_timeStamp = 0;
+
+			t->height = 0;
+			t->left = t->right = NULL;
+		}
+	}
+    else if (messageID < t->id)
+	{
+		t->left = AVL_insert(t->left, messageID, messageData, minTime, maxTime, req);
+        if (AVL_getHeight(t->left) - AVL_getHeight(t->right) == 2)
+        {
+            if (messageID < t->left->id)
+            {
+                t = AVL_singleRotateWithLeft(t);
+            }
+            else
+            {
+                t = AVL_doubleRotateWithLeft(t);
+            }
+        }
+	}
+	else if (messageID > t->id)
+	{
+		t->right = AVL_insert(t->right, messageID, messageData, minTime, maxTime, req);
+        if (AVL_getHeight(t->right) - AVL_getHeight(t->left) == 2)
+        {
+            if (messageID > t->right->id)
+            {
+                t = AVL_singleRotateWithRight(t);
+            }
+            else
+            {
+                t = AVL_doubleRotateWithRight(t);
+            }
+        }
+	}
+	/* Else X is in the tree already; we'll do nothing */
+
+	t->height = max(AVL_getHeight(t->left), AVL_getHeight(t->right)) + 1;
+	return t;
+}
+
+/*
+find a specific node's key in the tree
+*/
+AVLNode* AVL_find(AVLNode* t, ubyte4 messageID)
+{
+    if (t == NULL)
+    {
+        return NULL;
+    }
+    if (messageID < t->id)
+    {
+        return AVL_find(t->left, messageID);
+    }
+    else if (messageID > t->id)
+    {
+        return AVL_find(t->right, messageID);
+    }
+    else
+    {
+        return t;
+    }
+}
+
+///*
+//data data of a node
+//*/
+//int AVL_getData(AVLNode* n)
+//{
+//	return n->id;
+//}
+//
+///*
+//find minimum node's key
+//*/
+//AVLNode* AVL_findMin(AVLNode* t)
+//{
+//    if (t == NULL)
+//        return NULL;
+//    else if (t->left == NULL)
+//        return t;
+//    else
+//        return AVL_findMin(t->left);
+//}
+//
+///*
+//find maximum node's key
+//*/
+//AVLNode* AVL_findMax(AVLNode* t)
+//{
+//    if (t != NULL)
+//        while (t->right != NULL)
+//            t = t->right;
+//
+//    return t;
+//}
+
+
