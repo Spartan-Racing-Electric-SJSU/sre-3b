@@ -119,7 +119,7 @@ CanManager* CanManager_new(ubyte2 can0_busSpeed, ubyte1 can0_read_messageLimit, 
 * send
 * Note: http://stackoverflow.com/questions/5573310/difference-between-passing-array-and-array-pointer-into-function-in-c
 ****************************************************************************/
-IO_ErrorType CanManager_send(CanManager* me, CanChannel channel, IO_CAN_DATA_FRAME* canMessages[], ubyte2 canMessageCount)
+IO_ErrorType CanManager_send(CanManager* me, CanChannel channel, IO_CAN_DATA_FRAME canMessages[], ubyte1 canMessageCount)
 {
     bool sendMessage = FALSE;
     ubyte1 messagesToSendCount = 0;
@@ -130,14 +130,15 @@ IO_ErrorType CanManager_send(CanManager* me, CanChannel channel, IO_CAN_DATA_FRA
     //----------------------------------------------------------------------------
     AVLNode* lastMessage;
     ubyte1 messagePosition; //used twice
-    for (messagePosition = 0; messagePosition < canMessageCount; i++)
+    for (messagePosition = 0; messagePosition < canMessageCount; messagePosition++)
     {
+        //NEEDS TO USE DIFFERENT TREES FOR CAN0 / CAN1
         lastMessage = AVL_find(me->outgoingTree, canMessages[messagePosition]->id);
 
         // Message doesn't exist in history tree ---------------------------------
         if (lastMessage == NULL)
         {
-            lastMessage = AVL_insert(me->outgoingTree, canMessages[messagePosition]->id, canMessages[messagePosition]->data, me->sendDelayMs, me->sendDelayMs, FALSE);
+            lastMessage = AVL_insert(me->outgoingTree, (canMessages[messagePosition])->id, canMessages[messagePosition]->data, me->sendDelayMs, me->sendDelayMs, FALSE);
             //send message later
             sendMessage = TRUE;
         }
@@ -150,8 +151,14 @@ IO_ErrorType CanManager_send(CanManager* me, CanChannel channel, IO_CAN_DATA_FRA
             bool dataChanged = FALSE;
             for (ubyte1 dataPosition = 0; dataPosition < 8; dataPosition++)
             {
+                ubyte1 oldData = lastMessage->data[dataPosition];
+                ubyte1 newData = canMessages[messagePosition];
                 //if any data byte is changed, then probably want to send the message
-                if (lastMessage->data[dataPosition] != canMessages[messagePosition])
+                if (oldData == newData)
+                {
+                    //data is the same
+                }
+                else
                 {
                     dataChanged = TRUE;
                 }
@@ -204,7 +211,7 @@ IO_ErrorType CanManager_send(CanManager* me, CanChannel channel, IO_CAN_DATA_FRA
     if (messagesToSendCount > 0)
     {
         //Send the messages to send to the appropriate FIFO queue
-        sendResult = IO_CAN_WriteFIFO((channel == CAN0_HIPRI) ? me->can0_writeHandle : me->can1_writeHandle, canMessages, canMessageCount);
+        sendResult = IO_CAN_WriteFIFO((channel == CAN0_HIPRI) ? me->can0_writeHandle : me->can1_writeHandle, &canMessages, canMessageCount);
         *((channel == CAN0_HIPRI) ? &me->ioErr_can0_write : &me->ioErr_can1_write) = sendResult;
 
         //Update the outgoing message tree with message sent timestamps
@@ -240,7 +247,7 @@ bool CanManager_dataChangedSinceLastTransmit(IO_CAN_DATA_FRAME* canMessage) //bi
 void CanManager_read(CanManager* me, CanChannel channel, MotorController* mcm, BatteryManagementSystem* bms)
 {
     IO_CAN_DATA_FRAME canMessages[];
-    ubyte2 canMessageCount;
+    ubyte1 canMessageCount;  //FIFO queue only holds 128 messages max
 
 	//Read messages from hipri channel 
 	*(channel == CAN0_HIPRI ? &me->ioErr_can0_read : &me->ioErr_can1_read) =
@@ -323,7 +330,7 @@ void CanManager_read(CanManager* me, CanChannel channel, MotorController* mcm, B
 
 	//Echo message on lopri channel
 	//IO_CAN_WriteFIFO(me->can1_writeHandle, canMessages, messagesReceived);
-    CanManager_send(me, CAN1_LOPRI, canMessages, messagesReceived);
+    CanManager_send(me, CAN1_LOPRI, &canMessages, canMessageCount);
     //IO_CAN_WriteMsg(canFifoHandle_LoPri_Write, canMessages);
 }
 
@@ -347,14 +354,16 @@ void canOutput_sendSensorMessages(CanManager* me)
 /*****************************************************************************
 * Motor Controller (MCU) control message
 ******************************************************************************
-* TODO: Parameterize the motor controller (allow multiple motor controllers)
+* This function builds a IO_CAN_DATA_FRAME (can message) based on
+* the data that needs to be sent to the motor controller,
+* then pass the IO_CAN_DATA_FRAME to the CanManager via CanManager_Send()
 ****************************************************************************/
-void canOutput_sendMCUControl(CanManager* me, MotorController* mcm, bool sendEvenIfNoChanges)
+void MotorController_sendControlMessage(MotorController* me, CanManager* canMan, bool sendEvenIfNoChanges)
 {
+
     //Only send a message if there's an update or it's been > .25 seconds or force=true
-    if ((sendEvenIfNoChanges == TRUE) || (mcm_commands_getUpdateCount(mcm) > 0) || (mcm_commands_getTimeSinceLastCommandSent(mcm) > 125000))
-    {
-        //Rinehart CAN control message (heartbeat) structure ----------------
+    IO_CAN_DATA_FRAME canMessage;
+    //Rinehart CAN control message (heartbeat) structure ----------------
         canMessages[0].length = 8; // how many bytes in the message
         canMessages[0].id_format = IO_CAN_STD_FRAME;
         canMessages[0].id = 0xC0;
@@ -395,8 +404,8 @@ void canOutput_sendMCUControl(CanManager* me, MotorController* mcm, bool sendEve
         //Place the can messsages into the FIFO queue ---------------------------------------------------
         //IO_CAN_WriteFIFO(canFifoHandle_HiPri_Write, canMessages, 1);  //Important: Only transmit one message (the MCU message)
         //IO_CAN_WriteFIFO(canFifoHandle_LoPri_Write, canMessages, 1);  //Important: Only transmit one message (the MCU message)
-        CanManager_send(me, CAN0_HIPRI, canMessages, 1);
-        CanManager_send(me, CAN1_LOPRI, canMessages, 1);
+        CanManager_send(canMan, CAN0_HIPRI, canMessages, 1);
+        CanManager_send(canMan, CAN1_LOPRI, canMessages, 1);
 
         //Reset the last message count/timestamp
         mcm_commands_resetUpdateCountAndTime(mcm);
@@ -406,8 +415,6 @@ void canOutput_sendMCUControl(CanManager* me, MotorController* mcm, bool sendEve
         //IO_CAN_WriteMsg(canFifoHandle_HiPri_Write, &canMessages);  //Important: Only transmit one message (the MCU message)
         //IO_CAN_WriteMsg(canFifoHandle_LoPri_Write, &canMessages);  //Important: Only transmit one message (the MCU message)
 
-
-    } //end if sendEvenIfNoChanges/etc
 }
 
 
