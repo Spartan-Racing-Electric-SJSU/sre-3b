@@ -1,9 +1,9 @@
  /**************************************************************************
  * 	REVISION HISTORY:
  *
- *	2016-4-8 - Rabeel Elahi  - Moved endian conversion functions to canInput.h
-							 - Changed uints to ubytes
-							 
+ *
+ *	2016-4-20 - Rabeel Elahi - Added bms_parseCANMessage()
+ *
  *	2016-4-6  - Rabeel Elahi - Added constructor and BMS data struct
  *							 - Initially added helper functions to update variables,
  *							   but decided to update variables by passing BMS pointer to
@@ -26,8 +26,19 @@
 
 typedef struct _BMS BMS;
 
-BMS* BMS_new(int canMessageBaseID);
+BMS* BMS_new(ubyte2 canMessageBaseID);
+void bms_parseCanMessage(BatteryManagementSystem* bms, IO_CAN_DATA_FRAME* bmsCanMessage);
 
+
+/*
+ *  Functions for endian conversion
+ */
+ubyte1 swap_uint8(ubyte1 val);
+sbyte1 swap_int8(sbyte1 val);
+ubyte2 swap_uint16(ubyte2 val);
+sbyte2 swap_int16(sbyte2 val);
+ubyte4 swap_uint32(ubyte4 val);
+sbyte4 swap_int32(sbyte4 val);
 
 typedef enum
 {

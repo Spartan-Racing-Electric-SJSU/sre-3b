@@ -1,14 +1,21 @@
 #include <stdio.h>
 #include "bms.h"
 #include <stdlib.h>
+#include "IO_Driver.h"
+#include "IO_RTC.h"
 
 /**************************************************************************
  * 	REVISION HISTORY:
  *
- *	2015-4-8 - Rabeel Elahi - Moved cases to canInput.c
-							- Moved endian conversion functions to canInput.c
-							- Changed uints to ubytes
-							
+ *  2016-4-20 - Rabeel Elahi - Added bms_parseCANMessage()
+ *						     - Moved cases back to bms.c
+ *						     - Added #includes
+ *						     - Leaving endian conversion functions until new CAN manager complete
+ *
+ * 	2016-4-8 - Rabeel Elahi - Moved cases to canInput.c
+ *							- Moved endian conversion functions to canInput.c
+ *							- Changed uints to ubytes
+ *
  *	2016-4-7 - Rabeel Elahi - Created this file.
  *							- Defined cases for BMS can messages
  *							- TODO: Rename variable types to VCU types
@@ -99,8 +106,144 @@ BMS* BMS_new(int canMessageBaseID){
 
 }
 
+void bms_parseCanMessage(BatteryManagementSystem* bms, IO_CAN_DATA_FRAME* bmsCanMessage){
+	ubyte2 utemp16;
+	sbyte1  temp16;
+	ubyte4 utemp32;
+
+	switch (bmsCanMessage->id)
+	{
+
+	case 0x622:
+
+		bms->state = bmsCanMessage->data[0];
+		utemp16 = ((bmsCanMessage->data[1] << 8) | (bmsCanMessage->data[2]));
+		bms->timer = swap_uint16(utemp16);
+		bms->flags = bmsCanMessage->data[3];
+		bms->faultCode = bmsCanMessage->data[4];
+		bms->levelFaults = bmsCanMessage->data[5];
+		bms->warnings = bmsCanMessage->data[6];
+
+		break;
+
+	case 0x623:
+
+		utemp16 = ((bmsCanMessage->data[0] << 8) | (bmsCanMessage->data[1]));
+		bms->packVoltage = swap_uint16(utemp16);
+		bms->minVtg = bmsCanMessage->data[2];
+		bms->minVtgCell = bmsCanMessage->data[3];
+		bms->maxVtg = bmsCanMessage->data[4];
+		bms->maxVtgCell = bmsCanMessage->data[5];
+
+		break;
+
+	case 0x624:
+
+		temp16 = ((bmsCanMessage->data[0] << 8) | (bmsCanMessage->data[1]));
+		bms->packCurrent = swap_int16(temp16);
+
+		utemp16 = ((bmsCanMessage->data[2] << 8) | (bmsCanMessage->data[3]));
+		bms->chargeLimit = swap_uint16(utemp16);
+
+		utemp16 = ((bmsCanMessage->data[4] << 8) | (bmsCanMessage->data[5]));
+		bms->dischargeLimit = swap_uint16(utemp16);
+
+		break;
+
+	case 0x625:
+
+		utemp32 = (((bmsCanMessage->data[0] << 24) |
+			(bmsCanMessage->data[1] << 16) |
+			(bmsCanMessage->data[2] << 8) |
+			(bmsCanMessage->data[3])));
+		bms->batteryEnergyIn = swap_uint32(utemp32);
+
+		utemp32 = (((bmsCanMessage->data[4] << 24) |
+			(bmsCanMessage->data[5] << 16) |
+			(bmsCanMessage->data[6] << 8) |
+			(bmsCanMessage->data[7])));
+		bms->batteryEnergyOut = swap_uint32(utemp32);
+
+		break;
+
+	case 0x626:
+
+		bms->SOC = bmsCanMessage->data[0];
+
+		utemp16 = ((bmsCanMessage->data[1] << 8) | (bmsCanMessage->data[2]));
+		bms->DOD = swap_uint16(utemp16);
+
+		utemp16 = ((bmsCanMessage->data[3] << 8) | (bmsCanMessage->data[4]));
+		bms->capacity = swap_uint16(utemp16);
+
+		bms->SOH = bmsCanMessage->data[6];
+
+		break;
+
+	case 0x627:
+
+		bms->packTemp = bmsCanMessage->data[0];
+		bms->minTemp = bmsCanMessage->data[2];
+		bms->minTempCell = bmsCanMessage->data[3];
+		bms->maxTemp = bmsCanMessage->data[4];
+		bms->maxTempCell = bmsCanMessage->data[5];
+
+		break;
+
+	case 0x628:
+
+		utemp16 = ((bmsCanMessage->data[0] << 8) | (bmsCanMessage->data[1]));
+		bms->packRes = swap_uint16(utemp16);
+
+		bms->minRes = bmsCanMessage->data[2];
+		bms->minResCell = bmsCanMessage->data[3];
+		bms->maxRes = bmsCanMessage->data[4];
+		bms->maxResCell = bmsCanMessage->data[5];
+
+		break;
+
+	}
+}
 
 
+
+
+
+
+
+ubyte1 swap_uint8(ubyte1 val)
+{
+	return (val << 4) | (val >> 4);
+}
+
+sbyte1 swap_int8(sbyte1 val)
+{
+	return (val << 4) | (val >> 4);
+}
+ubyte2 swap_uint16(ubyte2 val)
+{
+	return (val << 8) | (val >> 8 );
+}
+
+//! Byte swap short
+sbyte2 swap_int16(sbyte2 val)
+{
+	return (val << 8) | ((val >> 8) & 0xFF);
+}
+
+//! Byte swap unsigned int
+ubyte4 swap_uint32(ubyte4 val)
+{
+	val = ((val << 8) & 0xFF00FF00 ) | ((val >> 8) & 0xFF00FF );
+	return (val << 16) | (val >> 16);
+}
+
+//! Byte swap int
+sbyte4 swap_int32(sbyte4 val)
+{
+	val = ((val << 8) & 0xFF00FF00) | ((val >> 8) & 0xFF00FF );
+	return (val << 16) | ((val >> 16) & 0xFFFF);
+}
 
 
 
