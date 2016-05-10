@@ -74,7 +74,7 @@ void mcm_setStartupStage(MotorController* me, ubyte1 stage);
 void setMCMCommands(MotorController* mcm, TorqueEncoder* tps, BrakePressureSensor* bps, ReadyToDriveSound* rtds, SafetyChecker* sc);
 void MotorControllerPowerManagement(MotorController* mcm, TorqueEncoder* tps, ReadyToDriveSound* rtds);
 
-
+void mcm_parseCanMessage(MotorContoller* mcm, IO_CAN_DATA_FRAME* mcmCanMessage);
 
 
 
