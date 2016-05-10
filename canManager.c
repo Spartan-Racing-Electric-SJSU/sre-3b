@@ -359,81 +359,16 @@ void canOutput_sendSensorMessages(CanManager* me)
 }
 
 
-/*****************************************************************************
-* Motor Controller (MCU) control message
-******************************************************************************
-* This function builds a IO_CAN_DATA_FRAME (can message) based on
-* the data that needs to be sent to the motor controller,
-* then pass the IO_CAN_DATA_FRAME to the CanManager via CanManager_Send()
-****************************************************************************/
-void MotorController_sendControlMessage(MotorController* me, CanManager* canMan, bool sendEvenIfNoChanges)
-{
-    //Only send a message if there's an update or it's been > .25 seconds or force=true
-    IO_CAN_DATA_FRAME canMessage;
-    //Rinehart CAN control message (heartbeat) structure ----------------
-        canMessages[0].length = 8; // how many bytes in the message
-        canMessages[0].id_format = IO_CAN_STD_FRAME;
-        canMessages[0].id = 0xC0;
-
-        //Torque (Nm * 10)
-        ubyte2 mcuTorque = 5; //In Nm * 10. 125 continuous, 240 max
-        canMessages[0].data[0] = (ubyte1)mcm_commands_getTorque(mcm);
-        canMessages[0].data[1] = mcm_commands_getTorque(mcm) >> 8;
-
-        //Speed (RPM?) - not needed - mcu should be in torque mode
-        canMessages[0].data[2] = 0;
-        canMessages[0].data[3] = 0;
-
-        //Direction: 0=CW, 1=CCW
-        canMessages[0].data[4] = mcm_commands_getDirection(mcm);
-
-        //unused/unused/unused/unused unused/unused/Discharge/Inverter Enable
-        canMessages[0].data[5] = 0; //First set whole byte to zero
-
-                                    //Next add each bit one at a time, starting with the bit that belongs in the leftmost position
-        for (int bit = 7; bit >= 0; bit--)
-        {
-            canMessages[0].data[5] <<= 1;  //Always leftshift first
-            switch (bit)
-            {
-                // Then add your bit to the right (note: the order of case statements doesn't matter - it's the fact that bit-- instead of bit++;)
-            case 1: canMessages[0].data[5] |= (mcm_commands_getDischarge(mcm) == ENABLED) ? 1 : 0; break;
-            case 0: canMessages[0].data[5] |= (mcm_commands_getInverter(mcm) == ENABLED) ? 1 : 0; break;  // Then add your bit to the right
-
-            }
-        }
-
-        //Unused (future use)
-        canMessages[0].data[6] = 0;
-        canMessages[0].data[7] = 0;
-
-
-        //Place the can messsages into the FIFO queue ---------------------------------------------------
-        //IO_CAN_WriteFIFO(canFifoHandle_HiPri_Write, canMessages, 1);  //Important: Only transmit one message (the MCU message)
-        //IO_CAN_WriteFIFO(canFifoHandle_LoPri_Write, canMessages, 1);  //Important: Only transmit one message (the MCU message)
-        CanManager_send(canMan, CAN0_HIPRI, canMessages, 1);
-        CanManager_send(canMan, CAN1_LOPRI, canMessages, 1);
-
-        //Reset the last message count/timestamp
-        mcm_commands_resetUpdateCountAndTime(mcm);
-        //IO_RTC_StartTime(&mcm.commands.timeStamp_lastCommandSent);
-        //mcm.commands.updateCount = 0;
-
-        //IO_CAN_WriteMsg(canFifoHandle_HiPri_Write, &canMessages);  //Important: Only transmit one message (the MCU message)
-        //IO_CAN_WriteMsg(canFifoHandle_LoPri_Write, &canMessages);  //Important: Only transmit one message (the MCU message)
-
-}
-
-
 //----------------------------------------------------------------------------
 // 
 //----------------------------------------------------------------------------
 void canOutput_sendDebugMessage(CanManager* me, TorqueEncoder* tps, BrakePressureSensor* bps, MotorController* mcm, WheelSpeeds* wss, SafetyChecker* sc)
 {
+    IO_CAN_DATA_FRAME canMessages[me->can0_write_messageLimit];
     ubyte1 errorCount;
     float4 tempPedalPercent;   //Pedal percent float (a decimal between 0 and 1
-    ubyte2 tps0Percent;  //Pedal percent int   (a number from 0 to 100)
-    ubyte2 tps1Percent;
+    ubyte1 tps0Percent;  //Pedal percent int   (a number from 0 to 100)
+    ubyte1 tps1Percent;
     ubyte2 canMessageCount = 0;
     ubyte2 canMessageID = 0x500;
     ubyte1 byteNum;
@@ -444,41 +379,12 @@ void canOutput_sendDebugMessage(CanManager* me, TorqueEncoder* tps, BrakePressur
     tps1Percent = 0xFF * (1 - tempPedalPercent);
 
     TorqueEncoder_getPedalTravel(tps, &errorCount, &tempPedalPercent); //getThrottlePercent(TRUE, &errorCount);
-    ubyte2 throttlePercent = 0xFF * tempPedalPercent;
+    ubyte1 throttlePercent = 0xFF * tempPedalPercent;
 
     BrakePressureSensor_getPedalTravel(bps, &errorCount, &tempPedalPercent); //getThrottlePercent(TRUE, &errorCount);
-    ubyte2 brakePercent = 0xFF * tempPedalPercent;
+    ubyte1 brakePercent = 0xFF * tempPedalPercent;
 
-    /*
-    canMessageCount++;
-    byteNum = 0;
-    canMessages[canMessageCount - 1].length = 8; // how many bytes in the message
-    canMessages[canMessageCount - 1].id_format = IO_CAN_STD_FRAME;
-    canMessages[canMessageCount - 1].id = canMessageID + canMessageCount - 1;
-    canMessages[canMessageCount - 1].data[byteNum++] = throttlePercent; //mcm_getStartupStage(mcm);
-    canMessages[canMessageCount - 1].data[byteNum++] = tps1Percent;
-    canMessages[canMessageCount - 1].data[byteNum++] = errorCount;
-    canMessages[canMessageCount - 1].data[byteNum++] = mcm_getStartupStage(mcm);
-    canMessages[canMessageCount - 1].data[byteNum++] = mcm_getStartupStage(mcm);
-    canMessages[canMessageCount - 1].data[byteNum++] = mcm_getStartupStage(mcm);
-    canMessages[canMessageCount - 1].data[byteNum++] = mcm_getStartupStage(mcm);
-
-    canMessageCount++;
-    byteNum = 0;
-    canMessages[canMessageCount - 1].length = 8; // how many bytes in the message
-    canMessages[canMessageCount - 1].id_format = IO_CAN_STD_FRAME;
-    canMessages[canMessageCount - 1].id = canMessageID + canMessageCount - 1;
-    canMessages[canMessageCount - 1].data[byteNum++] = SafetyChecker_allSafe(sc) == TRUE ? 0xFF : 0;
-    canMessages[canMessageCount - 1].data[byteNum++] = SafetyChecker_getErrorByte(sc, 0);
-    canMessages[canMessageCount - 1].data[byteNum++] = 2;
-    canMessages[canMessageCount - 1].data[byteNum++] = 3;
-    canMessages[canMessageCount - 1].data[byteNum++] = 4;
-    canMessages[canMessageCount - 1].data[byteNum++] = 5;
-    canMessages[canMessageCount - 1].data[byteNum++] = 6;
-    canMessages[canMessageCount - 1].data[byteNum++] = 7;
-    */
-
-    canMessageCount++;
+    //canMessageCount++; //Start at 0
     byteNum = 0;
     canMessages[canMessageCount - 1].length = 8; // how many bytes in the message
     canMessages[canMessageCount - 1].id_format = IO_CAN_STD_FRAME;

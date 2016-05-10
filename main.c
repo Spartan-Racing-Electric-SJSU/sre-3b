@@ -35,8 +35,8 @@
 #include "initializations.h"
 #include "sensors.h"
 #include "canManager.h"
-#include "canInput.h"
-#include "canOutput.h"
+//#include "canInput.h"
+//#include "canOutput.h"
 //#include "outputCalculations.h"
 #include "motorController.h"
 #include "readyToDriveSound.h"
@@ -115,7 +115,7 @@ void main(void)
 	bool bench = TRUE;
 
     vcu_initializeADC(bench);  //Configure and activate all I/O pins on the VCU
-    vcu_initializeCAN();
+    //vcu_initializeCAN();
     vcu_initializeSensors();
     //vcu_initializeMCU();
 
@@ -240,8 +240,9 @@ void main(void)
 
 
         //Drop the sensor readings into CAN (just raw data, not calculated stuff)
-        canOutput_sendMCUControl(mcm0, FALSE);
-        canOutput_sendDebugMessage(tps, bps, mcm0, wss, sc);
+        //MotorController_sendCommandMessage();
+        //canOutput_sendMCUControl(mcm0, FALSE);
+        canOutput_sendDebugMessage(canMan, tps, bps, mcm0, wss, sc);
         //canOutput_sendSensorMessages();
         //canOutput_sendStatusMessages(mcm0);
 
