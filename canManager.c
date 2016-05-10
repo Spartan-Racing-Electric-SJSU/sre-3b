@@ -116,14 +116,21 @@ CanManager* CanManager_new(ubyte2 can0_busSpeed, ubyte1 can0_read_messageLimit, 
 
 
 /*****************************************************************************
-* send
+* This function takes an array of messages, determines which messages to send
+* based on whether or not data has changed since the last time it was sent,
+* or if a certain amount of time has passed since the last time it was sent.
+*
+* Messages that need to be sent are copied to another array and passed to the
+* FIFO queue.
+*
 * Note: http://stackoverflow.com/questions/5573310/difference-between-passing-array-and-array-pointer-into-function-in-c
+* http://stackoverflow.com/questions/2360794/how-to-pass-an-array-of-struct-using-pointer-in-c-c
 ****************************************************************************/
 IO_ErrorType CanManager_send(CanManager* me, CanChannel channel, IO_CAN_DATA_FRAME canMessages[], ubyte1 canMessageCount)
 {
     bool sendMessage = FALSE;
     ubyte1 messagesToSendCount = 0;
-    IO_CAN_DATA_FRAME* messagesToSend[canMessageCount];  //Array will be too big, but oh well
+    IO_CAN_DATA_FRAME messagesToSend[canMessageCount];  //The biggest possible array size would be if every message needs to be sent.
 
     //----------------------------------------------------------------------------
     // Check if message exists in outgoing message history tree
@@ -133,12 +140,13 @@ IO_ErrorType CanManager_send(CanManager* me, CanChannel channel, IO_CAN_DATA_FRA
     for (messagePosition = 0; messagePosition < canMessageCount; messagePosition++)
     {
         //NEEDS TO USE DIFFERENT TREES FOR CAN0 / CAN1
-        lastMessage = AVL_find(me->outgoingTree, canMessages[messagePosition]->id);
+        //lastMessage = AVL_find(me->outgoingTree, canMessages[messagePosition]->id);
+        lastMessage = AVL_find(me->outgoingTree, canMessages[messagePosition].id);
 
         // Message doesn't exist in history tree ---------------------------------
         if (lastMessage == NULL)
         {
-            lastMessage = AVL_insert(me->outgoingTree, (canMessages[messagePosition])->id, canMessages[messagePosition]->data, me->sendDelayMs, me->sendDelayMs, FALSE);
+            lastMessage = AVL_insert(me->outgoingTree, (canMessages[messagePosition]).id, canMessages[messagePosition].data, me->sendDelayMs, me->sendDelayMs, FALSE);
             //send message later
             sendMessage = TRUE;
         }
@@ -152,7 +160,7 @@ IO_ErrorType CanManager_send(CanManager* me, CanChannel channel, IO_CAN_DATA_FRA
             for (ubyte1 dataPosition = 0; dataPosition < 8; dataPosition++)
             {
                 ubyte1 oldData = lastMessage->data[dataPosition];
-                ubyte1 newData = canMessages[messagePosition];
+                ubyte1 newData = canMessages[messagePosition].data[dataPosition];
                 //if any data byte is changed, then probably want to send the message
                 if (oldData == newData)
                 {
@@ -211,7 +219,7 @@ IO_ErrorType CanManager_send(CanManager* me, CanChannel channel, IO_CAN_DATA_FRA
     if (messagesToSendCount > 0)
     {
         //Send the messages to send to the appropriate FIFO queue
-        sendResult = IO_CAN_WriteFIFO((channel == CAN0_HIPRI) ? me->can0_writeHandle : me->can1_writeHandle, &canMessages, canMessageCount);
+        sendResult = IO_CAN_WriteFIFO((channel == CAN0_HIPRI) ? me->can0_writeHandle : me->can1_writeHandle, messagesToSend, canMessageCount);
         *((channel == CAN0_HIPRI) ? &me->ioErr_can0_write : &me->ioErr_can1_write) = sendResult;
 
         //Update the outgoing message tree with message sent timestamps
@@ -222,7 +230,7 @@ IO_ErrorType CanManager_send(CanManager* me, CanChannel channel, IO_CAN_DATA_FRA
             for (messagePosition = 0; messagePosition < messagesToSendCount; messagePosition++)
             {
                 //...find the message ID in the outgoing message tree (AGAIN - big inefficiency here)...
-                messageToUpdate = AVL_find(me->outgoingTree, messagesToSend[messagePosition]->id);
+                messageToUpdate = AVL_find(me->outgoingTree, messagesToSend[messagePosition].id);
 
                 //and update the message sent timestamp
                 IO_RTC_GetTimeUS(messageToUpdate->lastMessage_timeStamp); //Update the timestamp for when the message was last sent
@@ -246,7 +254,7 @@ bool CanManager_dataChangedSinceLastTransmit(IO_CAN_DATA_FRAME* canMessage) //bi
 ****************************************************************************/
 void CanManager_read(CanManager* me, CanChannel channel, MotorController* mcm, BatteryManagementSystem* bms)
 {
-    IO_CAN_DATA_FRAME canMessages[];
+    IO_CAN_DATA_FRAME canMessages[(channel == CAN0_HIPRI ? me->can0_read_messageLimit : me->can1_read_messageLimit)];
     ubyte1 canMessageCount;  //FIFO queue only holds 128 messages max
 
 	//Read messages from hipri channel 
@@ -330,7 +338,7 @@ void CanManager_read(CanManager* me, CanChannel channel, MotorController* mcm, B
 
 	//Echo message on lopri channel
 	//IO_CAN_WriteFIFO(me->can1_writeHandle, canMessages, messagesReceived);
-    CanManager_send(me, CAN1_LOPRI, &canMessages, canMessageCount);
+    CanManager_send(me, CAN1_LOPRI, canMessages, canMessageCount);
     //IO_CAN_WriteMsg(canFifoHandle_LoPri_Write, canMessages);
 }
 
@@ -360,7 +368,6 @@ void canOutput_sendSensorMessages(CanManager* me)
 ****************************************************************************/
 void MotorController_sendControlMessage(MotorController* me, CanManager* canMan, bool sendEvenIfNoChanges)
 {
-
     //Only send a message if there's an update or it's been > .25 seconds or force=true
     IO_CAN_DATA_FRAME canMessage;
     //Rinehart CAN control message (heartbeat) structure ----------------

@@ -125,7 +125,7 @@ void main(void)
     //----------------------------------------------------------------------------
     // External Devices - Object Initializations (including default values)
     //----------------------------------------------------------------------------
-    CanManager* canMan = CanManager_new(500, 500, 32, 100);  //3rd param = messages per node (can0/can1; read/write)
+    CanManager* canMan = CanManager_new(500, 40, 40, 500, 20, 20, 100);  //3rd param = messages per node (can0/can1; read/write)
     ReadyToDriveSound* rtds = RTDS_new();
 	//BatteryManagementSystem* bms = BMS_new();
     MotorController* mcm0 = MotorController_new(0xA0, FORWARD, 100); //CAN addr, direction, torque limit x10 (100 = 10Nm)
