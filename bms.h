@@ -1,4 +1,7 @@
- /**************************************************************************
+#ifndef _BATTERYMANAGEMENTSYSTEM_H
+#define _BATTERYMANAGEMENTSYSTEM_H
+
+/**************************************************************************
  * 	REVISION HISTORY:
  *
  *
@@ -16,19 +19,15 @@
  *
  **************************************************************************/
 
-
 #include <stdio.h>
 #include <stdint.h>
 #include "IO_CAN.h"
 
 
-#ifndef _BATTERYMANAGEMENTSYSTEM_H
-#define _BATTERYMANAGEMENTSYSTEM_H
+typedef struct _BatteryManagementSystem BatteryManagementSystem;
 
-typedef struct _BMS BMS;
-
-BMS* BMS_new(ubyte2 canMessageBaseID);
-void bms_parseCanMessage(BatteryManagementSystem* bms, IO_CAN_DATA_FRAME* bmsCanMessage);
+BatteryManagementSystem* BMS_new(ubyte2 canMessageBaseID);
+void BMS_parseCanMessage(BatteryManagementSystem* bms, IO_CAN_DATA_FRAME* bmsCanMessage);
 
 
 /*

@@ -133,7 +133,7 @@ void main(void)
 	BrakePressureSensor* bps = BrakePressureSensor_new();
 	WheelSpeeds* wss = WheelSpeeds_new(18, 18, 16, 16);
 	SafetyChecker* sc = SafetyChecker_new();
-	BatteryManagementSystem* bms = bms_new(0x620);
+	BatteryManagementSystem* bms = BMS_new(0x620);
 
     //----------------------------------------------------------------------------
     // TODO: Additional Initial Power-up functions

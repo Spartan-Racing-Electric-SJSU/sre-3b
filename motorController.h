@@ -2,6 +2,7 @@
 #ifndef _MOTORCONTROLLER_H
 #define _MOTORCONTROLLER_H
 
+#include "IO_CAN.h"
 #include "IO_Driver.h"
 #include "torqueEncoder.h"
 #include "brakePressureSensor.h"
@@ -74,7 +75,7 @@ void mcm_setStartupStage(MotorController* me, ubyte1 stage);
 void setMCMCommands(MotorController* mcm, TorqueEncoder* tps, BrakePressureSensor* bps, ReadyToDriveSound* rtds, SafetyChecker* sc);
 void MotorControllerPowerManagement(MotorController* mcm, TorqueEncoder* tps, ReadyToDriveSound* rtds);
 
-void mcm_parseCanMessage(MotorContoller* mcm, IO_CAN_DATA_FRAME* mcmCanMessage);
+void mcm_parseCanMessage(MotorController* mcm, IO_CAN_DATA_FRAME* mcmCanMessage);
 
 
 

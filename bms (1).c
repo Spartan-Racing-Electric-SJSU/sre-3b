@@ -1,8 +1,12 @@
 #include <stdio.h>
 #include "bms.h"
 #include <stdlib.h>
+<<<<<<< HEAD
+#include "IO_CAN.h"
+=======
 #include "IO_Driver.h"
 #include "IO_RTC.h"
+>>>>>>> Rabeel_Dev
 
 /**************************************************************************
  * 	REVISION HISTORY:
@@ -98,7 +102,7 @@ struct _BatteryManagementSystem {
 
 };
 
-BatteryManagementSystem* BMS_new(ubyte2 canMessageBaseID) {
+BatteryManagementSystem* bms_new(int canMessageBaseID) {
 
 	BatteryManagementSystem* BMS_obj = (BatteryManagementSystem*)malloc(sizeof(struct _BatteryManagementSystem));
 	BMS_obj->canMessageBaseId = canMessageBaseID;
@@ -106,10 +110,25 @@ BatteryManagementSystem* BMS_new(ubyte2 canMessageBaseID) {
 
 }
 
-void BMS_parseCanMessage(BatteryManagementSystem* bms, IO_CAN_DATA_FRAME* bmsCanMessage){
+void bms_parseCanMessage(BatteryManagementSystem* bms, IO_CAN_DATA_FRAME* bmsCanMessage){
 	ubyte2 utemp16;
 	sbyte1  temp16;
 	ubyte4 utemp32;
+
+	switch (bmsCanMessage->id)
+	{
+
+<<<<<<< HEAD
+/*
+ * TODO: change variables to VCU type variables
+ * TODO: move function below to caninput.c
+ *
+ * NOTE: MULTI-BYTE VALUES ARE BIG ENDIAN!
+ */
+void bms_parseCanMessage(BatteryManagementSystem* bms, IO_CAN_DATA_FRAME* bmsCanMessage){
+	uint16_t utemp16;
+	int16_t  temp16;
+	uint32_t utemp32;
 
 	switch (bmsCanMessage->id)
 	{
@@ -152,16 +171,16 @@ void BMS_parseCanMessage(BatteryManagementSystem* bms, IO_CAN_DATA_FRAME* bmsCan
 
 	case 0x625:
 
-		utemp32 = ((((ubyte4)bmsCanMessage->data[0] << 24) |
-			((ubyte4)bmsCanMessage->data[1] << 16) |
-			((ubyte4)bmsCanMessage->data[2] << 8) |
+		utemp32 = (((bmsCanMessage->data[0] << 24) |
+			(bmsCanMessage->data[1] << 16) |
+			(bmsCanMessage->data[2] << 8) |
 			(bmsCanMessage->data[3])));
 		bms->batteryEnergyIn = swap_uint32(utemp32);
 
-		utemp32 = ((((ubyte4)bmsCanMessage->data[4] << 24) |
-			((ubyte4)bmsCanMessage->data[5] << 16) |
-			((ubyte4)bmsCanMessage->data[6] << 8) |
-			((ubyte4)bmsCanMessage->data[7])));
+		utemp32 = (((bmsCanMessage->data[4] << 24) |
+			(bmsCanMessage->data[5] << 16) |
+			(bmsCanMessage->data[6] << 8) |
+			(bmsCanMessage->data[7])));
 		bms->batteryEnergyOut = swap_uint32(utemp32);
 
 		break;
@@ -192,6 +211,86 @@ void BMS_parseCanMessage(BatteryManagementSystem* bms, IO_CAN_DATA_FRAME* bmsCan
 
 	case 0x628:
 
+=======
+	case 0x622:
+
+		bms->state = bmsCanMessage->data[0];
+		utemp16 = ((bmsCanMessage->data[1] << 8) | (bmsCanMessage->data[2]));
+		bms->timer = swap_uint16(utemp16);
+		bms->flags = bmsCanMessage->data[3];
+		bms->faultCode = bmsCanMessage->data[4];
+		bms->levelFaults = bmsCanMessage->data[5];
+		bms->warnings = bmsCanMessage->data[6];
+
+		break;
+
+	case 0x623:
+
+		utemp16 = ((bmsCanMessage->data[0] << 8) | (bmsCanMessage->data[1]));
+		bms->packVoltage = swap_uint16(utemp16);
+		bms->minVtg = bmsCanMessage->data[2];
+		bms->minVtgCell = bmsCanMessage->data[3];
+		bms->maxVtg = bmsCanMessage->data[4];
+		bms->maxVtgCell = bmsCanMessage->data[5];
+
+		break;
+
+	case 0x624:
+
+		temp16 = ((bmsCanMessage->data[0] << 8) | (bmsCanMessage->data[1]));
+		bms->packCurrent = swap_int16(temp16);
+
+		utemp16 = ((bmsCanMessage->data[2] << 8) | (bmsCanMessage->data[3]));
+		bms->chargeLimit = swap_uint16(utemp16);
+
+		utemp16 = ((bmsCanMessage->data[4] << 8) | (bmsCanMessage->data[5]));
+		bms->dischargeLimit = swap_uint16(utemp16);
+
+		break;
+
+	case 0x625:
+
+		utemp32 = (((bmsCanMessage->data[0] << 24) |
+			(bmsCanMessage->data[1] << 16) |
+			(bmsCanMessage->data[2] << 8) |
+			(bmsCanMessage->data[3])));
+		bms->batteryEnergyIn = swap_uint32(utemp32);
+
+		utemp32 = (((bmsCanMessage->data[4] << 24) |
+			(bmsCanMessage->data[5] << 16) |
+			(bmsCanMessage->data[6] << 8) |
+			(bmsCanMessage->data[7])));
+		bms->batteryEnergyOut = swap_uint32(utemp32);
+
+		break;
+
+	case 0x626:
+
+		bms->SOC = bmsCanMessage->data[0];
+
+		utemp16 = ((bmsCanMessage->data[1] << 8) | (bmsCanMessage->data[2]));
+		bms->DOD = swap_uint16(utemp16);
+
+		utemp16 = ((bmsCanMessage->data[3] << 8) | (bmsCanMessage->data[4]));
+		bms->capacity = swap_uint16(utemp16);
+
+		bms->SOH = bmsCanMessage->data[6];
+
+		break;
+
+	case 0x627:
+
+		bms->packTemp = bmsCanMessage->data[0];
+		bms->minTemp = bmsCanMessage->data[2];
+		bms->minTempCell = bmsCanMessage->data[3];
+		bms->maxTemp = bmsCanMessage->data[4];
+		bms->maxTempCell = bmsCanMessage->data[5];
+
+		break;
+
+	case 0x628:
+
+>>>>>>> Rabeel_Dev
 		utemp16 = ((bmsCanMessage->data[0] << 8) | (bmsCanMessage->data[1]));
 		bms->packRes = swap_uint16(utemp16);
 
