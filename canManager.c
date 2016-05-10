@@ -282,38 +282,13 @@ void CanManager_read(CanManager* me, CanChannel channel, MotorController* mcm, B
         case 0xA7:
         case 0xA8:
         case 0xA9:
-            break;
-        //-------------------------------------------------------------------------
-		//MCU Internal states
-		//http://stackoverflow.com/questions/47981/how-do-you-set-clear-and-toggle-a-single-bit-in-c-c
-		//-------------------------------------------------------------------------
 		case 0xAA:
-			//128 == 0x80 == 1 << 7 == the first bit is 1 and the rest are 0 == 10000000
-			mcm_updateLockoutStatus(mcm, (canMessages[currMessage].data[6] & 0x80 == 0x80) ? ENABLED : DISABLED);
-			mcm_updateInverterStatus(mcm, ((canMessages[currMessage].data[6] & 0x01 == 0x01) ? ENABLED : DISABLED));
-			break;
-
-		//-------------------------------------------------------------------------
-		//MCU Fault codes
-		//-------------------------------------------------------------------------
 		case 0xAB:
-			//For unknown/dynamic data array sizes, use dataIndex < sizeof(canMessages[currMessage].data) / sizeof(canMessages[currMessage].data[0]
-			//for (int dataIndex = 0; dataIndex < 8; dataIndex++)
-			//{
-			//    switch (dataIndex)
-			//    {
-			//    case 6:   //Byte 6: 
-			//        break;
-			//    default:
-			//        break;
-			//    }
-			//}        
-			break;
-
         case 0xAC:
         case 0xAD:
         case 0xAE:
         case 0xAF:
+            mcm_parseCanMessage(mcm, &canMessages[currMessage]);
             break;
 
 		//-------------------------------------------------------------------------
