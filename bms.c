@@ -6,7 +6,7 @@
 
 /**************************************************************************
  * 	REVISION HISTORY:
- *
+ *	2016-5-11 - Rabeel Elahi - Added bms_commands_getPower();
  *  2016-4-20 - Rabeel Elahi - Added bms_parseCANMessage()
  *						     - Moved cases back to bms.c
  *						     - Added #includes
@@ -33,7 +33,7 @@
 
 
 
-struct _BMS{
+struct _BatteryManagementSystem {
 
 	ubyte2 canMessageBaseId;
 
@@ -98,15 +98,15 @@ struct _BMS{
 
 };
 
-BMS* BMS_new(int canMessageBaseID){
+BatteryManagementSystem* BMS_new(ubyte2 canMessageBaseID) {
 
-	BMS* BMS_obj = (BMS*)malloc(sizeof(struct _BMS));
+	BatteryManagementSystem* BMS_obj = (BatteryManagementSystem*)malloc(sizeof(struct _BatteryManagementSystem));
 	BMS_obj->canMessageBaseId = canMessageBaseID;
 	return BMS_obj;
 
 }
 
-void bms_parseCanMessage(BatteryManagementSystem* bms, IO_CAN_DATA_FRAME* bmsCanMessage){
+void BMS_parseCanMessage(BatteryManagementSystem* bms, IO_CAN_DATA_FRAME* bmsCanMessage){
 	ubyte2 utemp16;
 	sbyte1  temp16;
 	ubyte4 utemp32;
@@ -152,16 +152,16 @@ void bms_parseCanMessage(BatteryManagementSystem* bms, IO_CAN_DATA_FRAME* bmsCan
 
 	case 0x625:
 
-		utemp32 = (((bmsCanMessage->data[0] << 24) |
-			(bmsCanMessage->data[1] << 16) |
-			(bmsCanMessage->data[2] << 8) |
+		utemp32 = ((((ubyte4)bmsCanMessage->data[0] << 24) |
+			((ubyte4)bmsCanMessage->data[1] << 16) |
+			((ubyte4)bmsCanMessage->data[2] << 8) |
 			(bmsCanMessage->data[3])));
 		bms->batteryEnergyIn = swap_uint32(utemp32);
 
-		utemp32 = (((bmsCanMessage->data[4] << 24) |
-			(bmsCanMessage->data[5] << 16) |
-			(bmsCanMessage->data[6] << 8) |
-			(bmsCanMessage->data[7])));
+		utemp32 = ((((ubyte4)bmsCanMessage->data[4] << 24) |
+			((ubyte4)bmsCanMessage->data[5] << 16) |
+			((ubyte4)bmsCanMessage->data[6] << 8) |
+			((ubyte4)bmsCanMessage->data[7])));
 		bms->batteryEnergyOut = swap_uint32(utemp32);
 
 		break;
@@ -205,11 +205,10 @@ void bms_parseCanMessage(BatteryManagementSystem* bms, IO_CAN_DATA_FRAME* bmsCan
 	}
 }
 
-
-
-
-
-
+ubyte2 bms_commands_getPower(BMS* me)
+{
+	return (me->packCurrent * me->packVoltage);
+}
 
 ubyte1 swap_uint8(ubyte1 val)
 {
