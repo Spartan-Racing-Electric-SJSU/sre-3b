@@ -2,6 +2,7 @@
 #ifndef _MOTORCONTROLLER_H
 #define _MOTORCONTROLLER_H
 
+#include "IO_CAN.h"
 #include "IO_Driver.h"
 #include "torqueEncoder.h"
 #include "brakePressureSensor.h"
@@ -37,7 +38,10 @@ ubyte2 mcm_commands_getTorque(MotorController* me); //Will be divided by 10 e.g.
 Direction mcm_commands_getDirection(MotorController* me);
 Status mcm_commands_getInverter(MotorController* me);
 Status mcm_commands_getDischarge(MotorController* me);
-ubyte2 mcm_commands_getTorqueLimit(MotorController* me);
+ubyte2 mcm_commands_getTorqueLimit(MotorController* me); 
+
+ubyte2 mcm_command_getPower(MotorController* me);
+ubyte2 mcm_command_getCommandedTorque(MotorController* me);
 
 //----------------------------------------------------------------------------
 // Update Functions (CAN Inputs)
@@ -48,6 +52,8 @@ void mcm_updateInverterStatus(MotorController* me, Status newState);
 
 Status mcm_getLockoutStatus(MotorController* me);
 Status mcm_getInverterStatus(MotorController* me);
+
+
 
 ubyte2 mcm_commands_getUpdateCount(MotorController* me);
 void mcm_commands_resetUpdateCountAndTime(MotorController* me);
@@ -74,7 +80,7 @@ void mcm_setStartupStage(MotorController* me, ubyte1 stage);
 void setMCMCommands(MotorController* mcm, TorqueEncoder* tps, BrakePressureSensor* bps, ReadyToDriveSound* rtds, SafetyChecker* sc);
 void MotorControllerPowerManagement(MotorController* mcm, TorqueEncoder* tps, ReadyToDriveSound* rtds);
 
-void mcm_parseCanMessage(MotorContoller* mcm, IO_CAN_DATA_FRAME* mcmCanMessage);
+void mcm_parseCanMessage(MotorController* mcm, IO_CAN_DATA_FRAME* mcmCanMessage);
 
 
 
