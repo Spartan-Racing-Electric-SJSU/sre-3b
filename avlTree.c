@@ -3,6 +3,7 @@
 #include <string.h> //memcpy
 #include <stdlib.h> //malloc
 
+#include "IO_RTC.h"
 #include "IO_Driver.h"
 #include "mathFunctions.h"
 #include "avlTree.h"
@@ -267,7 +268,7 @@ AVLNode* AVL_insert(AVLNode* t, ubyte4 messageID, ubyte1 messageData[8], ubyte4 
             t->timeBetweenMessages_Max = maxTime;
             //To copy an entire array, http://stackoverflow.com/questions/9262784/array-equal-another-array
             memcpy(messageData, t->data, sizeof(messageData));
-            t->lastMessage_timeStamp = 0;
+            IO_RTC_StartTime(&t->lastMessage_timeStamp);
 
 			t->height = 0;
 			t->left = t->right = NULL;

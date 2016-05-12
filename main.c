@@ -113,7 +113,7 @@ void main(void)
     // objects instead, like the RTDS/MCM/TPS objects below
     //----------------------------------------------------------------------------
 	bool bench = TRUE;
-
+    
     vcu_initializeADC(bench);  //Configure and activate all I/O pins on the VCU
     //vcu_initializeCAN();
     vcu_initializeSensors();
@@ -125,7 +125,7 @@ void main(void)
     //----------------------------------------------------------------------------
     // External Devices - Object Initializations (including default values)
     //----------------------------------------------------------------------------
-    CanManager* canMan = CanManager_new(500, 40, 40, 500, 20, 20, 100);  //3rd param = messages per node (can0/can1; read/write)
+    CanManager* canMan = CanManager_new(500, 40, 40, 500, 20, 20, 250000);  //3rd param = messages per node (can0/can1; read/write)
     ReadyToDriveSound* rtds = RTDS_new();
 	//BatteryManagementSystem* bms = BMS_new();
     MotorController* mcm0 = MotorController_new(0xA0, FORWARD, 100); //CAN addr, direction, torque limit x10 (100 = 10Nm)
@@ -207,21 +207,14 @@ void main(void)
 		}
 
 		WheelSpeeds_update(wss);
-		//WheelSpeeds_update();
 		//DataAquisition_update(); //includes accelerometer
 		//TireModel_update()
 		//ControlLaw_update();
-		
-
-
-
 		/*
 		ControlLaw //Tq command
 			TireModel //used by control law -> read from WSS, accelerometer
 			StateObserver //choose driver command or ctrl law
 		*/	
-
-
 
 		//Every cycle: if the calibration was started and hasn't finished, check the values again
 
@@ -236,8 +229,6 @@ void main(void)
         //motorController_setCommands(rtds);
         //DOES NOT set inverter command or rtds flag
         setMCMCommands(mcm0, tps, bps, rtds, sc);
-
-
 
         //Drop the sensor readings into CAN (just raw data, not calculated stuff)
         //MotorController_sendCommandMessage();

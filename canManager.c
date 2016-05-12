@@ -45,7 +45,7 @@ struct _CanManager {
     IO_ErrorType ioErr_can1_read;
     IO_ErrorType ioErr_can1_write;
 
-    ubyte2 sendDelayMs;
+    ubyte4 sendDelayus;
 
 
     IO_CAN_DATA_FRAME canMessages[];//Flexible array must be the last struct member
@@ -67,14 +67,14 @@ struct _CanMessageNode
 
 CanManager* CanManager_new(ubyte2 can0_busSpeed, ubyte1 can0_read_messageLimit, ubyte1 can0_write_messageLimit
                          , ubyte2 can1_busSpeed, ubyte1 can1_read_messageLimit, ubyte1 can1_write_messageLimit
-                         , ubyte2 defaultSendDelayMs) //ubyte4 defaultMinSendDelay, ubyte4 defaultMaxSendDelay)
+                         , ubyte4 defaultSendDelayus) //ubyte4 defaultMinSendDelay, ubyte4 defaultMaxSendDelay)
 {
 	CanManager* me = (CanManager*)malloc(sizeof(struct _CanManager));
 
 	//create can history data structure (AVL tree?)
 	me->incomingTree = NULL;
     me->outgoingTree = NULL;
-    me->sendDelayMs = defaultSendDelayMs;
+    me->sendDelayus = defaultSendDelayus;
 
     //Activate the CAN channels --------------------------------------------------
     me->ioErr_can0_Init = IO_CAN_Init(IO_CAN_CHANNEL_0, can0_busSpeed, 0, 0, 0);
@@ -101,15 +101,14 @@ CanManager* CanManager_new(ubyte2 can0_busSpeed, ubyte1 can0_read_messageLimit, 
     //-------------------------------------------------------------------
     //Define default messages
     //-------------------------------------------------------------------
-    //Incoming
-    AVL_insert(me->outgoingTree, 0x0C0, NULL, 10, 125, TRUE); //MCM command message
-
     //Outgoing
-    AVL_insert(me->incomingTree, 0X0AA, NULL, 0, 10000, TRUE); //MCM Status
-    AVL_insert(me->incomingTree, 0X0AB, NULL, 0, 10000, TRUE); //MCM Faults
-    AVL_insert(me->incomingTree, 0x623, NULL, 0, 5000, TRUE); //BMS faults
-    AVL_insert(me->incomingTree, 0x629, NULL, 0, 1000, TRUE); //BMS high priority message
+    AVL_insert(me->outgoingTree, 0x0C0, NULL, 10000, 125000, TRUE); //MCM command message
 
+    //Incoming
+    AVL_insert(me->incomingTree, 0X0AA, NULL, 0, 500000, TRUE); //MCM Status
+    AVL_insert(me->incomingTree, 0X0AB, NULL, 0, 500000, TRUE); //MCM Faults
+    AVL_insert(me->incomingTree, 0x623, NULL, 0, 5000000, TRUE); //BMS faults
+    AVL_insert(me->incomingTree, 0x629, NULL, 0, 1000000, TRUE); //BMS high priority message
 
 	return me;
 }
@@ -139,6 +138,7 @@ IO_ErrorType CanManager_send(CanManager* me, CanChannel channel, IO_CAN_DATA_FRA
     ubyte1 messagePosition; //used twice
     for (messagePosition = 0; messagePosition < canMessageCount; messagePosition++)
     {
+        sendMessage = FALSE;
         //NEEDS TO USE DIFFERENT TREES FOR CAN0 / CAN1
         //lastMessage = AVL_find(me->outgoingTree, canMessages[messagePosition]->id);
         lastMessage = AVL_find(me->outgoingTree, canMessages[messagePosition].id);
@@ -146,7 +146,7 @@ IO_ErrorType CanManager_send(CanManager* me, CanChannel channel, IO_CAN_DATA_FRA
         // Message doesn't exist in history tree ---------------------------------
         if (lastMessage == NULL)
         {
-            lastMessage = AVL_insert(me->outgoingTree, (canMessages[messagePosition]).id, canMessages[messagePosition].data, me->sendDelayMs, me->sendDelayMs, FALSE);
+            lastMessage = AVL_insert(me->outgoingTree, (canMessages[messagePosition]).id, canMessages[messagePosition].data, me->sendDelayus, me->sendDelayus, FALSE);
             //send message later
             sendMessage = TRUE;
         }
@@ -165,6 +165,7 @@ IO_ErrorType CanManager_send(CanManager* me, CanChannel channel, IO_CAN_DATA_FRA
                 if (oldData == newData)
                 {
                     //data is the same
+                    //dataChanged = FALSE;
                 }
                 else
                 {
@@ -195,10 +196,7 @@ IO_ErrorType CanManager_send(CanManager* me, CanChannel channel, IO_CAN_DATA_FRA
                     sendMessage = TRUE;
                 }
             }
-        }
-        //----------------------------------------------------------------------------
-        // end check if message should be sent
-        //----------------------------------------------------------------------------
+        }   // end check if message should be sent
 
         //----------------------------------------------------------------------------
         // If we determined that this message should be sent
@@ -229,7 +227,7 @@ IO_ErrorType CanManager_send(CanManager* me, CanChannel channel, IO_CAN_DATA_FRA
             AVLNode* messageToUpdate;
             for (messagePosition = 0; messagePosition < messagesToSendCount; messagePosition++)
             {
-                //...find the message ID in the outgoing message tree (AGAIN - big inefficiency here)...
+                //...find the message ID in the outgoing message tree again (big inefficiency here)...
                 messageToUpdate = AVL_find(me->outgoingTree, messagesToSend[messagePosition].id);
 
                 //and update the message sent timestamp
@@ -237,7 +235,6 @@ IO_ErrorType CanManager_send(CanManager* me, CanChannel channel, IO_CAN_DATA_FRA
             }
         }
     }
-
     return sendResult;
 }
 
@@ -359,7 +356,7 @@ void canOutput_sendDebugMessage(CanManager* me, TorqueEncoder* tps, BrakePressur
     BrakePressureSensor_getPedalTravel(bps, &errorCount, &tempPedalPercent); //getThrottlePercent(TRUE, &errorCount);
     ubyte1 brakePercent = 0xFF * tempPedalPercent;
 
-    //canMessageCount++; //Start at 0
+    canMessageCount++;
     byteNum = 0;
     canMessages[canMessageCount - 1].length = 8; // how many bytes in the message
     canMessages[canMessageCount - 1].id_format = IO_CAN_STD_FRAME;
