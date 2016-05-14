@@ -292,20 +292,39 @@ ubyte1 SafetyChecker_getErrorByte(SafetyChecker* me, ubyte1* errorSet)
 	// 80kW Limit Check
 	//-------------------------------------------------------------------
 
-	ubyte2 checkPowerDraw(BatteryManagementSystem* bms, MotorController* mcm ){
-	
-
-	ubyte2 new_torque;
-	
-	ubyte2 bmsPower = bms_commands_getPower(bms);
-	ubyte2 mcmPower = mcm_commands_getPower(mcm);
-	ubyte2 mcmTorque = mcm_commands_getCommandedTorque(mcm);
+	ubyte2 checkPowerDraw(BatteryManagementSystem* bms, MotorController* mcm )
+{
+	ubyte2 torqueThrottle;
 	
 	// if either the bms or mcm goes over 75kw, limit torque 
-	if(bmsPower > 75 || mcmPower > 75){
+	if((bms_commands_getPower(bms) > 75) || (mcm_commands_getPower(mcm) > 75))
+	{
 		// using bmsPower since closer to e-meter
-	new_torque = (mcmTorque - (((bmsPower - 80000)/80000) * mcmTorque));
+	torqueThrottle = (mcm_commands_getCommandedTorque(mcm) - (((bms_commands_getPower(bms) - 80000)/80000) * mcm_commands_getCommandedTorque(mcm)));
 	}
 	
-	return new_torque; 
+	return torqueThrottle; 
+}
+
+	//-------------------------------------------------------------------
+	//      Pack Temp Check
+	//-------------------------------------------------------------------
+
+
+ubyte2 checkBatteryPackTemp(BatteryManagementSystem* bms)
+{
+	
+	if((bms_commands_getPackTemp(bms) > 35))
+	{
+		// Turn on FANS
+		//IO_DO_Init(IO_DO_06); 
+		IO_DO_Set(IO_DO_06, TRUE); //pin 142 - sending 12V 
+		
+	}
+	else
+	{
+		IO_DO_Set(IO_DO_06, FALSE);
+	}
+		
+		
 }
