@@ -7,6 +7,8 @@
 /**************************************************************************
  * 	REVISION HISTORY:
  *	2016-5-11 - Rabeel Elahi - Added bms_commands_getPower();
+ *							 - Added bms_commands_getPackTemp();
+ *							 
  *  2016-4-20 - Rabeel Elahi - Added bms_parseCANMessage()
  *						     - Moved cases back to bms.c
  *						     - Added #includes
