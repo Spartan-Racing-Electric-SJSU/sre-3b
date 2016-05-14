@@ -24,6 +24,7 @@ bool SafetyChecker_getError(SafetyChecker* me, SafetyCheck check);
 bool SafetyChecker_getErrorByte(SafetyChecker* me, ubyte1* errorByte);
 
 
-ubyte2 checkPowerDraw(BatteryManagementSystem* bms, MotorController* mcm )
+ubyte2 checkPowerDraw(BatteryManagementSystem* bms, MotorController* mcm);
+ubyte2 checkBatteryPackTemp(BatteryManagementSystem* bms);
 
 #endif //  _TORQUEENCODER_H
