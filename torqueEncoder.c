@@ -96,6 +96,24 @@ void TorqueEncoder_update(TorqueEncoder* me)
 				me->percent = (me->tps0_percent + me->tps1_percent) / 2;
 			//}
 		}
+
+        if (me->percent <= 0)
+        {
+            Light_set(Light_dashTCS, 0);
+        }
+        else
+        {
+            if (me->percent > 0 && me->percent <= .25)
+            {
+                Light_set(Light_dashTCS, .5 * me->percent);
+            }
+            else
+            {
+                Light_set(Light_dashTCS, me->percent);
+            }
+        }
+
+
 	}
 }
 
