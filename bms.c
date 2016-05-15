@@ -108,12 +108,12 @@ BatteryManagementSystem* BMS_new(ubyte2 canMessageBaseID){
 
 }
 
-ubyte2 bms_commands_getPower(BMS* bms)
+ubyte4 BMS_getPower(BatteryManagementSystem* me)
 {
 	return (me->packCurrent * me->packVoltage);
 }
 
-ubyte2 bms_commands_getPackTemp(BMS* bms)
+ubyte2 BMS_getPackTemp(BatteryManagementSystem* me)
 {
 
 	return (me->packTemp);
@@ -217,7 +217,16 @@ void BMS_parseCanMessage(BatteryManagementSystem* bms, IO_CAN_DATA_FRAME* bmsCan
 
 		break;
 
-	}
+    case 0x629:
+        //See https://onedrive.live.com/view.aspx?resid=F9BB8F0F8FDB5CF8!36803&ithint=file%2cxlsx&app=Excel&authkey=!AI-YHJrHmtUaWpI
+        //Voltage(100mV)[022]
+        //Current(100mA)[054]
+        //Max Temp[104]
+        //Avg Temp[096]
+        //SOC(%)[112]
+        //DOD(Ah)[144]
+        break;
+    }
 }
 
 

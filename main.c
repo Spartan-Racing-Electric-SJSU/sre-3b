@@ -105,6 +105,10 @@ extern Sensor Sensor_EcoButton;
 ****************************************************************************/
 void main(void)
 {
+
+    /*******************************************/
+    /*            Initializations              */
+    /*******************************************/
     IO_Driver_Init(NULL); //Handles basic startup for all VCU subsystems
 
     //----------------------------------------------------------------------------
@@ -162,6 +166,9 @@ void main(void)
         IO_Driver_TaskBegin();
 
 
+        /*******************************************/
+        /*              Read Inputs                */
+        /*******************************************/
         //----------------------------------------------------------------------------
         // Handle data input streams
         //----------------------------------------------------------------------------
@@ -172,14 +179,14 @@ void main(void)
         //Also echo can0 messages to can1 for DAQ.
         CanManager_read(canMan, CAN0_HIPRI, mcm0, bms);
 
-        //----------------------------------------------------------------------------
-        // Calculations
-        //----------------------------------------------------------------------------
+        /*******************************************/
+        /*          Perform Calculations           */
+        /*******************************************/
         //calculations - Now that we have local sensor data and external data from CAN, we can
         //do actual processing work, from pedal travel calcs to traction control
         //calculations_calculateStuff();
 
-		//Run calibration if commanded
+        //Run calibration if commanded
 		//if (IO_RTC_GetTimeUS(timestamp_calibStart) < (ubyte4)5000000)
 		if (Sensor_EcoButton.sensorValue == FALSE)
 		{
@@ -190,21 +197,12 @@ void main(void)
 			//DIGITAL OUTPUT 4 for STATUS LED
 		}
 		TorqueEncoder_update(tps);
-		TorqueEncoder_calibrationCycle(tps, &calibrationErrors); //Todo: deal with calibration errors
+        //Every cycle: if the calibration was started and hasn't finished, check the values again
+        TorqueEncoder_calibrationCycle(tps, &calibrationErrors); //Todo: deal with calibration errors
 		BrakePressureSensor_update(bps, bench);
 		BrakePressureSensor_calibrationCycle(bps, &calibrationErrors);
 
 		//TractionControl_update(tps, mcm0, wss, daq);
-
-		SafetyChecker_update(sc, tps, bps);
-		if(SafetyChecker_allSafe(sc) == TRUE)
-		{
-			Light_set(Light_dashError, 0);
-		}
-		else
-		{
-			Light_set(Light_dashError, 1);
-		}
 
 		WheelSpeeds_update(wss);
 		//DataAquisition_update(); //includes accelerometer
@@ -216,27 +214,45 @@ void main(void)
 			StateObserver //choose driver command or ctrl law
 		*/	
 
-		//Every cycle: if the calibration was started and hasn't finished, check the values again
-
-
-        //----------------------------------------------------------------------------
-        // Motor Controller Output Calculations
-        //----------------------------------------------------------------------------
-        //Handle motor startup procedures
-        MotorControllerPowerManagement(mcm0, tps, rtds);
 
         //Assign motor controls to MCM command message
         //motorController_setCommands(rtds);
         //DOES NOT set inverter command or rtds flag
-        setMCMCommands(mcm0, tps, bps, rtds, sc);
+        MCM_calculateCommands(mcm0, tps, bps);
+
+        SafetyChecker_update(sc, tps, bps);
+
+        /*******************************************/
+        /*  Output Adjustments by Safety Checker   */
+        /*******************************************/
+        //SafetyChecker_ReduceTorque()
+        //SafetyChecker_?
+
+        /*******************************************/
+        /*              Enact Outputs              */
+        /*******************************************/
+        //MOVE INTO SAFETYCHECKER
+        //SafetyChecker_setErrorLight(sc);
+        if (SafetyChecker_allSafe(sc) == TRUE)
+        {
+            Light_set(Light_dashError, 0);
+        }
+        else
+        {
+            Light_set(Light_dashError, 1);
+        }
+
+        //Handle motor controller startup procedures
+        MotorControllerPowerManagement(mcm0, tps, rtds);
 
         //Drop the sensor readings into CAN (just raw data, not calculated stuff)
         //MotorController_sendCommandMessage();
         //canOutput_sendMCUControl(mcm0, FALSE);
+
+        //Send debug data
         canOutput_sendDebugMessage(canMan, tps, bps, mcm0, wss, sc);
         //canOutput_sendSensorMessages();
         //canOutput_sendStatusMessages(mcm0);
-
 
         //----------------------------------------------------------------------------
         // Task management stuff (end)

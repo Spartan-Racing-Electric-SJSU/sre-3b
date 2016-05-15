@@ -31,8 +31,8 @@ void BMS_parseCanMessage(BatteryManagementSystem* bms, IO_CAN_DATA_FRAME* bmsCan
 
 // BMS COMMANDS // 
 
-ubyte2 bms_commands_getPower(BMS* bms);
-ubyte2 bms_commands_getPackTemp(BMS* bms);
+ubyte4 BMS_getPower(BatteryManagementSystem* bms);
+ubyte2 BMS_getPackTemp(BatteryManagementSystem* bms);
 
 
 /*

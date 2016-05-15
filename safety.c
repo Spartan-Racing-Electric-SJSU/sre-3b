@@ -1,6 +1,7 @@
 #include <stdlib.h>  //Needed for malloc
 #include <math.h>
 #include "IO_RTC.h"
+#include "IO_DIO.h"
 
 #include "safety.h"
 #include "mathFunctions.h"
@@ -292,15 +293,15 @@ ubyte1 SafetyChecker_getErrorByte(SafetyChecker* me, ubyte1* errorSet)
 	// 80kW Limit Check
 	//-------------------------------------------------------------------
 
-	ubyte2 checkPowerDraw(BatteryManagementSystem* bms, MotorController* mcm )
+ubyte2 checkPowerDraw(BatteryManagementSystem* bms, MotorController* mcm )
 {
 	ubyte2 torqueThrottle;
 	
 	// if either the bms or mcm goes over 75kw, limit torque 
-	if((bms_commands_getPower(bms) > 75) || (mcm_commands_getPower(mcm) > 75))
+	if((BMS_getPower(bms) > 75000) || (MCM_getPower(mcm) > 75000))
 	{
 		// using bmsPower since closer to e-meter
-	torqueThrottle = (mcm_commands_getCommandedTorque(mcm) - (((bms_commands_getPower(bms) - 80000)/80000) * mcm_commands_getCommandedTorque(mcm)));
+	    torqueThrottle = (MCM_getCommandedTorque(mcm) - (((BMS_getPower(bms) - 80000)/80000) * MCM_getCommandedTorque(mcm)));
 	}
 	
 	return torqueThrottle; 
@@ -314,7 +315,7 @@ ubyte1 SafetyChecker_getErrorByte(SafetyChecker* me, ubyte1* errorSet)
 ubyte2 checkBatteryPackTemp(BatteryManagementSystem* bms)
 {
 	
-	if((bms_commands_getPackTemp(bms) > 35))
+	if((BMS_getPackTemp(bms) > 35))
 	{
 		// Turn on FANS
 		//IO_DO_Init(IO_DO_06); 

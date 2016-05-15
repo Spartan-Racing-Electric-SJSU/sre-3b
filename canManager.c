@@ -9,6 +9,7 @@
 #include "avlTree.h"
 #include "motorController.h"
 #include "bms.h"
+#include "safety.h"
 
 struct _CanManager {
     AVLNode* incomingTree;
@@ -285,7 +286,7 @@ void CanManager_read(CanManager* me, CanChannel channel, MotorController* mcm, B
         case 0xAD:
         case 0xAE:
         case 0xAF:
-            mcm_parseCanMessage(mcm, &canMessages[currMessage]);
+            MCM_parseCanMessage(mcm, &canMessages[currMessage]);
             break;
 
 		//-------------------------------------------------------------------------
