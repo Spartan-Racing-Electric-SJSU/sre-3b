@@ -1,10 +1,3 @@
-/*
- * motorcontroller.c
- *
- *  Created on: May 4, 2016
- *      Author: Rabeel Elahi
- */
-
 #include <stdlib.h>  //Needed for malloc
 #include "IO_Driver.h"
 #include "IO_RTC.h"
@@ -289,6 +282,15 @@ void mcm_commands_setTorqueLimit(MotorController* me, ubyte2 newTorqueLimit)
 	me->commands_torqueLimit = newTorqueLimit;
 }
 
+ubyte2 mcm_command_getPower(MotorController* me)
+{
+	return (me->DC_Voltage * me->DC_Current);
+}
+
+ubyte2 mcm_command_getCommandedTorque(MotorController* me)
+{
+	return me->commandedTorque;
+}
 
 ubyte2 mcm_commands_getTorque(MotorController* me)
 {
@@ -309,17 +311,6 @@ Status mcm_commands_getDischarge(MotorController* me)
 ubyte2 mcm_commands_getTorqueLimit(MotorController* me)
 {
 	return me->commands_torqueLimit;
-}
-
-ubyte2 mcm_command_getCurrentPowerDraw(MotorController* me)
-{
-	return me->currentPower;
-}
-
-
-void mcm_updatePowerDraw(MotorController* me)
-{
-    me->currentPower = (me->DC_Voltage * me->DC_Current);
 }
 
 void mcm_updateLockoutStatus(MotorController* me, Status newState)

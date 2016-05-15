@@ -4,8 +4,8 @@
 /**************************************************************************
  * 	REVISION HISTORY:
  *
- *
- *	2016-4-20 - Rabeel Elahi - Added bms_parseCANMessage()
+ *	2016-5-11 - Rabeel Elahi - Added bms_commands_getPower();
+ *							 - Added bms_commands_getPackTemp();
  *
  *	2016-4-6  - Rabeel Elahi - Added constructor and BMS data struct
  *							 - Initially added helper functions to update variables,
@@ -28,6 +28,11 @@ typedef struct _BatteryManagementSystem BatteryManagementSystem;
 
 BatteryManagementSystem* BMS_new(ubyte2 canMessageBaseID);
 void BMS_parseCanMessage(BatteryManagementSystem* bms, IO_CAN_DATA_FRAME* bmsCanMessage);
+
+// BMS COMMANDS // 
+
+ubyte2 bms_commands_getPower(BMS* bms);
+ubyte2 bms_commands_getPackTemp(BMS* bms);
 
 
 /*

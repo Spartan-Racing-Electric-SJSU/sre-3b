@@ -6,6 +6,9 @@
 #include "IO_Driver.h"
 #include "sensors.h"
 
+#include "motorcontroller.h"
+#include "bms.h"
+
 typedef enum { CHECK_tpsOutOfRange, CHECK_bpsOutOfRange
 			   , CHECK_tpsOpenOrShort, CHECK_bpsOpenOrShort
 			   , CHECK_tpsNotCalibrated, CHECK_bpsNotCalibrated 
@@ -19,5 +22,9 @@ void SafetyChecker_update(SafetyChecker* me, TorqueEncoder* tps, BrakePressureSe
 bool SafetyChecker_allSafe(SafetyChecker* me);
 bool SafetyChecker_getError(SafetyChecker* me, SafetyCheck check);
 bool SafetyChecker_getErrorByte(SafetyChecker* me, ubyte1* errorByte);
+
+
+ubyte2 checkPowerDraw(BatteryManagementSystem* bms, MotorController* mcm);
+ubyte2 checkBatteryPackTemp(BatteryManagementSystem* bms);
 
 #endif //  _TORQUEENCODER_H

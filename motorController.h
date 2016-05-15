@@ -38,7 +38,10 @@ ubyte2 mcm_commands_getTorque(MotorController* me); //Will be divided by 10 e.g.
 Direction mcm_commands_getDirection(MotorController* me);
 Status mcm_commands_getInverter(MotorController* me);
 Status mcm_commands_getDischarge(MotorController* me);
-ubyte2 mcm_commands_getTorqueLimit(MotorController* me);
+ubyte2 mcm_commands_getTorqueLimit(MotorController* me); 
+
+ubyte2 mcm_command_getPower(MotorController* me);
+ubyte2 mcm_command_getCommandedTorque(MotorController* me);
 
 //----------------------------------------------------------------------------
 // Update Functions (CAN Inputs)
@@ -49,6 +52,8 @@ void mcm_updateInverterStatus(MotorController* me, Status newState);
 
 Status mcm_getLockoutStatus(MotorController* me);
 Status mcm_getInverterStatus(MotorController* me);
+
+
 
 ubyte2 mcm_commands_getUpdateCount(MotorController* me);
 void mcm_commands_resetUpdateCountAndTime(MotorController* me);

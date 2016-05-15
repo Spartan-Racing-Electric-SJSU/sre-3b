@@ -6,7 +6,9 @@
 
 /**************************************************************************
  * 	REVISION HISTORY:
- *
+ *	2016-5-11 - Rabeel Elahi - Added bms_commands_getPower();
+ *							 - Added bms_commands_getPackTemp();
+ *							 
  *  2016-4-20 - Rabeel Elahi - Added bms_parseCANMessage()
  *						     - Moved cases back to bms.c
  *						     - Added #includes
@@ -98,7 +100,7 @@ struct _BatteryManagementSystem {
 
 };
 
-BatteryManagementSystem* BMS_new(ubyte2 canMessageBaseID) {
+BatteryManagementSystem* BMS_new(ubyte2 canMessageBaseID){
 
 	BatteryManagementSystem* BMS_obj = (BatteryManagementSystem*)malloc(sizeof(struct _BatteryManagementSystem));
 	BMS_obj->canMessageBaseId = canMessageBaseID;
@@ -106,10 +108,23 @@ BatteryManagementSystem* BMS_new(ubyte2 canMessageBaseID) {
 
 }
 
+ubyte2 bms_commands_getPower(BMS* bms)
+{
+	return (me->packCurrent * me->packVoltage);
+}
+
+ubyte2 bms_commands_getPackTemp(BMS* bms)
+{
+
+	return (me->packTemp);
+}
+
+
 void BMS_parseCanMessage(BatteryManagementSystem* bms, IO_CAN_DATA_FRAME* bmsCanMessage){
 	ubyte2 utemp16;
 	sbyte1  temp16;
 	ubyte4 utemp32;
+	
 
 	switch (bmsCanMessage->id)
 	{
@@ -204,10 +219,6 @@ void BMS_parseCanMessage(BatteryManagementSystem* bms, IO_CAN_DATA_FRAME* bmsCan
 
 	}
 }
-
-
-
-
 
 
 
