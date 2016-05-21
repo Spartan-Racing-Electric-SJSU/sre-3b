@@ -21,6 +21,7 @@
 
 #include <stdio.h>
 #include <stdint.h>
+
 #include "IO_CAN.h"
 
 
@@ -31,8 +32,11 @@ void BMS_parseCanMessage(BatteryManagementSystem* bms, IO_CAN_DATA_FRAME* bmsCan
 
 // BMS COMMANDS // 
 
-ubyte2 bms_commands_getPower(BMS* bms);
-ubyte2 bms_commands_getPackTemp(BMS* bms);
+// ***NOTE: packCurrent and and packVoltage are SIGNED variables and the return type for BMS_getPower is signed
+sbyte4 BMS_getPower(BatteryManagementSystem* me);
+ubyte2 BMS_getPackTemp(BatteryManagementSystem* me);
+sbyte1 BMS_getAvgTemp(BatteryManagementSystem* me);
+sbyte1 BMS_getMaxTemp(BatteryManagementSystem* me);
 
 
 /*
