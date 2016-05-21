@@ -357,7 +357,7 @@ ubyte2 MCM_getTorqueMax(MotorController* me)
 
 
 
-ubyte4 MCM_getPower(MotorController* me)
+sbyte4 MCM_getPower(MotorController* me)
 {
     return ((me->DC_Voltage) * (me->DC_Current));
 }
