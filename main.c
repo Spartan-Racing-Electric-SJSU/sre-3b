@@ -32,12 +32,10 @@
 //#include "IO_PWM.h"
 
 //Our code
+#include "serial.h"
 #include "initializations.h"
 #include "sensors.h"
 #include "canManager.h"
-//#include "canInput.h"
-//#include "canOutput.h"
-//#include "outputCalculations.h"
 #include "motorController.h"
 #include "readyToDriveSound.h"
 #include "torqueEncoder.h"
@@ -116,6 +114,9 @@ void main(void)
     // Eventually, all of these functions should be made obsolete by creating
     // objects instead, like the RTDS/MCM/TPS objects below
     //----------------------------------------------------------------------------
+    SerialManager* serialMan = SerialManager_new();
+    SerialManager_send(serialMan, "Serial manager created.");
+
 	bool bench = TRUE;
     
     vcu_initializeADC(bench);  //Configure and activate all I/O pins on the VCU
@@ -126,10 +127,13 @@ void main(void)
     //Do some loops until the ADC stops outputting garbage values
     vcu_ADCWasteLoop();
 
+
+
     //----------------------------------------------------------------------------
     // External Devices - Object Initializations (including default values)
     //----------------------------------------------------------------------------
     CanManager* canMan = CanManager_new(500, 40, 40, 500, 20, 20, 250000);  //3rd param = messages per node (can0/can1; read/write)
+    
     ReadyToDriveSound* rtds = RTDS_new();
 	//BatteryManagementSystem* bms = BMS_new();
     MotorController* mcm0 = MotorController_new(0xA0, FORWARD, 100); //CAN addr, direction, torque limit x10 (100 = 10Nm)
@@ -243,6 +247,7 @@ void main(void)
         }
 
         //Handle motor controller startup procedures
+        MCM_relayControl(mcm0, &Sensor_HVILTerminationSense);
         MotorControllerPowerManagement(mcm0, tps, rtds);
 
         //Drop the sensor readings into CAN (just raw data, not calculated stuff)
@@ -259,6 +264,7 @@ void main(void)
         //----------------------------------------------------------------------------
         RTDS_shutdownHelper(rtds); //Stops the RTDS from playing if the set time has elapsed
 
+        IO_UART_Task();  //The task function shall be called every SW cycle.
         //Task end function for IO Driver - This function needs to be called at the end of every SW cycle
         IO_Driver_TaskEnd();
         //wait until the cycle time is over

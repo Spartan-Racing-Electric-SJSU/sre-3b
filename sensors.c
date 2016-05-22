@@ -101,14 +101,6 @@ void sensors_updateSensors(void)
 
 }
 
-//----------------------------------------------------------------------------
-//Testing MCM relay control
-//----------------------------------------------------------------------------
-void setMCMRelay(bool turnOn)
-{
-    IO_DO_Set(IO_DO_00, turnOn);
-}
-
 void Light_set(Light light, float4 percent)
 {
     ubyte2 duty = 65535 * percent;

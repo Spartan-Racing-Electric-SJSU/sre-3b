@@ -14,29 +14,35 @@
 #include "motorcontroller.h"
 #include "bms.h"
 
+//last flag is 0x 8000 0000 (32 flags)
+
+static const ubyte4 tpsOutOfRange = 1;
+static const ubyte4 bpsOutOfRange = 2;
+static const ubyte4 tpsPowerFailure = 4;
+static const ubyte4 bpsPowerFailure = 8;
+
+static const ubyte4 tpsSignalFailure = 0x10;
+static const ubyte4 bpsSignalFailure = 0x20;
+static const ubyte4 tpsNotCalibrated = 0x40;
+static const ubyte4 bpsNotCalibrated = 0x80;
+
+static const ubyte4 tpsOutOfSync = 0x100;
+static const ubyte4 tpsbpsImplausible = 0x200;
+
+static const ubyte4 HVILTermSenseLost = 0x400;
+
 
 /*****************************************************************************
 * SafetyChecker object
 ******************************************************************************
-*
+* ToDo: change to ubyte1[8] (64 flags possible)
+* 1 = fault
+* 0 = no fault
 ****************************************************************************/
 struct _SafetyChecker {
 	//Problems that require motor torque to be disabled
-	bool tpsOutOfRange;
-	bool bpsOutOfRange;
-
-	bool tpsPowerFailure;
-	bool bpsPowerFailure;
-
-	bool tpsSignalFailure;
-	bool bpsSignalFailure;
-
-	bool tpsNotCalibrated;
-	bool bpsNotCalibrated;
-
-	bool tpsOutOfSync;
-
-	bool tpsbpsImplausible;
+	
+    ubyte4 faults;
 };
 
 /*****************************************************************************
@@ -49,66 +55,51 @@ SafetyChecker* SafetyChecker_new(void)
 {
     SafetyChecker* me = (SafetyChecker*)malloc(sizeof(struct _SafetyChecker));
 
-	//Initialize all safety checks to FAIL 
-	me->tpsPowerFailure = TRUE;
-	me->tpsOutOfRange = TRUE;
-	me->tpsOutOfSync = TRUE; //Torque Encoder Plausibility Check
-	me->tpsNotCalibrated = TRUE;
-
-	me->bpsOutOfRange = TRUE;
-	//me->bpsOpenOrShort = TRUE;
-	me->bpsNotCalibrated = TRUE;
-
-	me->tpsbpsImplausible = TRUE;
-
-
+	//Initialize all safety checks to FAIL? Not anymore
+    me->faults = 0xFFFFFFFF;
     return me;
 }
 
 //Updates all values based on sensor readings, safety checks, etc
-void SafetyChecker_update(SafetyChecker* me, TorqueEncoder* tps, BrakePressureSensor* bps)
+void SafetyChecker_update(SafetyChecker* me, TorqueEncoder* tps, BrakePressureSensor* bps, Sensor* HVILTermSense)
 {
 	//===================================================================
 	// Get calibration status
 	//===================================================================
-	me->tpsNotCalibrated = !(tps->calibrated);
-	me->bpsNotCalibrated = !(bps->calibrated);
+    me->faults = 0;
+    if (tps->calibrated == FALSE) { me->faults |= tpsNotCalibrated; }
+    if (bps->calibrated == FALSE) { me->faults |= bpsNotCalibrated; }
 
 	//===================================================================
 	// Check if VCU was able to get a reading
 	//===================================================================
-	me->tpsPowerFailure = TRUE;
-	if (tps->tps0->ioErr_powerInit == IO_E_OK
-		&& tps->tps1->ioErr_powerInit == IO_E_OK
-		&& tps->tps0->ioErr_powerSet == IO_E_OK
-		&& tps->tps1->ioErr_powerSet == IO_E_OK)
+	if (tps->tps0->ioErr_powerInit != IO_E_OK
+		|| tps->tps1->ioErr_powerInit != IO_E_OK
+		|| tps->tps0->ioErr_powerSet != IO_E_OK
+		|| tps->tps1->ioErr_powerSet != IO_E_OK)
 	{
-		me->tpsPowerFailure = FALSE;
+		me->faults |= tpsPowerFailure;
 	}
 
-	me->tpsSignalFailure = TRUE;
-	if (tps->tps0->ioErr_signalInit == IO_E_OK
-		&& tps->tps1->ioErr_signalInit == IO_E_OK
-		&& tps->tps0->ioErr_signalGet == IO_E_OK
-		&& tps->tps1->ioErr_signalGet == IO_E_OK)
+	if (tps->tps0->ioErr_signalInit != IO_E_OK
+		|| tps->tps1->ioErr_signalInit != IO_E_OK
+		|| tps->tps0->ioErr_signalGet != IO_E_OK
+		|| tps->tps1->ioErr_signalGet != IO_E_OK)
 	{
-		me->tpsSignalFailure = FALSE;
+		me->faults |= tpsSignalFailure;
 	}
 
-	me->bpsPowerFailure = TRUE;
 	if (bps->bps0->ioErr_powerInit == IO_E_OK
-		&& bps->bps0->ioErr_powerSet == IO_E_OK)
+		|| bps->bps0->ioErr_powerSet == IO_E_OK)
 	{
-		me->bpsPowerFailure = FALSE;
+		me->faults |= bpsPowerFailure;
 	}
 
-	me->bpsSignalFailure = TRUE;
 	if (bps->bps0->ioErr_signalInit == IO_E_OK
 		&& bps->bps0->ioErr_signalGet == IO_E_OK)
 	{
-		me->bpsSignalFailure = FALSE;
+		me->faults |= bpsSignalFailure;
 	}
-
 
 	//===================================================================
 	// Make sure raw sensor readings are within operating range
@@ -121,22 +112,19 @@ void SafetyChecker_update(SafetyChecker* me, TorqueEncoder* tps, BrakePressureSe
 	//-------------------------------------------------------------------
 	//Torque Encoder
 	//-------------------------------------------------------------------
-	me->tpsOutOfRange = TRUE;
-	if (tps->tps0->sensorValue >= tps->tps0->specMin && tps->tps0->sensorValue <= tps->tps0->specMax
-	&&  tps->tps1->sensorValue >= tps->tps1->specMin && tps->tps1->sensorValue <= tps->tps1->specMax)
+	if (tps->tps0->sensorValue < tps->tps0->specMin || tps->tps0->sensorValue > tps->tps0->specMax
+	||  tps->tps1->sensorValue < tps->tps1->specMin || tps->tps1->sensorValue > tps->tps1->specMax)
 	{
-		me->tpsOutOfRange = FALSE;
+		me->faults |= tpsOutOfRange;
 	}
 
 	//-------------------------------------------------------------------
 	//Brake Pressure Sensor
 	//-------------------------------------------------------------------
-	me->bpsOutOfRange = TRUE;
-	if (bps->bps0->sensorValue >= bps->bps0->specMin && bps->bps0->sensorValue <= bps->bps0->specMax)
+	if (bps->bps0->sensorValue < bps->bps0->specMin || bps->bps0->sensorValue > bps->bps0->specMax)
 	{
-		me->bpsOutOfRange = FALSE;
+		me->faults |= bpsOutOfRange;
 	}
-
 
 	//===================================================================
 	// Make sure calibrated TPS readings are in sync with each other
@@ -157,11 +145,10 @@ void SafetyChecker_update(SafetyChecker* me, TorqueEncoder* tps, BrakePressureSe
 	TorqueEncoder_getIndividualSensorPercent(tps, 1, &tps1);
 	tps1 = 1 - tps1;
 
-	me->tpsOutOfSync = TRUE;
-	if (fabs(tps0 - tps1) < 0x19)  //Note: Individual TPS readings don't go negative, otherwise this wouldn't work
+	if (fabs(tps0 - tps1) > .1)  //Note: Individual TPS readings don't go negative, otherwise this wouldn't work
 	{
 		//Err.Report(Err.Codes.TPSDiscrepancy, "TPS discrepancy of over 10%", Motor.Stop);
-		me->tpsOutOfSync = FALSE;
+		me->faults |= tpsOutOfSync;
 	}
 
 
@@ -179,19 +166,31 @@ void SafetyChecker_update(SafetyChecker* me, TorqueEncoder* tps, BrakePressureSe
 	//Implausibility if..
 	if (bps->percent > .02 && tps->percent > .25) //If mechanical brakes actuated && tps > 25%
 	{
-		me->tpsbpsImplausible = TRUE;
+		me->faults |= tpsbpsImplausible;
 		//From here, assume that motor controller will check for implausibility before accepting commands
 	}
 
 	//Clear implausibility if...
-	if (me->tpsbpsImplausible == TRUE)
+	if ((me->faults & tpsbpsImplausible) > 0)
 	{
 		if (tps->percent < .05) //TPS is reduced to < 5%
 		{
-			me->tpsbpsImplausible = FALSE;
+			me->faults &= ~tpsbpsImplausible;  //turn off the implausibility flag
 		}
 	}
 
+
+
+    //===================================================================
+    // HVIL Term Sense Check
+    //===================================================================
+    // If HVIL term sense goes low (because HV went down), motor torque
+    // command should be set to zero before turning off the controller
+    //-------------------------------------------------------------------
+    if (HVILTermSense->sensorValue == FALSE)
+    {
+        me->faults |= HVILTermSenseLost;
+    }
 
 }
 
@@ -199,120 +198,102 @@ void SafetyChecker_update(SafetyChecker* me, TorqueEncoder* tps, BrakePressureSe
 //Updates all values based on sensor readings, safety checks, etc
 bool SafetyChecker_allSafe(SafetyChecker* me)
 {
-	bool allSafe = FALSE;
-	if (
-		me->tpsOutOfRange == FALSE
-	 && me->bpsOutOfRange == FALSE
-	 && me->tpsPowerFailure == FALSE
-	 && me->bpsPowerFailure == FALSE
-	 && me->tpsSignalFailure == FALSE
-	 && me->bpsSignalFailure == FALSE
-	 && me->tpsNotCalibrated == FALSE
-	 && me->bpsNotCalibrated == FALSE
-	 && me->tpsOutOfSync == FALSE 
-	 && me->tpsbpsImplausible == FALSE
-		)
-	{
-		allSafe = TRUE;
-	}
-	return allSafe;
+	return (me->faults == 0);
 }
 
-//Updates all values based on sensor readings, safety checks, etc
-bool SafetyChecker_getError(SafetyChecker* me, SafetyCheck check)
-{
-	bool status;
-	switch (check)
-	{
-	case CHECK_tpsOutOfRange:
-		status = me->tpsOutOfRange;
-		break;
+////Updates all values based on sensor readings, safety checks, etc
+//bool SafetyChecker_getError(SafetyChecker* me, SafetyCheck check)
+//{
+//	bool status;
+//	switch (check)
+//	{
+//	case CHECK_tpsOutOfRange:
+//		status = me->faults && tpsOutOfRange == 0;
+//		break;
+//
+//	case CHECK_bpsOutOfRange:
+//		status = me->faults && bpsOutOfRange;
+//		break;
+//
+//	case CHECK_tpsNotCalibrated:
+//		status = me->tpsNotCalibrated;
+//		break;
+//
+//	case CHECK_bpsNotCalibrated:
+//		status = me->bpsNotCalibrated;
+//		break;
+//
+//	case CHECK_tpsOutOfSync:
+//		status = me->tpsOutOfSync;
+//		break;
+//
+//	case CHECK_tpsbpsImplausible:
+//		status = me->tpsbpsImplausible;
+//		break;
+//
+//	default:
+//		status = TRUE; //error
+//		break;
+//	}
+//
+//	return status;
+//}
+//
+////Updates all values based on sensor readings, safety checks, etc
+//ubyte1 SafetyChecker_getErrorByte(SafetyChecker* me, ubyte1* errorSet)
+//{
+//	ubyte1 errorByte = 0;
+//	switch ((ubyte2)errorSet)
+//	{
+//	case 0:
+//		for (int bit = 0; bit <= 7; bit++)
+//		{
+//			errorByte <<= 1;  //Always leftshift first
+//			switch (bit)
+//			{
+//			case 0: errorByte |= me->tpsOutOfRange ? 1 : 0; break;
+//			case 1: errorByte |= me->tpsNotCalibrated ? 1 : 0; break;
+//			case 2: errorByte |= me->tpsOutOfSync ? 1 : 0; break;
+//			case 3: errorByte |= 0; break;
+//			case 4: errorByte |= me->bpsOutOfRange ? 1 : 0; break;
+//			case 5: errorByte |= me->bpsNotCalibrated ? 1 : 0; break;
+//			case 6: errorByte |= 0; break;
+//			case 7: errorByte |= me->tpsbpsImplausible ? 1 : 0; break;
+//			default: break;
+//			}
+//		}
+//		break;
+//
+//	default:
+//		errorByte = 0xFF; //error
+//		break;
+//	}
+//
+//	return errorByte;
+//}
 
-	case CHECK_bpsOutOfRange:
-		status = me->bpsOutOfRange;
-		break;
-
-	case CHECK_tpsNotCalibrated:
-		status = me->tpsNotCalibrated;
-		break;
-
-	case CHECK_bpsNotCalibrated:
-		status = me->bpsNotCalibrated;
-		break;
-
-	case CHECK_tpsOutOfSync:
-		status = me->tpsOutOfSync;
-		break;
-
-	case CHECK_tpsbpsImplausible:
-		status = me->tpsbpsImplausible;
-		break;
-
-	default:
-		status = TRUE; //error
-		break;
-	}
-
-	return status;
-}
-
-//Updates all values based on sensor readings, safety checks, etc
-ubyte1 SafetyChecker_getErrorByte(SafetyChecker* me, ubyte1* errorSet)
-{
-	ubyte1 errorByte = 0;
-	switch ((ubyte2)errorSet)
-	{
-	case 0:
-		for (int bit = 0; bit <= 7; bit++)
-		{
-			errorByte <<= 1;  //Always leftshift first
-			switch (bit)
-			{
-			case 0: errorByte |= me->tpsOutOfRange ? 1 : 0; break;
-			case 1: errorByte |= me->tpsNotCalibrated ? 1 : 0; break;
-			case 2: errorByte |= me->tpsOutOfSync ? 1 : 0; break;
-			case 3: errorByte |= 0; break;
-			case 4: errorByte |= me->bpsOutOfRange ? 1 : 0; break;
-			case 5: errorByte |= me->bpsNotCalibrated ? 1 : 0; break;
-			case 6: errorByte |= 0; break;
-			case 7: errorByte |= me->tpsbpsImplausible ? 1 : 0; break;
-			default: break;
-			}
-		}
-		break;
-
-	default:
-		errorByte = 0xFF; //error
-		break;
-	}
-
-	return errorByte;
-}
-
-	//-------------------------------------------------------------------
-	// 80kW Limit Check
-	//-------------------------------------------------------------------
-
+//-------------------------------------------------------------------
+// 80kW Limit Check
+//-------------------------------------------------------------------
+//Change this to return a multiplier instead of torque value
 ubyte2 checkPowerDraw(BatteryManagementSystem* bms, MotorController* mcm )
 {
-	ubyte2 torqueThrottle;
+	ubyte2 torqueThrottle = 0;
 	
 	// if either the bms or mcm goes over 75kw, limit torque 
 	if((BMS_getPower(bms) > 75000) || (MCM_getPower(mcm) > 75000))
 	{
 		// using bmsPower since closer to e-meter
-	    torqueThrottle = (MCM_getCommandedTorque(mcm) - (((BMS_getPower(bms) - 80000)/80000) * MCM_getCommandedTorque(mcm)));
+	    torqueThrottle = MCM_getCommandedTorque(mcm) - (((BMS_getPower(bms) - 80000)/80000) * MCM_getCommandedTorque(mcm));
 	}
 	
 	return torqueThrottle; 
 }
 
-	//-------------------------------------------------------------------
-	//      Pack Temp Check
-	//-------------------------------------------------------------------
-
-
-ubyte2 checkBatteryPackTemp(BatteryManagementSystem* bms)
+//-------------------------------------------------------------------
+// Pack Temp Check
+//-------------------------------------------------------------------
+void checkBatteryPackTemp(BatteryManagementSystem* bms)
 {
 	
 	if((BMS_getPackTemp(bms) > 35))

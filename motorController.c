@@ -1,6 +1,9 @@
 #include <stdlib.h>  //Needed for malloc
 #include "IO_Driver.h"
+#include "IO_DIO.h"     //TEMPORARY - until MCM relay control  / ADC stuff gets its own object
 #include "IO_RTC.h"
+#include "IO_CAN.h"
+
 #include "motorController.h"
 #include "mathFunctions.h"
 #include "sensors.h"
@@ -36,8 +39,12 @@ struct _MotorController {
 	ubyte4 timeStamp_inverterEnabled;
 	ubyte2 torqueMaximum;  //Max torque that can be commanded in deciNewton*meters ("100" = 10.0 Nm)
 
-	ubyte1 startupStage;
-	Status lockoutStatus;
+    bool relayState;
+    bool previousHVILState;
+    ubyte4 timeStamp_HVILLost;
+
+    ubyte1 startupStage;
+    Status lockoutStatus;
 	Status inverterStatus;
 	//bool startRTDS;
 	/*ubyte4 vsmStatus0;      //0xAA Byte 0,1
@@ -122,7 +129,7 @@ void MCM_parseCanMessage(MotorController* mcm, IO_CAN_DATA_FRAME* mcmCanMessage)
         //0,1 rtd 4 temp
         //2,3 rtd 5 temp
         //4,5 motor temperature***
-        mcm->motor_temp = (((mcmCanMessage->data[4] << 8) | (mcmCanMessage->data[5]))/10);
+        mcm->motor_temp = ((ubyte2)mcmCanMessage->data[5] << 8 | mcmCanMessage->data[4]) / 10;
         //6,7 torque shudder
         break;
 
@@ -147,7 +154,9 @@ void MCM_parseCanMessage(MotorController* mcm, IO_CAN_DATA_FRAME* mcmCanMessage)
     case 0x0A5:
         //0,1 motor angle (electrical)
         //2,3 motor speed*** // in rpms
-        mcm->motorRPM = ((mcmCanMessage->data[2] << 8) | (mcmCanMessage->data[3]));
+        //Cast may be required - needs testing
+        mcm->motorRPM = (ubyte2)mcmCanMessage->data[3] << 8 | mcmCanMessage->data[2];
+        //mcm->motorRPM = ((mcmCanMessage->data[2] << 8) | (mcmCanMessage->data[3]));
         //4,5 electrical output frequency
         //6,7 delta resolver filtered
         break;
@@ -157,12 +166,14 @@ void MCM_parseCanMessage(MotorController* mcm, IO_CAN_DATA_FRAME* mcmCanMessage)
         //2,3 Phase B current
         //4,5 Phase C current
         //6,7 DC bus current
-        mcm->DC_Current = (((mcmCanMessage->data[6] << 8) | (mcmCanMessage->data[7]))/10);
+        mcm->DC_Current = ((ubyte2)mcmCanMessage->data[7] << 8 | mcmCanMessage->data[6]) / 10;
+        //mcm->DC_Current = (((mcmCanMessage->data[6] << 8) | (mcmCanMessage->data[7])) / 10);
         break;
 
     case 0x0A7:
         //0,1 DC bus voltage***
-        mcm->DC_Voltage = (((mcmCanMessage->data[0] << 8) | (mcmCanMessage->data[1]))/10);
+        mcm->DC_Voltage = ((ubyte2)mcmCanMessage->data[1] << 8 | mcmCanMessage->data[0]) / 10;
+        //mcm->DC_Voltage = (((mcmCanMessage->data[0] << 8) | (mcmCanMessage->data[1])) / 10);
         //2,3 output voltage
         //4,5 Phase AB voltage
         //6,7 Phase BC voltage
@@ -198,7 +209,7 @@ void MCM_parseCanMessage(MotorController* mcm, IO_CAN_DATA_FRAME* mcmCanMessage)
         break;
     case 0x0AC:
         //0,1 Commanded Torque
-        mcm->commandedTorque = ((((ubyte2)mcmCanMessage->data[0] << 8) | ((ubyte2)(mcmCanMessage->data[1])))/10);
+        mcm->commandedTorque = ((ubyte2)mcmCanMessage->data[1] << 8 | mcmCanMessage->data[0]) / 10;
         //2,3 Torque Feedback
         break;
 
@@ -221,6 +232,8 @@ MotorController* MotorController_new(ubyte2 canMessageBaseID, Direction initialD
 	me->torqueMaximum = torqueMaxInDNm;
 
 	me->startupStage = 0; //Off
+    
+    me->relayState = FALSE; //Low
 
 	/*
 me->setTorque = &setTorque;
@@ -440,29 +453,50 @@ void MCM_calculateCommands(MotorController* mcm, TorqueEncoder* tps, BrakePressu
 //	}
 }
 
+void MCM_relayControl(MotorController* me, Sensor* HVILTermSense)
+{
+    //If HVIL Term Sense is low (HV is down)
+    if (HVILTermSense->sensorValue == FALSE)
+    {
+        //If we just noticed the HVIL went low
+        if (me->previousHVILState == TRUE)
+        {
+            IO_RTC_StartTime(&me->timeStamp_HVILLost);
+        }
+
+        //If the MCM is on (and we lost HV)
+        if (me->relayState == TRUE)
+        {
+            //Okay to turn MCM off once 0 torque is commanded, or after 2 sec
+            //SIMILAR CODE SHOULD BE EMPLOYED AT HVIL SHUTDOWN CONTROL PIN
+            if (me->commandedTorque == 0 || IO_RTC_GetTimeUS(me->timeStamp_HVILLost) > 2000000)
+            {
+                IO_DO_Set(IO_DO_00, FALSE);  //Need MCM relay object
+                me->relayState = FALSE;
+            }
+            else
+            {
+                //Safety.c will command zero torque
+                //For now do nothing
+            }
+        }
+        MCM_setStartupStage(me, 0);
+    }
+    else
+    {
+        //If the motor controller is off, don't turn it on until the pedals are calibrated
+        //if (MCM_getStartupStage(mcm) == 0)
+        //{
+        IO_DO_Set(IO_DO_00, FALSE);
+        me->relayState = TRUE;
+        //MCM_setStartupStage(mcm, 1);
+        //}
+    }
+}
 
 //See diagram at https://onedrive.live.com/redir?resid=F9BB8F0F8FDB5CF8!30410&authkey=!ABSF-uVH-VxQRAs&ithint=file%2chtml
 void MotorControllerPowerManagement(MotorController* mcm, TorqueEncoder* tps, ReadyToDriveSound* rtds)
 {
-
-
-
-	//If HVIL Term Sense is high, then set MCM relay high
-	if (Sensor_HVILTerminationSense.sensorValue == FALSE)
-	{
-		setMCMRelay(FALSE);
-		MCM_setStartupStage(mcm, 0);
-	}
-	else
-	{
-		//If the motor controller is off, don't turn it on until the pedals are calibrated
-		//if (MCM_getStartupStage(mcm) == 0)
-		//{
-		setMCMRelay(TRUE);
-		//MCM_setStartupStage(mcm, 1);
-		//}
-	}
-
 	//----------------------------------------------------------------------------
 	// Determine inverter state
 	//----------------------------------------------------------------------------
