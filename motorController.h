@@ -2,7 +2,7 @@
 #ifndef _MOTORCONTROLLER_H
 #define _MOTORCONTROLLER_H
 
-#include "IO_CAN.h"
+
 #include "IO_Driver.h"
 #include "torqueEncoder.h"
 #include "brakePressureSensor.h"
@@ -57,7 +57,7 @@ void MCM_updateInverterStatus(MotorController* me, Status newState);
 Status MCM_getLockoutStatus(MotorController* me);
 Status MCM_getInverterStatus(MotorController* me);
 
-ubyte4 MCM_getPower(MotorController* me);
+sbyte4 MCM_getPower(MotorController* me);
 ubyte2 MCM_getCommandedTorque(MotorController* me);
 
 void MCM_setRTDSFlag(MotorController* me, bool start);

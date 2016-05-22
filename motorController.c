@@ -61,11 +61,11 @@ struct _MotorController {
 	ubyte1 commands_direction;
 
 	sbyte2 motor_temp;
-	sbyte2 DC_Voltage;
-	sbyte2 DC_Current;
+	sbyte4 DC_Voltage;
+	sbyte4 DC_Current;
 
 	sbyte2 commandedTorque;
-	ubyte2 currentPower;
+	ubyte4 currentPower;
 
 	sbyte2 motorRPM;
 	//unused/unused/unused/unused unused/unused/Discharge/Inverter Enable
@@ -122,7 +122,7 @@ void MCM_parseCanMessage(MotorController* mcm, IO_CAN_DATA_FRAME* mcmCanMessage)
         //0,1 rtd 4 temp
         //2,3 rtd 5 temp
         //4,5 motor temperature***
-        mcm->motor_temp = ((mcmCanMessage->data[4] << 8) | (mcmCanMessage->data[5]));
+        mcm->motor_temp = (((mcmCanMessage->data[4] << 8) | (mcmCanMessage->data[5]))/10);
         //6,7 torque shudder
         break;
 
@@ -157,12 +157,12 @@ void MCM_parseCanMessage(MotorController* mcm, IO_CAN_DATA_FRAME* mcmCanMessage)
         //2,3 Phase B current
         //4,5 Phase C current
         //6,7 DC bus current
-        mcm->DC_Current = ((mcmCanMessage->data[6] << 8) | (mcmCanMessage->data[7]));
+        mcm->DC_Current = (((mcmCanMessage->data[6] << 8) | (mcmCanMessage->data[7]))/10);
         break;
 
     case 0x0A7:
         //0,1 DC bus voltage***
-        mcm->DC_Voltage = ((mcmCanMessage->data[0] << 8) | (mcmCanMessage->data[1]));
+        mcm->DC_Voltage = (((mcmCanMessage->data[0] << 8) | (mcmCanMessage->data[1]))/10);
         //2,3 output voltage
         //4,5 Phase AB voltage
         //6,7 Phase BC voltage
@@ -198,7 +198,7 @@ void MCM_parseCanMessage(MotorController* mcm, IO_CAN_DATA_FRAME* mcmCanMessage)
         break;
     case 0x0AC:
         //0,1 Commanded Torque
-        mcm->commandedTorque = ((ubyte2)mcmCanMessage->data[0] << 8) | (ubyte2)(mcmCanMessage->data[1]);
+        mcm->commandedTorque = ((((ubyte2)mcmCanMessage->data[0] << 8) | ((ubyte2)(mcmCanMessage->data[1])))/10);
         //2,3 Torque Feedback
         break;
 
@@ -357,9 +357,9 @@ ubyte2 MCM_getTorqueMax(MotorController* me)
 
 
 
-ubyte4 MCM_getPower(MotorController* me)
+sbyte4 MCM_getPower(MotorController* me)
 {
-    return ((me->DC_Voltage / 10) * (me->DC_Current / 10));
+    return ((me->DC_Voltage) * (me->DC_Current));
 }
 
 ubyte2 MCM_getCommandedTorque(MotorController* me)
