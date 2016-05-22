@@ -96,6 +96,24 @@ void TorqueEncoder_update(TorqueEncoder* me)
 				me->percent = (me->tps0_percent + me->tps1_percent) / 2;
 			//}
 		}
+
+        if (me->percent <= 0)
+        {
+            Light_set(Light_dashTCS, 0);
+        }
+        else
+        {
+            if (me->percent > 0 && me->percent <= .25)
+            {
+                Light_set(Light_dashTCS, .5 * me->percent);
+            }
+            else
+            {
+                Light_set(Light_dashTCS, me->percent);
+            }
+        }
+
+
 	}
 }
 
@@ -137,7 +155,7 @@ void TorqueEncoder_startCalibration(TorqueEncoder* me, ubyte1 secondsToRun)
         IO_RTC_StartTime(&(me->timestamp_calibrationStart));
         me->calibrationRunTime = secondsToRun;
 
-		dashLight_set(dash_EcoLight, TRUE);
+		Light_set(Light_dashEco, 1);
     }
 }
 
@@ -184,9 +202,20 @@ void TorqueEncoder_calibrationCycle(TorqueEncoder* me, ubyte1* errorCount)
 			//	me->tps1_calibMax = temp;
 			//}
 
+            //From Ryan: Should be less than 2 degrees of play on top, 5-10 at bottom of pedal travel
+            //90 degree sensor active range.. so just say % = degrees
+            float4 pedalTopPlay = 1.02;
+            float4 pedalBottomPlay = .95;
+
+            me->tps0_calibMin *= me->tps0_reverse ? pedalBottomPlay : pedalTopPlay;
+            me->tps0_calibMax *= me->tps0_reverse ? pedalTopPlay : pedalBottomPlay;
+            me->tps1_calibMin *= me->tps1_reverse ? pedalBottomPlay : pedalTopPlay;
+            me->tps1_calibMax *= me->tps1_reverse ? pedalTopPlay : pedalBottomPlay;
+
+
 			me->runCalibration = FALSE;
 			me->calibrated = TRUE;
-			dashLight_set(dash_EcoLight, FALSE);
+			Light_set(Light_dashEco, 0);
 			
 
         }

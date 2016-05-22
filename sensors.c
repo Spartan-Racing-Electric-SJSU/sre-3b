@@ -61,8 +61,8 @@ void sensors_updateSensors(void)
     //TODO: RTDS
 
     //Torque Encoders ---------------------------------------------------
-	Sensor_TPS0.ioErr_signalGet = IO_PWD_FreqGet(IO_PWM_00, &Sensor_TPS0.sensorValue);
-	Sensor_TPS1.ioErr_signalGet = IO_PWD_FreqGet(IO_PWM_01, &Sensor_TPS1.sensorValue);
+	Sensor_TPS0.ioErr_signalGet = IO_PWD_PulseGet(IO_PWM_00, &Sensor_TPS0.sensorValue);
+	Sensor_TPS1.ioErr_signalGet = IO_PWD_PulseGet(IO_PWM_01, &Sensor_TPS1.sensorValue);
 
 	//Bench TPS ---------------------------------------------------
 	Sensor_BenchTPS0.ioErr_signalGet = IO_ADC_Get(IO_ADC_5V_00, &Sensor_BenchTPS0.sensorValue, &Sensor_BenchTPS0.fresh);
@@ -109,26 +109,30 @@ void setMCMRelay(bool turnOn)
     IO_DO_Set(IO_DO_00, turnOn);
 }
 
-void dashLight_set(DashLight light, bool turnOn)
+void Light_set(Light light, float4 percent)
 {
-    ubyte2 duty = turnOn ? 65535 : 0;
+    ubyte2 duty = 65535 * percent;
 
     switch (light)
     {
-    case dash_EcoLight:
-        IO_PWM_SetDuty(IO_PWM_04, duty, NULL);  //Pin 116
-        break;
+	case Light_brake:
+		IO_PWM_SetDuty(IO_PWM_02, duty, NULL);  //Pin 116
+		break;
 
-    case dash_ErrorLight:
-        IO_PWM_SetDuty(IO_PWM_05, duty, NULL);  //Pin 104
-        break;
-
-    case dash_RTDLight:
-        IO_PWM_SetDuty(IO_PWM_06, duty, NULL);  //Pin 115
-        break;
-
-    case dash_TCSLight:
+	case Light_dashTCS:
         IO_PWM_SetDuty(IO_PWM_03, duty, NULL);  //Pin 105
+        break;
+
+	case Light_dashEco:
+		IO_PWM_SetDuty(IO_PWM_04, duty, NULL);  //Pin 116
+		break;
+
+	case Light_dashError:
+        IO_PWM_SetDuty(IO_PWM_05, duty *.6, NULL);  //Pin 104
+        break;
+
+    case Light_dashRTD:
+        IO_PWM_SetDuty(IO_PWM_06, duty * .25, NULL);  //Pin 115
         break;
     }
 

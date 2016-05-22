@@ -11,13 +11,13 @@
 
 #include "sensors.h"
 #include "initializations.h"
-#include "can.h"
+//#include "can.h"
 
 /*****************************************************************************
 * ADC
 ****************************************************************************/
 //Turns on the VCU's ADC channels and power supplies.
-void vcu_initializeADC(void)
+void vcu_initializeADC(bool benchMode)
 {
 	//----------------------------------------------------------------------------
 	//Power supplies/outputs
@@ -36,39 +36,55 @@ void vcu_initializeADC(void)
     IO_DO_Init(IO_DO_02); IO_DO_Set(IO_DO_02, FALSE); //Water pump relay
     IO_DO_Init(IO_DO_03); IO_DO_Set(IO_DO_03, FALSE); //Motor fan relay
 
+	//BMS supply - always on
+	IO_DO_Init(IO_DO_04); IO_DO_Set(IO_DO_04, TRUE); //BMS power / Fault LED
+
     //Wheel Speed Sensor supplies
     Sensor_WSS_FL.ioErr_powerInit = Sensor_WSS_FR.ioErr_powerInit = IO_DO_Init(IO_DO_06); //Front x2
 	Sensor_WSS_RL.ioErr_powerInit = Sensor_WSS_RR.ioErr_powerInit = IO_DO_Init(IO_DO_07); //Rear  x2
 
     //Digital PWM outputs ---------------------------------------------------
-    IO_PWM_Init(IO_PWM_03, 500, TRUE, FALSE, 0, FALSE, NULL);  //TCS Light
-    IO_PWM_Init(IO_PWM_04, 500, TRUE, FALSE, 0, FALSE, NULL);  //Eco Light
-    IO_PWM_Init(IO_PWM_05, 500, TRUE, FALSE, 0, FALSE, NULL);  //Error Light
-    IO_PWM_Init(IO_PWM_06, 500, TRUE, FALSE, 0, FALSE, NULL);  //RTD Light
-    IO_PWM_Init(IO_PWM_07, 750, TRUE, FALSE, 0, FALSE, NULL);  //RTD Sound
+	IO_PWM_Init(IO_PWM_02, 500, TRUE, FALSE, 0, FALSE, NULL); IO_PWM_SetDuty(IO_PWM_02, 0, NULL);  //TCS Light
+	IO_PWM_Init(IO_PWM_03, 500, TRUE, FALSE, 0, FALSE, NULL); IO_PWM_SetDuty(IO_PWM_03, 0, NULL);  //TCS Light
+	IO_PWM_Init(IO_PWM_04, 500, TRUE, FALSE, 0, FALSE, NULL); IO_PWM_SetDuty(IO_PWM_04, 0, NULL);  //Eco Light
+    IO_PWM_Init(IO_PWM_05, 500, TRUE, FALSE, 0, FALSE, NULL); IO_PWM_SetDuty(IO_PWM_05, 0, NULL);  //Error Light
+    IO_PWM_Init(IO_PWM_06, 500, TRUE, FALSE, 0, FALSE, NULL); IO_PWM_SetDuty(IO_PWM_06, 0, NULL);  //RTD Light
+    IO_PWM_Init(IO_PWM_07, 750, TRUE, FALSE, 0, FALSE, NULL); IO_PWM_SetDuty(IO_PWM_07, 0, NULL);  //RTD Sound
 
     //----------------------------------------------------------------------------
 	//ADC channels
 	//----------------------------------------------------------------------------
-	//TPS
+	//TPS+BPS
+    extern Sensor Sensor_BenchTPS0;  //wtf where are these even defined?
+    extern Sensor Sensor_BenchTPS1;
+
     //IO_ADC_ChannelInit(IO_ADC_5V_00, IO_ADC_RATIOMETRIC, 0, 0, IO_ADC_SENSOR_SUPPLY_0, NULL);
     //IO_ADC_ChannelInit(IO_ADC_5V_01, IO_ADC_RATIOMETRIC, 0, 0, IO_ADC_SENSOR_SUPPLY_1, NULL);
 
     //BPS
 	//Sensor_BPS0.ioErr_init = IO_ADC_ChannelInit(IO_ADC_5V_02, IO_ADC_RATIOMETRIC, 0, 0, IO_ADC_SENSOR_SUPPLY_0, NULL);
-	Sensor_BPS0.ioErr_signalInit = IO_ADC_ChannelInit(IO_ADC_5V_02, IO_ADC_RESISTIVE, 0, 0, 0, NULL);
+    if (benchMode == TRUE)
+    {
+        //Sensor_BenchTPS0.ioErr_signalInit = IO_ADC_ChannelInit(IO_ADC_5V_00, IO_ADC_RESISTIVE, 0, 0, 0, NULL);
+        //Sensor_BenchTPS1.ioErr_signalInit = IO_ADC_ChannelInit(IO_ADC_5V_01, IO_ADC_RESISTIVE, 0, 0, 0, NULL)
+        Sensor_BenchTPS0.ioErr_signalInit = IO_ADC_ChannelInit(IO_ADC_5V_00, IO_ADC_RATIOMETRIC, 0, 0, IO_ADC_SENSOR_SUPPLY_0, NULL);
+        Sensor_BenchTPS1.ioErr_signalInit = IO_ADC_ChannelInit(IO_ADC_5V_01, IO_ADC_RATIOMETRIC, 0, 0, IO_ADC_SENSOR_SUPPLY_1, NULL);
+        Sensor_BPS0.ioErr_signalInit = IO_ADC_ChannelInit(IO_ADC_5V_02, IO_ADC_RESISTIVE, 0, 0, 0, NULL);
+    }
+    else //Not bench mode
+    {
+        //In the future, production TPS will be digital instead of analog (see PWD section, below)
+        Sensor_BenchTPS0.ioErr_signalInit = IO_ADC_ChannelInit(IO_ADC_5V_00, IO_ADC_RATIOMETRIC, 0, 0, IO_ADC_SENSOR_SUPPLY_0, NULL);
+        Sensor_BenchTPS1.ioErr_signalInit = IO_ADC_ChannelInit(IO_ADC_5V_01, IO_ADC_RATIOMETRIC, 0, 0, IO_ADC_SENSOR_SUPPLY_1, NULL);
+        Sensor_BPS0.ioErr_signalInit = IO_ADC_ChannelInit(IO_ADC_5V_02, IO_ADC_RATIOMETRIC, 0, 0, IO_ADC_SENSOR_SUPPLY_0, NULL);
+    }
 
     //Unused
     //IO_ADC_ChannelInit(IO_ADC_5V_03, IO_ADC_RATIOMETRIC, 0, 0, IO_ADC_SENSOR_SUPPLY_0, NULL);
 
-    //Bench TPS
-	extern Sensor Sensor_BenchTPS0;
-	extern Sensor Sensor_BenchTPS1;
-    Sensor_BenchTPS0.ioErr_signalInit = IO_ADC_ChannelInit(IO_ADC_5V_00, IO_ADC_RESISTIVE, 0, 0, 0, NULL);
-	Sensor_BenchTPS1.ioErr_signalInit = IO_ADC_ChannelInit(IO_ADC_5V_01, IO_ADC_RESISTIVE, 0, 0, 0, NULL);
-
     //TCS Pot
     IO_ADC_ChannelInit(IO_ADC_5V_04, IO_ADC_RESISTIVE, 0, 0, 0, NULL);
+
 	//Shockpots
 	//IO_ADC_ChannelInit(IO_ADC_5V_05, IO_ADC_RESISTIVE, 0, 0, 0, NULL);
     //IO_ADC_ChannelInit(IO_ADC_5V_06, IO_ADC_RESISTIVE, 0, 0, 0, NULL);
@@ -132,53 +148,53 @@ void vcu_ADCWasteLoop(void)
     }
 }
 
-/*****************************************************************************
-* CAN
-****************************************************************************/
-//Defaults
-const ubyte1 canMessageLimit = 10;
-IO_CAN_DATA_FRAME canMessages[10]; //MUST BE THE SAME NUMBER AS ABOVE
-//extern IO_CAN_DATA_FRAME canMessages[]; //  = { { { 0 } } };
-
-//IO_CAN_DATA_FRAME canMessages[canMessageLimit];// = { { { 0 } } };
-
-const ubyte2 canMessageBaseId_VCU = 0x500;
-const ubyte2 canSpeed_Channel0 = 500;
-const ubyte2 canSpeed_Channel1 = 500;
-
-//These are our four FIFO queues.  All messages should come/go through one of these queues.
-ubyte1 canFifoHandle_HiPri_Read;
-ubyte1 canFifoHandle_HiPri_Write;
-ubyte1 canFifoHandle_LoPri_Read;
-ubyte1 canFifoHandle_LoPri_Write;
-
-//Initializes all four can FIFO queues
-void vcu_initializeCAN(void)
-{
-    IO_CAN_DATA_FRAME canMessages[canMessageLimit];// = { { { 0 } } };
-    //Activate the CAN channels --------------------------------------------------
-    IO_CAN_Init(IO_CAN_CHANNEL_0, canSpeed_Channel0, 0, 0, 0);
-    IO_CAN_Init(IO_CAN_CHANNEL_1, canSpeed_Channel1, 0, 0, 0);
-
-    //Configure the FIFO queues
-    //This specifies: The handle names for the queues
-    //, which channel the queue belongs to
-    //, the # of messages (or maximum count?)
-    //, the direction of the queue (in/out)
-    //, the frame size
-    //, and other stuff?
-    IO_CAN_ConfigFIFO(&canFifoHandle_HiPri_Read, IO_CAN_CHANNEL_1, canMessageLimit, IO_CAN_MSG_READ, IO_CAN_STD_FRAME, 0, 0);
-    IO_CAN_ConfigFIFO(&canFifoHandle_HiPri_Write, IO_CAN_CHANNEL_1, canMessageLimit, IO_CAN_MSG_WRITE, IO_CAN_STD_FRAME, 0, 0);
-    IO_CAN_ConfigFIFO(&canFifoHandle_LoPri_Read, IO_CAN_CHANNEL_0, canMessageLimit, IO_CAN_MSG_READ, IO_CAN_STD_FRAME, 0, 0);
-    IO_CAN_ConfigFIFO(&canFifoHandle_LoPri_Write, IO_CAN_CHANNEL_0, canMessageLimit, IO_CAN_MSG_WRITE, IO_CAN_STD_FRAME, 0, 0);
-
-/*
-    IO_CAN_ConfigMsg(&canFifoHandle_HiPri_Read, IO_CAN_CHANNEL_1, IO_CAN_MSG_READ, IO_CAN_STD_FRAME, 0, 0);
-    IO_CAN_ConfigMsg(&canFifoHandle_HiPri_Write, IO_CAN_CHANNEL_1, IO_CAN_MSG_WRITE, IO_CAN_STD_FRAME, 0, 0);
-    IO_CAN_ConfigMsg(&canFifoHandle_LoPri_Read, IO_CAN_CHANNEL_0, IO_CAN_MSG_READ, IO_CAN_STD_FRAME, 0, 0);
-    IO_CAN_ConfigMsg(&canFifoHandle_LoPri_Write, IO_CAN_CHANNEL_0, IO_CAN_MSG_WRITE, IO_CAN_STD_FRAME, 0, 0);
-*/
-}
+///*****************************************************************************
+//* CAN
+//****************************************************************************/
+////Defaults
+//const ubyte1 canMessageLimit = 25;
+//IO_CAN_DATA_FRAME canMessages[25]; //MUST BE THE SAME NUMBER AS ABOVE
+////extern IO_CAN_DATA_FRAME canMessages[]; //  = { { { 0 } } };
+//
+////IO_CAN_DATA_FRAME canMessages[canMessageLimit];// = { { { 0 } } };
+//
+//const ubyte2 canMessageBaseId_VCU = 0x500;
+//const ubyte2 canSpeed_Channel0 = 500;
+//const ubyte2 canSpeed_Channel1 = 500;
+//
+////These are our four FIFO queues.  All messages should come/go through one of these queues.
+//ubyte1 canFifoHandle_HiPri_Read;
+//ubyte1 canFifoHandle_HiPri_Write;
+//ubyte1 canFifoHandle_LoPri_Read;
+//ubyte1 canFifoHandle_LoPri_Write;
+//
+////Initializes all four can FIFO queues
+//void vcu_initializeCAN(void)
+//{
+//    IO_CAN_DATA_FRAME canMessages[canMessageLimit];// = { { { 0 } } };
+//    //Activate the CAN channels --------------------------------------------------
+//    IO_CAN_Init(IO_CAN_CHANNEL_0, canSpeed_Channel0, 0, 0, 0);
+//    IO_CAN_Init(IO_CAN_CHANNEL_1, canSpeed_Channel1, 0, 0, 0);
+//
+//    //Configure the FIFO queues
+//    //This specifies: The handle names for the queues
+//    //, which channel the queue belongs to
+//    //, the # of messages (or maximum count?)
+//    //, the direction of the queue (in/out)
+//    //, the frame size
+//    //, and other stuff?
+//    IO_CAN_ConfigFIFO(&canFifoHandle_HiPri_Read, IO_CAN_CHANNEL_1, canMessageLimit, IO_CAN_MSG_READ, IO_CAN_STD_FRAME, 0, 0);
+//    IO_CAN_ConfigFIFO(&canFifoHandle_HiPri_Write, IO_CAN_CHANNEL_1, canMessageLimit, IO_CAN_MSG_WRITE, IO_CAN_STD_FRAME, 0, 0);
+//    IO_CAN_ConfigFIFO(&canFifoHandle_LoPri_Read, IO_CAN_CHANNEL_0, canMessageLimit, IO_CAN_MSG_READ, IO_CAN_STD_FRAME, 0, 0);
+//    IO_CAN_ConfigFIFO(&canFifoHandle_LoPri_Write, IO_CAN_CHANNEL_0, canMessageLimit, IO_CAN_MSG_WRITE, IO_CAN_STD_FRAME, 0, 0);
+//
+///*
+//    IO_CAN_ConfigMsg(&canFifoHandle_HiPri_Read, IO_CAN_CHANNEL_1, IO_CAN_MSG_READ, IO_CAN_STD_FRAME, 0, 0);
+//    IO_CAN_ConfigMsg(&canFifoHandle_HiPri_Write, IO_CAN_CHANNEL_1, IO_CAN_MSG_WRITE, IO_CAN_STD_FRAME, 0, 0);
+//    IO_CAN_ConfigMsg(&canFifoHandle_LoPri_Read, IO_CAN_CHANNEL_0, IO_CAN_MSG_READ, IO_CAN_STD_FRAME, 0, 0);
+//    IO_CAN_ConfigMsg(&canFifoHandle_LoPri_Write, IO_CAN_CHANNEL_0, IO_CAN_MSG_WRITE, IO_CAN_STD_FRAME, 0, 0);
+//*/
+//}
 
 /*****************************************************************************
 * Sensors

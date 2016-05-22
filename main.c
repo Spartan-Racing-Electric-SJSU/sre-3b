@@ -34,8 +34,9 @@
 //Our code
 #include "initializations.h"
 #include "sensors.h"
-#include "canInput.h"
-#include "canOutput.h"
+#include "canManager.h"
+//#include "canInput.h"
+//#include "canOutput.h"
 //#include "outputCalculations.h"
 #include "motorController.h"
 #include "readyToDriveSound.h"
@@ -104,6 +105,10 @@ extern Sensor Sensor_EcoButton;
 ****************************************************************************/
 void main(void)
 {
+
+    /*******************************************/
+    /*            Initializations              */
+    /*******************************************/
     IO_Driver_Init(NULL); //Handles basic startup for all VCU subsystems
 
     //----------------------------------------------------------------------------
@@ -111,8 +116,10 @@ void main(void)
     // Eventually, all of these functions should be made obsolete by creating
     // objects instead, like the RTDS/MCM/TPS objects below
     //----------------------------------------------------------------------------
-    vcu_initializeADC();  //Configure and activate all I/O pins on the VCU
-    vcu_initializeCAN();
+	bool bench = TRUE;
+    
+    vcu_initializeADC(bench);  //Configure and activate all I/O pins on the VCU
+    //vcu_initializeCAN();
     vcu_initializeSensors();
     //vcu_initializeMCU();
 
@@ -122,13 +129,15 @@ void main(void)
     //----------------------------------------------------------------------------
     // External Devices - Object Initializations (including default values)
     //----------------------------------------------------------------------------
+    CanManager* canMan = CanManager_new(500, 40, 40, 500, 20, 20, 250000);  //3rd param = messages per node (can0/can1; read/write)
     ReadyToDriveSound* rtds = RTDS_new();
 	//BatteryManagementSystem* bms = BMS_new();
     MotorController* mcm0 = MotorController_new(0xA0, FORWARD, 100); //CAN addr, direction, torque limit x10 (100 = 10Nm)
-	TorqueEncoder* tps = TorqueEncoder_new(TRUE);
+	TorqueEncoder* tps = TorqueEncoder_new(bench);
 	BrakePressureSensor* bps = BrakePressureSensor_new();
 	WheelSpeeds* wss = WheelSpeeds_new(18, 18, 16, 16);
 	SafetyChecker* sc = SafetyChecker_new();
+	BatteryManagementSystem* bms = BMS_new(0x620);
 
     //----------------------------------------------------------------------------
     // TODO: Additional Initial Power-up functions
@@ -157,6 +166,9 @@ void main(void)
         IO_Driver_TaskBegin();
 
 
+        /*******************************************/
+        /*              Read Inputs                */
+        /*******************************************/
         //----------------------------------------------------------------------------
         // Handle data input streams
         //----------------------------------------------------------------------------
@@ -165,51 +177,37 @@ void main(void)
 
         //canInput - pull messages from CAN FIFO and update our object representations.
         //Also echo can0 messages to can1 for DAQ.
-        canInput_readMessages(mcm0);
+        CanManager_read(canMan, CAN0_HIPRI, mcm0, bms);
 
-        //----------------------------------------------------------------------------
-        // Calculations
-        //----------------------------------------------------------------------------
+        /*******************************************/
+        /*          Perform Calculations           */
+        /*******************************************/
         //calculations - Now that we have local sensor data and external data from CAN, we can
         //do actual processing work, from pedal travel calcs to traction control
         //calculations_calculateStuff();
 
-		//Run calibration if commanded
+        //Run calibration if commanded
 		//if (IO_RTC_GetTimeUS(timestamp_calibStart) < (ubyte4)5000000)
 		if (Sensor_EcoButton.sensorValue == FALSE)
 		{
 			//calibrateTPS(TRUE, 5);
 			TorqueEncoder_startCalibration(tps, 5);
 			BrakePressureSensor_startCalibration(bps, 5);
-			//dashLight_set(dash_ErrorLight, TRUE);
+			//Light_set(Light_dashError, 1);
 			//DIGITAL OUTPUT 4 for STATUS LED
 		}
 		TorqueEncoder_update(tps);
-		TorqueEncoder_calibrationCycle(tps, &calibrationErrors); //Todo: deal with calibration errors
-		BrakePressureSensor_update(bps);
+        //Every cycle: if the calibration was started and hasn't finished, check the values again
+        TorqueEncoder_calibrationCycle(tps, &calibrationErrors); //Todo: deal with calibration errors
+		BrakePressureSensor_update(bps, bench);
 		BrakePressureSensor_calibrationCycle(bps, &calibrationErrors);
 
 		//TractionControl_update(tps, mcm0, wss, daq);
 
-		SafetyChecker_update(sc, tps, bps);
-		if(SafetyChecker_allSafe(sc) == TRUE)
-		{
-			dashLight_set(dash_ErrorLight, FALSE);
-		}
-		else
-		{
-			dashLight_set(dash_ErrorLight, TRUE);
-		}
-
 		WheelSpeeds_update(wss);
-		//WheelSpeeds_update();
 		//DataAquisition_update(); //includes accelerometer
 		//TireModel_update()
 		//ControlLaw_update();
-		
-
-
-
 		/*
 		ControlLaw //Tq command
 			TireModel //used by control law -> read from WSS, accelerometer
@@ -217,29 +215,44 @@ void main(void)
 		*/	
 
 
-
-		//Every cycle: if the calibration was started and hasn't finished, check the values again
-
-
-        //----------------------------------------------------------------------------
-        // Motor Controller Output Calculations
-        //----------------------------------------------------------------------------
-        //Handle motor startup procedures
-        MotorControllerPowerManagement(mcm0, tps, rtds);
-
         //Assign motor controls to MCM command message
         //motorController_setCommands(rtds);
         //DOES NOT set inverter command or rtds flag
-        setMCMCommands(mcm0, tps, bps, rtds, sc);
+        MCM_calculateCommands(mcm0, tps, bps);
 
+        SafetyChecker_update(sc, tps, bps);
 
+        /*******************************************/
+        /*  Output Adjustments by Safety Checker   */
+        /*******************************************/
+        //SafetyChecker_ReduceTorque()
+        //SafetyChecker_?
+
+        /*******************************************/
+        /*              Enact Outputs              */
+        /*******************************************/
+        //MOVE INTO SAFETYCHECKER
+        //SafetyChecker_setErrorLight(sc);
+        if (SafetyChecker_allSafe(sc) == TRUE)
+        {
+            Light_set(Light_dashError, 0);
+        }
+        else
+        {
+            Light_set(Light_dashError, 1);
+        }
+
+        //Handle motor controller startup procedures
+        MotorControllerPowerManagement(mcm0, tps, rtds);
 
         //Drop the sensor readings into CAN (just raw data, not calculated stuff)
-        canOutput_sendMCUControl(mcm0, FALSE);
-        canOutput_sendDebugMessage(tps, bps, mcm0, wss, sc);
+        //MotorController_sendCommandMessage();
+        //canOutput_sendMCUControl(mcm0, FALSE);
+
+        //Send debug data
+        canOutput_sendDebugMessage(canMan, tps, bps, mcm0, wss, sc);
         //canOutput_sendSensorMessages();
         //canOutput_sendStatusMessages(mcm0);
-
 
         //----------------------------------------------------------------------------
         // Task management stuff (end)
