@@ -287,7 +287,7 @@ ubyte2 checkPowerDraw(BatteryManagementSystem* bms, MotorController* mcm )
 	    torqueThrottle = MCM_getCommandedTorque(mcm) - (((BMS_getPower(bms) - 80000)/80000) * MCM_getCommandedTorque(mcm));
 	}
 	
-	return torqueThrottle; 
+	return torqueThrottle;
 }
 
 //-------------------------------------------------------------------

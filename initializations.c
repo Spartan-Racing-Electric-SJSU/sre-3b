@@ -98,10 +98,10 @@ void vcu_initializeADC(bool benchMode)
 	Sensor_TPS1.ioErr_signalInit = IO_PWD_PulseInit(IO_PWM_01, IO_PWD_HIGH_TIME);
 	
 	//Wheel Speed Sensors (Pulse Width Detection)
-    Sensor_WSS_FR.ioErr_signalInit = IO_PWD_FreqInit(IO_PWD_08, IO_PWD_RISING_VAR);  //Is there a reason to look for rising vs falling edge?
-	Sensor_WSS_RR.ioErr_signalInit = IO_PWD_FreqInit(IO_PWD_09, IO_PWD_RISING_VAR);  //Is there a reason to look for rising vs falling edge?
-	Sensor_WSS_FL.ioErr_signalInit = IO_PWD_FreqInit(IO_PWD_10, IO_PWD_RISING_VAR);  //Is there a reason to look for rising vs falling edge?
-	Sensor_WSS_RL.ioErr_signalInit = IO_PWD_FreqInit(IO_PWD_11, IO_PWD_RISING_VAR);  //Is there a reason to look for rising vs falling edge?
+    Sensor_WSS_FR.ioErr_signalInit = IO_PWD_FreqInit(IO_PWD_08, IO_PWD_FALLING_VAR);  //Is there a reason to look for rising vs falling edge?
+	Sensor_WSS_RR.ioErr_signalInit = IO_PWD_FreqInit(IO_PWD_09, IO_PWD_FALLING_VAR);  //Is there a reason to look for rising vs falling edge?
+	Sensor_WSS_FL.ioErr_signalInit = IO_PWD_FreqInit(IO_PWD_10, IO_PWD_FALLING_VAR);  //Is there a reason to look for rising vs falling edge?
+	Sensor_WSS_RL.ioErr_signalInit = IO_PWD_FreqInit(IO_PWD_11, IO_PWD_FALLING_VAR);  //Is there a reason to look for rising vs falling edge?
     
     //----------------------------------------------------------------------------
 	//Switches
@@ -147,54 +147,6 @@ void vcu_ADCWasteLoop(void)
         while (IO_RTC_GetTimeUS(timestamp_sensorpoll) < 125000);   // wait until 1/8s (125ms) have passed
     }
 }
-
-///*****************************************************************************
-//* CAN
-//****************************************************************************/
-////Defaults
-//const ubyte1 canMessageLimit = 25;
-//IO_CAN_DATA_FRAME canMessages[25]; //MUST BE THE SAME NUMBER AS ABOVE
-////extern IO_CAN_DATA_FRAME canMessages[]; //  = { { { 0 } } };
-//
-////IO_CAN_DATA_FRAME canMessages[canMessageLimit];// = { { { 0 } } };
-//
-//const ubyte2 canMessageBaseId_VCU = 0x500;
-//const ubyte2 canSpeed_Channel0 = 500;
-//const ubyte2 canSpeed_Channel1 = 500;
-//
-////These are our four FIFO queues.  All messages should come/go through one of these queues.
-//ubyte1 canFifoHandle_HiPri_Read;
-//ubyte1 canFifoHandle_HiPri_Write;
-//ubyte1 canFifoHandle_LoPri_Read;
-//ubyte1 canFifoHandle_LoPri_Write;
-//
-////Initializes all four can FIFO queues
-//void vcu_initializeCAN(void)
-//{
-//    IO_CAN_DATA_FRAME canMessages[canMessageLimit];// = { { { 0 } } };
-//    //Activate the CAN channels --------------------------------------------------
-//    IO_CAN_Init(IO_CAN_CHANNEL_0, canSpeed_Channel0, 0, 0, 0);
-//    IO_CAN_Init(IO_CAN_CHANNEL_1, canSpeed_Channel1, 0, 0, 0);
-//
-//    //Configure the FIFO queues
-//    //This specifies: The handle names for the queues
-//    //, which channel the queue belongs to
-//    //, the # of messages (or maximum count?)
-//    //, the direction of the queue (in/out)
-//    //, the frame size
-//    //, and other stuff?
-//    IO_CAN_ConfigFIFO(&canFifoHandle_HiPri_Read, IO_CAN_CHANNEL_1, canMessageLimit, IO_CAN_MSG_READ, IO_CAN_STD_FRAME, 0, 0);
-//    IO_CAN_ConfigFIFO(&canFifoHandle_HiPri_Write, IO_CAN_CHANNEL_1, canMessageLimit, IO_CAN_MSG_WRITE, IO_CAN_STD_FRAME, 0, 0);
-//    IO_CAN_ConfigFIFO(&canFifoHandle_LoPri_Read, IO_CAN_CHANNEL_0, canMessageLimit, IO_CAN_MSG_READ, IO_CAN_STD_FRAME, 0, 0);
-//    IO_CAN_ConfigFIFO(&canFifoHandle_LoPri_Write, IO_CAN_CHANNEL_0, canMessageLimit, IO_CAN_MSG_WRITE, IO_CAN_STD_FRAME, 0, 0);
-//
-///*
-//    IO_CAN_ConfigMsg(&canFifoHandle_HiPri_Read, IO_CAN_CHANNEL_1, IO_CAN_MSG_READ, IO_CAN_STD_FRAME, 0, 0);
-//    IO_CAN_ConfigMsg(&canFifoHandle_HiPri_Write, IO_CAN_CHANNEL_1, IO_CAN_MSG_WRITE, IO_CAN_STD_FRAME, 0, 0);
-//    IO_CAN_ConfigMsg(&canFifoHandle_LoPri_Read, IO_CAN_CHANNEL_0, IO_CAN_MSG_READ, IO_CAN_STD_FRAME, 0, 0);
-//    IO_CAN_ConfigMsg(&canFifoHandle_LoPri_Write, IO_CAN_CHANNEL_0, IO_CAN_MSG_WRITE, IO_CAN_STD_FRAME, 0, 0);
-//*/
-//}
 
 /*****************************************************************************
 * Sensors

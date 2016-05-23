@@ -153,7 +153,7 @@ void BMS_parseCanMessage(BatteryManagementSystem* bms, IO_CAN_DATA_FRAME* bmsCan
 	case 0x622:
 
 		bms->state = bmsCanMessage->data[0];
-		utemp16 = ((bmsCanMessage->data[1] << 8) | (bmsCanMessage->data[2]));
+		utemp16 = (ubyte2)bmsCanMessage->data[1] << 8 | bmsCanMessage->data[2];
 		bms->timer = swap_uint16(utemp16);
 		bms->flags = bmsCanMessage->data[3];
 		bms->faultCode = bmsCanMessage->data[4];
