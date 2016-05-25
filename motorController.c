@@ -89,7 +89,7 @@ struct _MotorController {
 
     /*
     //----------------------------------------------------------------------------
-    // Control functions
+    // Control functions - for functions nested within struct
     //----------------------------------------------------------------------------
     void(*setTorque)(MotorController* me, ubyte2 torque); //Will be divided by 10 e.g. pass in 100 for 10.0 Nm
     void(*setDirection)(MotorController* me, Direction rotation);
@@ -146,151 +146,6 @@ me->getInverterStatus = &getInverterStatus;
 }
 
 
-//Will be divided by 10 e.g. pass in 100 for 10.0 Nm
-void MCM_commands_setTorque(MotorController* me, ubyte2 newTorque)
-{
-	me->updateCount += (me->commands_torque == newTorque) ? 0 : 1;
-	me->commands_torque = newTorque;
-}
-
-void MCM_commands_setDirection(MotorController* me, Direction newDirection)
-{
-	switch (newDirection)
-	{
-	case _0:
-	case CLOCKWISE:
-	case REVERSE:
-		me->updateCount += (me->commands_direction == 0) ? 0 : 1;
-		me->commands_direction = 0;
-		break;
-
-	case _1:
-	case COUNTERCLOCKWISE:
-	case FORWARD:
-		me->updateCount += (me->commands_direction == 1) ? 0 : 1;
-		me->commands_direction = 1;
-		break;
-
-	default:
-		//Invalid direction?
-		break;
-	}
-}
-void MCM_commands_setInverter(MotorController* me, Status newInverterState)
-{
-	me->updateCount += (me->commands_inverter == newInverterState) ? 0 : 1;
-	me->commands_inverter = newInverterState;
-}
-void MCM_commands_setDischarge(MotorController* me, Status setDischargeTo)
-{
-	me->updateCount += (me->commands_discharge == setDischargeTo) ? 0 : 1;
-	me->commands_discharge = setDischargeTo;
-}
-void MCM_commands_setTorqueLimit(MotorController* me, ubyte2 newTorqueLimit)
-{
-	me->updateCount += (me->commands_torqueLimit == newTorqueLimit) ? 0 : 1;
-	me->commands_torqueLimit = newTorqueLimit;
-}
-ubyte2 MCM_commands_getTorque(MotorController* me)
-{
-	return me->commands_torque;
-}
-Direction MCM_commands_getDirection(MotorController* me)
-{
-	return me->commands_direction;
-}
-Status MCM_commands_getInverter(MotorController* me)
-{
-	return me->commands_inverter;
-}
-Status MCM_commands_getDischarge(MotorController* me)
-{
-	return me->commands_discharge;
-}
-ubyte2 MCM_commands_getTorqueLimit(MotorController* me)
-{
-	return me->commands_torqueLimit;
-}
-
-void MCM_updateLockoutStatus(MotorController* me, Status newState)
-{
-	me->lockoutStatus = newState;
-}
-void MCM_updateInverterStatus(MotorController* me, Status newState)
-{
-	me->inverterStatus = newState;
-}
-
-Status MCM_getLockoutStatus(MotorController* me)
-{
-	return me->lockoutStatus;
-}
-
-Status MCM_getInverterStatus(MotorController* me)
-{
-	return me->inverterStatus;
-}
-
-void MCM_setRTDSFlag(MotorController* me, bool enableRTDS)
-{
-	//me->updateCount += (me->commands_torqueLimit == newTorqueLimit) ? 0 : 1;
-	//me->startRTDS = enableRTDS;
-}
-bool MCM_getRTDSFlag(MotorController* me)
-{
-	//me->updateCount += (me->commands_torqueLimit == newTorqueLimit) ? 0 : 1;
-	//return me->startRTDS;
-	return FALSE;
-}
-
-ubyte2 MCM_commands_getUpdateCount(MotorController* me)
-{
-	return me->updateCount;
-}
-
-void MCM_commands_resetUpdateCountAndTime(MotorController* me)
-{
-	me->updateCount = 0;
-	IO_RTC_StartTime(&(me->timeStamp_lastCommandSent));
-}
-
-ubyte4 MCM_commands_getTimeSinceLastCommandSent(MotorController* me)
-{
-	return IO_RTC_GetTimeUS(me->timeStamp_lastCommandSent);
-}
-
-
-ubyte2 MCM_getTorqueMax(MotorController* me)
-{
-	return me->torqueMaximum;
-}
-
-
-
-sbyte4 MCM_getPower(MotorController* me)
-{
-    return ((me->DC_Voltage) * (me->DC_Current));
-}
-
-ubyte2 MCM_getCommandedTorque(MotorController* me)
-{
-    return me->commandedTorque;
-}
-
-
-
-
-
-
-void MCM_setStartupStage(MotorController* me, ubyte1 stage)
-{
-	me->startupStage = stage;
-}
-
-ubyte1 MCM_getStartupStage(MotorController* me)
-{
-	return me->startupStage;
-}
 
 
 
@@ -614,4 +469,154 @@ void MCM_parseCanMessage(MotorController* me, IO_CAN_DATA_FRAME* mcmCanMessage)
         break;
 
     }
+}
+
+
+/*****************************************************************************
+* Accessors / Mutators (Set/Get)
+******************************************************************************
+*
+****************************************************************************/
+//Will be divided by 10 e.g. pass in 100 for 10.0 Nm
+void MCM_commands_setTorque(MotorController* me, ubyte2 newTorque)
+{
+	me->updateCount += (me->commands_torque == newTorque) ? 0 : 1;
+	me->commands_torque = newTorque;
+}
+
+void MCM_commands_setDirection(MotorController* me, Direction newDirection)
+{
+	switch (newDirection)
+	{
+	case _0:
+	case CLOCKWISE:
+	case REVERSE:
+		me->updateCount += (me->commands_direction == 0) ? 0 : 1;
+		me->commands_direction = 0;
+		break;
+
+	case _1:
+	case COUNTERCLOCKWISE:
+	case FORWARD:
+		me->updateCount += (me->commands_direction == 1) ? 0 : 1;
+		me->commands_direction = 1;
+		break;
+
+	default:
+		//Invalid direction?
+		break;
+	}
+}
+void MCM_commands_setInverter(MotorController* me, Status newInverterState)
+{
+	me->updateCount += (me->commands_inverter == newInverterState) ? 0 : 1;
+	me->commands_inverter = newInverterState;
+}
+void MCM_commands_setDischarge(MotorController* me, Status setDischargeTo)
+{
+	me->updateCount += (me->commands_discharge == setDischargeTo) ? 0 : 1;
+	me->commands_discharge = setDischargeTo;
+}
+void MCM_commands_setTorqueLimit(MotorController* me, ubyte2 newTorqueLimit)
+{
+	me->updateCount += (me->commands_torqueLimit == newTorqueLimit) ? 0 : 1;
+	me->commands_torqueLimit = newTorqueLimit;
+}
+ubyte2 MCM_commands_getTorque(MotorController* me)
+{
+	return me->commands_torque;
+}
+Direction MCM_commands_getDirection(MotorController* me)
+{
+	return me->commands_direction;
+}
+Status MCM_commands_getInverter(MotorController* me)
+{
+	return me->commands_inverter;
+}
+Status MCM_commands_getDischarge(MotorController* me)
+{
+	return me->commands_discharge;
+}
+ubyte2 MCM_commands_getTorqueLimit(MotorController* me)
+{
+	return me->commands_torqueLimit;
+}
+
+void MCM_updateLockoutStatus(MotorController* me, Status newState)
+{
+	me->lockoutStatus = newState;
+}
+void MCM_updateInverterStatus(MotorController* me, Status newState)
+{
+	me->inverterStatus = newState;
+}
+
+Status MCM_getLockoutStatus(MotorController* me)
+{
+	return me->lockoutStatus;
+}
+
+Status MCM_getInverterStatus(MotorController* me)
+{
+	return me->inverterStatus;
+}
+
+void MCM_setRTDSFlag(MotorController* me, bool enableRTDS)
+{
+	//me->updateCount += (me->commands_torqueLimit == newTorqueLimit) ? 0 : 1;
+	//me->startRTDS = enableRTDS;
+}
+bool MCM_getRTDSFlag(MotorController* me)
+{
+	//me->updateCount += (me->commands_torqueLimit == newTorqueLimit) ? 0 : 1;
+	//return me->startRTDS;
+	return FALSE;
+}
+
+ubyte2 MCM_commands_getUpdateCount(MotorController* me)
+{
+	return me->updateCount;
+}
+
+void MCM_commands_resetUpdateCountAndTime(MotorController* me)
+{
+	me->updateCount = 0;
+	IO_RTC_StartTime(&(me->timeStamp_lastCommandSent));
+}
+
+ubyte4 MCM_commands_getTimeSinceLastCommandSent(MotorController* me)
+{
+	return IO_RTC_GetTimeUS(me->timeStamp_lastCommandSent);
+}
+
+
+ubyte2 MCM_getTorqueMax(MotorController* me)
+{
+	return me->torqueMaximum;
+}
+
+
+
+sbyte4 MCM_getPower(MotorController* me)
+{
+	return ((me->DC_Voltage) * (me->DC_Current));
+}
+
+ubyte2 MCM_getCommandedTorque(MotorController* me)
+{
+	return me->commandedTorque;
+}
+
+
+
+
+void MCM_setStartupStage(MotorController* me, ubyte1 stage)
+{
+	me->startupStage = stage;
+}
+
+ubyte1 MCM_getStartupStage(MotorController* me)
+{
+	return me->startupStage;
 }

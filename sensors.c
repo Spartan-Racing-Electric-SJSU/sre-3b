@@ -41,6 +41,7 @@ extern Sensor Sensor_BenchTPS1;
 
 extern Sensor Sensor_RTDButton;
 extern Sensor Sensor_EcoButton;
+extern Sensor Sensor_TCSKnob;
 extern Sensor Sensor_TCSSwitchA;
 extern Sensor Sensor_TCSSwitchB;
 extern Sensor Sensor_HVILTerminationSense;
@@ -71,7 +72,10 @@ void sensors_updateSensors(void)
 	//Brake Position Sensor ---------------------------------------------------
 	Sensor_BPS0.ioErr_signalGet = IO_ADC_Get(IO_ADC_5V_02, &Sensor_BPS0.sensorValue, &Sensor_BPS0.fresh);
 
-    //?? - For future use ---------------------------------------------------
+	//TCS Knob
+	Sensor_TCSKnob.ioErr_signalGet = IO_ADC_Get(IO_ADC_5V_04, &Sensor_TCSKnob.sensorValue, &Sensor_TCSKnob.fresh);
+    
+	//?? - For future use ---------------------------------------------------
     //IO_ADC_Get(IO_ADC_5V_03, &Sensor_BPS1.sensorValue, &Sensor_BPS1.fresh);
 
     //Shock pots ---------------------------------------------------
