@@ -225,7 +225,7 @@ void main(void)
         //DOES NOT set inverter command or rtds flag
         MCM_calculateCommands(mcm0, tps, bps);
 
-        SafetyChecker_update(sc, tps, bps);
+        SafetyChecker_update(sc, tps, bps, &Sensor_HVILTerminationSense);
 
         /*******************************************/
         /*  Output Adjustments by Safety Checker   */

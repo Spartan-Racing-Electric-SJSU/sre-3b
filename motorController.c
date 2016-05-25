@@ -44,6 +44,7 @@ struct _MotorController {
 	sbyte2 torqueMaximum;  //Max torque that can be commanded in deciNewton*meters ("100" = 10.0 Nm)
     sbyte2 torqueMaximum_Regen;
     sbyte2 torqueRegenAtZeroPedal;
+    float4 torquePercentBPSForMaxRegen;
 
     bool relayState;
     bool previousHVILState;
@@ -111,8 +112,7 @@ struct _MotorController {
     //};
 };
 
-
-MotorController* MotorController_new(ubyte2 canMessageBaseID, Direction initialDirection, ubyte2 torqueMaxInDNm)
+MotorController* MotorController_new(ubyte2 canMessageBaseID, Direction initialDirection, sbyte2 torqueMaxInDNm)
 {
 	MotorController* me = (MotorController*)malloc(sizeof(struct _MotorController));
 
@@ -126,7 +126,12 @@ MotorController* MotorController_new(ubyte2 canMessageBaseID, Direction initialD
 
 	me->commands_direction = initialDirection;
 	me->torqueMaximum = torqueMaxInDNm;
-    me->faultHistory = 0;  //Todo: read from eeprom instead of defaulting to 0
+    me->torqueMaximum_Regen = torqueMaxInDNm * -.2;
+    me->torqueRegenAtZeroPedal = me->torqueMaximum_Regen * .1;
+
+    me->torquePercentBPSForMaxRegen = 0.5;
+
+    //me->faultHistory = { 0,0,0,0,0,0,0,0 };  //Todo: read from eeprom instead of defaulting to 0
 
 	me->startupStage = 0; //Off
     
@@ -150,23 +155,23 @@ me->getInverterStatus = &getInverterStatus;
 
 
 /*****************************************************************************
-	* Motor Control Functions
-	* Reads sensor objects and sets MCM control object values, which will be picked up
-	* later by CAN function
-	* > Direction
-	* > Torque
-	*   > Delay command after inverter enable (temporary until noise fix)
-	*   > Calculate Nm to request based on pedal position
-	*   > Keep track of update count to prevent CANbus overload //MOVE ALL COUNT UPDATES INTO INTERNAL MCM FUNCTIONS
-	* > Torque limit
-	*   > Get from TCS function
-	* Manages the different phases startup/ready-to-drive procedure
-	* > Turn on MCM relay?  Should this be done elsewhere?
-	* > Disable inverter lockout
-	* > Listen for driver to complete startup sequence
-	* > Enable inverter
-	* > Play RTDS
-	****************************************************************************/
+* Motor Control Functions
+* Reads sensor objects and sets MCM control object values, which will be picked up
+* later by CAN function
+* > Direction
+* > Torque
+*   > Delay command after inverter enable (temporary until noise fix)
+*   > Calculate Nm to request based on pedal position
+*   > Keep track of update count to prevent CANbus overload //MOVE ALL COUNT UPDATES INTO INTERNAL MCM FUNCTIONS
+* > Torque limit
+*   > Get from TCS function
+* Manages the different phases startup/ready-to-drive procedure
+* > Turn on MCM relay?  Should this be done elsewhere?
+* > Disable inverter lockout
+* > Listen for driver to complete startup sequence
+* > Enable inverter
+* > Play RTDS
+****************************************************************************/
 void MCM_calculateCommands(MotorController* me, TorqueEncoder* tps, BrakePressureSensor* bps)
 {
 	//----------------------------------------------------------------------------
@@ -181,44 +186,21 @@ void MCM_calculateCommands(MotorController* me, TorqueEncoder* tps, BrakePressur
     //Note: Safety checks (torque command limiting) are done EXTERNALLY.  This is a preliminary calculation
     //which should return the intended torque based on pedals
     
+    //NOTE: Brake/regen is currently prioritized over accel for safety.  However, plausibility check can still
+    //fail even though car is not even accelerating if both pedals are actuated simultaneously.
+
+    sbyte2 torqueOutput = 0;
     if (bps > 0)
     {
-        torqueOutput = me->torqueMaximum_Regen * getPercent(bps->percent, 0, .5, TRUE)
+        torqueOutput = me->torqueMaximum_Regen * getPercent(bps->percent, 0, .5, TRUE) + me->torqueRegenAtZeroPedal;
     }
     else
     {
-        if ()
+        torqueOutput = (me->torqueMaximum - me->torqueRegenAtZeroPedal) * tps->percent + me->torqueRegenAtZeroPedal;
     }
 
-    MCM_commands_setTorque(me, MCM_getTorqueMax(mcm) * tps->percent);
-
-	//Set Torque/Inverter control
-	//if (SafetyChecker_allSafe(sc) == FALSE)
-	//{
-	//	MCM_commands_setTorque(mcm, 0);
-	//}
-    //else
-    //{
-        //Note: This value may be overridden by the safety checker later
-        
-    //}
-
-
-		/*        ubyte2 torqueSetting;  //temp variable to store torque calculation
-    //CURRENTLY: Don't command torque until >1s after the inverter is enabled, otherwise CAN breaks
-    if (IO_RTC_GetTimeUS(mcm.timeStamp_inverterEnabled) <= 1000000)
-    {
-    torqueSetting = 0;
-    if (mcm.commands.requestedTorque != torqueSetting) mcm.commands.updateCount++;
-    }
-    else
-    {
-    torqueSetting = 100 * getPercent(Sensor_WPS_FL.sensorValue, 500, 2500, TRUE); //int is fine
-    if (mcm.commands.requestedTorque != torqueSetting) mcm.commands.updateCount++;
-    mcm.commands.requestedTorque = torqueSetting;
-    }
-			*/
-//	}
+    MCM_commands_setTorque(me, torqueOutput);
+    
 }
 
 void MCM_relayControl(MotorController* me, Sensor* HVILTermSense)
@@ -456,8 +438,8 @@ void MCM_parseCanMessage(MotorController* me, IO_CAN_DATA_FRAME* mcmCanMessage)
 
 
     case 0x0AB: //Faults
-        mcmCanMessage->data;
-        me->faultHistory |= data stuff //????????
+        //mcmCanMessage->data;
+        //me->faultHistory |= data stuff //????????
 
         break;
 

@@ -168,6 +168,8 @@ Sensor Sensor_WPS_RR;  // = { 3 };
 Sensor Sensor_SAS;  // = { 4 };
 Sensor Sensor_LVBattery;
 
+Sensor Sensor_TCSKnob;
+
 Sensor Sensor_RTDButton;
 Sensor Sensor_EcoButton;
 Sensor Sensor_TCSSwitchA;

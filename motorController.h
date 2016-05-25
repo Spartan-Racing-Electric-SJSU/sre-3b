@@ -19,7 +19,7 @@ typedef enum { CLOCKWISE, COUNTERCLOCKWISE, FORWARD, REVERSE, _0, _1 } Direction
 
 typedef struct _MotorController MotorController;
 
-MotorController* MotorController_new(ubyte2 canMessageBaseID, Direction initialDirection, ubyte2 torqueMaxIndNm);
+MotorController* MotorController_new(ubyte2 canMessageBaseID, Direction initialDirection, sbyte2 torqueMaxInDNm);
 
 //----------------------------------------------------------------------------
 // Command Functions
