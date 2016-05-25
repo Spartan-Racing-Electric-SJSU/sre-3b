@@ -130,7 +130,8 @@ void main(void)
 
 
     //----------------------------------------------------------------------------
-    // External Devices - Object Initializations (including default values)
+    // External Devices - Object Initializations
+    // Default values are specified here
     //----------------------------------------------------------------------------
     CanManager* canMan = CanManager_new(500, 40, 40, 500, 20, 20, 250000);  //3rd param = messages per node (can0/can1; read/write)
     

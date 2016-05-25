@@ -37,7 +37,13 @@ struct _MotorController {
 	//----------------------------------------------------------------------------
 	ubyte2 canMessageBaseId;  //Starting message ID for messages that will come in from this controller
 	ubyte4 timeStamp_inverterEnabled;
-	ubyte2 torqueMaximum;  //Max torque that can be commanded in deciNewton*meters ("100" = 10.0 Nm)
+
+    //All torque units are in 10ths (500 = 50.0 Nm)
+    //Positive = accel, negative = regen
+    //Reverse not allowed
+	sbyte2 torqueMaximum;  //Max torque that can be commanded in deciNewton*meters ("100" = 10.0 Nm)
+    sbyte2 torqueMaximum_Regen;
+    sbyte2 torqueRegenAtZeroPedal;
 
     bool relayState;
     bool previousHVILState;
@@ -63,9 +69,10 @@ struct _MotorController {
 	ubyte4 timeStamp_lastCommandSent;  //from IO_RTC_StartTime(&)
 	ubyte2 updateCount; //Number of updates since lastCommandSent
 
-	ubyte2 commands_torque;
-	ubyte2 commands_torqueLimit;
+	sbyte2 commands_torque;
+	sbyte2 commands_torqueLimit;
 	ubyte1 commands_direction;
+    ubyte1 faultHistory[8];
 
 	sbyte2 motor_temp;
 	sbyte4 DC_Voltage;
@@ -80,9 +87,7 @@ struct _MotorController {
 	Status commands_inverter;
 	//ubyte1 controlSwitches; // example: 0b00000001 = inverter is enabled, discharge is disabled.
 
-};
-
-/*
+    /*
     //----------------------------------------------------------------------------
     // Control functions
     //----------------------------------------------------------------------------
@@ -101,120 +106,11 @@ struct _MotorController {
     void(*getLockoutStatus)(MotorController* me);
     void(*getInverterStatus)(MotorController* me);
     }
- */
-//_commands commands;
-//};
+    */
+    //_commands commands;
+    //};
+};
 
-
-
-void MCM_parseCanMessage(MotorController* mcm, IO_CAN_DATA_FRAME* mcmCanMessage)
-{
-    switch (mcmCanMessage->id)
-    {
-    case 0x0A0:
-        //0,1 module A temperature
-        //2,3 module B temperature
-        //4,5 module C temperature
-        //6,7 gate driver board temperature
-        break;
-
-    case 0x0A1:
-        //0,1 control board temp
-        //2,3 rtd 1 temp
-        //4,5 rtd 2 temp
-        //6,7 rtd 3 temp
-        break;
-
-    case 0x0A2:
-        //0,1 rtd 4 temp
-        //2,3 rtd 5 temp
-        //4,5 motor temperature***
-        mcm->motor_temp = ((ubyte2)mcmCanMessage->data[5] << 8 | mcmCanMessage->data[4]) / 10;
-        //6,7 torque shudder
-        break;
-
-    case 0x0A3:
-        //0,1 voltage analog input #1
-        //2,3 voltage analog input #2
-        //4,5 voltage analog input #3
-        //6,7 voltage analog input #4
-        break;
-
-    case 0x0A4:
-        // booleans //
-        // 0 digital input #1
-        // 1 digital input #2
-        // 2 digital input #3
-        // 4 digital input #5
-        // 5 digital input #6
-        // 6 digital input #7
-        // 7 digital input #8
-        break;
-
-    case 0x0A5:
-        //0,1 motor angle (electrical)
-        //2,3 motor speed*** // in rpms
-        //Cast may be required - needs testing
-        mcm->motorRPM = (ubyte2)mcmCanMessage->data[3] << 8 | mcmCanMessage->data[2];
-        //mcm->motorRPM = ((mcmCanMessage->data[2] << 8) | (mcmCanMessage->data[3]));
-        //4,5 electrical output frequency
-        //6,7 delta resolver filtered
-        break;
-
-    case 0x0A6:
-        //0,1 Phase A current
-        //2,3 Phase B current
-        //4,5 Phase C current
-        //6,7 DC bus current
-        mcm->DC_Current = ((ubyte2)mcmCanMessage->data[7] << 8 | mcmCanMessage->data[6]) / 10;
-        //mcm->DC_Current = (((mcmCanMessage->data[6] << 8) | (mcmCanMessage->data[7])) / 10);
-        break;
-
-    case 0x0A7:
-        //0,1 DC bus voltage***
-        mcm->DC_Voltage = ((ubyte2)mcmCanMessage->data[1] << 8 | mcmCanMessage->data[0]) / 10;
-        //mcm->DC_Voltage = (((mcmCanMessage->data[0] << 8) | (mcmCanMessage->data[1])) / 10);
-        //2,3 output voltage
-        //4,5 Phase AB voltage
-        //6,7 Phase BC voltage
-        break;
-
-    case 0x0A8:
-        //0,1 Flux Command
-        //2,3 flux feedback
-        //4,5 id feedback
-        //6,7 iq feedback
-        break;
-
-    case 0x0A9:
-        // 0,1 1.5V reference voltage
-        // 2,3 2.5V reference voltage
-        // 4,5 5.0V reference voltage
-        // 6,7 12V reference voltage
-        break;
-
-    case 0x0AA:
-
-        //0,1 VSM state
-        //2   Inverter state
-        //3   Relay State
-        //4   bit-0 inverter run mode
-        //4   bit5-7 inverter active discharge state
-        //5   inverter command mode
-        //6   bit0 inverter enable state***
-        mcm->inverterStatus = mcmCanMessage->data[6];
-        //6   bit7 inverter enable lockout***
-        mcm->lockoutStatus = mcmCanMessage->data[6];
-        //7   direction command
-        break;
-    case 0x0AC:
-        //0,1 Commanded Torque
-        mcm->commandedTorque = ((ubyte2)mcmCanMessage->data[1] << 8 | mcmCanMessage->data[0]) / 10;
-        //2,3 Torque Feedback
-        break;
-
-    }
-}
 
 MotorController* MotorController_new(ubyte2 canMessageBaseID, Direction initialDirection, ubyte2 torqueMaxInDNm)
 {
@@ -230,6 +126,7 @@ MotorController* MotorController_new(ubyte2 canMessageBaseID, Direction initialD
 
 	me->commands_direction = initialDirection;
 	me->torqueMaximum = torqueMaxInDNm;
+    me->faultHistory = 0;  //Todo: read from eeprom instead of defaulting to 0
 
 	me->startupStage = 0; //Off
     
@@ -415,26 +312,42 @@ ubyte1 MCM_getStartupStage(MotorController* me)
 	* > Enable inverter
 	* > Play RTDS
 	****************************************************************************/
-void MCM_calculateCommands(MotorController* mcm, TorqueEncoder* tps, BrakePressureSensor* bps)
+void MCM_calculateCommands(MotorController* me, TorqueEncoder* tps, BrakePressureSensor* bps)
 {
 	//----------------------------------------------------------------------------
 	// Control commands
 	//----------------------------------------------------------------------------
 	//Temp hardcode
-	MCM_commands_setDischarge(mcm, DISABLED);
+	MCM_commands_setDischarge(me, DISABLED);
 
 	//1 = forwards for our car, 0 = reverse
-	MCM_commands_setDirection(mcm, FORWARD);
+	MCM_commands_setDirection(me, FORWARD);
+
+    //Note: Safety checks (torque command limiting) are done EXTERNALLY.  This is a preliminary calculation
+    //which should return the intended torque based on pedals
+    
+    if (bps > 0)
+    {
+        torqueOutput = me->torqueMaximum_Regen * getPercent(bps->percent, 0, .5, TRUE)
+    }
+    else
+    {
+        if ()
+    }
+
+    MCM_commands_setTorque(me, MCM_getTorqueMax(mcm) * tps->percent);
 
 	//Set Torque/Inverter control
 	//if (SafetyChecker_allSafe(sc) == FALSE)
 	//{
-//		MCM_commands_setTorque(mcm, 0);
-//	}
-//	else
-//	{
+	//	MCM_commands_setTorque(mcm, 0);
+	//}
+    //else
+    //{
         //Note: This value may be overridden by the safety checker later
-		MCM_commands_setTorque(mcm, MCM_getTorqueMax(mcm) * tps->percent);
+        
+    //}
+
 
 		/*        ubyte2 torqueSetting;  //temp variable to store torque calculation
     //CURRENTLY: Don't command torque until >1s after the inverter is enabled, otherwise CAN breaks
@@ -580,4 +493,125 @@ if (MCM_getInverterStatus(mcm) == ENABLED && MCM_getRTDSFlag(mcm) == TRUE)
 }
 		*/
 
+}
+
+
+
+
+void MCM_parseCanMessage(MotorController* me, IO_CAN_DATA_FRAME* mcmCanMessage)
+{
+    switch (mcmCanMessage->id)
+    {
+    case 0x0A0:
+        //0,1 module A temperature
+        //2,3 module B temperature
+        //4,5 module C temperature
+        //6,7 gate driver board temperature
+        break;
+
+    case 0x0A1:
+        //0,1 control board temp
+        //2,3 rtd 1 temp
+        //4,5 rtd 2 temp
+        //6,7 rtd 3 temp
+        break;
+
+    case 0x0A2:
+        //0,1 rtd 4 temp
+        //2,3 rtd 5 temp
+        //4,5 motor temperature***
+        me->motor_temp = ((ubyte2)mcmCanMessage->data[5] << 8 | mcmCanMessage->data[4]) / 10;
+        //6,7 torque shudder
+        break;
+
+    case 0x0A3:
+        //0,1 voltage analog input #1
+        //2,3 voltage analog input #2
+        //4,5 voltage analog input #3
+        //6,7 voltage analog input #4
+        break;
+
+    case 0x0A4:
+        // booleans //
+        // 0 digital input #1
+        // 1 digital input #2
+        // 2 digital input #3
+        // 4 digital input #5
+        // 5 digital input #6
+        // 6 digital input #7
+        // 7 digital input #8
+        break;
+
+    case 0x0A5:
+        //0,1 motor angle (electrical)
+        //2,3 motor speed*** // in rpms
+        //Cast may be required - needs testing
+        me->motorRPM = (ubyte2)mcmCanMessage->data[3] << 8 | mcmCanMessage->data[2];
+        //me->motorRPM = ((mcmCanMessage->data[2] << 8) | (mcmCanMessage->data[3]));
+        //4,5 electrical output frequency
+        //6,7 delta resolver filtered
+        break;
+
+    case 0x0A6:
+        //0,1 Phase A current
+        //2,3 Phase B current
+        //4,5 Phase C current
+        //6,7 DC bus current
+        me->DC_Current = ((ubyte2)mcmCanMessage->data[7] << 8 | mcmCanMessage->data[6]) / 10;
+        //me->DC_Current = (((mcmCanMessage->data[6] << 8) | (mcmCanMessage->data[7])) / 10);
+        break;
+
+    case 0x0A7:
+        //0,1 DC bus voltage***
+        me->DC_Voltage = ((ubyte2)mcmCanMessage->data[1] << 8 | mcmCanMessage->data[0]) / 10;
+        //me->DC_Voltage = (((mcmCanMessage->data[0] << 8) | (mcmCanMessage->data[1])) / 10);
+        //2,3 output voltage
+        //4,5 Phase AB voltage
+        //6,7 Phase BC voltage
+        break;
+
+    case 0x0A8:
+        //0,1 Flux Command
+        //2,3 flux feedback
+        //4,5 id feedback
+        //6,7 iq feedback
+        break;
+
+    case 0x0A9:
+        // 0,1 1.5V reference voltage
+        // 2,3 2.5V reference voltage
+        // 4,5 5.0V reference voltage
+        // 6,7 12V reference voltage
+        break;
+
+    case 0x0AA:
+
+        //0,1 VSM state
+        //2   Inverter state
+        //3   Relay State
+        //4   bit-0 inverter run mode
+        //4   bit5-7 inverter active discharge state
+        //5   inverter command mode
+        //6   bit0 inverter enable state***
+        me->inverterStatus = mcmCanMessage->data[6];
+        //6   bit7 inverter enable lockout***
+        me->lockoutStatus = mcmCanMessage->data[6];
+        //7   direction command
+        break;
+
+
+    case 0x0AB: //Faults
+        mcmCanMessage->data;
+        me->faultHistory |= data stuff //????????
+
+        break;
+
+
+    case 0x0AC:
+        //0,1 Commanded Torque
+        me->commandedTorque = ((ubyte2)mcmCanMessage->data[1] << 8 | mcmCanMessage->data[0]) / 10;
+        //2,3 Torque Feedback
+        break;
+
+    }
 }
