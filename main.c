@@ -109,13 +109,15 @@ void main(void)
     /*******************************************/
     IO_Driver_Init(NULL); //Handles basic startup for all VCU subsystems
 
+    //Special: Initialize serial first so we can use it to debug init of other subsystems
+    SerialManager* serialMan = SerialManager_new();
+    SerialManager_send(serialMan, "Serial manager created.");
+
     //----------------------------------------------------------------------------
     // VCU Subsystem Initializations
     // Eventually, all of these functions should be made obsolete by creating
     // objects instead, like the RTDS/MCM/TPS objects below
     //----------------------------------------------------------------------------
-    SerialManager* serialMan = SerialManager_new();
-    SerialManager_send(serialMan, "Serial manager created.");
 
 	bool bench = TRUE;
     
@@ -127,14 +129,14 @@ void main(void)
     //Do some loops until the ADC stops outputting garbage values
     vcu_ADCWasteLoop();
 
-
-
-    //----------------------------------------------------------------------------
-    // External Devices - Object Initializations
-    // Default values are specified here
-    //----------------------------------------------------------------------------
+    //vcu_init functions may have to be performed BEFORE creating CAN Manager object
     CanManager* canMan = CanManager_new(500, 40, 40, 500, 20, 20, 250000);  //3rd param = messages per node (can0/can1; read/write)
-    
+
+
+    //----------------------------------------------------------------------------
+    // Object representations of external devices
+    // Most default values for things should be specified here
+    //----------------------------------------------------------------------------    
     ReadyToDriveSound* rtds = RTDS_new();
 	//BatteryManagementSystem* bms = BMS_new();
     MotorController* mcm0 = MotorController_new(0xA0, FORWARD, 100); //CAN addr, direction, torque limit x10 (100 = 10Nm)
