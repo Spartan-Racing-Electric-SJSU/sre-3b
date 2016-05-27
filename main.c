@@ -158,7 +158,8 @@ void main(void)
     /*******************************************/
     /* main loop, executed periodically with a defined cycle time (here: 5 ms) */
 
-	ubyte4 timestamp_sensorpoll = 0;
+    ubyte4 timestamp_sensorpoll = 0;
+    ubyte4 timestamp_EcoButton = 0;
     ubyte1 calibrationErrors;
 
     //IO_RTC_StartTime(&timestamp_calibStart);
@@ -197,12 +198,23 @@ void main(void)
 		//if (IO_RTC_GetTimeUS(timestamp_calibStart) < (ubyte4)5000000)
 		if (Sensor_EcoButton.sensorValue == FALSE)
 		{
-			//calibrateTPS(TRUE, 5);
-			TorqueEncoder_startCalibration(tps, 5);
-			BrakePressureSensor_startCalibration(bps, 5);
-			//Light_set(Light_dashError, 1);
-			//DIGITAL OUTPUT 4 for STATUS LED
+            if (timestamp_EcoButton == 0)
+            {
+                IO_RTC_StartTime(&timestamp_EcoButton);
+            }
+            else if (IO_RTC_GetTimeUS(timestamp_EcoButton) >= 3000000)
+            {
+                //calibrateTPS(TRUE, 5);
+                TorqueEncoder_startCalibration(tps, 5);
+                BrakePressureSensor_startCalibration(bps, 5);
+                //Light_set(Light_dashError, 1);
+                //DIGITAL OUTPUT 4 for STATUS LED
+            }
 		}
+        else
+        {
+            timestamp_EcoButton = 0;
+        }
 		TorqueEncoder_update(tps);
         //Every cycle: if the calibration was started and hasn't finished, check the values again
         TorqueEncoder_calibrationCycle(tps, &calibrationErrors); //Todo: deal with calibration errors
