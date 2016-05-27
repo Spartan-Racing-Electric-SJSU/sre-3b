@@ -33,11 +33,9 @@ void vcu_initializeADC(bool benchMode)
     //Relay power outputs
     IO_DO_Init(IO_DO_00); IO_DO_Set(IO_DO_00, FALSE); //mcm0 Relay
     IO_DO_Init(IO_DO_01); IO_DO_Set(IO_DO_01, FALSE); //HVIL shutdown relay
-    IO_DO_Init(IO_DO_02); IO_DO_Set(IO_DO_02, FALSE); //Water pump relay
-    IO_DO_Init(IO_DO_03); IO_DO_Set(IO_DO_03, FALSE); //Motor fan relay
-
-	//BMS supply - always on
-	IO_DO_Init(IO_DO_04); IO_DO_Set(IO_DO_04, TRUE); //BMS power / Fault LED
+    IO_DO_Init(IO_DO_02); IO_DO_Set(IO_DO_02, TRUE); //Water pump relay - always on per RMS HW manual pg 7
+    IO_DO_Init(IO_DO_03); IO_DO_Set(IO_DO_03, TRUE); //Fan relay - motor fan and radiator fan are on same circuit
+    IO_DO_Init(IO_DO_04); IO_DO_Set(IO_DO_04, TRUE); //Battery fan relay
 
     //Wheel Speed Sensor supplies
     Sensor_WSS_FL.ioErr_powerInit = Sensor_WSS_FR.ioErr_powerInit = IO_DO_Init(IO_DO_06); //Front x2
@@ -106,10 +104,10 @@ void vcu_initializeADC(bool benchMode)
     //----------------------------------------------------------------------------
 	//Switches
 	//----------------------------------------------------------------------------
-	Sensor_RTDButton.ioErr_signalInit = IO_DI_Init(IO_DI_00, IO_DI_PU_10K); //RTD Button
-    Sensor_EcoButton.ioErr_signalInit = IO_DI_Init(IO_DI_01, IO_DI_PU_10K); //Eco Button
-    Sensor_TCSSwitchA.ioErr_signalInit = IO_DI_Init(IO_DI_02, IO_DI_PU_10K); //TCS Switch A
-	Sensor_TCSSwitchB.ioErr_signalInit = IO_DI_Init(IO_DI_03, IO_DI_PU_10K); //TCS Switch B
+	Sensor_RTDButton.ioErr_signalInit = IO_DI_Init(IO_DI_00, IO_DI_PD_10K); //RTD Button
+    Sensor_EcoButton.ioErr_signalInit = IO_DI_Init(IO_DI_01, IO_DI_PD_10K); //Eco Button
+    Sensor_TCSSwitchA.ioErr_signalInit = IO_DI_Init(IO_DI_02, IO_DI_PD_10K); //TCS Switch A
+	Sensor_TCSSwitchB.ioErr_signalInit = IO_DI_Init(IO_DI_03, IO_DI_PD_10K); //TCS Switch B
     Sensor_HVILTerminationSense.ioErr_signalInit = IO_DI_Init(IO_DI_07, IO_DI_PD_10K); //HVIL Term sense, high = HV present
 
     //
