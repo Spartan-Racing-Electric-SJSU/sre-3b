@@ -21,9 +21,11 @@ TorqueEncoder* TorqueEncoder_new(bool benchMode)
     //me->bench = benchMode;
 	
     //TODO: Make sure the main loop is running before doing this
-    me->tps0 = (benchMode == TRUE) ? &Sensor_BenchTPS0 : &Sensor_TPS0;
-    me->tps1 = (benchMode == TRUE) ? &Sensor_BenchTPS1 : &Sensor_TPS1;
-	
+    //me->tps0 = (benchMode == TRUE) ? &Sensor_BenchTPS0 : &Sensor_TPS0;
+    //me->tps1 = (benchMode == TRUE) ? &Sensor_BenchTPS1 : &Sensor_TPS1;
+    me->tps0 = &Sensor_TPS0;
+    me->tps1 = &Sensor_TPS1;
+
 	//Where/should these be hardcoded?
 	me->tps0_reverse = FALSE;
 	me->tps1_reverse = TRUE;
@@ -155,7 +157,7 @@ void TorqueEncoder_startCalibration(TorqueEncoder* me, ubyte1 secondsToRun)
         IO_RTC_StartTime(&(me->timestamp_calibrationStart));
         me->calibrationRunTime = secondsToRun;
 
-		Light_set(Light_dashEco, 1);
+		//Light_set(Light_dashEco, 1);
     }
 }
 
@@ -215,7 +217,7 @@ void TorqueEncoder_calibrationCycle(TorqueEncoder* me, ubyte1* errorCount)
 
 			me->runCalibration = FALSE;
 			me->calibrated = TRUE;
-			Light_set(Light_dashEco, 0);
+			//Light_set(Light_dashEco, 0);
 			
 
         }

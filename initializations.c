@@ -42,7 +42,7 @@ void vcu_initializeADC(bool benchMode)
 	Sensor_WSS_RL.ioErr_powerInit = Sensor_WSS_RR.ioErr_powerInit = IO_DO_Init(IO_DO_07); //Rear  x2
 
     //Digital PWM outputs ---------------------------------------------------
-	IO_PWM_Init(IO_PWM_02, 500, TRUE, FALSE, 0, FALSE, NULL); IO_PWM_SetDuty(IO_PWM_02, 0, NULL);  //TCS Light
+	IO_PWM_Init(IO_PWM_02, 500, TRUE, FALSE, 0, FALSE, NULL); IO_PWM_SetDuty(IO_PWM_02, 0, NULL);  //Brake Light
 	IO_PWM_Init(IO_PWM_03, 500, TRUE, FALSE, 0, FALSE, NULL); IO_PWM_SetDuty(IO_PWM_03, 0, NULL);  //TCS Light
 	IO_PWM_Init(IO_PWM_04, 500, TRUE, FALSE, 0, FALSE, NULL); IO_PWM_SetDuty(IO_PWM_04, 0, NULL);  //Eco Light
     IO_PWM_Init(IO_PWM_05, 500, TRUE, FALSE, 0, FALSE, NULL); IO_PWM_SetDuty(IO_PWM_05, 0, NULL);  //Error Light
@@ -59,21 +59,21 @@ void vcu_initializeADC(bool benchMode)
     //IO_ADC_ChannelInit(IO_ADC_5V_00, IO_ADC_RATIOMETRIC, 0, 0, IO_ADC_SENSOR_SUPPLY_0, NULL);
     //IO_ADC_ChannelInit(IO_ADC_5V_01, IO_ADC_RATIOMETRIC, 0, 0, IO_ADC_SENSOR_SUPPLY_1, NULL);
 
-    //BPS
+    //TPS/BPS
 	//Sensor_BPS0.ioErr_init = IO_ADC_ChannelInit(IO_ADC_5V_02, IO_ADC_RATIOMETRIC, 0, 0, IO_ADC_SENSOR_SUPPLY_0, NULL);
     if (benchMode == TRUE)
     {
-        //Sensor_BenchTPS0.ioErr_signalInit = IO_ADC_ChannelInit(IO_ADC_5V_00, IO_ADC_RESISTIVE, 0, 0, 0, NULL);
-        //Sensor_BenchTPS1.ioErr_signalInit = IO_ADC_ChannelInit(IO_ADC_5V_01, IO_ADC_RESISTIVE, 0, 0, 0, NULL)
-        Sensor_BenchTPS0.ioErr_signalInit = IO_ADC_ChannelInit(IO_ADC_5V_00, IO_ADC_RATIOMETRIC, 0, 0, IO_ADC_SENSOR_SUPPLY_0, NULL);
-        Sensor_BenchTPS1.ioErr_signalInit = IO_ADC_ChannelInit(IO_ADC_5V_01, IO_ADC_RATIOMETRIC, 0, 0, IO_ADC_SENSOR_SUPPLY_1, NULL);
+        Sensor_TPS0.ioErr_signalInit = IO_ADC_ChannelInit(IO_ADC_5V_00, IO_ADC_RESISTIVE, 0, 0, 0, NULL);
+        Sensor_TPS1.ioErr_signalInit = IO_ADC_ChannelInit(IO_ADC_5V_01, IO_ADC_RESISTIVE, 0, 0, 0, NULL);
         Sensor_BPS0.ioErr_signalInit = IO_ADC_ChannelInit(IO_ADC_5V_02, IO_ADC_RESISTIVE, 0, 0, 0, NULL);
     }
     else //Not bench mode
     {
         //In the future, production TPS will be digital instead of analog (see PWD section, below)
-        Sensor_BenchTPS0.ioErr_signalInit = IO_ADC_ChannelInit(IO_ADC_5V_00, IO_ADC_RATIOMETRIC, 0, 0, IO_ADC_SENSOR_SUPPLY_0, NULL);
-        Sensor_BenchTPS1.ioErr_signalInit = IO_ADC_ChannelInit(IO_ADC_5V_01, IO_ADC_RATIOMETRIC, 0, 0, IO_ADC_SENSOR_SUPPLY_1, NULL);
+        //Sensor_TPS0.ioErr_signalInit = IO_PWD_PulseInit(IO_PWM_00, IO_PWD_HIGH_TIME);
+        //Sensor_TPS1.ioErr_signalInit = IO_PWD_PulseInit(IO_PWM_01, IO_PWD_HIGH_TIME);
+        Sensor_TPS0.ioErr_signalInit = IO_ADC_ChannelInit(IO_ADC_5V_00, IO_ADC_RATIOMETRIC, 0, 0, IO_ADC_SENSOR_SUPPLY_0, NULL);
+        Sensor_TPS1.ioErr_signalInit = IO_ADC_ChannelInit(IO_ADC_5V_01, IO_ADC_RATIOMETRIC, 0, 0, IO_ADC_SENSOR_SUPPLY_1, NULL);
         Sensor_BPS0.ioErr_signalInit = IO_ADC_ChannelInit(IO_ADC_5V_02, IO_ADC_RATIOMETRIC, 0, 0, IO_ADC_SENSOR_SUPPLY_0, NULL);
     }
 
@@ -83,7 +83,7 @@ void vcu_initializeADC(bool benchMode)
     //TCS Pot
     IO_ADC_ChannelInit(IO_ADC_5V_04, IO_ADC_RESISTIVE, 0, 0, 0, NULL);
 
-	//Shockpots
+	//Unused
 	//IO_ADC_ChannelInit(IO_ADC_5V_05, IO_ADC_RESISTIVE, 0, 0, 0, NULL);
     //IO_ADC_ChannelInit(IO_ADC_5V_06, IO_ADC_RESISTIVE, 0, 0, 0, NULL);
     //IO_ADC_ChannelInit(IO_ADC_5V_07, IO_ADC_RESISTIVE, 0, 0, 0, NULL);
@@ -92,8 +92,7 @@ void vcu_initializeADC(bool benchMode)
 	//PWD channels
 	//----------------------------------------------------------------------------
 	//TPS
-	Sensor_TPS0.ioErr_signalInit = IO_PWD_PulseInit(IO_PWM_00, IO_PWD_HIGH_TIME);
-	Sensor_TPS1.ioErr_signalInit = IO_PWD_PulseInit(IO_PWM_01, IO_PWD_HIGH_TIME);
+    //MOVED TO TPS/BPS BLOCK ABOVE
 	
 	//Wheel Speed Sensors (Pulse Width Detection)
     Sensor_WSS_FR.ioErr_signalInit = IO_PWD_FreqInit(IO_PWD_08, IO_PWD_FALLING_VAR);  //Is there a reason to look for rising vs falling edge?
@@ -157,8 +156,6 @@ Sensor Sensor_WSS_FL;  // = { 2 };
 Sensor Sensor_WSS_FR;  // = { 2 };
 Sensor Sensor_WSS_RL;  // = { 2 };
 Sensor Sensor_WSS_RR;  // = { 2 };
-Sensor Sensor_BenchTPS0;
-Sensor Sensor_BenchTPS1;
 Sensor Sensor_WPS_FL;  // = { 3 };
 Sensor Sensor_WPS_FR;  // = { 3 };
 Sensor Sensor_WPS_RL;  // = { 3 };
@@ -181,7 +178,7 @@ Sensor Sensor_HVILTerminationSense;
 extern Sensor Sensor_LVBattery; // = { 0xA };  //Note: There will be no init for this "sensor"
 
 //Initialize the sensors with default values
-void vcu_initializeSensors(void)
+void vcu_initializeSensors(bool bench)
 {
     //Torque Encoders (TPS is not really accurate since there's no throttle to position in an EV)
     //TODO: specMin/specMax are ints, won't store decimal values!!!!!!!
@@ -198,20 +195,26 @@ void vcu_initializeSensors(void)
 	//VCU max sensible pulse: 100ms
 	//Sensor min: 1ms * 5% = .000050 = 50 microseconds
 	//Sensor max: 1ms * 95% = .000950 = 950 microseconds
-	Sensor_TPS0.specMin = .001 * .05;  //1kHz = .001s/cycle...
-	Sensor_TPS0.specMax = .001 * .95;
-	Sensor_TPS1.specMin = .001 * .95;
-	Sensor_TPS1.specMax = .001 * .05;
-
-	//TPS: Pot
-	Sensor_BenchTPS0.specMin = 1;
-    Sensor_BenchTPS0.specMax = 5001;
-    Sensor_BenchTPS1.specMin = 1;
-    Sensor_BenchTPS1.specMax = 5001;
+    if (bench == TRUE)
+    {
+        //TPS: Pot
+        //Do not reverse sensor values here.fd
+        Sensor_TPS0.specMin = 1;
+        Sensor_TPS0.specMax = 15000;
+        Sensor_TPS1.specMin = 1;
+        Sensor_TPS1.specMax = 15000;
+    }
+    else
+    {
+        Sensor_TPS0.specMin = .001 * .05;  //1kHz = .001s/cycle...
+        Sensor_TPS0.specMax = .001 * .95;
+        Sensor_TPS1.specMin = .001 * .95;
+        Sensor_TPS1.specMax = .001 * .05;
+    }
 
     //Brake Position Sensors
 	Sensor_BPS0.specMin = 1;
-	Sensor_BPS0.specMax = 10000;
+	Sensor_BPS0.specMax = 000;
 	//Sensor_BPS0.specMin = 0.5;
 	//Sensor_BPS0.specMax = 4.5;
 	//Sensor_BPS1.specMin = 0.5;

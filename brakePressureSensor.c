@@ -79,7 +79,7 @@ void BrakePressureSensor_update(BrakePressureSensor* me, bool bench)
 		}
 		else if (me->percent >= .30)
 		{
-			Light_set(Light_brake, me->percent);
+			//Light_set(Light_brake, me->percent);
 		}
 	}
 }
@@ -122,7 +122,7 @@ void BrakePressureSensor_startCalibration(BrakePressureSensor* me, ubyte1 second
         IO_RTC_StartTime(&(me->timestamp_calibrationStart));
         me->calibrationRunTime = secondsToRun;
 
-		Light_set(Light_dashEco, 1);
+		//Light_set(Light_dashEco, 1);
     }
 }
 
