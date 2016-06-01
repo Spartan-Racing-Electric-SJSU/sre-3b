@@ -19,8 +19,9 @@ extern Sensor Sensor_BenchTPS1;
 
 extern Sensor Sensor_RTDButton;
 extern Sensor Sensor_EcoButton;
-extern Sensor Sensor_TCSSwitchA;
-extern Sensor Sensor_TCSSwitchB;
+extern Sensor Sensor_TCSSwitchA; // used currently for regen
+extern Sensor Sensor_TCSSwitchB; // used currently for regen
+extern Sensor Sensor_TCSKnob;    // used currently for regen
 extern Sensor Sensor_HVILTerminationSense;
 
 /*****************************************************************************
@@ -191,6 +192,35 @@ void MCM_calculateCommands(MotorController* me, TorqueEncoder* tps, BrakePressur
     
     //NOTE: Brake/regen is currently prioritized over accel for safety.  However, plausibility check can still
     //fail even though car is not even accelerating if both pedals are actuated simultaneously.
+
+    /*=================BEGIN REGEN CODE=================== */
+
+    if(Sensor_TCSSwitchA.sensorValue ^ Sensor_TCSSwitchB.sensorValue)
+    {
+        if(Sensor_TCSSwitchA.sensorValue != 0) //I'm guessing this value will only equal zero if the switch is not in this position
+        {
+            //If switch is in position 
+            //me->torqueRegenAtZeroPedal = some_function_of(Sensor_TCSKnob.sensorValue);
+        }
+        else
+        {
+            //If switch is in position 
+            //me->torquePercentBPSForMaxRegen = some_function_of(Sensor_TCSKnob.sensorValue);
+        }
+
+    } 
+    else if (Sensor_TCSSwitchA.sensorValue && Sensor_TCSSwitchB.sensorValue)
+    {
+        //REGEN WILL BE ON BUT NO OTHER FURTHER IMPLEMENTATION YET       
+    } 
+    else
+    {
+        //REGEN OFF
+        me->torqueMaximum_Regen = 0;
+    }
+    /*====================END REGEN CODE====================== */
+
+
 
     sbyte2 torqueOutput = 0;
     if (bps > 0)
