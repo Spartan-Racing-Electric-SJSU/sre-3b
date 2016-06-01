@@ -121,6 +121,7 @@ void main(void)
     // Check if we're on the bench or not
     //----------------------------------------------------------------------------
     bool bench;
+    /* THIS DOESN'T WORK
     //sense bench mode
     IO_DI_Init(IO_DI_06, IO_DI_PU_10K);
     IO_RTC_StartTime(&timestamp_sensorpoll);
@@ -137,8 +138,8 @@ void main(void)
     }
     //Need to invert bench bceause grounded = false
     bench = !bench;
-
-
+    */
+    bench = FALSE;
 
     //----------------------------------------------------------------------------
     // VCU Subsystem Initializations

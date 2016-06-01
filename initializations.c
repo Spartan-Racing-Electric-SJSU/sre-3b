@@ -33,9 +33,9 @@ void vcu_initializeADC(bool benchMode)
     //Relay power outputs
     IO_DO_Init(IO_DO_00); IO_DO_Set(IO_DO_00, FALSE); //mcm0 Relay
     IO_DO_Init(IO_DO_01); IO_DO_Set(IO_DO_01, FALSE); //HVIL shutdown relay
-    IO_DO_Init(IO_DO_02); IO_DO_Set(IO_DO_02, TRUE); //Water pump relay - always on per RMS HW manual pg 7
-    IO_DO_Init(IO_DO_03); IO_DO_Set(IO_DO_03, TRUE); //Fan relay - motor fan and radiator fan are on same circuit
-    IO_DO_Init(IO_DO_04); IO_DO_Set(IO_DO_04, TRUE); //Battery fan relay
+    IO_DO_Init(IO_DO_02); IO_DO_Set(IO_DO_02, FALSE); //Water pump relay - always on per RMS HW manual pg 7
+    IO_DO_Init(IO_DO_03); IO_DO_Set(IO_DO_03, FALSE); //Fan relay - motor fan and radiator fan are on same circuit
+    IO_DO_Init(IO_DO_04); IO_DO_Set(IO_DO_04, FALSE); //Battery fan relay
     IO_DO_Init(IO_DO_05); IO_DO_Set(IO_DO_05, benchMode); //power output for switches - only used on bench
 
     //Wheel Speed Sensor supplies
