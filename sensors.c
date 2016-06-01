@@ -88,8 +88,8 @@ void sensors_updateSensors(void)
 
     //Wheel speed sensors ---------------------------------------------------
 	Sensor_WSS_FL.ioErr_signalGet = IO_PWD_FreqGet(IO_PWD_10, &Sensor_WSS_FL.sensorValue);
-	Sensor_WSS_FR.ioErr_signalGet = IO_PWD_FreqGet(IO_PWD_11, &Sensor_WSS_FR.sensorValue);
-	Sensor_WSS_RL.ioErr_signalGet = IO_PWD_FreqGet(IO_PWD_08, &Sensor_WSS_RL.sensorValue);
+	Sensor_WSS_FR.ioErr_signalGet = IO_PWD_FreqGet(IO_PWD_08, &Sensor_WSS_FR.sensorValue);
+	Sensor_WSS_RL.ioErr_signalGet = IO_PWD_FreqGet(IO_PWD_11, &Sensor_WSS_RL.sensorValue);
 	Sensor_WSS_RR.ioErr_signalGet = IO_PWD_FreqGet(IO_PWD_09, &Sensor_WSS_RR.sensorValue);
 
     //Switches / Digital ---------------------------------------------------
