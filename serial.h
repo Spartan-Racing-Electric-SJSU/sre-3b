@@ -6,6 +6,9 @@
 
 typedef struct _SerialManager SerialManager;
 
+//Make serialMan available globally
+//SerialManager* serialMan;
+
 //Note: Sum of messageLimits must be < 128 (hardware only does 128 total messages)
 SerialManager* SerialManager_new(void);
 
