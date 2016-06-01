@@ -8,6 +8,7 @@
 #include "sensors.h"
 #include "motorController.h"
 #include "bms.h"
+#include "serial.h"
 
 /*
 typedef enum { CHECK_tpsOutOfRange    , CHECK_bpsOutOfRange
@@ -19,9 +20,11 @@ typedef enum { CHECK_tpsOutOfRange    , CHECK_bpsOutOfRange
 
 typedef struct _SafetyChecker SafetyChecker;
 
-SafetyChecker* SafetyChecker_new(void);
-void SafetyChecker_update(SafetyChecker* me, TorqueEncoder* tps, BrakePressureSensor* bps, Sensor* HVILTermSense);
+SafetyChecker* SafetyChecker_new(SerialManager* sm);
+void SafetyChecker_update(SafetyChecker* me, TorqueEncoder* tps, BrakePressureSensor* bps, Sensor* HVILTermSense, Sensor* LVBattery);
 bool SafetyChecker_allSafe(SafetyChecker* me);
+ubyte4 SafetyChecker_getFaults(SafetyChecker* me);
+ubyte4 SafetyChecker_getWarnings(SafetyChecker* me);
 //bool SafetyChecker_getError(SafetyChecker* me, SafetyCheck check);
 //bool SafetyChecker_getErrorByte(SafetyChecker* me, ubyte1* errorByte);
 

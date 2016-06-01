@@ -13,9 +13,10 @@
 
 #include "motorcontroller.h"
 #include "bms.h"
+#include "serial.h"
 
 //last flag is 0x 8000 0000 (32 flags)
-
+//Faults
 static const ubyte4 tpsOutOfRange = 1;
 static const ubyte4 bpsOutOfRange = 2;
 static const ubyte4 tpsPowerFailure = 4;
@@ -27,9 +28,14 @@ static const ubyte4 tpsNotCalibrated = 0x40;
 static const ubyte4 bpsNotCalibrated = 0x80;
 
 static const ubyte4 tpsOutOfSync = 0x100;
-static const ubyte4 tpsbpsImplausible = 0x200;
+static const ubyte4 bpsOutOfSync = 0x200; //NOT USED
+static const ubyte4 tpsbpsImplausible = 0x400;
+//static const ubyte4 UNUSED = 0x800;
 
-static const ubyte4 HVILTermSenseLost = 0x400;
+static const ubyte4 HVILTermSenseLost = 0x1000;
+
+//Warnings
+static const ubyte4 LVSBatteryLow = 1;
 
 
 /*****************************************************************************
@@ -41,8 +47,9 @@ static const ubyte4 HVILTermSenseLost = 0x400;
 ****************************************************************************/
 struct _SafetyChecker {
 	//Problems that require motor torque to be disabled
-	
+    SerialManager* serialMan;
     ubyte4 faults;
+    ubyte4 warnings;
 };
 
 /*****************************************************************************
@@ -51,18 +58,23 @@ struct _SafetyChecker {
 * If an implausibility occurs between the values of these two sensors the power to the motor(s) must be immediately shut down completely.
 * It is not necessary to completely deactivate the tractive system, the motor controller(s) shutting down the power to the motor(s) is sufficient.
 ****************************************************************************/
-SafetyChecker* SafetyChecker_new(void)
+SafetyChecker* SafetyChecker_new(SerialManager* sm)
 {
     SafetyChecker* me = (SafetyChecker*)malloc(sizeof(struct _SafetyChecker));
 
+    me->serialMan = sm;
 	//Initialize all safety checks to FAIL? Not anymore
-    me->faults = 0xFFFFFFFF;
+    me->faults = 0;
+    me->warnings = 0;
     return me;
 }
 
 //Updates all values based on sensor readings, safety checks, etc
-void SafetyChecker_update(SafetyChecker* me, TorqueEncoder* tps, BrakePressureSensor* bps, Sensor* HVILTermSense)
+void SafetyChecker_update(SafetyChecker* me, TorqueEncoder* tps, BrakePressureSensor* bps, Sensor* HVILTermSense, Sensor* LVBattery)
 {
+    /*****************************************************************************
+    * Faults
+    ****************************************************************************/
 	//===================================================================
 	// Get calibration status
 	//===================================================================
@@ -77,9 +89,13 @@ void SafetyChecker_update(SafetyChecker* me, TorqueEncoder* tps, BrakePressureSe
 		|| tps->tps1->ioErr_powerInit != IO_E_OK
 		|| tps->tps0->ioErr_powerSet != IO_E_OK
 		|| tps->tps1->ioErr_powerSet != IO_E_OK)
-	{
-		me->faults |= tpsPowerFailure;
-	}
+    {
+        me->faults |= tpsPowerFailure;
+    }
+    else
+    {
+        me->faults &= ~tpsPowerFailure;
+    }
 
 	if (tps->tps0->ioErr_signalInit != IO_E_OK
 		|| tps->tps1->ioErr_signalInit != IO_E_OK
@@ -88,18 +104,30 @@ void SafetyChecker_update(SafetyChecker* me, TorqueEncoder* tps, BrakePressureSe
 	{
 		me->faults |= tpsSignalFailure;
 	}
+    else
+    {
+        me->faults &= ~tpsSignalFailure;
+    }
 
 	if (bps->bps0->ioErr_powerInit == IO_E_OK
 		|| bps->bps0->ioErr_powerSet == IO_E_OK)
 	{
 		me->faults |= bpsPowerFailure;
 	}
+    else
+    {
+        me->faults &= ~bpsPowerFailure;
+    }
 
 	if (bps->bps0->ioErr_signalInit == IO_E_OK
 		&& bps->bps0->ioErr_signalGet == IO_E_OK)
 	{
 		me->faults |= bpsSignalFailure;
 	}
+    else
+    {
+        me->faults &= ~bpsSignalFailure;
+    }
 
 	//===================================================================
 	// Make sure raw sensor readings are within operating range
@@ -117,6 +145,10 @@ void SafetyChecker_update(SafetyChecker* me, TorqueEncoder* tps, BrakePressureSe
 	{
 		me->faults |= tpsOutOfRange;
 	}
+    else
+    {
+        me->faults &= ~tpsOutOfRange;
+    }
 
 	//-------------------------------------------------------------------
 	//Brake Pressure Sensor
@@ -125,6 +157,10 @@ void SafetyChecker_update(SafetyChecker* me, TorqueEncoder* tps, BrakePressureSe
 	{
 		me->faults |= bpsOutOfRange;
 	}
+    else
+    {
+        me->faults &= ~bpsOutOfRange;
+    }
 
 	//===================================================================
 	// Make sure calibrated TPS readings are in sync with each other
@@ -150,6 +186,10 @@ void SafetyChecker_update(SafetyChecker* me, TorqueEncoder* tps, BrakePressureSe
 		//Err.Report(Err.Codes.TPSDiscrepancy, "TPS discrepancy of over 10%", Motor.Stop);
 		me->faults |= tpsOutOfSync;
 	}
+    else
+    {
+        me->faults &= ~tpsOutOfSync;
+    }
 
 
 
@@ -191,6 +231,28 @@ void SafetyChecker_update(SafetyChecker* me, TorqueEncoder* tps, BrakePressureSe
     {
         me->faults |= HVILTermSenseLost;
     }
+    else
+    {
+        me->faults &= ~HVILTermSenseLost;
+    }
+
+
+    /*****************************************************************************
+    * Warnings
+    ****************************************************************************/
+    //===================================================================
+    // LVS Battery Check
+    //===================================================================
+    //  IO_ADC_UBAT: 0..40106  (0V..40.106V)
+    //-------------------------------------------------------------------
+    if (LVBattery->sensorValue <= 13100)
+    {
+        me->warnings |= LVSBatteryLow;
+    }
+    else
+    {
+        me->warnings &= ~LVSBatteryLow;
+    }
 
 }
 
@@ -198,7 +260,20 @@ void SafetyChecker_update(SafetyChecker* me, TorqueEncoder* tps, BrakePressureSe
 //Updates all values based on sensor readings, safety checks, etc
 bool SafetyChecker_allSafe(SafetyChecker* me)
 {
-	return (me->faults == 0);
+    return (me->faults == 0);
+}
+
+//Updates all values based on sensor readings, safety checks, etc
+ubyte4 SafetyChecker_getFaults(SafetyChecker* me)
+{
+    return (me->faults);
+}
+
+
+//Updates all values based on sensor readings, safety checks, etc
+ubyte4 SafetyChecker_getWarnings(SafetyChecker* me)
+{
+    return (me->warnings);
 }
 
 ////Updates all values based on sensor readings, safety checks, etc
