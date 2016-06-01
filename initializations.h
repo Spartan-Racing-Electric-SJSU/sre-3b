@@ -21,7 +21,7 @@
 void vcu_initializeVCU(void);
 void vcu_initializeADC(bool benchMode);
 void vcu_initializeCAN(void);
-void vcu_initializeSensors(void);
+void vcu_initializeSensors(bool bench);
 void vcu_initializeMCU(void);
 void vcu_ADCWasteLoop(void);
 #endif //  _INITIALIZEVCU_H

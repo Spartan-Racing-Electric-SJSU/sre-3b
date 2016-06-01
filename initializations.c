@@ -36,6 +36,7 @@ void vcu_initializeADC(bool benchMode)
     IO_DO_Init(IO_DO_02); IO_DO_Set(IO_DO_02, TRUE); //Water pump relay - always on per RMS HW manual pg 7
     IO_DO_Init(IO_DO_03); IO_DO_Set(IO_DO_03, TRUE); //Fan relay - motor fan and radiator fan are on same circuit
     IO_DO_Init(IO_DO_04); IO_DO_Set(IO_DO_04, TRUE); //Battery fan relay
+    IO_DO_Init(IO_DO_05); IO_DO_Set(IO_DO_05, benchMode); //power output for switches - only used on bench
 
     //Wheel Speed Sensor supplies
     Sensor_WSS_FL.ioErr_powerInit = Sensor_WSS_FR.ioErr_powerInit = IO_DO_Init(IO_DO_06); //Front x2
@@ -95,11 +96,11 @@ void vcu_initializeADC(bool benchMode)
     //MOVED TO TPS/BPS BLOCK ABOVE
 	
 	//Wheel Speed Sensors (Pulse Width Detection)
+    Sensor_WSS_FL.ioErr_signalInit = IO_PWD_FreqInit(IO_PWD_10, IO_PWD_FALLING_VAR);  //Is there a reason to look for rising vs falling edge?
     Sensor_WSS_FR.ioErr_signalInit = IO_PWD_FreqInit(IO_PWD_08, IO_PWD_FALLING_VAR);  //Is there a reason to look for rising vs falling edge?
-	Sensor_WSS_RR.ioErr_signalInit = IO_PWD_FreqInit(IO_PWD_09, IO_PWD_FALLING_VAR);  //Is there a reason to look for rising vs falling edge?
-	Sensor_WSS_FL.ioErr_signalInit = IO_PWD_FreqInit(IO_PWD_10, IO_PWD_FALLING_VAR);  //Is there a reason to look for rising vs falling edge?
-	Sensor_WSS_RL.ioErr_signalInit = IO_PWD_FreqInit(IO_PWD_11, IO_PWD_FALLING_VAR);  //Is there a reason to look for rising vs falling edge?
-    
+    Sensor_WSS_RL.ioErr_signalInit = IO_PWD_FreqInit(IO_PWD_11, IO_PWD_FALLING_VAR);  //Is there a reason to look for rising vs falling edge?
+    Sensor_WSS_RR.ioErr_signalInit = IO_PWD_FreqInit(IO_PWD_09, IO_PWD_FALLING_VAR);  //Is there a reason to look for rising vs falling edge?
+	
     //----------------------------------------------------------------------------
 	//Switches
 	//----------------------------------------------------------------------------
@@ -197,24 +198,34 @@ void vcu_initializeSensors(bool bench)
 	//Sensor max: 1ms * 95% = .000950 = 950 microseconds
     if (bench == TRUE)
     {
+        //Resistive
+        Sensor_TPS0.specMin = 0;
+        Sensor_TPS1.specMin = 0;
+        Sensor_BPS0.specMin = 0;
+        Sensor_TPS0.specMax = 12500;
+        Sensor_TPS1.specMax = 12500;
+        Sensor_BPS0.specMax = 6500; //6.5k
         //TPS: Pot
         //Do not reverse sensor values here.fd
-        Sensor_TPS0.specMin = 1;
-        Sensor_TPS0.specMax = 15000;
-        Sensor_TPS1.specMin = 1;
-        Sensor_TPS1.specMax = 15000;
     }
     else
     {
-        Sensor_TPS0.specMin = .001 * .05;  //1kHz = .001s/cycle...
-        Sensor_TPS0.specMax = .001 * .95;
-        Sensor_TPS1.specMin = .001 * .95;
-        Sensor_TPS1.specMax = .001 * .05;
+        //Ratiometric
+        Sensor_TPS0.specMin = 00500; //00.500 Volts
+        Sensor_TPS1.specMin = 500;
+        Sensor_BPS0.specMin = 500;
+        Sensor_TPS0.specMax = 04500; //04.500 Volts
+        Sensor_TPS1.specMax = 4500;
+        Sensor_BPS0.specMax = 4500;
+
+        //PWM
+        //Sensor_TPS0.specMin = .001 * .05;  //1kHz = .001s/cycle...
+        //Sensor_TPS0.specMax = .001 * .95;
+        //Sensor_TPS1.specMin = .001 * .95;
+        //Sensor_TPS1.specMax = .001 * .05;
     }
 
     //Brake Position Sensors
-	Sensor_BPS0.specMin = 1;
-	Sensor_BPS0.specMax = 000;
 	//Sensor_BPS0.specMin = 0.5;
 	//Sensor_BPS0.specMax = 4.5;
 	//Sensor_BPS1.specMin = 0.5;
