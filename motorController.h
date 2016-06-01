@@ -8,6 +8,7 @@
 #include "brakePressureSensor.h"
 #include "readyToDriveSound.h"
 //#include "safety.h"
+#include "serial.h"
 
 //typedef enum { TORQUE, DIRECTION, INVERTER, DISCHARGE, TORQUELIMIT} MCMCommand;
 typedef enum { ENABLED, DISABLED, UNKNOWN } Status;
@@ -19,7 +20,7 @@ typedef enum { CLOCKWISE, COUNTERCLOCKWISE, FORWARD, REVERSE, _0, _1 } Direction
 
 typedef struct _MotorController MotorController;
 
-MotorController* MotorController_new(ubyte2 canMessageBaseID, Direction initialDirection, sbyte2 torqueMaxInDNm);
+MotorController* MotorController_new(SerialManager* sm, ubyte2 canMessageBaseID, Direction initialDirection, sbyte2 torqueMaxInDNm);
 
 //----------------------------------------------------------------------------
 // Command Functions

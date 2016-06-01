@@ -11,6 +11,7 @@
 
 #include "torqueEncoder.h"
 #include "readyToDriveSound.h"
+#include "serial.h"
 
 
 extern Sensor Sensor_BenchTPS0;
@@ -29,6 +30,7 @@ extern Sensor Sensor_HVILTerminationSense;
  ****************************************************************************/
 
 struct _MotorController {
+    SerialManager* serialMan;
 	//----------------------------------------------------------------------------
 	// Controller statuses/properties
 	//----------------------------------------------------------------------------
@@ -64,7 +66,7 @@ struct _MotorController {
 	//----------------------------------------------------------------------------
 	// Control parameters
 	//----------------------------------------------------------------------------
-	// These are updated by ??? and will be sent to the VCU over CAN
+	// These are updated by ??? and will be sent to the MCM over CAN
 	//----------------------------------------------------------------------------
 	//struct _commands {
 	ubyte4 timeStamp_lastCommandSent;  //from IO_RTC_StartTime(&)
@@ -112,9 +114,10 @@ struct _MotorController {
     //};
 };
 
-MotorController* MotorController_new(ubyte2 canMessageBaseID, Direction initialDirection, sbyte2 torqueMaxInDNm)
+MotorController* MotorController_new(SerialManager* sm, ubyte2 canMessageBaseID, Direction initialDirection, sbyte2 torqueMaxInDNm)
 {
 	MotorController* me = (MotorController*)malloc(sizeof(struct _MotorController));
+    me->serialMan = sm;
 
 	me->canMessageBaseId = canMessageBaseID;
 	//Dummy timestamp for last MCU message
@@ -204,13 +207,14 @@ void MCM_calculateCommands(MotorController* me, TorqueEncoder* tps, BrakePressur
 }
 
 void MCM_relayControl(MotorController* me, Sensor* HVILTermSense)
-{
+{    
     //If HVIL Term Sense is low (HV is down)
     if (HVILTermSense->sensorValue == FALSE)
     {
         //If we just noticed the HVIL went low
         if (me->previousHVILState == TRUE)
         {
+            SerialManager_send(me->serialMan, "Term sense went low\n");
             IO_RTC_StartTime(&me->timeStamp_HVILLost);
         }
 
@@ -219,7 +223,7 @@ void MCM_relayControl(MotorController* me, Sensor* HVILTermSense)
         {
             //Okay to turn MCM off once 0 torque is commanded, or after 2 sec
             //SIMILAR CODE SHOULD BE EMPLOYED AT HVIL SHUTDOWN CONTROL PIN
-            if (me->commandedTorque == 0 || IO_RTC_GetTimeUS(me->timeStamp_HVILLost) > 2000000)
+            if (me->commandedTorque == 0 || IO_RTC_GetTimeUS(me->timeStamp_HVILLost) > 20000000)  //EXTRA 0
             {
                 IO_DO_Set(IO_DO_00, FALSE);  //Need MCM relay object
                 me->relayState = FALSE;
@@ -231,16 +235,26 @@ void MCM_relayControl(MotorController* me, Sensor* HVILTermSense)
             }
         }
         MCM_setStartupStage(me, 0);
+
+        me->previousHVILState = FALSE;
     }
-    else
+    else  // HVILTermSense->sensorValue == TRUE
     {
         //If the motor controller is off, don't turn it on until the pedals are calibrated
         //if (MCM_getStartupStage(mcm) == 0)
         //{
-        IO_DO_Set(IO_DO_00, FALSE);
+        IO_DO_Set(IO_DO_00, TRUE);
         me->relayState = TRUE;
         //MCM_setStartupStage(mcm, 1);
         //}
+
+
+        //If HVIL just changed
+        if (me->previousHVILState == FALSE)
+        {
+            SerialManager_send(me->serialMan, "Term sense went high\n");
+        }
+        me->previousHVILState = TRUE;
     }
 }
 

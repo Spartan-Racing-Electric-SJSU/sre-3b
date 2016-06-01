@@ -26,13 +26,13 @@
 #include <stdio.h>
 #include <string.h>
 #include "APDB.h"
+#include "IO_DIO.h"
 #include "IO_Driver.h"  //Includes datatypes, constants, etc - should be included in every c file
 #include "IO_RTC.h"
 //#include "IO_CAN.h"
 //#include "IO_PWM.h"
 
 //Our code
-#include "serial.h"
 #include "initializations.h"
 #include "sensors.h"
 #include "canManager.h"
@@ -42,8 +42,8 @@
 #include "brakePressureSensor.h"
 #include "wheelSpeeds.h"
 #include "safety.h"
-
 #include "sensorCalculations.h"
+#include "serial.h"
 
 //Application Database, needed for TTC-Downloader
 APDB appl_db =
@@ -103,6 +103,9 @@ extern Sensor Sensor_EcoButton;
 ****************************************************************************/
 void main(void)
 {
+    ubyte4 timestamp_sensorpoll = 0;
+    ubyte4 timestamp_EcoButton = 0;
+    ubyte1 calibrationErrors;  //NOT USED
 
     /*******************************************/
     /*            Initializations              */
@@ -111,19 +114,40 @@ void main(void)
 
     //Special: Initialize serial first so we can use it to debug init of other subsystems
     SerialManager* serialMan = SerialManager_new();
-    SerialManager_send(serialMan, "Serial manager created.");
+    SerialManager_send(serialMan, "\nVCU serial is online.\n");
+
+
+    //----------------------------------------------------------------------------
+    // Check if we're on the bench or not
+    //----------------------------------------------------------------------------
+    bool bench;
+    //sense bench mode
+    IO_DI_Init(IO_DI_06, IO_DI_PU_10K);
+    IO_RTC_StartTime(&timestamp_sensorpoll);
+    while (IO_RTC_GetTimeUS(timestamp_sensorpoll) < 999999) //This time doesn't matter
+    {
+        IO_Driver_TaskBegin();
+
+        //IO_DI (digital inputs) supposed to take 2 cycles before they return valid data
+        IO_DI_Get(IO_DI_06, &bench);
+
+        IO_Driver_TaskEnd();
+        //TODO: Find out if EACH pin needs 2 cycles or just the entire DIO unit
+        while (IO_RTC_GetTimeUS(timestamp_sensorpoll) < 125000);   // wait until 1/8s (125ms) have passed
+    }
+    //Need to invert bench bceause grounded = false
+    bench = !bench;
+
+
 
     //----------------------------------------------------------------------------
     // VCU Subsystem Initializations
     // Eventually, all of these functions should be made obsolete by creating
     // objects instead, like the RTDS/MCM/TPS objects below
     //----------------------------------------------------------------------------
-
-	bool bench = TRUE;
-    
     vcu_initializeADC(bench);  //Configure and activate all I/O pins on the VCU
     //vcu_initializeCAN();
-    vcu_initializeSensors();
+    vcu_initializeSensors(bench);
     //vcu_initializeMCU();
 
     //Do some loops until the ADC stops outputting garbage values
@@ -139,11 +163,11 @@ void main(void)
     //----------------------------------------------------------------------------    
     ReadyToDriveSound* rtds = RTDS_new();
 	//BatteryManagementSystem* bms = BMS_new();
-    MotorController* mcm0 = MotorController_new(0xA0, FORWARD, 100); //CAN addr, direction, torque limit x10 (100 = 10Nm)
+    MotorController* mcm0 = MotorController_new(serialMan, 0xA0, FORWARD, 100); //CAN addr, direction, torque limit x10 (100 = 10Nm)
 	TorqueEncoder* tps = TorqueEncoder_new(bench);
 	BrakePressureSensor* bps = BrakePressureSensor_new();
 	WheelSpeeds* wss = WheelSpeeds_new(18, 18, 16, 16);
-	SafetyChecker* sc = SafetyChecker_new();
+	SafetyChecker* sc = SafetyChecker_new(serialMan);
 	BatteryManagementSystem* bms = BMS_new(0x620);
 
     //----------------------------------------------------------------------------
@@ -157,10 +181,6 @@ void main(void)
     /*       PERIODIC APPLICATION CODE         */
     /*******************************************/
     /* main loop, executed periodically with a defined cycle time (here: 5 ms) */
-
-    ubyte4 timestamp_sensorpoll = 0;
-    ubyte4 timestamp_EcoButton = 0;
-    ubyte1 calibrationErrors;
 
     //IO_RTC_StartTime(&timestamp_calibStart);
     while (1)
@@ -196,14 +216,16 @@ void main(void)
 
         //Run calibration if commanded
 		//if (IO_RTC_GetTimeUS(timestamp_calibStart) < (ubyte4)5000000)
-		if (Sensor_EcoButton.sensorValue == FALSE)
+		if (Sensor_EcoButton.sensorValue == TRUE)
 		{
             if (timestamp_EcoButton == 0)
             {
+                SerialManager_send(serialMan, "Eco button detected\n");
                 IO_RTC_StartTime(&timestamp_EcoButton);
             }
             else if (IO_RTC_GetTimeUS(timestamp_EcoButton) >= 3000000)
             {
+                SerialManager_send(serialMan, "Eco button held 3s - starting calibrations\n");
                 //calibrateTPS(TRUE, 5);
                 TorqueEncoder_startCalibration(tps, 5);
                 BrakePressureSensor_startCalibration(bps, 5);
@@ -213,6 +235,7 @@ void main(void)
 		}
         else
         {
+            Light_set(Light_dashEco, 0);
             timestamp_EcoButton = 0;
         }
 		TorqueEncoder_update(tps);
@@ -239,7 +262,7 @@ void main(void)
         //DOES NOT set inverter command or rtds flag
         MCM_calculateCommands(mcm0, tps, bps);
 
-        SafetyChecker_update(sc, tps, bps, &Sensor_HVILTerminationSense);
+        SafetyChecker_update(sc, tps, bps, &Sensor_HVILTerminationSense, &Sensor_LVBattery);
 
         /*******************************************/
         /*  Output Adjustments by Safety Checker   */
@@ -252,14 +275,7 @@ void main(void)
         /*******************************************/
         //MOVE INTO SAFETYCHECKER
         //SafetyChecker_setErrorLight(sc);
-        if (SafetyChecker_allSafe(sc) == TRUE)
-        {
-            Light_set(Light_dashError, 0);
-        }
-        else
-        {
-            Light_set(Light_dashError, 1);
-        }
+        Light_set(Light_dashError, (SafetyChecker_getWarnings(sc) == 0 || SafetyChecker_allSafe(sc) == TRUE) ? 0 : 1);
 
         //Handle motor controller startup procedures
         MCM_relayControl(mcm0, &Sensor_HVILTerminationSense);
