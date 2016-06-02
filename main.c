@@ -114,16 +114,17 @@ void main(void)
 
     //Special: Initialize serial first so we can use it to debug init of other subsystems
     SerialManager* serialMan = SerialManager_new();
-    SerialManager_send(serialMan, "\nVCU serial is online.\n");
+    IO_RTC_StartTime(&timestamp_sensorpoll);
+    SerialManager_send(serialMan, "\n\n");
+    //SerialManager_send(serialMan, IO_RTC_GetTimeUS(timestamp_sensorpoll));
+    SerialManager_send(serialMan, "VCU serial is online.\n");
 
 
     //----------------------------------------------------------------------------
     // Check if we're on the bench or not
     //----------------------------------------------------------------------------
     bool bench;
-    /* THIS DOESN'T WORK
-    //sense bench mode
-    IO_DI_Init(IO_DI_06, IO_DI_PU_10K);
+    IO_DI_Init(IO_DI_06, IO_DI_PD_10K);
     IO_RTC_StartTime(&timestamp_sensorpoll);
     while (IO_RTC_GetTimeUS(timestamp_sensorpoll) < 999999) //This time doesn't matter
     {
@@ -134,18 +135,18 @@ void main(void)
 
         IO_Driver_TaskEnd();
         //TODO: Find out if EACH pin needs 2 cycles or just the entire DIO unit
-        while (IO_RTC_GetTimeUS(timestamp_sensorpoll) < 125000);   // wait until 1/8s (125ms) have passed
+        while (IO_RTC_GetTimeUS(timestamp_sensorpoll) < 10000);   // wait until 10ms have passed
     }
+    IO_DI_DeInit(IO_DI_06);
     //Need to invert bench bceause grounded = false
-    bench = !bench;
-    */
-    bench = FALSE;
-
+    SerialManager_send(serialMan, bench == TRUE ? "VCU is in bench mode.\n" : "VCU is NOT in bench mode.\n");
+    
     //----------------------------------------------------------------------------
     // VCU Subsystem Initializations
     // Eventually, all of these functions should be made obsolete by creating
     // objects instead, like the RTDS/MCM/TPS objects below
     //----------------------------------------------------------------------------
+    SerialManager_send(serialMan, "VCU objects/subsystems initializing.\n");
     vcu_initializeADC(bench);  //Configure and activate all I/O pins on the VCU
     //vcu_initializeCAN();
     vcu_initializeSensors(bench);
@@ -184,6 +185,7 @@ void main(void)
     /* main loop, executed periodically with a defined cycle time (here: 5 ms) */
 
     //IO_RTC_StartTime(&timestamp_calibStart);
+    SerialManager_send(serialMan, "VCU initializations complete.  Entering main loop.\n");
     while (1)
     {
         //----------------------------------------------------------------------------
@@ -194,6 +196,7 @@ void main(void)
         //Mark the beginning of a task - what does this actually do?
         IO_Driver_TaskBegin();
 
+        //SerialManager_send(serialMan, "VCU has entered main loop.");
 
         /*******************************************/
         /*              Read Inputs                */
