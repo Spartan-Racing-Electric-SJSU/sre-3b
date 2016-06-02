@@ -48,3 +48,29 @@ ubyte2 max(ubyte2 a, ubyte2 b)
 	return (a > b) ? a : b;
 }
 
+
+/**********************************************************************//**
+ *
+ * \brief Decides whether a blinking light should be on or off based on
+ *        the system clock and period given
+ *
+ * \param timestamp     A timestamp from IO_RTC for when the blink was started
+ * \param highPeriod    How long the blink should stay high, in ms (NOT ns)
+ * \param lowPeriod     How long the blink should stay low -- NOT IMPLEMENTED;
+ *                      Always the same as highPeriod
+ *
+ * \return boolean:
+ * \retval TRUE      blink should be high
+ * \retval FALSE     blink should be low
+ *
+ ***************************************************************************
+ *
+ * \remarks
+ *   Blablabla
+ *
+ ***************************************************************************/
+bool blink(ubyte4* clock, ubyte2 highPeriod)
+{
+
+    return TRUE;
+}

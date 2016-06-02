@@ -103,7 +103,7 @@ extern Sensor Sensor_EcoButton;
 ****************************************************************************/
 void main(void)
 {
-    ubyte4 timestamp_sensorpoll = 0;
+    ubyte4 timestamp_startTime = 0;
     ubyte4 timestamp_EcoButton = 0;
     ubyte1 calibrationErrors;  //NOT USED
 
@@ -114,9 +114,9 @@ void main(void)
 
     //Special: Initialize serial first so we can use it to debug init of other subsystems
     SerialManager* serialMan = SerialManager_new();
-    IO_RTC_StartTime(&timestamp_sensorpoll);
+    IO_RTC_StartTime(&timestamp_startTime);
     SerialManager_send(serialMan, "\n\n");
-    //SerialManager_send(serialMan, IO_RTC_GetTimeUS(timestamp_sensorpoll));
+    //SerialManager_send(serialMan, IO_RTC_GetTimeUS(timestamp_startTime));
     SerialManager_send(serialMan, "VCU serial is online.\n");
 
 
@@ -125,8 +125,8 @@ void main(void)
     //----------------------------------------------------------------------------
     bool bench;
     IO_DI_Init(IO_DI_06, IO_DI_PD_10K);
-    IO_RTC_StartTime(&timestamp_sensorpoll);
-    while (IO_RTC_GetTimeUS(timestamp_sensorpoll) < 999999) //This time doesn't matter
+    IO_RTC_StartTime(&timestamp_startTime);
+    while (IO_RTC_GetTimeUS(timestamp_startTime) < 999999) //This time doesn't matter
     {
         IO_Driver_TaskBegin();
 
@@ -135,7 +135,7 @@ void main(void)
 
         IO_Driver_TaskEnd();
         //TODO: Find out if EACH pin needs 2 cycles or just the entire DIO unit
-        while (IO_RTC_GetTimeUS(timestamp_sensorpoll) < 10000);   // wait until 10ms have passed
+        while (IO_RTC_GetTimeUS(timestamp_startTime) < 10000);   // wait until 10ms have passed
     }
     IO_DI_DeInit(IO_DI_06);
     //Need to invert bench bceause grounded = false
@@ -183,7 +183,7 @@ void main(void)
     /*       PERIODIC APPLICATION CODE         */
     /*******************************************/
     /* main loop, executed periodically with a defined cycle time (here: 5 ms) */
-
+    ubyte4 timestamp_mainLoopStart = 0;
     //IO_RTC_StartTime(&timestamp_calibStart);
     SerialManager_send(serialMan, "VCU initializations complete.  Entering main loop.\n");
     while (1)
@@ -192,7 +192,7 @@ void main(void)
         // Task management stuff (start)
         //----------------------------------------------------------------------------
         //Get a timestamp of when this task started from the Real Time Clock
-        IO_RTC_StartTime(&timestamp_sensorpoll);
+        IO_RTC_StartTime(&timestamp_mainLoopStart);
         //Mark the beginning of a task - what does this actually do?
         IO_Driver_TaskBegin();
 
@@ -303,7 +303,7 @@ void main(void)
         //Task end function for IO Driver - This function needs to be called at the end of every SW cycle
         IO_Driver_TaskEnd();
         //wait until the cycle time is over
-        while (IO_RTC_GetTimeUS(timestamp_sensorpoll) < 1000);   // wait until 1ms (1000us) have passed
+        while (IO_RTC_GetTimeUS(timestamp_mainLoopStart) < 1000);   // wait until 1ms (1000us) have passed
 
     } //end of main loop
 
