@@ -14,7 +14,7 @@ typedef struct _TorqueEncoder
     Sensor* tps0;
     Sensor* tps1;
 
-	ubyte4 tps0_calibMin;
+	ubyte4 tps0_calibMin;  //Must be 4 bytes to support PWM (digital/timer) sensor
 	ubyte4 tps0_calibMax;
 	bool tps0_reverse;
 	ubyte4 tps0_value;

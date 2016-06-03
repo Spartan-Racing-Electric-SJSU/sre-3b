@@ -44,14 +44,14 @@ void BrakePressureSensor_update(BrakePressureSensor* me, bool bench)
 	//me->bps1_value = me->bps1->sensorValue;
 
 	me->percent = 0;
-	ubyte2 errorCount = 0;
+	//ubyte2 errorCount = 0;
 	
 	//This function runs before the calibration cycle function.  If calibration is currently
 	//running, then set the percentage to zero for safety purposes.
 	if (me->runCalibration == TRUE || me->calibrated == FALSE)
 	{
 		me->bps0_percent = 0;
-		errorCount++;  //DO SOMETHING WITH THIS
+		//errorCount++;  //DO SOMETHING WITH THIS
 	}
 	else
 	{
@@ -91,8 +91,8 @@ void BrakePressureSensor_resetCalibration(BrakePressureSensor* me)
     //me->bps0_rawCalibMax = me->bps0->specMin;
     //me->bps0_calibMin = me->bps0->specMax;
 	//me->bps0_calibMax = me->bps0->specMin;
-	me->bps0_calibMin = me->bps0->sensorValue;
-	me->bps0_calibMax = me->bps0->sensorValue;
+	me->bps0_calibMin = 500;
+	me->bps0_calibMax = 2000;
 
     //me->bps1_rawCalibMin = me->bps1->specMax;
     //me->bps1_rawCalibMax = me->bps1->specMin;
@@ -100,6 +100,7 @@ void BrakePressureSensor_resetCalibration(BrakePressureSensor* me)
 	//me->bps1_calibMax = me->bps1->specMin;
 //	me->bps1_calibMin = me->bps1->sensorValue;
 //	me->bps1_calibMax = me->bps1->sensorValue;
+    me->calibrated = TRUE;
 }
 
 void BrakePressureSensor_saveCalibrationToEEPROM(BrakePressureSensor* me)
@@ -153,20 +154,13 @@ void BrakePressureSensor_calibrationCycle(BrakePressureSensor* me, ubyte1* error
         }
         else  //Calibration shutdown
         {
-			////If the sensor goes in reverse direction then flip the min/max values
-			//if (me->bps0_reverse == TRUE)
-			//{
-			//	float4 temp = me->bps0_calibMin;
-			//	me->bps0_calibMin = me->bps0_calibMax;
-			//	me->bps0_calibMax = temp;
-			//}
+            float4 pedalTopPlay = 1.02;
+            float4 pedalBottomPlay = .95;
 
-			//if (me->bps1_reverse == TRUE)
-			//{
-			//	float4 temp = me->bps1_calibMin;
-			//	me->bps1_calibMin = me->bps1_calibMax;
-			//	me->bps1_calibMax = temp;
-			//}
+            me->bps0_calibMin *= me->bps0_reverse ? pedalBottomPlay : pedalTopPlay;
+            me->bps0_calibMax *= me->bps0_reverse ? pedalTopPlay : pedalBottomPlay;
+            //me->bps1_calibMin *= me->bps1_reverse ? pedalBottomPlay : pedalTopPlay;
+            //me->bps1_calibMax *= me->bps1_reverse ? pedalTopPlay : pedalBottomPlay;
 
 			me->runCalibration = FALSE;
 			me->calibrated = TRUE;

@@ -13,6 +13,8 @@
 #include "readyToDriveSound.h"
 #include "serial.h"
 
+#include "canManager.h"
+
 
 extern Sensor Sensor_BenchTPS0;
 extern Sensor Sensor_BenchTPS1;
@@ -289,57 +291,64 @@ void MCM_relayControl(MotorController* me, Sensor* HVILTermSense)
 }
 
 //See diagram at https://onedrive.live.com/redir?resid=F9BB8F0F8FDB5CF8!30410&authkey=!ABSF-uVH-VxQRAs&ithint=file%2chtml
-void MotorControllerPowerManagement(MotorController* mcm, TorqueEncoder* tps, ReadyToDriveSound* rtds)
+void MotorControllerPowerManagement(MotorController* me, TorqueEncoder* tps, ReadyToDriveSound* rtds)
 {
+    /*
 	//----------------------------------------------------------------------------
 	// Determine inverter state
 	//----------------------------------------------------------------------------
 	//New Handshake NOTE: Switches connected to ground.. TRUE = high = off = disconnected = open circuit, FALSE = low = grounded = on = connected = closed circuit
-	//if (MCM_getLockoutStatus(mcm) == ENABLED)
+	//if (MCM_getLockoutStatus(me) == ENABLED)
 
 	//Set inverter to disabled until RTD procedure is done.
 	//This disables the lockout ahead of time.
-	if (MCM_getStartupStage(mcm) < 3)
+	if (MCM_getStartupStage(me) < 3)
 	{
-		MCM_commands_setInverter(mcm, DISABLED);
+        SerialManager_send(me->serialMan, "Disabling inverter.\n");
+		MCM_commands_setInverter(me, DISABLED);
 		Light_set(Light_dashRTD, 0);
-		//MCM_setStartupStage(mcm, 2);
+		//MCM_setStartupStage(me, 2);
 	}
 
-	//if (MCM_getStartupStage(mcm) == 1 && MCM_getRTDSFlag(mcm) == )
+	//if (MCM_getStartupStage(me) == 1 && MCM_getRTDSFlag(me) == )
 	//{
-	//	MCM_commands_setInverter(mcm, DISABLED);
-	//	MCM_setStartupStage(mcm, 2);
+	//	MCM_commands_setInverter(me, DISABLED);
+	//	MCM_setStartupStage(me, 2);
 	//}
 
 	//case DISABLED: //Lockout is disabled
-	switch (MCM_getInverterStatus(mcm))
+	switch (MCM_getInverterStatus(me))
 	{
 	case DISABLED:
-		MCM_setStartupStage(mcm, 3); //Lockout disabled, waiting for RTD procedure
+        //SerialManager_send(me->serialMan, "Inverter is disabled.\n");
+		MCM_setStartupStage(me, 3); //Lockout disabled, waiting for RTD procedure
 		//If not on gas and YES on brake and RTD is pressed
 		//BRAKE CODE NEEDS TO BE ADDED HERE
-		if (tps->percent < .05 && Sensor_RTDButton.sensorValue == FALSE)
+		if (tps->percent < .05 && Sensor_RTDButton.sensorValue == TRUE)
 		{
-			MCM_commands_setInverter(mcm, ENABLED);
-			//MCM_setRTDSFlag(mcm, TRUE);  //Now, start the RTDS if the inverter is successfully enabled
-			MCM_setStartupStage(mcm, 4); //RTD complete, waiting for confirmation
+			MCM_commands_setInverter(me, ENABLED);
+            SerialManager_send(me->serialMan, "Enabling inverter.\n");
+			//MCM_setRTDSFlag(me, TRUE);  //Now, start the RTDS if the inverter is successfully enabled
+			MCM_setStartupStage(me, 4); //RTD complete, waiting for confirmation
 		}
 		break;
 
 	case ENABLED:
+        //SerialManager_send(me->serialMan, "Inverter is enabled.\n");
 		Light_set(Light_dashRTD, 1);
 		//If the inverter was successfully enabled AND we haven't started the RTDS yet
-		//if (MCM_getRTDSFlag(mcm) == TRUE)
-		if (MCM_getStartupStage(mcm) == 4) //If we're waiting to start the motor controller
+		//if (MCM_getRTDSFlag(me) == TRUE)
+		if (MCM_getStartupStage(me) == 4) //If we're waiting to start the motor controller
 		{
+            SerialManager_send(me->serialMan, "Starting RTDS.\n");
 			RTDS_setVolume(rtds, .01, 1500000);
-			//MCM_setRTDSFlag(mcm, FALSE);  //RTDS started, so don't restart it next loop
-			MCM_setStartupStage(mcm, 5); //RTD confirmed
+			//MCM_setRTDSFlag(me, FALSE);  //RTDS started, so don't restart it next loop
+			MCM_setStartupStage(me, 5); //RTD confirmed
 		}
 		else
 		{
-			MCM_setStartupStage(mcm, 6); //Driving
+            SerialManager_send(me->serialMan, "Car is ready to drive.\n");
+			MCM_setStartupStage(me, 6); //Driving
 		}
 		break;
 
@@ -351,32 +360,97 @@ void MotorControllerPowerManagement(MotorController* mcm, TorqueEncoder* tps, Re
 	//case UNKNOWN: default:
 	//    break;
 	//}
+    */
+	
+    //TEMPORARY Eco Switch startup code
+    if (Sensor_RTDButton.sensorValue == TRUE)
+    {
+        MCM_commands_setInverter(me, DISABLED);
+    }
+    else
+    {
+        MCM_commands_setInverter(me, ENABLED);
+    }
+    //If the inverter is disabled, but we're turning it on now
+    if (MCM_getInverterStatus(me) == DISABLED && MCM_commands_getInverter(me) == ENABLED)
+    {
+        MCM_setRTDSFlag(me, TRUE);
+    }
+    if (MCM_getInverterStatus(me) == ENABLED && MCM_getRTDSFlag(me) == TRUE)
+    {
+        RTDS_setVolume(rtds, .005, 1500000);
+        MCM_setRTDSFlag(me, FALSE);  //RTDS started, so don't restart it next loop
+    }
+		
 
-	/*
-//TEMPORARY Eco Switch startup code
-if (Sensor_EcoButton.sensorValue == FALSE)
-{
-    MCM_commands_setInverter(mcm, DISABLED);
-}
-else
-{
-    MCM_commands_setInverter(mcm, ENABLED);
-}
-//If the inverter is disabled, but we're turning it on now
-if (MCM_getInverterStatus(mcm) == DISABLED && MCM_commands_getInverter(mcm) == ENABLED)
-{
-    MCM_setRTDSFlag(mcm, TRUE);
-}
-if (MCM_getInverterStatus(mcm) == ENABLED && MCM_getRTDSFlag(mcm) == TRUE)
-{
-    RTDS_setVolume(rtds, .005, 1500000);
-    MCM_setRTDSFlag(mcm, FALSE);  //RTDS started, so don't restart it next loop
-}
-		*/
-
 }
 
 
+/*****************************************************************************
+* Motor Controller (MCU) control message
+******************************************************************************
+* TODO: Parameterize the motor controller (allow multiple motor controllers)
+****************************************************************************/
+void canOutput_sendMCUControl(MotorController* me, CanManager* cm)
+{
+    IO_CAN_DATA_FRAME mcmControlMessage;
+    //Only send a message if there's an update or it's been > .25 seconds or force=true
+    if ((sendEvenIfNoChanges == TRUE) || (mcm_commands_getUpdateCount(me) > 0) || (mcm_commands_getTimeSinceLastCommandSent(me) > 125000))
+    {
+        //Rinehart CAN control message (heartbeat) structure ----------------
+        mcmControlMessage.length = 8; // how many bytes in the message
+        mcmControlMessage.id_format = IO_CAN_STD_FRAME;
+        mcmControlMessage.id = 0xC0;
+
+        //Torque (Nm * 10)
+        ubyte2 mcuTorque = 5; //In Nm * 10. 125 continuous, 240 max
+        mcmControlMessage.data[0] = (ubyte1)mcm_commands_getTorque(me);
+        mcmControlMessage.data[1] = mcm_commands_getTorque(me) >> 8;
+
+        //Speed (RPM?) - not needed - mcu should be in torque mode
+        mcmControlMessage.data[2] = 0;
+        mcmControlMessage.data[3] = 0;
+
+        //Direction: 0=CW, 1=CCW
+        mcmControlMessage.data[4] = mcm_commands_getDirection(me);
+
+        //unused/unused/unused/unused unused/unused/Discharge/Inverter Enable
+        mcmControlMessage.data[5] = 0; //First set whole byte to zero
+
+                                    //Next add each bit one at a time, starting with the bit that belongs in the leftmost position
+        for (int bit = 7; bit >= 0; bit--)
+        {
+            mcmControlMessage.data[5] <<= 1;  //Always leftshift first
+            switch (bit)
+            {
+                // Then add your bit to the right (note: the order of case statements doesn't matter - it's the fact that bit-- instead of bit++;)
+            case 1: mcmControlMessage.data[5] |= (mcm_commands_getDischarge(me) == ENABLED) ? 1 : 0; break;
+            case 0: mcmControlMessage.data[5] |= (mcm_commands_getInverter(me) == ENABLED) ? 1 : 0; break;  // Then add your bit to the right
+
+            }
+        }
+
+        //Unused (future use)
+        mcmControlMessage.data[6] = 0;
+        mcmControlMessage.data[7] = 0;
+
+
+        //Place the can messsages into the FIFO queue ---------------------------------------------------
+        
+        //IO_CAN_WriteFIFO(canFifoHandle_HiPri_Write, canMessages, 1);  //Important: Only transmit one message (the MCU message)
+        //IO_CAN_WriteFIFO(canFifoHandle_LoPri_Write, canMessages, 1);  //Important: Only transmit one message (the MCU message)
+
+        CanManager_send(cm, CAN0_HIPRI, &mcmControlMessage, 1);
+        mcm_commands_resetUpdateCountAndTime(me);
+        //IO_RTC_StartTime(&me.commands.timeStamp_lastCommandSent);
+        //mcm.commands.updateCount = 0;
+
+        //IO_CAN_WriteMsg(canFifoHandle_HiPri_Write, &canMessages);  //Important: Only transmit one message (the MCU message)
+        //IO_CAN_WriteMsg(canFifoHandle_LoPri_Write, &canMessages);  //Important: Only transmit one message (the MCU message)
+
+
+    } //end if sendEvenIfNoChanges/etc
+}
 
 
 void MCM_parseCanMessage(MotorController* me, IO_CAN_DATA_FRAME* mcmCanMessage)

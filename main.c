@@ -233,13 +233,13 @@ void main(void)
                 //calibrateTPS(TRUE, 5);
                 TorqueEncoder_startCalibration(tps, 5);
                 BrakePressureSensor_startCalibration(bps, 5);
-                //Light_set(Light_dashError, 1);
+                Light_set(Light_dashEco, 1);
                 //DIGITAL OUTPUT 4 for STATUS LED
             }
 		}
         else
         {
-            Light_set(Light_dashEco, 0);
+            //Light_set(Light_dashEco, 0);
             timestamp_EcoButton = 0;
         }
 		TorqueEncoder_update(tps);
@@ -286,7 +286,7 @@ void main(void)
         MotorControllerPowerManagement(mcm0, tps, rtds);
 
         //Drop the sensor readings into CAN (just raw data, not calculated stuff)
-        //MotorController_sendCommandMessage();
+        MotorController_sendCommandMessage();
         //canOutput_sendMCUControl(mcm0, FALSE);
 
         //Send debug data
