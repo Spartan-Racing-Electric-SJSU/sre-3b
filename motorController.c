@@ -270,6 +270,8 @@ void MCM_relayControl(MotorController* me, Sensor* HVILTermSense)
             }
         }
         MCM_setStartupStage(me, 0);
+        MCM_updateInverterStatus(me, UNKNOWN);
+        MCM_updateLockoutStatus(me, UNKNOWN);
 
         me->previousHVILState = FALSE;
     }
@@ -306,6 +308,18 @@ void MCM_inverterControl(MotorController* me, TorqueEncoder* tps, BrakePressureS
         //but if we have trouble we can add that here.
 
     case 1: //MCM relay is on, lockout=enabled, inverter=disabled --> stay until lockout is disabled
+        if (MCM_getLockoutStatus(me) == ENABLED)
+        {
+            SerialManager_send(me->serialMan, "In stage 0/1. Lockout has NOT been disabled.\n");
+        }
+        else if (MCM_getLockoutStatus(me) == DISABLED)
+        {
+            SerialManager_send(me->serialMan, "In stage 0/1. Lockout has been disabled.\n");
+        }
+        else
+        {
+            SerialManager_send(me->serialMan, "In stage 0/1. Motor controller status unknown (off?).\n");
+        }
         //Actions to perform upon entering this state ------------------------------------------------
         MCM_commands_setInverter(me, DISABLED);
         //Light_set(Light_dashRTD, 0);
@@ -416,6 +430,10 @@ void MCM_inverterControl(MotorController* me, TorqueEncoder* tps, BrakePressureS
 
 void MCM_parseCanMessage(MotorController* me, IO_CAN_DATA_FRAME* mcmCanMessage)
 {
+    //0xAA
+    static const ubyte1 bitInverter = 1; //bit 1
+    static const ubyte1 bitLockout = 128; //bit 7
+
     switch (mcmCanMessage->id)
     {
     case 0x0A0:
@@ -501,17 +519,19 @@ void MCM_parseCanMessage(MotorController* me, IO_CAN_DATA_FRAME* mcmCanMessage)
         break;
 
     case 0x0AA:
-
         //0,1 VSM state
         //2   Inverter state
         //3   Relay State
         //4   bit-0 inverter run mode
         //4   bit5-7 inverter active discharge state
         //5   inverter command mode
-        //6   bit0 inverter enable state***
-        me->inverterStatus = mcmCanMessage->data[6];
-        //6   bit7 inverter enable lockout***
-        me->lockoutStatus = mcmCanMessage->data[6];
+
+        //6   internal states
+        //    bit0 inverter enable state***
+        me->inverterStatus = (mcmCanMessage->data[6] & bitInverter) > 0 ? ENABLED : DISABLED;
+        //    bit7 inverter enable lockout***
+        me->lockoutStatus = (mcmCanMessage->data[6] & bitLockout) > 0 ? ENABLED : DISABLED;
+
         //7   direction command
         break;
 
