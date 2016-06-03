@@ -9,7 +9,6 @@
 #include "readyToDriveSound.h"
 //#include "safety.h"
 #include "serial.h"
-#include "canManager.h"
 
 //typedef enum { TORQUE, DIRECTION, INVERTER, DISCHARGE, TORQUELIMIT} MCMCommand;
 typedef enum { ENABLED, DISABLED, UNKNOWN } Status;

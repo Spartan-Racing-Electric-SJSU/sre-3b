@@ -115,7 +115,7 @@ void main(void)
     //Special: Initialize serial first so we can use it to debug init of other subsystems
     SerialManager* serialMan = SerialManager_new();
     IO_RTC_StartTime(&timestamp_startTime);
-    SerialManager_send(serialMan, "\n\n");
+    SerialManager_send(serialMan, "\n\n\n\n\n\n\n\n\n\n----------------------------------------------------\n");
     //SerialManager_send(serialMan, IO_RTC_GetTimeUS(timestamp_startTime));
     SerialManager_send(serialMan, "VCU serial is online.\n");
 
@@ -165,7 +165,7 @@ void main(void)
     //----------------------------------------------------------------------------    
     ReadyToDriveSound* rtds = RTDS_new();
 	//BatteryManagementSystem* bms = BMS_new();
-    MotorController* mcm0 = MotorController_new(serialMan, 0xA0, FORWARD, 100); //CAN addr, direction, torque limit x10 (100 = 10Nm)
+    MotorController* mcm0 = MotorController_new(serialMan, 0xA0, FORWARD, 90); //CAN addr, direction, torque limit x10 (100 = 10Nm)
 	TorqueEncoder* tps = TorqueEncoder_new(bench);
 	BrakePressureSensor* bps = BrakePressureSensor_new();
 	WheelSpeeds* wss = WheelSpeeds_new(18, 18, 16, 16);
@@ -284,9 +284,9 @@ void main(void)
         //Handle motor controller startup procedures
         MCM_relayControl(mcm0, &Sensor_HVILTerminationSense);
         MotorControllerPowerManagement(mcm0, tps, rtds);
+        //CanManager_sendMCMCommandMessage(mcm0, canMan, FALSE);
 
         //Drop the sensor readings into CAN (just raw data, not calculated stuff)
-        MotorController_sendCommandMessage();
         //canOutput_sendMCUControl(mcm0, FALSE);
 
         //Send debug data
@@ -303,7 +303,7 @@ void main(void)
         //Task end function for IO Driver - This function needs to be called at the end of every SW cycle
         IO_Driver_TaskEnd();
         //wait until the cycle time is over
-        while (IO_RTC_GetTimeUS(timestamp_mainLoopStart) < 1000);   // wait until 1ms (1000us) have passed
+        while (IO_RTC_GetTimeUS(timestamp_mainLoopStart) < 1000);   // 1000 = 1ms
 
     } //end of main loop
 

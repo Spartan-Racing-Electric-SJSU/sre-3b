@@ -457,6 +457,22 @@ void canOutput_sendDebugMessage(CanManager* me, TorqueEncoder* tps, BrakePressur
     canMessages[canMessageCount - 1].data[byteNum++] = SafetyChecker_getWarnings(sc) >> 16;
     canMessages[canMessageCount - 1].data[byteNum++] = SafetyChecker_getWarnings(sc) >> 24;
 
+
+
+    //Motor controller command message
+    canMessageCount++;
+    byteNum = 0;
+    canMessages[canMessageCount - 1].length = 8; // how many bytes in the message
+    canMessages[canMessageCount - 1].id_format = IO_CAN_STD_FRAME;
+    canMessages[canMessageCount - 1].id = 0xC0;
+    canMessages[canMessageCount - 1].data[byteNum++] = (ubyte1)MCM_commands_getTorque(mcm);
+    canMessages[canMessageCount - 1].data[byteNum++] = MCM_commands_getTorque(mcm) >> 8;
+    canMessages[canMessageCount - 1].data[byteNum++] = 0;  //Speed (RPM?) - not needed - mcu should be in torque mode
+    canMessages[canMessageCount - 1].data[byteNum++] = 0;  //Speed (RPM?) - not needed - mcu should be in torque mode
+    canMessages[canMessageCount - 1].data[byteNum++] = MCM_commands_getDirection(mcm);
+    canMessages[canMessageCount - 1].data[byteNum++] = (MCM_commands_getInverter(mcm) == ENABLED) ? 1 : 0; //unused/unused/unused/unused unused/unused/Discharge/Inverter Enable
+    canMessages[canMessageCount - 1].data[byteNum++] = (ubyte1)MCM_commands_getTorqueLimit(mcm);
+    canMessages[canMessageCount - 1].data[byteNum++] = MCM_commands_getTorqueLimit(mcm) >> 8;
     //----------------------------------------------------------------------------
     //Additional sensors
     //----------------------------------------------------------------------------

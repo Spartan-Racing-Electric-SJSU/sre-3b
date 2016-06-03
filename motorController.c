@@ -58,7 +58,7 @@ struct _MotorController {
     ubyte1 startupStage;
     Status lockoutStatus;
 	Status inverterStatus;
-	//bool startRTDS;
+	bool startRTDS;
 	/*ubyte4 vsmStatus0;      //0xAA Byte 0,1
     ubyte4 vsmStatus1;      //0xAA Byte 0,1
     ubyte4 vsmStatus2;      //0xAA Byte 0,1
@@ -131,7 +131,7 @@ MotorController* MotorController_new(SerialManager* sm, ubyte2 canMessageBaseID,
 	//me->startRTDS = FALSE;
 
 	me->commands_direction = initialDirection;
-	me->torqueMaximum = torqueMaxInDNm;
+	me->commands_torqueLimit = me->torqueMaximum = torqueMaxInDNm;
     me->torqueMaximum_Regen = torqueMaxInDNm * -.2;
     me->torqueRegenAtZeroPedal = me->torqueMaximum_Regen * .1;
 
@@ -225,7 +225,7 @@ void MCM_calculateCommands(MotorController* me, TorqueEncoder* tps, BrakePressur
 
 
     sbyte2 torqueOutput = 0;
-    if (bps > 0)
+    /*    if (bps > 0)
     {
         torqueOutput = me->torqueMaximum_Regen * getPercent(bps->percent, 0, .5, TRUE) + me->torqueRegenAtZeroPedal;
     }
@@ -233,7 +233,9 @@ void MCM_calculateCommands(MotorController* me, TorqueEncoder* tps, BrakePressur
     {
         torqueOutput = (me->torqueMaximum - me->torqueRegenAtZeroPedal) * tps->percent + me->torqueRegenAtZeroPedal;
     }
+    */
 
+    torqueOutput = me->torqueMaximum * tps->percent;
     MCM_commands_setTorque(me, torqueOutput);
     
 }
@@ -362,94 +364,37 @@ void MotorControllerPowerManagement(MotorController* me, TorqueEncoder* tps, Rea
 	//}
     */
 	
+    float4 RTDPercent = 0;
+    
     //TEMPORARY Eco Switch startup code
     if (Sensor_RTDButton.sensorValue == TRUE)
     {
-        MCM_commands_setInverter(me, DISABLED);
+        MCM_commands_setInverter(me, ENABLED);
+        RTDPercent = 1;
     }
     else
     {
-        MCM_commands_setInverter(me, ENABLED);
+        MCM_commands_setInverter(me, DISABLED);
     }
+
     //If the inverter is disabled, but we're turning it on now
     if (MCM_getInverterStatus(me) == DISABLED && MCM_commands_getInverter(me) == ENABLED)
     {
+        SerialManager_send(me->serialMan, "MCM inverter is disabled; Setting to enabled.\n");
         MCM_setRTDSFlag(me, TRUE);
+        //Light_set(Light_dashTCS, .95);
     }
+    
     if (MCM_getInverterStatus(me) == ENABLED && MCM_getRTDSFlag(me) == TRUE)
     {
-        RTDS_setVolume(rtds, .005, 1500000);
+        SerialManager_send(me->serialMan, "MCM inverter has been enabled.\n");
+        RTDS_setVolume(rtds, .01, 1250000);
         MCM_setRTDSFlag(me, FALSE);  //RTDS started, so don't restart it next loop
+        RTDPercent = 1;
     }
-		
 
-}
+    Light_set(Light_dashRTD, RTDPercent);
 
-
-/*****************************************************************************
-* Motor Controller (MCU) control message
-******************************************************************************
-* TODO: Parameterize the motor controller (allow multiple motor controllers)
-****************************************************************************/
-void canOutput_sendMCUControl(MotorController* me, CanManager* cm)
-{
-    IO_CAN_DATA_FRAME mcmControlMessage;
-    //Only send a message if there's an update or it's been > .25 seconds or force=true
-    if ((sendEvenIfNoChanges == TRUE) || (mcm_commands_getUpdateCount(me) > 0) || (mcm_commands_getTimeSinceLastCommandSent(me) > 125000))
-    {
-        //Rinehart CAN control message (heartbeat) structure ----------------
-        mcmControlMessage.length = 8; // how many bytes in the message
-        mcmControlMessage.id_format = IO_CAN_STD_FRAME;
-        mcmControlMessage.id = 0xC0;
-
-        //Torque (Nm * 10)
-        ubyte2 mcuTorque = 5; //In Nm * 10. 125 continuous, 240 max
-        mcmControlMessage.data[0] = (ubyte1)mcm_commands_getTorque(me);
-        mcmControlMessage.data[1] = mcm_commands_getTorque(me) >> 8;
-
-        //Speed (RPM?) - not needed - mcu should be in torque mode
-        mcmControlMessage.data[2] = 0;
-        mcmControlMessage.data[3] = 0;
-
-        //Direction: 0=CW, 1=CCW
-        mcmControlMessage.data[4] = mcm_commands_getDirection(me);
-
-        //unused/unused/unused/unused unused/unused/Discharge/Inverter Enable
-        mcmControlMessage.data[5] = 0; //First set whole byte to zero
-
-                                    //Next add each bit one at a time, starting with the bit that belongs in the leftmost position
-        for (int bit = 7; bit >= 0; bit--)
-        {
-            mcmControlMessage.data[5] <<= 1;  //Always leftshift first
-            switch (bit)
-            {
-                // Then add your bit to the right (note: the order of case statements doesn't matter - it's the fact that bit-- instead of bit++;)
-            case 1: mcmControlMessage.data[5] |= (mcm_commands_getDischarge(me) == ENABLED) ? 1 : 0; break;
-            case 0: mcmControlMessage.data[5] |= (mcm_commands_getInverter(me) == ENABLED) ? 1 : 0; break;  // Then add your bit to the right
-
-            }
-        }
-
-        //Unused (future use)
-        mcmControlMessage.data[6] = 0;
-        mcmControlMessage.data[7] = 0;
-
-
-        //Place the can messsages into the FIFO queue ---------------------------------------------------
-        
-        //IO_CAN_WriteFIFO(canFifoHandle_HiPri_Write, canMessages, 1);  //Important: Only transmit one message (the MCU message)
-        //IO_CAN_WriteFIFO(canFifoHandle_LoPri_Write, canMessages, 1);  //Important: Only transmit one message (the MCU message)
-
-        CanManager_send(cm, CAN0_HIPRI, &mcmControlMessage, 1);
-        mcm_commands_resetUpdateCountAndTime(me);
-        //IO_RTC_StartTime(&me.commands.timeStamp_lastCommandSent);
-        //mcm.commands.updateCount = 0;
-
-        //IO_CAN_WriteMsg(canFifoHandle_HiPri_Write, &canMessages);  //Important: Only transmit one message (the MCU message)
-        //IO_CAN_WriteMsg(canFifoHandle_LoPri_Write, &canMessages);  //Important: Only transmit one message (the MCU message)
-
-
-    } //end if sendEvenIfNoChanges/etc
 }
 
 
@@ -665,13 +610,13 @@ Status MCM_getInverterStatus(MotorController* me)
 void MCM_setRTDSFlag(MotorController* me, bool enableRTDS)
 {
 	//me->updateCount += (me->commands_torqueLimit == newTorqueLimit) ? 0 : 1;
-	//me->startRTDS = enableRTDS;
+	me->startRTDS = enableRTDS;
 }
 bool MCM_getRTDSFlag(MotorController* me)
 {
 	//me->updateCount += (me->commands_torqueLimit == newTorqueLimit) ? 0 : 1;
-	//return me->startRTDS;
-	return FALSE;
+	return me->startRTDS;
+	//return FALSE;
 }
 
 ubyte2 MCM_commands_getUpdateCount(MotorController* me)
