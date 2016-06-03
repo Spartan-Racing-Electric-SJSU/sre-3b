@@ -56,7 +56,6 @@ void TorqueEncoder_update(TorqueEncoder* me)
 	}
 	else
 	{
-
 		//getPedalTravel = 0;
 
 		//-------------------------------------------------------------------

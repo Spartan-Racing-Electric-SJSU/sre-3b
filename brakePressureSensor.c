@@ -92,7 +92,7 @@ void BrakePressureSensor_resetCalibration(BrakePressureSensor* me)
     //me->bps0_calibMin = me->bps0->specMax;
 	//me->bps0_calibMax = me->bps0->specMin;
 	me->bps0_calibMin = 500;
-	me->bps0_calibMax = 2000;
+	me->bps0_calibMax = 1250;
 
     //me->bps1_rawCalibMin = me->bps1->specMax;
     //me->bps1_rawCalibMax = me->bps1->specMin;
