@@ -148,7 +148,7 @@ void vcu_ADCWasteLoop(void)
 
         IO_Driver_TaskEnd();
         //TODO: Find out if EACH pin needs 2 cycles or just the entire DIO unit
-        while (IO_RTC_GetTimeUS(timestamp_sensorpoll) < 125000);   // wait until 1/8s (125ms) have passed
+        while (IO_RTC_GetTimeUS(timestamp_sensorpoll) < 12500);   // wait until 1/8/10s (125ms) have passed
     }
 }
 
