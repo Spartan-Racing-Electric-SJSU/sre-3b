@@ -283,7 +283,7 @@ void main(void)
 
         //Handle motor controller startup procedures
         MCM_relayControl(mcm0, &Sensor_HVILTerminationSense);
-        MotorControllerPowerManagement(mcm0, tps, rtds);
+        MCM_inverterControl(mcm0, tps, bps, rtds);
         //CanManager_sendMCMCommandMessage(mcm0, canMan, FALSE);
 
         //Drop the sensor readings into CAN (just raw data, not calculated stuff)

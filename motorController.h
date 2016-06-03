@@ -76,8 +76,9 @@ void MCM_setStartupStage(MotorController* me, ubyte1 stage);
 //Inter-object functions
 //----------------------------------------------------------------------------
 void MCM_calculateCommands(MotorController* mcm, TorqueEncoder* tps, BrakePressureSensor* bps);
+
 void MCM_relayControl(MotorController* mcm, Sensor* HVILTermSense);
-void MotorControllerPowerManagement(MotorController* mcm, TorqueEncoder* tps, ReadyToDriveSound* rtds);
+void MCM_inverterControl(MotorController* mcm, TorqueEncoder* tps, BrakePressureSensor* bps, ReadyToDriveSound* rtds);
 
 void MCM_parseCanMessage(MotorController* mcm, IO_CAN_DATA_FRAME* mcmCanMessage);
 

@@ -10,6 +10,7 @@
 #include "sensorCalculations.h"
 
 #include "torqueEncoder.h"
+#include "brakePressureSensor.h"
 #include "readyToDriveSound.h"
 #include "serial.h"
 
@@ -274,99 +275,114 @@ void MCM_relayControl(MotorController* me, Sensor* HVILTermSense)
     }
     else  // HVILTermSense->sensorValue == TRUE
     {
-        //If the motor controller is off, don't turn it on until the pedals are calibrated
-        //if (MCM_getStartupStage(mcm) == 0)
-        //{
-        IO_DO_Set(IO_DO_00, TRUE);
-        me->relayState = TRUE;
-        //MCM_setStartupStage(mcm, 1);
-        //}
-
-
-        //If HVIL just changed
+        //If HVIL just changed, send a message
         if (me->previousHVILState == FALSE)
         {
             SerialManager_send(me->serialMan, "Term sense went high\n");
         }
         me->previousHVILState = TRUE;
+
+        //Turn on the MCM relay
+        IO_DO_Set(IO_DO_00, TRUE);
+        me->relayState = TRUE;
+        if (MCM_getStartupStage(me) == 0) { MCM_setStartupStage(me, 1); }
     }
 }
 
 //See diagram at https://onedrive.live.com/redir?resid=F9BB8F0F8FDB5CF8!30410&authkey=!ABSF-uVH-VxQRAs&ithint=file%2chtml
-void MotorControllerPowerManagement(MotorController* me, TorqueEncoder* tps, ReadyToDriveSound* rtds)
+void MCM_inverterControl(MotorController* me, TorqueEncoder* tps, BrakePressureSensor* bps, ReadyToDriveSound* rtds)
 {
-    /*
+    float4 RTDPercent;
+    RTDPercent = (Sensor_RTDButton.sensorValue == TRUE ? 1 : 0);
+    
 	//----------------------------------------------------------------------------
 	// Determine inverter state
 	//----------------------------------------------------------------------------
 	//New Handshake NOTE: Switches connected to ground.. TRUE = high = off = disconnected = open circuit, FALSE = low = grounded = on = connected = closed circuit
-	//if (MCM_getLockoutStatus(me) == ENABLED)
+    switch (MCM_getStartupStage(me))
+    {
+    case 0: //MCM relay is off --> stay until lockout is enabled;
+        //It shouldn't be necessary to check mcm relayState or inverter status <> UNKNOWN
+        //but if we have trouble we can add that here.
 
-	//Set inverter to disabled until RTD procedure is done.
-	//This disables the lockout ahead of time.
-	if (MCM_getStartupStage(me) < 3)
-	{
-        SerialManager_send(me->serialMan, "Disabling inverter.\n");
-		MCM_commands_setInverter(me, DISABLED);
-		Light_set(Light_dashRTD, 0);
-		//MCM_setStartupStage(me, 2);
-	}
+    case 1: //MCM relay is on, lockout=enabled, inverter=disabled --> stay until lockout is disabled
+        //Actions to perform upon entering this state ------------------------------------------------
+        MCM_commands_setInverter(me, DISABLED);
+        //Light_set(Light_dashRTD, 0);
 
-	//if (MCM_getStartupStage(me) == 1 && MCM_getRTDSFlag(me) == )
-	//{
-	//	MCM_commands_setInverter(me, DISABLED);
-	//	MCM_setStartupStage(me, 2);
-	//}
+        //How to transition to next state ------------------------------------------------
+        if (MCM_getLockoutStatus(me) == DISABLED)
+        {
+            SerialManager_send(me->serialMan, "MCM lockout has been disabled.\n");
+            MCM_setStartupStage(me, MCM_getStartupStage(me) + 1);
+        }
+        break;
 
-	//case DISABLED: //Lockout is disabled
-	switch (MCM_getInverterStatus(me))
-	{
-	case DISABLED:
-        //SerialManager_send(me->serialMan, "Inverter is disabled.\n");
-		MCM_setStartupStage(me, 3); //Lockout disabled, waiting for RTD procedure
-		//If not on gas and YES on brake and RTD is pressed
-		//BRAKE CODE NEEDS TO BE ADDED HERE
-		if (tps->percent < .05 && Sensor_RTDButton.sensorValue == TRUE)
-		{
-			MCM_commands_setInverter(me, ENABLED);
-            SerialManager_send(me->serialMan, "Enabling inverter.\n");
-			//MCM_setRTDSFlag(me, TRUE);  //Now, start the RTDS if the inverter is successfully enabled
-			MCM_setStartupStage(me, 4); //RTD complete, waiting for confirmation
-		}
-		break;
+    case 2: //MCM on, lockout=disabled, inverter=disabled --> stay until RTD button pressed
+        //Actions to perform upon entering this state ------------------------------------------------
+        //Nothing: wait for RTD button
 
-	case ENABLED:
-        //SerialManager_send(me->serialMan, "Inverter is enabled.\n");
-		Light_set(Light_dashRTD, 1);
-		//If the inverter was successfully enabled AND we haven't started the RTDS yet
-		//if (MCM_getRTDSFlag(me) == TRUE)
-		if (MCM_getStartupStage(me) == 4) //If we're waiting to start the motor controller
-		{
-            SerialManager_send(me->serialMan, "Starting RTDS.\n");
-			RTDS_setVolume(rtds, .01, 1500000);
-			//MCM_setRTDSFlag(me, FALSE);  //RTDS started, so don't restart it next loop
-			MCM_setStartupStage(me, 5); //RTD confirmed
-		}
-		else
-		{
-            SerialManager_send(me->serialMan, "Car is ready to drive.\n");
-			MCM_setStartupStage(me, 6); //Driving
-		}
-		break;
+        //How to transition to next state ------------------------------------------------
+        if (Sensor_RTDButton.sensorValue == TRUE 
+            && tps->calibrated == TRUE
+            && bps->calibrated == TRUE
+            && tps->percent < .1
+            && bps->percent > .5
+            )
+        {
+            MCM_commands_setInverter(me, ENABLED);  //Change the inverter command to enable
+            SerialManager_send(me->serialMan, "Changed MCM inverter command to ENABLE.\n");
+            MCM_setStartupStage(me, MCM_getStartupStage(me) + 1);
+            RTDPercent = 1; //This line is redundant
+        }
+        break;
 
-	case UNKNOWN: default:
-		break;
-	}
+    case 3: //inverted=disabled, rtd=pressed, waiting for inverter to be enabled
+        //Actions to perform upon entering this state ------------------------------------------------
+        //Nothing: wait for mcm to say it's enabled
 
-	//break;
-	//case UNKNOWN: default:
-	//    break;
-	//}
-    */
-	
+        //How to transition to next state ------------------------------------------------
+        if (MCM_getInverterStatus(me) == ENABLED)
+        {
+            RTDPercent = 1; //Doesn't matter if button is no longer pressed - RTD light should be on if car is driveable
+            SerialManager_send(me->serialMan, "Inverter has been enabled.  Starting RTDS.  Car is ready to drive.\n");
+            RTDS_setVolume(rtds, .01, 1500000);
+            MCM_setStartupStage(me, MCM_getStartupStage(me) + 1);  //leave this stage since we've already kicked off the RTDS
+        }
+        break;
+
+    case 4: //inverter=disabled, rtds=already started
+        //Actions to perform upon entering this state ------------------------------------------------
+        SerialManager_send(me->serialMan, "RTD procedure complete.\n");  //Just send a message
+        RTDPercent = 1; //This line is redundant
+
+        //How to transition to next state ------------------------------------------------
+        //Always do, since we sent a message.
+        MCM_setStartupStage(me, MCM_getStartupStage(me) + 1);
+        break;
+
+    case 5: //inverter=enabled, rtds=notstarted
+        //What happens in this state ------------------------------------------------
+        RTDPercent = 1; //This line is redundant
+        //This case is here so we don't send a message anymore
+        
+        //How to transition to next state ------------------------------------------------
+        //Don't. //MCM_setStartupStage(me, MCM_getStartupStage(me) + 1);
+        break;
+
+
+    default:
+        SerialManager_send(me->serialMan, "ERROR: Lost track of MCM startup status.\n");
+        break;
+    }
+    
+    //After all that, we can turn the RTD light on/off
+    Light_set(Light_dashRTD, RTDPercent);
+
+    /*
+    //TEMPORARY Eco Switch startup code
     float4 RTDPercent = 0;
     
-    //TEMPORARY Eco Switch startup code
     if (Sensor_RTDButton.sensorValue == TRUE)
     {
         MCM_commands_setInverter(me, ENABLED);
@@ -394,7 +410,7 @@ void MotorControllerPowerManagement(MotorController* me, TorqueEncoder* tps, Rea
     }
 
     Light_set(Light_dashRTD, RTDPercent);
-
+    */
 }
 
 
