@@ -173,8 +173,11 @@ IO_ErrorType CanManager_send(CanManager* me, CanChannel channel, IO_CAN_DATA_FRA
                 {
                     dataChanged = TRUE;
                 }
-            }
-            
+            }//end checking each byte in message
+
+            //TODO:
+            //TEST #1: See if datachanged is stuck
+            //TEST #2: See if timestamp is stuck
             //----------------------------------------------------------------------------
             // If data has changed
             //----------------------------------------------------------------------------
@@ -315,6 +318,14 @@ void CanManager_read(CanManager* me, CanChannel channel, MotorController* mcm, B
     CanManager_send(me, CAN1_LOPRI, canMessages, canMessageCount);
     //IO_CAN_WriteMsg(canFifoHandle_LoPri_Write, canMessages);
 }
+
+ubyte1 CanManager_getReadStatus(CanManager* me, CanChannel channel)
+{
+    return (channel == CAN0_HIPRI) ? me->ioErr_can0_read : me->ioErr_can1_read;
+}
+
+
+
 
 /*****************************************************************************
 * device-specific functions

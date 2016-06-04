@@ -208,8 +208,39 @@ void main(void)
 		sensors_updateSensors();
 
         //canInput - pull messages from CAN FIFO and update our object representations.
+
+
+
+
+        /*
+        * \retval IO_E_OK                everything fine
+        * \retval IO_E_NULL_POINTER      null pointer has been passed to function
+        * \retval IO_E_CAN_FIFO_FULL     overflow of FIFO buffer
+        * \retval IO_E_CAN_WRONG_HANDLE  invalid handle has been passed
+        * \retval IO_E_CHANNEL_NOT_CONFIGURED the given handle has not been configured
+        * \retval IO_E_CAN_OLD_DATA      no data has been received
+        */
+
         //Also echo can0 messages to can1 for DAQ.
         CanManager_read(canMan, CAN0_HIPRI, mcm0, bms);
+        switch (CanManager_getReadStatus(canMan, CAN0_HIPRI))
+        {
+            case IO_E_OK: SerialManager_send(serialMan, "IO_E_OK: everything fine\n"); break;
+            case IO_E_NULL_POINTER: SerialManager_send(serialMan, "IO_E_NULL_POINTER: null pointer has been passed to function\n"); break;
+            case IO_E_CAN_FIFO_FULL: SerialManager_send(serialMan, "IO_E_CAN_FIFO_FULL: overflow of FIFO buffer\n"); break;
+            case IO_E_CAN_WRONG_HANDLE: SerialManager_send(serialMan, "IO_E_CAN_WRONG_HANDLE: invalid handle has been passed\n"); break;
+            case IO_E_CHANNEL_NOT_CONFIGURED: SerialManager_send(serialMan, "IO_E_CHANNEL_NOT_CONFIGURED: the given handle has not been configured\n"); break;
+            case IO_E_CAN_OLD_DATA: SerialManager_send(serialMan, "IO_E_CAN_OLD_DATA: no data has been received\n"); break;
+            default: SerialManager_send(serialMan, "Warning: Unknown CAN read status\n"); break;
+        }
+
+
+
+
+
+
+
+
 
         /*******************************************/
         /*          Perform Calculations           */

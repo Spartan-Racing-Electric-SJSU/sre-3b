@@ -31,4 +31,6 @@ void canOutput_sendSensorMessages(CanManager* me);
 //void canOutput_sendMCUControl(CanManager* me, MotorController* mcm, bool sendEvenIfNoChanges);
 void canOutput_sendDebugMessage(CanManager* me, TorqueEncoder* tps, BrakePressureSensor* bps, MotorController* mcm, WheelSpeeds* wss, SafetyChecker* sc);
 
+ubyte1 CanManager_getReadStatus(CanManager* me, CanChannel channel);
+
 #endif // _CANMANAGER_H is defined
