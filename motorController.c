@@ -308,7 +308,7 @@ void MCM_inverterControl(MotorController* me, TorqueEncoder* tps, BrakePressureS
         //but if we have trouble we can add that here.
 
     case 1: //MCM relay is on, lockout=enabled, inverter=disabled --> stay until lockout is disabled
-        if (MCM_getLockoutStatus(me) == ENABLED)
+        /*if (MCM_getLockoutStatus(me) == ENABLED)
         {
             SerialManager_send(me->serialMan, "In stage 0/1. Lockout has NOT been disabled.\n");
         }
@@ -319,7 +319,7 @@ void MCM_inverterControl(MotorController* me, TorqueEncoder* tps, BrakePressureS
         else
         {
             SerialManager_send(me->serialMan, "In stage 0/1. Motor controller status unknown (off?).\n");
-        }
+        }*/
         //Actions to perform upon entering this state ------------------------------------------------
         MCM_commands_setInverter(me, DISABLED);
         //Light_set(Light_dashRTD, 0);

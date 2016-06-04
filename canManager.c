@@ -11,10 +11,12 @@
 #include "bms.h"
 #include "safety.h"
 #include "wheelSpeeds.h"
+#include "serial.h"
 
 struct _CanManager {
     AVLNode* incomingTree;
     AVLNode* outgoingTree;
+    SerialManager* sm;
 
     ubyte1 canMessageLimit;
 	
@@ -69,7 +71,7 @@ struct _CanMessageNode
 
 CanManager* CanManager_new(ubyte2 can0_busSpeed, ubyte1 can0_read_messageLimit, ubyte1 can0_write_messageLimit
                          , ubyte2 can1_busSpeed, ubyte1 can1_read_messageLimit, ubyte1 can1_write_messageLimit
-                         , ubyte4 defaultSendDelayus) //ubyte4 defaultMinSendDelay, ubyte4 defaultMaxSendDelay)
+                         , ubyte4 defaultSendDelayus, SerialManager* sm) //ubyte4 defaultMinSendDelay, ubyte4 defaultMaxSendDelay)
 {
 	CanManager* me = (CanManager*)malloc(sizeof(struct _CanManager));
 
@@ -143,6 +145,13 @@ IO_ErrorType CanManager_send(CanManager* me, CanChannel channel, IO_CAN_DATA_FRA
         sendMessage = FALSE;
         //NEEDS TO USE DIFFERENT TREES FOR CAN0 / CAN1
         //lastMessage = AVL_find(me->outgoingTree, canMessages[messagePosition]->id);
+        SerialManager_send(me->sm, "Searching for message ID ");
+
+        ubyte1 strMessageID[4];
+        sprintf(strMessageID, "%03X", canMessages[messagePosition].id);
+
+        SerialManager_send(me->sm, strMessageID);
+        SerialManager_send(me->sm, "\n");
         lastMessage = AVL_find(me->outgoingTree, canMessages[messagePosition].id);
 
         // Message doesn't exist in history tree ---------------------------------
@@ -151,6 +160,7 @@ IO_ErrorType CanManager_send(CanManager* me, CanChannel channel, IO_CAN_DATA_FRA
             lastMessage = AVL_insert(me->outgoingTree, (canMessages[messagePosition]).id, canMessages[messagePosition].data, me->sendDelayus, me->sendDelayus, FALSE);
             //send message later
             sendMessage = TRUE;
+            SerialManager_send(me->sm, "This message has never been sent before.\n");
         }
         // This message exists in the history tree ---------------------------------
         else
@@ -176,17 +186,24 @@ IO_ErrorType CanManager_send(CanManager* me, CanChannel channel, IO_CAN_DATA_FRA
             }//end checking each byte in message
 
             //TODO:
-            //TEST #1: See if datachanged is stuck
+            //TEST #1: See if datachanged is stuck TRUE
             //TEST #2: See if timestamp is stuck
             //----------------------------------------------------------------------------
             // If data has changed
             //----------------------------------------------------------------------------
             if (dataChanged == TRUE)
             {
+                SerialManager_send(me->sm, "Data changed...\n");
                 //Send message if >10ms have passed (or whatever the min time is for this message)
                 if (IO_RTC_GetTimeUS(lastMessage->lastMessage_timeStamp) >= lastMessage->timeBetweenMessages_Min)
                 {
                     sendMessage = TRUE;
+                    SerialManager_send(me->sm, "...and it's been longer than mintime.");
+                }
+                else
+                {
+                    SerialManager_send(me->sm, "...and but it hasn't been long enough past mintime.");
+
                 }
             }
             //----------------------------------------------------------------------------
@@ -194,11 +211,17 @@ IO_ErrorType CanManager_send(CanManager* me, CanChannel channel, IO_CAN_DATA_FRA
             //----------------------------------------------------------------------------
             else
             {
+                SerialManager_send(me->sm, "Data NOT changed...\n");
                 //If it's been a long time since this message was last sent out
                 if (IO_RTC_GetTimeUS(lastMessage->lastMessage_timeStamp) >= lastMessage->timeBetweenMessages_Max)
                 {
+                    SerialManager_send(me->sm, "...but it's been longer than mintime so send anyway.");
                     //Send the message even though the data hasn't changed
                     sendMessage = TRUE;
+                }
+                else
+                {
+                    SerialManager_send(me->sm, "...and message was sent recently, so don't send it.");
                 }
             }
         }   // end check if message should be sent
@@ -212,6 +235,10 @@ IO_ErrorType CanManager_send(CanManager* me, CanChannel channel, IO_CAN_DATA_FRA
             //see http://stackoverflow.com/questions/1693853/copying-arrays-of-structs-in-c
             //http://www.socialledge.com/sjsu/index.php?title=ES101_-_Lesson_9_:_Structures
             messagesToSend[messagesToSendCount++] = canMessages[messagePosition];
+        }
+        else
+        {
+            SerialManager_send(me->sm, "This message did not need to be sent.\n");
         }
     } //end of loop for each message in outgoing messages
 
@@ -383,107 +410,107 @@ void canOutput_sendDebugMessage(CanManager* me, TorqueEncoder* tps, BrakePressur
     canMessages[canMessageCount - 1].data[byteNum++] = tps->tps0_calibMax;
     canMessages[canMessageCount - 1].data[byteNum++] = tps->tps0_calibMax >> 8;
 
-    canMessageCount++;
-    byteNum = 0;
-    canMessages[canMessageCount - 1].length = 8; // how many bytes in the message
-    canMessages[canMessageCount - 1].id_format = IO_CAN_STD_FRAME;
-    canMessages[canMessageCount - 1].id = canMessageID + canMessageCount - 1;
-    canMessages[canMessageCount - 1].data[byteNum++] = throttlePercent;
-    canMessages[canMessageCount - 1].data[byteNum++] = tps1Percent;
-    canMessages[canMessageCount - 1].data[byteNum++] = tps->tps1_value;
-    canMessages[canMessageCount - 1].data[byteNum++] = tps->tps1_value >> 8;
-    canMessages[canMessageCount - 1].data[byteNum++] = tps->tps1_calibMin;
-    canMessages[canMessageCount - 1].data[byteNum++] = tps->tps1_calibMin >> 8;
-    canMessages[canMessageCount - 1].data[byteNum++] = tps->tps1_calibMax;
-    canMessages[canMessageCount - 1].data[byteNum++] = tps->tps1_calibMax >> 8;
+    ////////canMessageCount++;
+    ////////byteNum = 0;
+    ////////canMessages[canMessageCount - 1].length = 8; // how many bytes in the message
+    ////////canMessages[canMessageCount - 1].id_format = IO_CAN_STD_FRAME;
+    ////////canMessages[canMessageCount - 1].id = canMessageID + canMessageCount - 1;
+    ////////canMessages[canMessageCount - 1].data[byteNum++] = throttlePercent;
+    ////////canMessages[canMessageCount - 1].data[byteNum++] = tps1Percent;
+    ////////canMessages[canMessageCount - 1].data[byteNum++] = tps->tps1_value;
+    ////////canMessages[canMessageCount - 1].data[byteNum++] = tps->tps1_value >> 8;
+    ////////canMessages[canMessageCount - 1].data[byteNum++] = tps->tps1_calibMin;
+    ////////canMessages[canMessageCount - 1].data[byteNum++] = tps->tps1_calibMin >> 8;
+    ////////canMessages[canMessageCount - 1].data[byteNum++] = tps->tps1_calibMax;
+    ////////canMessages[canMessageCount - 1].data[byteNum++] = tps->tps1_calibMax >> 8;
 
-    canMessageCount++;
-    byteNum = 0;
-    canMessages[canMessageCount - 1].length = 8; // how many bytes in the message
-    canMessages[canMessageCount - 1].id_format = IO_CAN_STD_FRAME;
-    canMessages[canMessageCount - 1].id = canMessageID + canMessageCount - 1;
-    canMessages[canMessageCount - 1].data[byteNum++] = brakePercent; //This should be bps0Percent, but for now bps0Percent = brakePercent
-    canMessages[canMessageCount - 1].data[byteNum++] = 0;
-    canMessages[canMessageCount - 1].data[byteNum++] = bps->bps0_value;
-    canMessages[canMessageCount - 1].data[byteNum++] = bps->bps0_value >> 8;
-    canMessages[canMessageCount - 1].data[byteNum++] = bps->bps0_calibMin;
-    canMessages[canMessageCount - 1].data[byteNum++] = bps->bps0_calibMin >> 8;
-    canMessages[canMessageCount - 1].data[byteNum++] = bps->bps0_calibMax;
-    canMessages[canMessageCount - 1].data[byteNum++] = bps->bps0_calibMax >> 8;
+    ////////canMessageCount++;
+    ////////byteNum = 0;
+    ////////canMessages[canMessageCount - 1].length = 8; // how many bytes in the message
+    ////////canMessages[canMessageCount - 1].id_format = IO_CAN_STD_FRAME;
+    ////////canMessages[canMessageCount - 1].id = canMessageID + canMessageCount - 1;
+    ////////canMessages[canMessageCount - 1].data[byteNum++] = brakePercent; //This should be bps0Percent, but for now bps0Percent = brakePercent
+    ////////canMessages[canMessageCount - 1].data[byteNum++] = 0;
+    ////////canMessages[canMessageCount - 1].data[byteNum++] = bps->bps0_value;
+    ////////canMessages[canMessageCount - 1].data[byteNum++] = bps->bps0_value >> 8;
+    ////////canMessages[canMessageCount - 1].data[byteNum++] = bps->bps0_calibMin;
+    ////////canMessages[canMessageCount - 1].data[byteNum++] = bps->bps0_calibMin >> 8;
+    ////////canMessages[canMessageCount - 1].data[byteNum++] = bps->bps0_calibMax;
+    ////////canMessages[canMessageCount - 1].data[byteNum++] = bps->bps0_calibMax >> 8;
 
-    canMessageCount++;
-    byteNum = 0;
-    canMessages[canMessageCount - 1].length = 8; // how many bytes in the message
-    canMessages[canMessageCount - 1].id_format = IO_CAN_STD_FRAME;
-    canMessages[canMessageCount - 1].id = canMessageID + canMessageCount - 1;
-    canMessages[canMessageCount - 1].data[byteNum++] = (ubyte2)(WheelSpeeds_getWheelSpeed(wss, FL) + 0.5);
-    canMessages[canMessageCount - 1].data[byteNum++] = ((ubyte2)(WheelSpeeds_getWheelSpeed(wss, FL) + 0.5)) >> 8;
-    canMessages[canMessageCount - 1].data[byteNum++] = (ubyte2)(WheelSpeeds_getWheelSpeed(wss, FR) + 0.5);
-    canMessages[canMessageCount - 1].data[byteNum++] = ((ubyte2)(WheelSpeeds_getWheelSpeed(wss, FR) + 0.5)) >> 8;
-    canMessages[canMessageCount - 1].data[byteNum++] = (ubyte2)(WheelSpeeds_getWheelSpeed(wss, RL) + 0.5);
-    canMessages[canMessageCount - 1].data[byteNum++] = ((ubyte2)(WheelSpeeds_getWheelSpeed(wss, RL) + 0.5)) >> 8;
-    canMessages[canMessageCount - 1].data[byteNum++] = (ubyte2)(WheelSpeeds_getWheelSpeed(wss, RR) + 0.5);
-    canMessages[canMessageCount - 1].data[byteNum++] = ((ubyte2)(WheelSpeeds_getWheelSpeed(wss, RR) + 0.5)) >> 8;
+    ////////canMessageCount++;
+    ////////byteNum = 0;
+    ////////canMessages[canMessageCount - 1].length = 8; // how many bytes in the message
+    ////////canMessages[canMessageCount - 1].id_format = IO_CAN_STD_FRAME;
+    ////////canMessages[canMessageCount - 1].id = canMessageID + canMessageCount - 1;
+    ////////canMessages[canMessageCount - 1].data[byteNum++] = (ubyte2)(WheelSpeeds_getWheelSpeed(wss, FL) + 0.5);
+    ////////canMessages[canMessageCount - 1].data[byteNum++] = ((ubyte2)(WheelSpeeds_getWheelSpeed(wss, FL) + 0.5)) >> 8;
+    ////////canMessages[canMessageCount - 1].data[byteNum++] = (ubyte2)(WheelSpeeds_getWheelSpeed(wss, FR) + 0.5);
+    ////////canMessages[canMessageCount - 1].data[byteNum++] = ((ubyte2)(WheelSpeeds_getWheelSpeed(wss, FR) + 0.5)) >> 8;
+    ////////canMessages[canMessageCount - 1].data[byteNum++] = (ubyte2)(WheelSpeeds_getWheelSpeed(wss, RL) + 0.5);
+    ////////canMessages[canMessageCount - 1].data[byteNum++] = ((ubyte2)(WheelSpeeds_getWheelSpeed(wss, RL) + 0.5)) >> 8;
+    ////////canMessages[canMessageCount - 1].data[byteNum++] = (ubyte2)(WheelSpeeds_getWheelSpeed(wss, RR) + 0.5);
+    ////////canMessages[canMessageCount - 1].data[byteNum++] = ((ubyte2)(WheelSpeeds_getWheelSpeed(wss, RR) + 0.5)) >> 8;
 
-    canMessageCount++;
-    byteNum = 0;
-    canMessages[canMessageCount - 1].length = 8; // how many bytes in the message
-    canMessages[canMessageCount - 1].id_format = IO_CAN_STD_FRAME;
-    canMessages[canMessageCount - 1].id = canMessageID + canMessageCount - 1;
-    canMessages[canMessageCount - 1].data[byteNum++] = Sensor_WSS_FL.sensorValue;
-    canMessages[canMessageCount - 1].data[byteNum++] = Sensor_WSS_FL.sensorValue >> 8;
-    canMessages[canMessageCount - 1].data[byteNum++] = Sensor_WSS_FL.sensorValue >> 16;
-    canMessages[canMessageCount - 1].data[byteNum++] = Sensor_WSS_FL.sensorValue >> 24;
-    canMessages[canMessageCount - 1].data[byteNum++] = Sensor_WSS_FR.sensorValue;
-    canMessages[canMessageCount - 1].data[byteNum++] = Sensor_WSS_FR.sensorValue >> 8;
-    canMessages[canMessageCount - 1].data[byteNum++] = Sensor_WSS_FR.sensorValue >> 16;
-    canMessages[canMessageCount - 1].data[byteNum++] = Sensor_WSS_FR.sensorValue >> 24;
+    ////////canMessageCount++;
+    ////////byteNum = 0;
+    ////////canMessages[canMessageCount - 1].length = 8; // how many bytes in the message
+    ////////canMessages[canMessageCount - 1].id_format = IO_CAN_STD_FRAME;
+    ////////canMessages[canMessageCount - 1].id = canMessageID + canMessageCount - 1;
+    ////////canMessages[canMessageCount - 1].data[byteNum++] = Sensor_WSS_FL.sensorValue;
+    ////////canMessages[canMessageCount - 1].data[byteNum++] = Sensor_WSS_FL.sensorValue >> 8;
+    ////////canMessages[canMessageCount - 1].data[byteNum++] = Sensor_WSS_FL.sensorValue >> 16;
+    ////////canMessages[canMessageCount - 1].data[byteNum++] = Sensor_WSS_FL.sensorValue >> 24;
+    ////////canMessages[canMessageCount - 1].data[byteNum++] = Sensor_WSS_FR.sensorValue;
+    ////////canMessages[canMessageCount - 1].data[byteNum++] = Sensor_WSS_FR.sensorValue >> 8;
+    ////////canMessages[canMessageCount - 1].data[byteNum++] = Sensor_WSS_FR.sensorValue >> 16;
+    ////////canMessages[canMessageCount - 1].data[byteNum++] = Sensor_WSS_FR.sensorValue >> 24;
 
-    canMessageCount++;
-    byteNum = 0;
-    canMessages[canMessageCount - 1].length = 8; // how many bytes in the message
-    canMessages[canMessageCount - 1].id_format = IO_CAN_STD_FRAME;
-    canMessages[canMessageCount - 1].id = canMessageID + canMessageCount - 1;
-    canMessages[canMessageCount - 1].data[byteNum++] = Sensor_WSS_RL.sensorValue;
-    canMessages[canMessageCount - 1].data[byteNum++] = Sensor_WSS_RL.sensorValue >> 8;
-    canMessages[canMessageCount - 1].data[byteNum++] = Sensor_WSS_RL.sensorValue >> 16;
-    canMessages[canMessageCount - 1].data[byteNum++] = Sensor_WSS_RL.sensorValue >> 24;
-    canMessages[canMessageCount - 1].data[byteNum++] = Sensor_WSS_RR.sensorValue;
-    canMessages[canMessageCount - 1].data[byteNum++] = Sensor_WSS_RR.sensorValue >> 8;
-    canMessages[canMessageCount - 1].data[byteNum++] = Sensor_WSS_RR.sensorValue >> 16;
-    canMessages[canMessageCount - 1].data[byteNum++] = Sensor_WSS_RR.sensorValue >> 24;
+    ////////canMessageCount++;
+    ////////byteNum = 0;
+    ////////canMessages[canMessageCount - 1].length = 8; // how many bytes in the message
+    ////////canMessages[canMessageCount - 1].id_format = IO_CAN_STD_FRAME;
+    ////////canMessages[canMessageCount - 1].id = canMessageID + canMessageCount - 1;
+    ////////canMessages[canMessageCount - 1].data[byteNum++] = Sensor_WSS_RL.sensorValue;
+    ////////canMessages[canMessageCount - 1].data[byteNum++] = Sensor_WSS_RL.sensorValue >> 8;
+    ////////canMessages[canMessageCount - 1].data[byteNum++] = Sensor_WSS_RL.sensorValue >> 16;
+    ////////canMessages[canMessageCount - 1].data[byteNum++] = Sensor_WSS_RL.sensorValue >> 24;
+    ////////canMessages[canMessageCount - 1].data[byteNum++] = Sensor_WSS_RR.sensorValue;
+    ////////canMessages[canMessageCount - 1].data[byteNum++] = Sensor_WSS_RR.sensorValue >> 8;
+    ////////canMessages[canMessageCount - 1].data[byteNum++] = Sensor_WSS_RR.sensorValue >> 16;
+    ////////canMessages[canMessageCount - 1].data[byteNum++] = Sensor_WSS_RR.sensorValue >> 24;
 
-    //Safety Checker
-    canMessageCount++;
-    byteNum = 0;
-    canMessages[canMessageCount - 1].length = 8; // how many bytes in the message
-    canMessages[canMessageCount - 1].id_format = IO_CAN_STD_FRAME;
-    canMessages[canMessageCount - 1].id = canMessageID + canMessageCount - 1;
-    canMessages[canMessageCount - 1].data[byteNum++] = SafetyChecker_getFaults(sc);
-    canMessages[canMessageCount - 1].data[byteNum++] = SafetyChecker_getFaults(sc) >> 8;
-    canMessages[canMessageCount - 1].data[byteNum++] = SafetyChecker_getFaults(sc) >> 16;
-    canMessages[canMessageCount - 1].data[byteNum++] = SafetyChecker_getFaults(sc) >> 24;
-    canMessages[canMessageCount - 1].data[byteNum++] = SafetyChecker_getWarnings(sc);
-    canMessages[canMessageCount - 1].data[byteNum++] = SafetyChecker_getWarnings(sc) >> 8;
-    canMessages[canMessageCount - 1].data[byteNum++] = SafetyChecker_getWarnings(sc) >> 16;
-    canMessages[canMessageCount - 1].data[byteNum++] = SafetyChecker_getWarnings(sc) >> 24;
+    //////////Safety Checker
+    ////////canMessageCount++;
+    ////////byteNum = 0;
+    ////////canMessages[canMessageCount - 1].length = 8; // how many bytes in the message
+    ////////canMessages[canMessageCount - 1].id_format = IO_CAN_STD_FRAME;
+    ////////canMessages[canMessageCount - 1].id = canMessageID + canMessageCount - 1;
+    ////////canMessages[canMessageCount - 1].data[byteNum++] = SafetyChecker_getFaults(sc);
+    ////////canMessages[canMessageCount - 1].data[byteNum++] = SafetyChecker_getFaults(sc) >> 8;
+    ////////canMessages[canMessageCount - 1].data[byteNum++] = SafetyChecker_getFaults(sc) >> 16;
+    ////////canMessages[canMessageCount - 1].data[byteNum++] = SafetyChecker_getFaults(sc) >> 24;
+    ////////canMessages[canMessageCount - 1].data[byteNum++] = SafetyChecker_getWarnings(sc);
+    ////////canMessages[canMessageCount - 1].data[byteNum++] = SafetyChecker_getWarnings(sc) >> 8;
+    ////////canMessages[canMessageCount - 1].data[byteNum++] = SafetyChecker_getWarnings(sc) >> 16;
+    ////////canMessages[canMessageCount - 1].data[byteNum++] = SafetyChecker_getWarnings(sc) >> 24;
 
 
 
-    //Motor controller command message
-    canMessageCount++;
-    byteNum = 0;
-    canMessages[canMessageCount - 1].length = 8; // how many bytes in the message
-    canMessages[canMessageCount - 1].id_format = IO_CAN_STD_FRAME;
-    canMessages[canMessageCount - 1].id = 0xC0;
-    canMessages[canMessageCount - 1].data[byteNum++] = (ubyte1)MCM_commands_getTorque(mcm);
-    canMessages[canMessageCount - 1].data[byteNum++] = MCM_commands_getTorque(mcm) >> 8;
-    canMessages[canMessageCount - 1].data[byteNum++] = 0;  //Speed (RPM?) - not needed - mcu should be in torque mode
-    canMessages[canMessageCount - 1].data[byteNum++] = 0;  //Speed (RPM?) - not needed - mcu should be in torque mode
-    canMessages[canMessageCount - 1].data[byteNum++] = MCM_commands_getDirection(mcm);
-    canMessages[canMessageCount - 1].data[byteNum++] = (MCM_commands_getInverter(mcm) == ENABLED) ? 1 : 0; //unused/unused/unused/unused unused/unused/Discharge/Inverter Enable
-    canMessages[canMessageCount - 1].data[byteNum++] = (ubyte1)MCM_commands_getTorqueLimit(mcm);
-    canMessages[canMessageCount - 1].data[byteNum++] = MCM_commands_getTorqueLimit(mcm) >> 8;
+    //////////Motor controller command message
+    ////////canMessageCount++;
+    ////////byteNum = 0;
+    ////////canMessages[canMessageCount - 1].length = 8; // how many bytes in the message
+    ////////canMessages[canMessageCount - 1].id_format = IO_CAN_STD_FRAME;
+    ////////canMessages[canMessageCount - 1].id = 0xC0;
+    ////////canMessages[canMessageCount - 1].data[byteNum++] = (ubyte1)MCM_commands_getTorque(mcm);
+    ////////canMessages[canMessageCount - 1].data[byteNum++] = MCM_commands_getTorque(mcm) >> 8;
+    ////////canMessages[canMessageCount - 1].data[byteNum++] = 0;  //Speed (RPM?) - not needed - mcu should be in torque mode
+    ////////canMessages[canMessageCount - 1].data[byteNum++] = 0;  //Speed (RPM?) - not needed - mcu should be in torque mode
+    ////////canMessages[canMessageCount - 1].data[byteNum++] = MCM_commands_getDirection(mcm);
+    ////////canMessages[canMessageCount - 1].data[byteNum++] = (MCM_commands_getInverter(mcm) == ENABLED) ? 1 : 0; //unused/unused/unused/unused unused/unused/Discharge/Inverter Enable
+    ////////canMessages[canMessageCount - 1].data[byteNum++] = (ubyte1)MCM_commands_getTorqueLimit(mcm);
+    ////////canMessages[canMessageCount - 1].data[byteNum++] = MCM_commands_getTorqueLimit(mcm) >> 8;
     //----------------------------------------------------------------------------
     //Additional sensors
     //----------------------------------------------------------------------------

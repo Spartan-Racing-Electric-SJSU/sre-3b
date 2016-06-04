@@ -156,8 +156,15 @@ void main(void)
     vcu_ADCWasteLoop();
 
     //vcu_init functions may have to be performed BEFORE creating CAN Manager object
-    CanManager* canMan = CanManager_new(500, 40, 40, 500, 20, 20, 250000);  //3rd param = messages per node (can0/can1; read/write)
-
+    CanManager* canMan = CanManager_new(500, 40, 40, 500, 20, 20, 500000, serialMan);  //3rd param = messages per node (can0/can1; read/write)
+    //can0_busSpeed ---------------------^    ^   ^   ^    ^   ^     ^         ^
+    //can0_read_messageLimit -----------------|   |   |    |   |     |         |
+    //can0_write_messageLimit---------------------+   |    |   |     |         |
+    //can1_busSpeed-----------------------------------+    |   |     |         |
+    //can1_read_messageLimit-------------------------------+   |     |         |
+    //can1_write_messageLimit----------------------------------+     |         |
+    //defaultSendDelayus---------------------------------------------+         |
+    //SerialManager* sm--------------------------------------------------------+
 
     //----------------------------------------------------------------------------
     // Object representations of external devices
@@ -223,7 +230,7 @@ void main(void)
 
         //Also echo can0 messages to can1 for DAQ.
         CanManager_read(canMan, CAN0_HIPRI, mcm0, bms);
-        switch (CanManager_getReadStatus(canMan, CAN0_HIPRI))
+        /*switch (CanManager_getReadStatus(canMan, CAN0_HIPRI))
         {
             case IO_E_OK: SerialManager_send(serialMan, "IO_E_OK: everything fine\n"); break;
             case IO_E_NULL_POINTER: SerialManager_send(serialMan, "IO_E_NULL_POINTER: null pointer has been passed to function\n"); break;
@@ -232,7 +239,7 @@ void main(void)
             case IO_E_CHANNEL_NOT_CONFIGURED: SerialManager_send(serialMan, "IO_E_CHANNEL_NOT_CONFIGURED: the given handle has not been configured\n"); break;
             case IO_E_CAN_OLD_DATA: SerialManager_send(serialMan, "IO_E_CAN_OLD_DATA: no data has been received\n"); break;
             default: SerialManager_send(serialMan, "Warning: Unknown CAN read status\n"); break;
-        }
+        }*/
 
 
 
@@ -330,11 +337,14 @@ void main(void)
         //----------------------------------------------------------------------------
         RTDS_shutdownHelper(rtds); //Stops the RTDS from playing if the set time has elapsed
 
-        IO_UART_Task();  //The task function shall be called every SW cycle.
+        //IO_UART_Task();  //The task function shall be called every SW cycle.
         //Task end function for IO Driver - This function needs to be called at the end of every SW cycle
         IO_Driver_TaskEnd();
         //wait until the cycle time is over
-        while (IO_RTC_GetTimeUS(timestamp_mainLoopStart) < 1000);   // 1000 = 1ms
+        while (IO_RTC_GetTimeUS(timestamp_mainLoopStart) < 1000000) // 1000 = 1ms
+        {
+            IO_UART_Task();  //The task function shall be called every SW cycle.
+        }
 
     } //end of main loop
 
