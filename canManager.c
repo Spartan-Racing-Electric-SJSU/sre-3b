@@ -438,7 +438,7 @@ void canOutput_sendDebugMessage(CanManager* me, TorqueEncoder* tps, BrakePressur
     byteNum = 0;
     canMessages[canMessageCount - 1].length = 8; // how many bytes in the message
     canMessages[canMessageCount - 1].id_format = IO_CAN_STD_FRAME;
-    canMessages[canMessageCount - 1].id = canMessageID + canMessageCount - 1;
+    canMessages[canMessageCount - 1].id = canMessageID + canMessageCount - 1; //500
     canMessages[canMessageCount - 1].data[byteNum++] = throttlePercent;
     canMessages[canMessageCount - 1].data[byteNum++] = tps0Percent;
     canMessages[canMessageCount - 1].data[byteNum++] = tps->tps0_value;
@@ -508,7 +508,7 @@ void canOutput_sendDebugMessage(CanManager* me, TorqueEncoder* tps, BrakePressur
     byteNum = 0;
     canMessages[canMessageCount - 1].length = 8; // how many bytes in the message
     canMessages[canMessageCount - 1].id_format = IO_CAN_STD_FRAME;
-    canMessages[canMessageCount - 1].id = canMessageID + canMessageCount - 1;
+    canMessages[canMessageCount - 1].id = canMessageID + canMessageCount - 1;  //505
     canMessages[canMessageCount - 1].data[byteNum++] = Sensor_WSS_RL.sensorValue;
     canMessages[canMessageCount - 1].data[byteNum++] = Sensor_WSS_RL.sensorValue >> 8;
     canMessages[canMessageCount - 1].data[byteNum++] = Sensor_WSS_RL.sensorValue >> 16;
@@ -533,6 +533,20 @@ void canOutput_sendDebugMessage(CanManager* me, TorqueEncoder* tps, BrakePressur
     canMessages[canMessageCount - 1].data[byteNum++] = SafetyChecker_getWarnings(sc) >> 16;
     canMessages[canMessageCount - 1].data[byteNum++] = SafetyChecker_getWarnings(sc) >> 24;
 
+    //12v battery
+    canMessageCount++;
+    byteNum = 0;
+    canMessages[canMessageCount - 1].id = canMessageID + canMessageCount - 1;  //0x50A
+    canMessages[canMessageCount - 1].id_format = IO_CAN_STD_FRAME;
+    canMessages[canMessageCount - 1].length = 2;
+    canMessages[canMessageCount - 1].data[byteNum++] = (ubyte1)Sensor_LVBattery.sensorValue;
+    canMessages[canMessageCount - 1].data[byteNum++] = Sensor_LVBattery.sensorValue >> 8;
+    //canMessages[canMessageCount - 1].data[byteNum++] = 0;
+    //canMessages[canMessageCount - 1].data[byteNum++] = 0;
+    //canMessages[canMessageCount - 1].data[byteNum++] = 0;
+    //canMessages[canMessageCount - 1].data[byteNum++] = 0;
+    //canMessages[canMessageCount - 1].data[byteNum++] = 0;
+    //canMessages[canMessageCount - 1].data[byteNum++] = 0;
 
 
     //Motor controller command message
@@ -552,15 +566,6 @@ void canOutput_sendDebugMessage(CanManager* me, TorqueEncoder* tps, BrakePressur
     //----------------------------------------------------------------------------
     //Additional sensors
     //----------------------------------------------------------------------------
-    //12v battery ---------------------------------------------------    
-    /*
-    messageIndex++;
-    canMessages[messageIndex].id = canMessageBaseId_VCU + 0xA;  //0x50A
-    canMessages[messageIndex].id_format = IO_CAN_STD_FRAME;
-    canMessages[messageIndex].length = 2;
-    canMessages[messageIndex].data[0] = (ubyte1)Sensor_LVBattery.sensorValue;
-    canMessages[messageIndex].data[1] = Sensor_LVBattery.sensorValue >> 8;
-    */
 
     //Place the can messsages into the FIFO queue ---------------------------------------------------
     //IO_CAN_WriteFIFO(canFifoHandle_HiPri_Write, canMessages, canMessageCount);  //Important: Only transmit one message (the MCU message)
