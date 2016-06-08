@@ -217,12 +217,14 @@ void vcu_initializeSensors(bool bench)
     else
     {
         //Ratiometric
-        Sensor_TPS0.specMin = 00500; //00.500 Volts
+        Sensor_TPS0.specMin = 00500; //00.500 Volts +/- 0.6% of active electrical angle
         Sensor_TPS1.specMin = 500;
-        Sensor_BPS0.specMin = 500;
         Sensor_TPS0.specMax = 04500; //04.500 Volts
         Sensor_TPS1.specMax = 4500;
-        Sensor_BPS0.specMax = 4500;
+
+        //Note: BPS sits slightly below 0.5V but it's still within range
+        Sensor_BPS0.specMin = 500 - 4000 * .005; //0.5V +/- 0.5%
+        Sensor_BPS0.specMax = 4500 + 4000 * .0025; //+/- 0.25%
 
         //PWM
         //Sensor_TPS0.specMin = .001 * .05;  //1kHz = .001s/cycle...
