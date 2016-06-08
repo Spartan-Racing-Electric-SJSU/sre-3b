@@ -136,9 +136,9 @@ void vcu_ADCWasteLoop(void)
         IO_PWM_SetDuty(IO_PWM_07, 0, NULL);  //Pin 103
 
         IO_DO_Set(IO_DO_00, FALSE); //False = low
-        IO_DO_Set(IO_DO_01, FALSE); //HVIL shutdown relay
-        IO_DO_Set(IO_DO_06, FALSE); //Front WSS x2
-        IO_DO_Set(IO_DO_07, FALSE); //Rear  WSS x2
+        //IO_DO_Set(IO_DO_01, FALSE); //HVIL shutdown relay
+        //IO_DO_Set(IO_DO_06, FALSE); //Front WSS x2
+        //IO_DO_Set(IO_DO_07, FALSE); //Rear  WSS x2
 
         //IO_DI (digital inputs) supposed to take 2 cycles before they return valid data
         IO_DI_Get(IO_DI_04, &tempData);
