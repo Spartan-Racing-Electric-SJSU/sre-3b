@@ -214,13 +214,19 @@ void TorqueEncoder_calibrationCycle(TorqueEncoder* me, ubyte1* errorCount)
 
             //From Ryan: Should be less than 2 degrees of play on top, 5-10 at bottom of pedal travel
             //90 degree sensor active range.. so just say % = degrees
-            float4 pedalTopPlay = 1.05;
-            float4 pedalBottomPlay = .95;
+            //float4 pedalTopPlay = 1.05;
+            //float4 pedalBottomPlay = .95;
 
-            me->tps0_calibMin *= me->tps0_reverse ? pedalBottomPlay : pedalTopPlay;
-            me->tps0_calibMax *= me->tps0_reverse ? pedalTopPlay : pedalBottomPlay;
-            me->tps1_calibMin *= me->tps1_reverse ? pedalBottomPlay : pedalTopPlay;
-            me->tps1_calibMax *= me->tps1_reverse ? pedalTopPlay : pedalBottomPlay;
+            //me->tps0_calibMin *= me->tps0_reverse ? pedalBottomPlay : pedalTopPlay;
+            //me->tps0_calibMax *= me->tps0_reverse ? pedalTopPlay : pedalBottomPlay;
+            //me->tps1_calibMin *= me->tps1_reverse ? pedalBottomPlay : pedalTopPlay;
+            //me->tps1_calibMax *= me->tps1_reverse ? pedalTopPlay : pedalBottomPlay;
+
+            //Shrink the calibrated range slightly
+            me->tps0_calibMin += me->tps0_calibMin * .05;
+            me->tps0_calibMax -= me->tps0_calibMax * .05;
+            me->tps1_calibMin += me->tps1_calibMin * .05;
+            me->tps1_calibMax -= me->tps1_calibMax * .05;
 
 
 			me->runCalibration = FALSE;
