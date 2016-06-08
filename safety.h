@@ -25,6 +25,7 @@ void SafetyChecker_update(SafetyChecker* me, TorqueEncoder* tps, BrakePressureSe
 bool SafetyChecker_allSafe(SafetyChecker* me);
 ubyte4 SafetyChecker_getFaults(SafetyChecker* me);
 ubyte4 SafetyChecker_getWarnings(SafetyChecker* me);
+void SafetyChecker_ReduceTorque(SafetyChecker* me, MotorController* mcm);
 //bool SafetyChecker_getError(SafetyChecker* me, SafetyCheck check);
 //bool SafetyChecker_getErrorByte(SafetyChecker* me, ubyte1* errorByte);
 

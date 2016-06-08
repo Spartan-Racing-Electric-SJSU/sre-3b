@@ -276,23 +276,29 @@ Var="2- WSS RR Pulse" unsigned 32,32 /u:us
 ID=506h
 DLC=8
 CycleTime=100
-Var="1-1 TPS Out of Range" unsigned 0,1
-Var="1-2 BPS Out of Range" unsigned 1,1
-Var="1-3 TPS Power Failure" unsigned 2,1
-Var="1-4 BPS Power Failure" unsigned 3,1
-Var="1-5 TPS Signal Failure" unsigned 4,1
-Var="1-6 BPS Signal Failure" unsigned 5,1
-Var="1-7 TPS Not Calibrated" unsigned 6,1
-Var="1-8 BPS Not Calibrated" unsigned 7,1
-Var="1-9 TPS Out of Sync" unsigned 8,1
-Var="1-10 BPS Out of Sync (unused)" unsigned 9,1
-Var="1-11 TPS-BPS Implausible" unsigned 10,1
-Var="1-12 (reserved)" unsigned 11,1
-Var="1-13 HVIL Term Sense Lost" unsigned 12,1
-Var="1-14 (unused)" unsigned 13,1
-Var="1-15 (unused)" unsigned 14,1
-Var="1-16 (unused)" unsigned 15,1
-Var="2-1 LVS Battery Low" unsigned 16,1
+Var="E-1 TPS Out of Range" unsigned 0,1
+Var="E-2 BPS Out of Range" unsigned 1,1
+Var="E-3 TPS Power Failure" unsigned 2,1
+Var="E-4 BPS Power Failure" unsigned 3,1
+Var="E-5 TPS Signal Failure" unsigned 4,1
+Var="E-6 BPS Signal Failure" unsigned 5,1
+Var="E-7 TPS Not Calibrated" unsigned 6,1
+Var="E-8 BPS Not Calibrated" unsigned 7,1
+Var="E-9 TPS Out of Sync" unsigned 8,1
+Var="E-10 BPS Out of Sync (unused)" unsigned 9,1
+Var="E-11 TPS-BPS Implausible" unsigned 10,1
+Var="E-12 (reserved)" unsigned 11,1
+Var="E-13 (unused)" unsigned 12,1
+Var="E-14 (unused)" unsigned 13,1
+Var="E-15 (unused)" unsigned 14,1
+Var="E-16 (unused)" unsigned 15,1
+Var="W-1 LVS Battery Low" unsigned 16,1
+
+[V507_12VBattery]
+ID=507h
+DLC=8
+CycleTime=100
+Var="1- Battery Voltage" unsigned 0,16 /u:V /f:0.001 /p:3
 
 [B620_Elithion]
 ID=620h

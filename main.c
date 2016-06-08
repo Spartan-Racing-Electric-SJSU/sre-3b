@@ -291,7 +291,7 @@ void main(void)
         /*******************************************/
         /*  Output Adjustments by Safety Checker   */
         /*******************************************/
-        //SafetyChecker_ReduceTorque()
+        SafetyChecker_ReduceTorque(sc, mcm0);
         //SafetyChecker_?
 
         /*******************************************/

@@ -1,5 +1,5 @@
 #include <stdlib.h>  //Needed for malloc
-#include <math.h>
+//#include <math.h>
 #include "IO_RTC.h"
 #include "IO_DIO.h"
 
@@ -11,7 +11,7 @@
 #include "torqueEncoder.h"
 #include "brakePressureSensor.h"
 
-#include "motorcontroller.h"
+#include "motorController.h"
 #include "bms.h"
 #include "serial.h"
 
@@ -32,10 +32,19 @@ static const ubyte4 bpsOutOfSync = 0x200; //NOT USED
 static const ubyte4 tpsbpsImplausible = 0x400;
 //static const ubyte4 UNUSED = 0x800;
 
-static const ubyte4 HVILTermSenseLost = 0x1000;
+//static const ubyte4 tpsOutOfSync = 0x1000;
+//static const ubyte4 bpsOutOfSync = 0x2000; //NOT USED
+//static const ubyte4 tpsbpsImplausible = 0x4000;
+//static const ubyte4 UNUSED = 0x8000;
+
+
+
 
 //Warnings
 static const ubyte4 LVSBatteryLow = 1;
+
+
+static const ubyte4 HVILTermSenseLost = 0x10;
 
 
 /*****************************************************************************
@@ -63,6 +72,7 @@ SafetyChecker* SafetyChecker_new(SerialManager* sm)
     SafetyChecker* me = (SafetyChecker*)malloc(sizeof(struct _SafetyChecker));
 
     me->serialMan = sm;
+    SerialManager_send(me->serialMan, "SafetyChecker's reference to SerialManager was created.\n");
 	//Initialize all safety checks to FAIL? Not anymore
     me->faults = 0;
     me->warnings = 0;
@@ -72,6 +82,7 @@ SafetyChecker* SafetyChecker_new(SerialManager* sm)
 //Updates all values based on sensor readings, safety checks, etc
 void SafetyChecker_update(SafetyChecker* me, TorqueEncoder* tps, BrakePressureSensor* bps, Sensor* HVILTermSense, Sensor* LVBattery)
 {
+    SerialManager_send(me->serialMan, "Entered SafetyChecker_update().\n");
     /*****************************************************************************
     * Faults
     ****************************************************************************/
@@ -97,20 +108,22 @@ void SafetyChecker_update(SafetyChecker* me, TorqueEncoder* tps, BrakePressureSe
         me->faults &= ~tpsPowerFailure;
     }
 
-	if (tps->tps0->ioErr_signalInit != IO_E_OK
+    
+	if (   tps->tps0->ioErr_signalInit != IO_E_OK
 		|| tps->tps1->ioErr_signalInit != IO_E_OK
 		|| tps->tps0->ioErr_signalGet != IO_E_OK
 		|| tps->tps1->ioErr_signalGet != IO_E_OK)
 	{
-		me->faults |= tpsSignalFailure;
+		//me->faults |= tpsSignalFailure;
+        SerialManager_send(me->serialMan, "TPS signal error\n");
 	}
     else
     {
         me->faults &= ~tpsSignalFailure;
     }
 
-	if (bps->bps0->ioErr_powerInit == IO_E_OK
-		|| bps->bps0->ioErr_powerSet == IO_E_OK)
+	if (bps->bps0->ioErr_powerInit != IO_E_OK
+		|| bps->bps0->ioErr_powerSet != IO_E_OK)
 	{
 		me->faults |= bpsPowerFailure;
 	}
@@ -119,8 +132,8 @@ void SafetyChecker_update(SafetyChecker* me, TorqueEncoder* tps, BrakePressureSe
         me->faults &= ~bpsPowerFailure;
     }
 
-	if (bps->bps0->ioErr_signalInit == IO_E_OK
-		&& bps->bps0->ioErr_signalGet == IO_E_OK)
+	if (bps->bps0->ioErr_signalInit != IO_E_OK
+		|| bps->bps0->ioErr_signalGet != IO_E_OK)
 	{
 		me->faults |= bpsSignalFailure;
 	}
@@ -174,17 +187,17 @@ void SafetyChecker_update(SafetyChecker* me, TorqueEncoder* tps, BrakePressureSe
 	
 	//Check for implausibility (discrepancy > 10%)
 	//RULE: EV2.3.6 Implausibility is defined as a deviation of more than 10% pedal travel between the sensors.
-	float4 tps0;   //Pedal percent float (a decimal between 0 and 1
-	float4 tps1;
+	float4 tps0Percent;   //Pedal percent float (a decimal between 0 and 1
+	float4 tps1Percent;
 
-	TorqueEncoder_getIndividualSensorPercent(tps, 0, &tps0); //borrow the pedal percent variable
-	TorqueEncoder_getIndividualSensorPercent(tps, 1, &tps1);
-	tps1 = 1 - tps1;
+	TorqueEncoder_getIndividualSensorPercent(tps, 0, &tps0Percent); //borrow the pedal percent variable
+	TorqueEncoder_getIndividualSensorPercent(tps, 1, &tps1Percent);
 
-	if (fabs(tps0 - tps1) > .1)  //Note: Individual TPS readings don't go negative, otherwise this wouldn't work
+	if ((1 - tps1Percent - tps0Percent) > .1 || (1 - tps1Percent - tps0Percent) < -.1)  //Note: Individual TPS readings don't go negative, otherwise this wouldn't work
 	{
 		//Err.Report(Err.Codes.TPSDiscrepancy, "TPS discrepancy of over 10%", Motor.Stop);
-		me->faults |= tpsOutOfSync;
+        SerialManager_send(me->serialMan, "TPS discrepancy of over 10%\n"); 
+        me->faults |= tpsOutOfSync;
 	}
     else
     {
@@ -221,21 +234,6 @@ void SafetyChecker_update(SafetyChecker* me, TorqueEncoder* tps, BrakePressureSe
 
 
 
-    //===================================================================
-    // HVIL Term Sense Check
-    //===================================================================
-    // If HVIL term sense goes low (because HV went down), motor torque
-    // command should be set to zero before turning off the controller
-    //-------------------------------------------------------------------
-    if (HVILTermSense->sensorValue == FALSE)
-    {
-        me->faults |= HVILTermSenseLost;
-    }
-    else
-    {
-        me->faults &= ~HVILTermSenseLost;
-    }
-
 
     /*****************************************************************************
     * Warnings
@@ -254,6 +252,23 @@ void SafetyChecker_update(SafetyChecker* me, TorqueEncoder* tps, BrakePressureSe
         me->warnings &= ~LVSBatteryLow;
     }
 
+
+
+
+    //===================================================================
+    // HVIL Term Sense Check
+    //===================================================================
+    // If HVIL term sense goes low (because HV went down), motor torque
+    // command should be set to zero before turning off the controller
+    //-------------------------------------------------------------------
+    if (HVILTermSense->sensorValue == FALSE)
+    {
+        me->warnings |= HVILTermSenseLost;
+    }
+    else
+    {
+        me->warnings &= ~HVILTermSenseLost;
+    }
 }
 
 
@@ -274,6 +289,15 @@ ubyte4 SafetyChecker_getFaults(SafetyChecker* me)
 ubyte4 SafetyChecker_getWarnings(SafetyChecker* me)
 {
     return (me->warnings);
+}
+
+void SafetyChecker_ReduceTorque(SafetyChecker* me, MotorController* mcm0)
+{
+    if (me->faults > 0)
+    {
+        MCM_commands_setTorque(mcm0, 0);
+        //MCM_commands_setTorqueLimit(1)
+    }
 }
 
 ////Updates all values based on sensor readings, safety checks, etc
