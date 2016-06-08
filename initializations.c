@@ -260,22 +260,3 @@ void vcu_initializeSensors(bool bench)
     Sensor_LVBattery;// = { 0xA };  //Note: There will be no init for this "sensor"
     */
 }
-
-/*****************************************************************************
-* MCU
-****************************************************************************/
-#include "motorController.h"
-/*
-MotorController MCU0;
-//Initialize the motor controllers (assign the can message IDs)
-void vcu_initializeMCU(void)
-{
-    MCU0.canMessageBaseId = 0xA0;
-    //Dummy timestamp for last MCU message
-    IO_RTC_StartTime(&MCU0.commands.timeStamp_lastCommandSent);
-
-    MCU0.lockoutStatus = UNKNOWN;
-    MCU0.inverterStatus = UNKNOWN;
-    MCU0.startRTDS = FALSE;
-}
-*/

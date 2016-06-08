@@ -219,7 +219,7 @@ void MCM_calculateCommands(MotorController* me, TorqueEncoder* tps, BrakePressur
     else
     {
         //REGEN OFF
-        me->torqueMaximum_Regen = 0;
+        //me->torqueMaximum_Regen = 0;
     }
     /*====================END REGEN CODE====================== */
 
@@ -258,7 +258,7 @@ void MCM_relayControl(MotorController* me, Sensor* HVILTermSense)
         {
             //Okay to turn MCM off once 0 torque is commanded, or after 2 sec
             //SIMILAR CODE SHOULD BE EMPLOYED AT HVIL SHUTDOWN CONTROL PIN
-            if (me->commandedTorque == 0 || IO_RTC_GetTimeUS(me->timeStamp_HVILLost) > 20000000)  //EXTRA 0
+            if (me->commandedTorque == 0 || IO_RTC_GetTimeUS(me->timeStamp_HVILLost) > 2000000)  //EXTRA 0
             {
                 IO_DO_Set(IO_DO_00, FALSE);  //Need MCM relay object
                 me->relayState = FALSE;
@@ -281,13 +281,13 @@ void MCM_relayControl(MotorController* me, Sensor* HVILTermSense)
         if (me->previousHVILState == FALSE)
         {
             SerialManager_send(me->serialMan, "Term sense went high\n");
+            if (MCM_getStartupStage(me) == 0) { MCM_setStartupStage(me, 1); }  //Reset the startup procedure because HV just went high and we are now turning on the MCM
         }
         me->previousHVILState = TRUE;
 
         //Turn on the MCM relay
         IO_DO_Set(IO_DO_00, TRUE);
         me->relayState = TRUE;
-        if (MCM_getStartupStage(me) == 0) { MCM_setStartupStage(me, 1); }
     }
 }
 
@@ -328,7 +328,7 @@ void MCM_inverterControl(MotorController* me, TorqueEncoder* tps, BrakePressureS
         if (MCM_getLockoutStatus(me) == DISABLED)
         {
             SerialManager_send(me->serialMan, "MCM lockout has been disabled.\n");
-            MCM_setStartupStage(me, MCM_getStartupStage(me) + 1);
+            MCM_setStartupStage(me, 2); //MCM_getStartupStage(me) + 1);
         }
         break;
 
@@ -341,13 +341,13 @@ void MCM_inverterControl(MotorController* me, TorqueEncoder* tps, BrakePressureS
             && tps->calibrated == TRUE
             && bps->calibrated == TRUE
             && tps->percent < .1
-            && bps->percent > .5
+            && bps->percent > .25
             )
         {
             MCM_commands_setInverter(me, ENABLED);  //Change the inverter command to enable
             SerialManager_send(me->serialMan, "Changed MCM inverter command to ENABLE.\n");
-            MCM_setStartupStage(me, MCM_getStartupStage(me) + 1);
-            RTDPercent = 1; //This line is redundant
+            MCM_setStartupStage(me, 3); // MCM_getStartupStage(me) + 1);
+            //RTDPercent = 1; //This line is redundant
         }
         break;
 
@@ -361,7 +361,7 @@ void MCM_inverterControl(MotorController* me, TorqueEncoder* tps, BrakePressureS
             RTDPercent = 1; //Doesn't matter if button is no longer pressed - RTD light should be on if car is driveable
             SerialManager_send(me->serialMan, "Inverter has been enabled.  Starting RTDS.  Car is ready to drive.\n");
             RTDS_setVolume(rtds, .01, 1500000);
-            MCM_setStartupStage(me, MCM_getStartupStage(me) + 1);  //leave this stage since we've already kicked off the RTDS
+            MCM_setStartupStage(me, 4); //MCM_getStartupStage(me) + 1);  //leave this stage since we've already kicked off the RTDS
         }
         break;
 
@@ -393,38 +393,68 @@ void MCM_inverterControl(MotorController* me, TorqueEncoder* tps, BrakePressureS
     //After all that, we can turn the RTD light on/off
     Light_set(Light_dashRTD, RTDPercent);
 
-    /*
+    
     //TEMPORARY Eco Switch startup code
-    float4 RTDPercent = 0;
+    //float4 RTDPercent = 0;
     
-    if (Sensor_RTDButton.sensorValue == TRUE)
-    {
-        MCM_commands_setInverter(me, ENABLED);
-        RTDPercent = 1;
-    }
-    else
-    {
-        MCM_commands_setInverter(me, DISABLED);
-    }
+    //////////////////////////if (Sensor_RTDButton.sensorValue == TRUE)
+    //////////////////////////{
+    //////////////////////////    RTDPercent = 1;
+    //////////////////////////    if (MCM_getInverterStatus(me) == DISABLED)
+    //////////////////////////    {
+    //////////////////////////        MCM_setRTDSFlag(me, TRUE);
+    //////////////////////////        MCM_commands_setInverter(me, ENABLED);
+    //////////////////////////    }
+    //////////////////////////    else
+    //////////////////////////    {
+    //////////////////////////        //already on.  do nothing.
+    //////////////////////////    }
+    //////////////////////////}
+    //////////////////////////else
+    //////////////////////////{
+    //////////////////////////    if (MCM_getInverterStatus(me) == ENABLED)
+    //////////////////////////    {
+    //////////////////////////        RTDPercent = 1;
+    //////////////////////////        if (MCM_getRTDSFlag(me) == TRUE)
+    //////////////////////////        {
+    //////////////////////////            RTDS_setVolume(rtds, .01, 1250000);
+    //////////////////////////            MCM_setRTDSFlag(me, FALSE);
+    //////////////////////////        }
+    //////////////////////////    }
+    //////////////////////////    else
+    //////////////////////////    {
+    //////////////////////////        MCM_commands_setInverter(me, DISABLED);
+    //////////////////////////        RTDPercent = 0;
+    //////////////////////////    }
+    //////////////////////////}
 
-    //If the inverter is disabled, but we're turning it on now
-    if (MCM_getInverterStatus(me) == DISABLED && MCM_commands_getInverter(me) == ENABLED)
-    {
-        SerialManager_send(me->serialMan, "MCM inverter is disabled; Setting to enabled.\n");
-        MCM_setRTDSFlag(me, TRUE);
-        //Light_set(Light_dashTCS, .95);
-    }
-    
-    if (MCM_getInverterStatus(me) == ENABLED && MCM_getRTDSFlag(me) == TRUE)
-    {
-        SerialManager_send(me->serialMan, "MCM inverter has been enabled.\n");
-        RTDS_setVolume(rtds, .01, 1250000);
-        MCM_setRTDSFlag(me, FALSE);  //RTDS started, so don't restart it next loop
-        RTDPercent = 1;
-    }
+    //////if (Sensor_RTDButton.sensorValue == TRUE)
+    //////{
+    //////    MCM_commands_setInverter(me, ENABLED);
+    //////}
+    //////else
+    //////{
+    //////    MCM_commands_setInverter(me, DISABLED);
+    //////}
+
+
+    ////////////If the inverter is disabled, but we're turning it on now
+    //////////if (MCM_getInverterStatus(me) == DISABLED && MCM_commands_getInverter(me) == ENABLED)
+    //////////{
+    //////////    SerialManager_send(me->serialMan, "MCM inverter is disabled; Setting to enabled.\n");
+    //////////    MCM_setRTDSFlag(me, TRUE);
+    //////////    //Light_set(Light_dashTCS, .95);
+    //////////}
+    //////////
+    //////////if (MCM_getInverterStatus(me) == ENABLED && MCM_getRTDSFlag(me) == TRUE)
+    //////////{
+    //////////    SerialManager_send(me->serialMan, "MCM inverter has been enabled.\n");
+    //////////    RTDS_setVolume(rtds, .01, 1250000);
+    //////////    MCM_setRTDSFlag(me, FALSE);  //RTDS started, so don't restart it next loop
+    //////////    RTDPercent = 1;
+    //////////}
 
     Light_set(Light_dashRTD, RTDPercent);
-    */
 }
 
 

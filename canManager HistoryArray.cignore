@@ -56,7 +56,6 @@ struct _CanManager {
 
     //WARNING: These values are not initialized - be careful to only access
     //pointers that have been previously assigned
-    //AVLNode* canMessageHistory[0x7FF];
     AVLNode* canMessageHistory[0x7FF];
 };
 
@@ -88,7 +87,7 @@ CanManager* CanManager_new(ubyte2 can0_busSpeed, ubyte1 can0_read_messageLimit, 
     //me->outgoingTree = NULL;
     for (ubyte4 id = 0; id <= 0x7FF; id++)
     {
-        me->canMessageHistory[id] = 0;
+        me->canMessageHistory[id] = NULL;
     }
 
     me->sendDelayus = defaultSendDelayus;
@@ -133,7 +132,7 @@ CanManager* CanManager_new(ubyte2 can0_busSpeed, ubyte1 can0_read_messageLimit, 
     for (messageID = 0x500; messageID <= 0x515; messageID++)
     {
         me->canMessageHistory[messageID]->timeBetweenMessages_Min = 50000;
-        me->canMessageHistory[messageID]->timeBetweenMessages_Max = 250000;
+        me->canMessageHistory[messageID]->timeBetweenMessages_Max = 500000;
         me->canMessageHistory[messageID]->required = TRUE;
         for (ubyte1 i = 0; i <= 7; i++) { me->canMessageHistory[messageID]->data[i] = 0; }
         IO_RTC_StartTime(&me->canMessageHistory[messageID]->lastMessage_timeStamp);
@@ -187,77 +186,123 @@ IO_ErrorType CanManager_send(CanManager* me, CanChannel channel, IO_CAN_DATA_FRA
 {
     //SerialManager_send(me->sm, "Do you even send?\n");
     bool sendSerialDebug = FALSE;
-    ubyte2 serialMessageID = 0xC0;
     bool sendMessage = FALSE;
     ubyte1 messagesToSendCount = 0;
-    IO_CAN_DATA_FRAME messagesToSend[canMessageCount];//[channel == CAN0_HIPRI ? me->can0_write_messageLimit : me->can1_write_messageLimit];
+    IO_CAN_DATA_FRAME messagesToSend[channel == CAN0_HIPRI ? me->can0_write_messageLimit : me->can1_write_messageLimit];
 
     //----------------------------------------------------------------------------
     // Check if message exists in outgoing message history tree
     //----------------------------------------------------------------------------
+    //AVLNode* lastMessage;  //replace with me->canMessageHistory[ID]
     AVLNode* lastMessage;  //replace with me->canMessageHistory[ID]
     ubyte1 messagePosition; //used twice
     for (messagePosition = 0; messagePosition < canMessageCount; messagePosition++)
     {
-        bool firstTimeMessage = FALSE;
-        bool dataChanged = FALSE;
-        bool minTimeExceeded = FALSE;
-        bool maxTimeExceeded = FALSE;
-
-        ubyte2 outboundMessageID = canMessages[messagePosition].id;
-        lastMessage = me->canMessageHistory[outboundMessageID];
         sendMessage = FALSE;
+        //NEEDS TO USE DIFFERENT TREES FOR CAN0 / CAN1
+        //lastMessage = AVL_find(me->outgoingTree, canMessages[messagePosition]->id);
+        lastMessage = me->canMessageHistory[canMessages[messagePosition].id];
+        //////////SerialManager_send(me->sm, "Searching for message ID ");
 
-        //----------------------------------------------------------------------------
-        // Check if this message exists in the array
-        //----------------------------------------------------------------------------
-        firstTimeMessage = (me->canMessageHistory[outboundMessageID] == 0);
-        if (firstTimeMessage)
-        {
-            me->canMessageHistory[outboundMessageID]->timeBetweenMessages_Min = 25000;
-            me->canMessageHistory[outboundMessageID]->timeBetweenMessages_Max = 125000;
-            me->canMessageHistory[outboundMessageID]->required = TRUE;
-            for (ubyte1 i = 0; i <= 7; i++) { me->canMessageHistory[outboundMessageID]->data[i] = 0; }
-            //IO_RTC_StartTime(&me->canMessageHistory[outboundMessageID]->lastMessage_timeStamp);
-            me->canMessageHistory[outboundMessageID]->lastMessage_timeStamp = 0;
-        }
+        //////////ubyte1 strMessageID[4];
+        //////////sprintf(strMessageID, "%03X", canMessages[messagePosition].id);
 
-        //----------------------------------------------------------------------------
-        // Check if data has changed since last time message was sent
-        //----------------------------------------------------------------------------
-        //Check each data byte in the data array
-        for (ubyte1 dataPosition = 0; dataPosition < 8; dataPosition++)
-        {
-            ubyte1 oldData = lastMessage->data[dataPosition];
-            ubyte1 newData = canMessages[messagePosition].data[dataPosition];
-            //if any data byte is changed, then probably want to send the message
-            if (oldData == newData)
-            {
-                //data has not changed.  No action required (DO NOT SET)
-                //dataChanged = FALSE;
-            }
-            else
-            {
-                dataChanged = TRUE; //ONLY MODIFY IF CHANGED
-            }
-        }//end checking each byte in message
+        //////////SerialManager_send(me->sm, strMessageID);
+        //////////SerialManager_send(me->sm, "\n");
+        //////////lastMessage = AVL_find(me->outgoingTree, canMessages[messagePosition].id);
 
-        //----------------------------------------------------------------------------
-        // Check if time has exceeded
-        //----------------------------------------------------------------------------
-        minTimeExceeded = ((IO_RTC_GetTimeUS(lastMessage->lastMessage_timeStamp) >= lastMessage->timeBetweenMessages_Min));
-        maxTimeExceeded = ((IO_RTC_GetTimeUS(lastMessage->lastMessage_timeStamp) >= 50000));//lastMessage->timeBetweenMessages_Max));
-        
-        //----------------------------------------------------------------------------
-        // If any criteria were exceeded, send the message out
-        //----------------------------------------------------------------------------
-        if (  (firstTimeMessage)
-           || (dataChanged && minTimeExceeded)
-           || (!dataChanged && maxTimeExceeded)
-           )
+        // Message doesn't exist in history tree ---------------------------------
+        //////////if (lastMessage == NULL)
+        if (me->canMessageHistory[canMessages[messagePosition].id] == NULL)
         {
+            //if (canMessages[messagePosition].id == 0x501) {
+                SerialManager_send(me->sm, "New CAN message.\n");
+            //}
+            ///////////lastMessage = AVL_insert(me->outgoingTree, (canMessages[messagePosition]).id, canMessages[messagePosition].data, me->sendDelayus, me->sendDelayus, FALSE);
+            //This assignment to lastMessage never gets used
+            lastMessage = AVL_insert(me->canMessageHistory, (canMessages[messagePosition]).id, canMessages[messagePosition].data, me->sendDelayus, me->sendDelayus, FALSE);
+            //send message later
             sendMessage = TRUE;
         }
+        // This message exists in the history tree ---------------------------------
+        else
+        {
+            //if (canMessages[messagePosition].id == 0x501) {
+                SerialManager_send(me->sm, "Existing CAN message.\n");
+            //}
+            //----------------------------------------------------------------------------
+            // Check if data has changed since last time message was sent
+            //----------------------------------------------------------------------------
+            bool dataChanged = FALSE;
+            for (ubyte1 dataPosition = 0; dataPosition < 8; dataPosition++)
+            {
+                ubyte1 oldData = lastMessage->data[dataPosition];
+                ubyte1 newData = canMessages[messagePosition].data[dataPosition];
+                //if any data byte is changed, then probably want to send the message
+                if (oldData == newData)
+                {
+                    //data has not changed.  No action required
+                    //dataChanged = FALSE;
+                }
+                else
+                {
+                    dataChanged = TRUE;
+                }
+            }//end checking each byte in message
+
+            //TODO:
+            //TEST #1: See if datachanged is stuck TRUE
+            //TEST #2: See if timestamp is stuck
+            //----------------------------------------------------------------------------
+            // If data has changed
+            //----------------------------------------------------------------------------
+            if (dataChanged == TRUE)
+            {
+                //if (canMessages[messagePosition].id == 0x501) {
+                    SerialManager_send(me->sm, "Data changed... ");
+                //}
+                //Send message if >10ms have passed (or whatever the min time is for this message)
+                if (IO_RTC_GetTimeUS(lastMessage->lastMessage_timeStamp) >= lastMessage->timeBetweenMessages_Min)
+                {
+                    sendMessage = TRUE;
+                    //if (canMessages[messagePosition].id == 0x501) {
+                        SerialManager_send(me->sm, "and it's past mintime.\n");
+                    //}
+                }
+                else
+                {
+                    //if (canMessages[messagePosition].id == 0x501) {
+                        SerialManager_send(me->sm, "but msg was sent recently.\n");
+                    //}
+                }
+                IO_UART_Task();
+            }
+            //----------------------------------------------------------------------------
+            // If data has NOT changed
+            //----------------------------------------------------------------------------
+            else
+            {
+                //if (canMessages[messagePosition].id == 0x501) {
+                    SerialManager_send(me->sm, "Data NOT changed... ");
+                //}
+                //If it's been a long time since this message was last sent out
+                if (IO_RTC_GetTimeUS(lastMessage->lastMessage_timeStamp) >= lastMessage->timeBetweenMessages_Max)
+                {
+                    //if (canMessages[messagePosition].id == 0x501) {
+                        SerialManager_send(me->sm, "but it's past mintime.\n");
+                    //}
+                    //Send the message even though the data hasn't changed
+                    sendMessage = TRUE;
+                }
+                else
+                {
+                    //if (canMessages[messagePosition].id == 0x501) {
+                        SerialManager_send(me->sm, "and message just sent.");
+                    //}
+                }
+                IO_UART_Task();
+            }
+        }   // end check if message should be sent
 
         //----------------------------------------------------------------------------
         // If we determined that this message should be sent
@@ -271,9 +316,9 @@ IO_ErrorType CanManager_send(CanManager* me, CanChannel channel, IO_CAN_DATA_FRA
         }
         else
         {
-            if (sendSerialDebug && (serialMessageID == outboundMessageID)) {
+            //if (canMessages[messagePosition].id == 0x501) {
                 SerialManager_send(me->sm, "This message did not need to be sent.\n");
-            }
+            //}
         }
     } //end of loop for each message in outgoing messages
 
@@ -285,7 +330,7 @@ IO_ErrorType CanManager_send(CanManager* me, CanChannel channel, IO_CAN_DATA_FRA
     if (messagesToSendCount > 0)
     {
         //Send the messages to send to the appropriate FIFO queue
-        sendResult = IO_CAN_WriteFIFO((channel == CAN0_HIPRI) ? me->can0_writeHandle : me->can1_writeHandle, messagesToSend, messagesToSendCount);
+        sendResult = IO_CAN_WriteFIFO((channel == CAN0_HIPRI) ? me->can0_writeHandle : me->can1_writeHandle, messagesToSend, canMessageCount);
         *((channel == CAN0_HIPRI) ? &me->ioErr_can0_write : &me->ioErr_can1_write) = sendResult;
 
         //Update the outgoing message tree with message sent timestamps

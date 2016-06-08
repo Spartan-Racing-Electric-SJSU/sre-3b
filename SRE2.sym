@@ -225,9 +225,9 @@ DLC=8
 CycleTime=100
 Var="1- Throttle Percent (0-FF)" unsigned 0,8 -h
 Var="2- TPS0 Percent (0-FF)" unsigned 8,8 -h
-Var="3- TPS0 Voltage" unsigned 16,16 /u:V /f:0.001
-Var="4- TPS0 CalibMin" unsigned 32,16 /u:V /f:0.001
-Var="5- TPS0 CalibMax" unsigned 48,16 /u:V /f:0.001
+Var="3- TPS0 Voltage" unsigned 16,16 /u:V /f:0.001 /p:3
+Var="4- TPS0 CalibMin" unsigned 32,16 /u:V /f:0.001 /p:3
+Var="5- TPS0 CalibMax" unsigned 48,16 /u:V /f:0.001 /p:3
 
 [V501_TPS1]
 ID=501h
@@ -235,9 +235,9 @@ DLC=8
 CycleTime=100
 Var="1- Throttle Percent (0-FF)" unsigned 0,8 -h
 Var="2- TPS1 Percent (0-FF)" unsigned 8,8 -h
-Var="3- TPS1 Voltage" unsigned 16,16 /u:V /f:0.001
-Var="4- TPS1 CalibMin" unsigned 32,16 /u:V /f:0.001
-Var="5- TPS1 CalibMax" unsigned 48,16 /u:V /f:0.001
+Var="3- TPS1 Voltage" unsigned 16,16 /u:V /f:0.001 /p:3
+Var="4- TPS1 CalibMin" unsigned 32,16 /u:V /f:0.001 /p:3
+Var="5- TPS1 CalibMax" unsigned 48,16 /u:V /f:0.001 /p:3
 
 [V502_BPS0]
 ID=502h
@@ -245,9 +245,9 @@ DLC=8
 CycleTime=100
 Var="1- Brake Percent (0-FF)" unsigned 0,8 -h
 Var="2- unused" unsigned 8,8 -h
-Var="3- BPS0 Voltage" unsigned 16,16 /u:V /f:0.001
-Var="4- BPS0 CalibMin" unsigned 32,16 /u:V /f:0.001
-Var="5- BPS0 CalibMax" unsigned 48,16 /u:V /f:0.001
+Var="3- BPS0 Voltage" unsigned 16,16 /u:V /f:0.001 /p:3
+Var="4- BPS0 CalibMin" unsigned 32,16 /u:V /f:0.001 /p:3
+Var="5- BPS0 CalibMax" unsigned 48,16 /u:V /f:0.001 /p:3
 
 [V503_WheelSpeeds]
 ID=503h
@@ -293,4 +293,54 @@ Var="1-14 (unused)" unsigned 13,1
 Var="1-15 (unused)" unsigned 14,1
 Var="1-16 (unused)" unsigned 15,1
 Var="2-1 LVS Battery Low" unsigned 16,1
+
+[B620_Elithion]
+ID=620h
+DLC=8
+Var=Elithion char 0,8
+
+[B621_Elithion_Rev]
+ID=621h
+DLC=8
+Var=Rev char 0,8
+
+[B622_Status]
+ID=622h
+DLC=8
+Var=Rev char 0,8
+
+[B623_Voltage]
+ID=623h
+DLC=8
+Var=Rev char 0,8
+
+[B624_Current]
+ID=624h
+DLC=8
+Var=Elithion char 0,8
+
+[B625_Energy]
+ID=625h
+DLC=8
+Var=Rev char 0,8
+
+[B626_SOC]
+ID=626h
+DLC=8
+Var=Elithion char 0,8
+
+[B627_Temp]
+ID=627h
+DLC=8
+Var=Rev char 0,8
+
+[B628_Resistance]
+ID=628h
+DLC=8
+Var=Rev char 0,8
+
+[B629_Elithion_Rev]
+ID=629h
+DLC=8
+Var=Rev char 0,8
 

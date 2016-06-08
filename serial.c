@@ -24,7 +24,9 @@ SerialManager* SerialManager_new(void)
 
 IO_ErrorType SerialManager_send(SerialManager* me, const ubyte1* data)
 {
-    return IO_UART_Write(IO_UART_CH0, data, strlen(data), &me->size);
+    IO_ErrorType err = IO_UART_Write(IO_UART_CH0, data, strlen(data), &me->size);
+    return err;
+
 }
 
 //IO_ErrorType SerialManager_sendLen(SerialManager* me, const ubyte1* data, ubyte1* dataLength)

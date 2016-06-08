@@ -29,6 +29,7 @@
 #include "IO_DIO.h"
 #include "IO_Driver.h"  //Includes datatypes, constants, etc - should be included in every c file
 #include "IO_RTC.h"
+#include "IO_UART.h"
 //#include "IO_CAN.h"
 //#include "IO_PWM.h"
 
@@ -156,7 +157,7 @@ void main(void)
     vcu_ADCWasteLoop();
 
     //vcu_init functions may have to be performed BEFORE creating CAN Manager object
-    CanManager* canMan = CanManager_new(500, 40, 40, 500, 20, 20, 500000, serialMan);  //3rd param = messages per node (can0/can1; read/write)
+    CanManager* canMan = CanManager_new(500, 40, 40, 500, 20, 20, 200000, serialMan);  //3rd param = messages per node (can0/can1; read/write)
     //can0_busSpeed ---------------------^    ^   ^   ^    ^   ^     ^         ^
     //can0_read_messageLimit -----------------|   |   |    |   |     |         |
     //can0_write_messageLimit---------------------+   |    |   |     |         |
@@ -205,6 +206,7 @@ void main(void)
 
         //SerialManager_send(serialMan, "VCU has entered main loop.");
 
+        
         /*******************************************/
         /*              Read Inputs                */
         /*******************************************/
@@ -214,21 +216,8 @@ void main(void)
         //Get readings from our sensors and other local devices (buttons, 12v battery, etc)
 		sensors_updateSensors();
 
-        //canInput - pull messages from CAN FIFO and update our object representations.
-
-
-
-
-        /*
-        * \retval IO_E_OK                everything fine
-        * \retval IO_E_NULL_POINTER      null pointer has been passed to function
-        * \retval IO_E_CAN_FIFO_FULL     overflow of FIFO buffer
-        * \retval IO_E_CAN_WRONG_HANDLE  invalid handle has been passed
-        * \retval IO_E_CHANNEL_NOT_CONFIGURED the given handle has not been configured
-        * \retval IO_E_CAN_OLD_DATA      no data has been received
-        */
-
-        //Also echo can0 messages to can1 for DAQ.
+        //Pull messages from CAN FIFO and update our object representations.
+        //Also echoes can0 messages to can1 for DAQ.
         CanManager_read(canMan, CAN0_HIPRI, mcm0, bms);
         /*switch (CanManager_getReadStatus(canMan, CAN0_HIPRI))
         {
@@ -240,13 +229,6 @@ void main(void)
             case IO_E_CAN_OLD_DATA: SerialManager_send(serialMan, "IO_E_CAN_OLD_DATA: no data has been received\n"); break;
             default: SerialManager_send(serialMan, "Warning: Unknown CAN read status\n"); break;
         }*/
-
-
-
-
-
-
-
 
 
         /*******************************************/
@@ -337,11 +319,10 @@ void main(void)
         //----------------------------------------------------------------------------
         RTDS_shutdownHelper(rtds); //Stops the RTDS from playing if the set time has elapsed
 
-        //IO_UART_Task();  //The task function shall be called every SW cycle.
         //Task end function for IO Driver - This function needs to be called at the end of every SW cycle
         IO_Driver_TaskEnd();
         //wait until the cycle time is over
-        while (IO_RTC_GetTimeUS(timestamp_mainLoopStart) < 1000000) // 1000 = 1ms
+        while (IO_RTC_GetTimeUS(timestamp_mainLoopStart) < 33000) // 1000 = 1ms
         {
             IO_UART_Task();  //The task function shall be called every SW cycle.
         }
