@@ -193,18 +193,18 @@ void SafetyChecker_update(SafetyChecker* me, TorqueEncoder* tps, BrakePressureSe
 	TorqueEncoder_getIndividualSensorPercent(tps, 0, &tps0Percent); //borrow the pedal percent variable
 	TorqueEncoder_getIndividualSensorPercent(tps, 1, &tps1Percent);
 
+    ubyte1* t0p[20];
+    ubyte1* t1p[20];
+    sprintf(t0p, "TPS0: %f\n", tps0Percent);
+    sprintf(t1p, "TPS1: %f\n", tps1Percent);
+    SerialManager_send(me->serialMan, t0p);
+    SerialManager_send(me->serialMan, t1p);
 
 	if ((tps1Percent - tps0Percent) > .1 || (tps1Percent - tps0Percent) < -.1)  //Note: Individual TPS readings don't go negative, otherwise this wouldn't work
 	{
-        ubyte1* t0p[20];
-        ubyte1* t1p[20];
-        sprintf(t0p, "TPS0: %f\n", tps0Percent);
-        sprintf(t1p, "TPS1: %f\n", tps1Percent);
 
 		//Err.Report(Err.Codes.TPSDiscrepancy, "TPS discrepancy of over 10%", Motor.Stop);
-        SerialManager_send(me->serialMan, "TPS discrepancy of over 10%\n"); 
-        SerialManager_send(me->serialMan, t0p);
-        SerialManager_send(me->serialMan, t1p);
+        SerialManager_send(me->serialMan, "TPS discrepancy of over 10%\n");
 
         me->faults |= tpsOutOfSync;
 	}

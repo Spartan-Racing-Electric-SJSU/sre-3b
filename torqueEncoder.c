@@ -34,7 +34,14 @@ TorqueEncoder* TorqueEncoder_new(bool benchMode)
     me->runCalibration = FALSE;  //Do not run the calibration at the next main loop cycle
 
     //me->calibrated = FALSE;
-    TorqueEncoder_resetCalibration(me);
+    //TorqueEncoder_resetCalibration(me);
+
+    //Default calibration values
+    me->tps0_calibMin = 1117;  //me->tps0->sensorValue;
+    me->tps0_calibMax = 2304;  //me->tps0->sensorValue;
+    me->tps1_calibMin = 2702;  //me->tps1->sensorValue;
+    me->tps1_calibMax = 3890;  //me->tps1->sensorValue;
+    me->calibrated = TRUE;
 
     return me;
 }
@@ -132,17 +139,10 @@ void TorqueEncoder_resetCalibration(TorqueEncoder* me)
 	//me->tps1_calibMax = me->tps1->specMin;
     
     //Normal
-    //me->tps0_calibMin = me->tps0->sensorValue;
-    //me->tps0_calibMax = me->tps0->sensorValue;
-    //me->tps1_calibMin = me->tps1->sensorValue;
-    //me->tps1_calibMax = me->tps1->sensorValue;
-
-    //Default calibration values
-    me->tps0_calibMin = 1300;  //me->tps0->sensorValue;
-    me->tps0_calibMax = 2200;  //me->tps0->sensorValue;
-    me->tps1_calibMin = 2500;  //me->tps1->sensorValue;
-    me->tps1_calibMax = 3800;  //me->tps1->sensorValue;
-    me->calibrated = TRUE;
+    me->tps0_calibMin = me->tps0->sensorValue;
+    me->tps0_calibMax = me->tps0->sensorValue;
+    me->tps1_calibMin = me->tps1->sensorValue;
+    me->tps1_calibMax = me->tps1->sensorValue;
 }
 
 void TorqueEncoder_saveCalibrationToEEPROM(TorqueEncoder* me)
@@ -223,10 +223,12 @@ void TorqueEncoder_calibrationCycle(TorqueEncoder* me, ubyte1* errorCount)
             //me->tps1_calibMax *= me->tps1_reverse ? pedalTopPlay : pedalBottomPlay;
 
             //Shrink the calibrated range slightly
-            me->tps0_calibMin += me->tps0_calibMin * .05;
-            me->tps0_calibMax -= me->tps0_calibMax * .05;
-            me->tps1_calibMin += me->tps1_calibMin * .05;
-            me->tps1_calibMax -= me->tps1_calibMax * .05;
+            float4 shrink0 = (me->tps0_calibMax - me->tps0_calibMin) * .05;
+            float4 shrink1 = (me->tps1_calibMax - me->tps1_calibMin) * .05;
+            me->tps0_calibMin += shrink0;
+            me->tps0_calibMax -= shrink0;
+            me->tps1_calibMin += shrink1;
+            me->tps1_calibMax -= shrink1;
 
 
 			me->runCalibration = FALSE;
