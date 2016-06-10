@@ -2,6 +2,7 @@
 #include <math.h>
 #include "mathFunctions.h"
 #include "IO_Driver.h"
+#include "IO_RTC.h"
 
 /*****************************************************************************
 * Helper functions
@@ -12,6 +13,7 @@
 * Automatically compensates for reverse-direction values: When min > max, value is assumed to travel in reverse direction.
 * If zeroToOneOnly is true, then % will be capped at 0%-100% (no negative % or > 100%)
 -------------------------------------------------------------------*/
+
 float4 getPercent(float4 value, float4 start, float4 end, bool zeroToOneOnly)
 {
     float4 retVal;
@@ -72,5 +74,12 @@ ubyte2 max(ubyte2 a, ubyte2 b)
 bool blink(ubyte4* clock, ubyte2 highPeriod)
 {
 
-    return TRUE;
+    //time passed since the start of the blinks divided by the period to get
+    //count.
+    //count % 2 gets the current state the blink should be in 0 or <0
+    ubyte4 count = IO_RTC_GetTimeUS(*clock) / highPeriod;
+    //removes decimal places. there may be a better way to do this but I got lazy
+    count = count - count % 1;
+
+    return !( count / highPeriod ) % 2;
 }
