@@ -100,7 +100,7 @@
 
 
 
-typedef enum { Light_dashEco, Light_dashError, Light_dashRTD, Light_dashTCS, Light_brake } Light;
+typedef enum { Light_dashEco, Light_dashError, Light_dashRTD, Light_dashTCS, Light_brake, Light_waterPump } Light;
 
 
 //----------------------------------------------------------------------------

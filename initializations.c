@@ -50,10 +50,8 @@ void vcu_initializeADC(bool benchMode)
 
     //Digital PWM outputs ---------------------------------------------------
 	IO_PWM_Init(IO_PWM_02, 500, TRUE, FALSE, 0, FALSE, NULL); IO_PWM_SetDuty(IO_PWM_02, 0, NULL);  //Brake Light
-	IO_PWM_Init(IO_PWM_03, 500, TRUE, FALSE, 0, FALSE, NULL); IO_PWM_SetDuty(IO_PWM_03, benchMode == TRUE ? 0xFFFF : 0, NULL);  //Bench light 12V source //TCS Light
-	//IO_PWM_Init(IO_PWM_04, 500, TRUE, FALSE, 0, FALSE, NULL); IO_PWM_SetDuty(IO_PWM_04, 0, NULL);  //Eco Light
-    //IO_PWM_Init(IO_PWM_05, 500, TRUE, FALSE, 0, FALSE, NULL); IO_PWM_SetDuty(IO_PWM_05, 0, NULL);  //Error Light
-    //IO_PWM_Init(IO_PWM_06, 500, TRUE, FALSE, 0, FALSE, NULL); IO_PWM_SetDuty(IO_PWM_06, 0, NULL);  //RTD Light
+	IO_PWM_Init(IO_PWM_03, 500, TRUE, FALSE, 0, FALSE, NULL); IO_PWM_SetDuty(IO_PWM_03, benchMode == TRUE ? 0xFFFF : 0, NULL);  //Bench LED 12V source
+	IO_PWM_Init(IO_PWM_05, 750, FALSE, FALSE, 0, FALSE, NULL); IO_PWM_SetDuty(IO_PWM_05, 0, NULL);  //Water pump signal
     IO_PWM_Init(IO_PWM_07, 750, TRUE, FALSE, 0, FALSE, NULL); IO_PWM_SetDuty(IO_PWM_07, 0, NULL);  //RTD Sound
 
     //----------------------------------------------------------------------------

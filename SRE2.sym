@@ -272,7 +272,7 @@ CycleTime=100
 Var="1- WSS RL Pulse" unsigned 0,32 /u:us
 Var="2- WSS RR Pulse" unsigned 32,32 /u:us
 
-[V506_SafetyChecks]
+[V506_VCU_Faults_and_Warnings]
 ID=506h
 DLC=8
 CycleTime=100
@@ -292,61 +292,79 @@ Var="E-13 (unused)" unsigned 12,1
 Var="E-14 (unused)" unsigned 13,1
 Var="E-15 (unused)" unsigned 14,1
 Var="E-16 (unused)" unsigned 15,1
-Var="W-1 LVS Battery Low" unsigned 16,1
+Var="E-17 LVS Battery Empty" unsigned 16,1
+Var="W-1 LVS Battery Low" unsigned 32,1
 
 [V507_12VBattery]
 ID=507h
 DLC=8
-CycleTime=100
+CycleTime=1000
 Var="1- Battery Voltage" unsigned 0,16 /u:V /f:0.001 /p:3
 
 [B620_Elithion]
 ID=620h
 DLC=8
+CycleTime=1000
 Var=Elithion char 0,8
 
 [B621_Elithion_Rev]
 ID=621h
-DLC=8
+DLC=0
+CycleTime=1000
 Var=Rev char 0,8
 
 [B622_Status]
 ID=622h
 DLC=8
-Var=Rev char 0,8
+CycleTime=1000
+Var=Overvoltage bit 47,1
+Var=Undervoltage bit 46,1
+Var=Overtemperature bit 45,1
+Var="Discharge Overcurrent" bit 44,1
+Var="Charge Overcurrent" bit 43,1
+Var="Comm Fault (bank or cell)" bit 42,1
+Var="Interlock is tripped" bit 41,1
+Var="Driving off while plugged in" bit 40,1
 
 [B623_Voltage]
 ID=623h
 DLC=8
-Var=Rev char 0,8
+CycleTime=1000
+Var=Voltage char 0,8
 
 [B624_Current]
 ID=624h
 DLC=8
-Var=Elithion char 0,8
+CycleTime=1000
+Var=Current char 0,8
 
 [B625_Energy]
 ID=625h
 DLC=8
-Var=Rev char 0,8
+CycleTime=1000
+Var=Energy char 0,8
 
 [B626_SOC]
 ID=626h
 DLC=8
-Var=Elithion char 0,8
+CycleTime=1000
+Var=SOC char 0,8
 
 [B627_Temp]
 ID=627h
 DLC=8
-Var=Rev char 0,8
+CycleTime=1000
+Var=Temp char 0,8
 
 [B628_Resistance]
 ID=628h
 DLC=8
-Var=Rev char 0,8
+CycleTime=1000
+Var=Resistance char 0,8
 
-[B629_Elithion_Rev]
+[B629_Custom]
 ID=629h
 DLC=8
-Var=Rev char 0,8
+CycleTime=10
+Var=Custom char 0,8
 

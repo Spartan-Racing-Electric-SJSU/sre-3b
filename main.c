@@ -45,6 +45,7 @@
 #include "safety.h"
 #include "sensorCalculations.h"
 #include "serial.h"
+#include "cooling.h"
 
 //Application Database, needed for TTC-Downloader
 APDB appl_db =
@@ -299,8 +300,7 @@ void main(void)
         /*******************************************/
         //MOVE INTO SAFETYCHECKER
         //SafetyChecker_setErrorLight(sc);
-        Light_set(Light_dashError, (SafetyChecker_getWarnings(sc) == 0 || SafetyChecker_allSafe(sc) == TRUE) ? 0 : 1);
-
+        Light_set(Light_dashError, (SafetyChecker_getWarnings(sc) == 0 && SafetyChecker_getFaults(sc) == 0) ? 0 : 1);
         //Handle motor controller startup procedures
         MCM_relayControl(mcm0, &Sensor_HVILTerminationSense);
         MCM_inverterControl(mcm0, tps, bps, rtds);
@@ -313,6 +313,9 @@ void main(void)
         canOutput_sendDebugMessage(canMan, tps, bps, mcm0, wss, sc);
         //canOutput_sendSensorMessages();
         //canOutput_sendStatusMessages(mcm0);
+
+        coolingSystemControl(bms);
+        
 
         //----------------------------------------------------------------------------
         // Task management stuff (end)

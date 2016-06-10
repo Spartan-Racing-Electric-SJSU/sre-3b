@@ -16,35 +16,38 @@
 #include "serial.h"
 
 //last flag is 0x 8000 0000 (32 flags)
-//Faults
-static const ubyte4 tpsOutOfRange = 1;
-static const ubyte4 bpsOutOfRange = 2;
-static const ubyte4 tpsPowerFailure = 4;
-static const ubyte4 bpsPowerFailure = 8;
+//Faults -------------------------------------------
+static const ubyte4 F_tpsOutOfRange = 1;
+static const ubyte4 F_bpsOutOfRange = 2;
+static const ubyte4 F_tpsPowerFailure = 4;
+static const ubyte4 F_bpsPowerFailure = 8;
 
-static const ubyte4 tpsSignalFailure = 0x10;
-static const ubyte4 bpsSignalFailure = 0x20;
-static const ubyte4 tpsNotCalibrated = 0x40;
-static const ubyte4 bpsNotCalibrated = 0x80;
+static const ubyte4 F_tpsSignalFailure = 0x10;
+static const ubyte4 F_bpsSignalFailure = 0x20;
+static const ubyte4 F_tpsNotCalibrated = 0x40;
+static const ubyte4 F_bpsNotCalibrated = 0x80;
 
-static const ubyte4 tpsOutOfSync = 0x100;
-static const ubyte4 bpsOutOfSync = 0x200; //NOT USED
-static const ubyte4 tpsbpsImplausible = 0x400;
+static const ubyte4 F_tpsOutOfSync = 0x100;
+static const ubyte4 F_bpsOutOfSync = 0x200; //NOT USED
+static const ubyte4 F_tpsbpsImplausible = 0x400;
 //static const ubyte4 UNUSED = 0x800;
 
-//static const ubyte4 tpsOutOfSync = 0x1000;
-//static const ubyte4 bpsOutOfSync = 0x2000; //NOT USED
-//static const ubyte4 tpsbpsImplausible = 0x4000;
+//static const ubyte4 F_tpsOutOfSync = 0x1000;
+//static const ubyte4 F_bpsOutOfSync = 0x2000; //NOT USED
+//static const ubyte4 F_tpsbpsImplausible = 0x4000;
+//static const ubyte4 UNUSED = 0x8000;
+
+static const ubyte4 F_lvsBatteryVeryLow = 0x10000;
+//static const ubyte4 F_bpsOutOfSync = 0x2000; //NOT USED
+//static const ubyte4 F_tpsbpsImplausible = 0x4000;
 //static const ubyte4 UNUSED = 0x8000;
 
 
 
 
-//Warnings
-static const ubyte4 LVSBatteryLow = 1;
-
-
-static const ubyte4 HVILTermSenseLost = 0x10;
+//Warnings -------------------------------------------
+static const ubyte4 W_lvsBatteryLow = 1;
+//static const ubyte4 HVILTermSenseLost = 0x10;
 
 
 /*****************************************************************************
@@ -82,7 +85,8 @@ SafetyChecker* SafetyChecker_new(SerialManager* sm)
 //Updates all values based on sensor readings, safety checks, etc
 void SafetyChecker_update(SafetyChecker* me, TorqueEncoder* tps, BrakePressureSensor* bps, Sensor* HVILTermSense, Sensor* LVBattery)
 {
-    SerialManager_send(me->serialMan, "Entered SafetyChecker_update().\n");
+    ubyte1* message[50];  //For sprintf'ing variables to print in serial
+    //SerialManager_send(me->serialMan, "Entered SafetyChecker_update().\n");
     /*****************************************************************************
     * Faults
     ****************************************************************************/
@@ -90,8 +94,8 @@ void SafetyChecker_update(SafetyChecker* me, TorqueEncoder* tps, BrakePressureSe
 	// Get calibration status
 	//===================================================================
     me->faults = 0;
-    if (tps->calibrated == FALSE) { me->faults |= tpsNotCalibrated; }
-    if (bps->calibrated == FALSE) { me->faults |= bpsNotCalibrated; }
+    if (tps->calibrated == FALSE) { me->faults |= F_tpsNotCalibrated; }
+    if (bps->calibrated == FALSE) { me->faults |= F_bpsNotCalibrated; }
 
 	//===================================================================
 	// Check if VCU was able to get a reading
@@ -101,11 +105,11 @@ void SafetyChecker_update(SafetyChecker* me, TorqueEncoder* tps, BrakePressureSe
 		|| tps->tps0->ioErr_powerSet != IO_E_OK
 		|| tps->tps1->ioErr_powerSet != IO_E_OK)
     {
-        me->faults |= tpsPowerFailure;
+        me->faults |= F_tpsPowerFailure;
     }
     else
     {
-        me->faults &= ~tpsPowerFailure;
+        me->faults &= ~F_tpsPowerFailure;
     }
 
     
@@ -114,32 +118,32 @@ void SafetyChecker_update(SafetyChecker* me, TorqueEncoder* tps, BrakePressureSe
 		|| tps->tps0->ioErr_signalGet != IO_E_OK
 		|| tps->tps1->ioErr_signalGet != IO_E_OK)
 	{
-		//me->faults |= tpsSignalFailure;
+		//me->faults |= F_tpsSignalFailure;
         SerialManager_send(me->serialMan, "TPS signal error\n");
 	}
     else
     {
-        me->faults &= ~tpsSignalFailure;
+        me->faults &= ~F_tpsSignalFailure;
     }
 
 	if (bps->bps0->ioErr_powerInit != IO_E_OK
 		|| bps->bps0->ioErr_powerSet != IO_E_OK)
 	{
-		me->faults |= bpsPowerFailure;
+		me->faults |= F_bpsPowerFailure;
 	}
     else
     {
-        me->faults &= ~bpsPowerFailure;
+        me->faults &= ~F_bpsPowerFailure;
     }
 
 	if (bps->bps0->ioErr_signalInit != IO_E_OK
 		|| bps->bps0->ioErr_signalGet != IO_E_OK)
 	{
-		me->faults |= bpsSignalFailure;
+		me->faults |= F_bpsSignalFailure;
 	}
     else
     {
-        me->faults &= ~bpsSignalFailure;
+        me->faults &= ~F_bpsSignalFailure;
     }
 
 	//===================================================================
@@ -156,11 +160,11 @@ void SafetyChecker_update(SafetyChecker* me, TorqueEncoder* tps, BrakePressureSe
 	if (tps->tps0->sensorValue < tps->tps0->specMin || tps->tps0->sensorValue > tps->tps0->specMax
 	||  tps->tps1->sensorValue < tps->tps1->specMin || tps->tps1->sensorValue > tps->tps1->specMax)
 	{
-		me->faults |= tpsOutOfRange;
+		me->faults |= F_tpsOutOfRange;
 	}
     else
     {
-        me->faults &= ~tpsOutOfRange;
+        me->faults &= ~F_tpsOutOfRange;
     }
 
 	//-------------------------------------------------------------------
@@ -168,11 +172,11 @@ void SafetyChecker_update(SafetyChecker* me, TorqueEncoder* tps, BrakePressureSe
 	//-------------------------------------------------------------------
 	if (bps->bps0->sensorValue < bps->bps0->specMin || bps->bps0->sensorValue > bps->bps0->specMax)
 	{
-		me->faults |= bpsOutOfRange;
+		me->faults |= F_bpsOutOfRange;
 	}
     else
     {
-        me->faults &= ~bpsOutOfRange;
+        me->faults &= ~F_bpsOutOfRange;
     }
 
 	//===================================================================
@@ -193,12 +197,10 @@ void SafetyChecker_update(SafetyChecker* me, TorqueEncoder* tps, BrakePressureSe
 	TorqueEncoder_getIndividualSensorPercent(tps, 0, &tps0Percent); //borrow the pedal percent variable
 	TorqueEncoder_getIndividualSensorPercent(tps, 1, &tps1Percent);
 
-    ubyte1* t0p[20];
-    ubyte1* t1p[20];
-    sprintf(t0p, "TPS0: %f\n", tps0Percent);
-    sprintf(t1p, "TPS1: %f\n", tps1Percent);
-    SerialManager_send(me->serialMan, t0p);
-    SerialManager_send(me->serialMan, t1p);
+    sprintf(message, "TPS0: %f\n", tps0Percent);
+    SerialManager_send(me->serialMan, message);
+    sprintf(message, "TPS1: %f\n", tps1Percent);
+    SerialManager_send(me->serialMan, message);
 
 	if ((tps1Percent - tps0Percent) > .1 || (tps1Percent - tps0Percent) < -.1)  //Note: Individual TPS readings don't go negative, otherwise this wouldn't work
 	{
@@ -206,11 +208,11 @@ void SafetyChecker_update(SafetyChecker* me, TorqueEncoder* tps, BrakePressureSe
 		//Err.Report(Err.Codes.TPSDiscrepancy, "TPS discrepancy of over 10%", Motor.Stop);
         SerialManager_send(me->serialMan, "TPS discrepancy of over 10%\n");
 
-        me->faults |= tpsOutOfSync;
+        me->faults |= F_tpsOutOfSync;
 	}
     else
     {
-        me->faults &= ~tpsOutOfSync;
+        me->faults &= ~F_tpsOutOfSync;
     }
 
 
@@ -228,16 +230,16 @@ void SafetyChecker_update(SafetyChecker* me, TorqueEncoder* tps, BrakePressureSe
 	//Implausibility if..
 	if (bps->percent > .02 && tps->percent > .25) //If mechanical brakes actuated && tps > 25%
 	{
-		me->faults |= tpsbpsImplausible;
+		me->faults |= F_tpsbpsImplausible;
 		//From here, assume that motor controller will check for implausibility before accepting commands
 	}
 
 	//Clear implausibility if...
-	if ((me->faults & tpsbpsImplausible) > 0)
+	if ((me->faults & F_tpsbpsImplausible) > 0)
 	{
 		if (tps->percent < .05) //TPS is reduced to < 5%
 		{
-			me->faults &= ~tpsbpsImplausible;  //turn off the implausibility flag
+			me->faults &= ~F_tpsbpsImplausible;  //turn off the implausibility flag
 		}
 	}
 
@@ -252,15 +254,25 @@ void SafetyChecker_update(SafetyChecker* me, TorqueEncoder* tps, BrakePressureSe
     //===================================================================
     //  IO_ADC_UBAT: 0..40106  (0V..40.106V)
     //-------------------------------------------------------------------
-    if (LVBattery->sensorValue <= 13100)
+    if (LVBattery->sensorValue <= 12730)
     {
-        me->warnings |= LVSBatteryLow;
+        me->faults |= F_lvsBatteryVeryLow;
+        me->warnings |= W_lvsBatteryLow;
+        sprintf(message, "LVS battery %.03fV BELOW 10%%!\n", (float4)LVBattery->sensorValue / 1000);
+    }
+    else if (LVBattery->sensorValue <= 13100)
+    {
+        me->warnings &= ~F_lvsBatteryVeryLow;
+        me->warnings |= W_lvsBatteryLow;
+        sprintf(message, "LVS battery %.03fV LOW.\n", (float4)LVBattery->sensorValue / 1000);
     }
     else
     {
-        me->warnings &= ~LVSBatteryLow;
+        me->warnings &= ~F_lvsBatteryVeryLow;
+        me->warnings &= ~W_lvsBatteryLow;
+        sprintf(message, "LVS battery %.03fV good.\n", (float4)LVBattery->sensorValue / 1000);
     }
-
+    SerialManager_send(me->serialMan, message);
 
 
 
@@ -270,14 +282,14 @@ void SafetyChecker_update(SafetyChecker* me, TorqueEncoder* tps, BrakePressureSe
     // If HVIL term sense goes low (because HV went down), motor torque
     // command should be set to zero before turning off the controller
     //-------------------------------------------------------------------
-    if (HVILTermSense->sensorValue == FALSE)
+    /*if (HVILTermSense->sensorValue == FALSE)
     {
         me->warnings |= HVILTermSenseLost;
     }
     else
     {
         me->warnings &= ~HVILTermSenseLost;
-    }
+    }*/
 }
 
 
@@ -302,83 +314,26 @@ ubyte4 SafetyChecker_getWarnings(SafetyChecker* me)
 
 void SafetyChecker_ReduceTorque(SafetyChecker* me, MotorController* mcm0)
 {
+    //-------------------------------------------------------------------
+    // Faults - set 0 torque
+    //-------------------------------------------------------------------
     if (me->faults > 0)
     {
         MCM_commands_setTorque(mcm0, 0);
         //MCM_commands_setTorqueLimit(1)
     }
-}
+    else
+    {
+        //-------------------------------------------------------------------
+        // Other limits (% reduction)
+        //-------------------------------------------------------------------
+        //80kW
 
-////Updates all values based on sensor readings, safety checks, etc
-//bool SafetyChecker_getError(SafetyChecker* me, SafetyCheck check)
-//{
-//	bool status;
-//	switch (check)
-//	{
-//	case CHECK_tpsOutOfRange:
-//		status = me->faults && tpsOutOfRange == 0;
-//		break;
-//
-//	case CHECK_bpsOutOfRange:
-//		status = me->faults && bpsOutOfRange;
-//		break;
-//
-//	case CHECK_tpsNotCalibrated:
-//		status = me->tpsNotCalibrated;
-//		break;
-//
-//	case CHECK_bpsNotCalibrated:
-//		status = me->bpsNotCalibrated;
-//		break;
-//
-//	case CHECK_tpsOutOfSync:
-//		status = me->tpsOutOfSync;
-//		break;
-//
-//	case CHECK_tpsbpsImplausible:
-//		status = me->tpsbpsImplausible;
-//		break;
-//
-//	default:
-//		status = TRUE; //error
-//		break;
-//	}
-//
-//	return status;
-//}
-//
-////Updates all values based on sensor readings, safety checks, etc
-//ubyte1 SafetyChecker_getErrorByte(SafetyChecker* me, ubyte1* errorSet)
-//{
-//	ubyte1 errorByte = 0;
-//	switch ((ubyte2)errorSet)
-//	{
-//	case 0:
-//		for (int bit = 0; bit <= 7; bit++)
-//		{
-//			errorByte <<= 1;  //Always leftshift first
-//			switch (bit)
-//			{
-//			case 0: errorByte |= me->tpsOutOfRange ? 1 : 0; break;
-//			case 1: errorByte |= me->tpsNotCalibrated ? 1 : 0; break;
-//			case 2: errorByte |= me->tpsOutOfSync ? 1 : 0; break;
-//			case 3: errorByte |= 0; break;
-//			case 4: errorByte |= me->bpsOutOfRange ? 1 : 0; break;
-//			case 5: errorByte |= me->bpsNotCalibrated ? 1 : 0; break;
-//			case 6: errorByte |= 0; break;
-//			case 7: errorByte |= me->tpsbpsImplausible ? 1 : 0; break;
-//			default: break;
-//			}
-//		}
-//		break;
-//
-//	default:
-//		errorByte = 0xFF; //error
-//		break;
-//	}
-//
-//	return errorByte;
-//}
+        //Battery temp
+
+        //Discharge Current Limit
+    }
+}
 
 //-------------------------------------------------------------------
 // 80kW Limit Check
@@ -396,25 +351,4 @@ ubyte2 checkPowerDraw(BatteryManagementSystem* bms, MotorController* mcm )
 	}
 	
 	return torqueThrottle;
-}
-
-//-------------------------------------------------------------------
-// Pack Temp Check
-//-------------------------------------------------------------------
-void checkBatteryPackTemp(BatteryManagementSystem* bms)
-{
-	
-	if((BMS_getPackTemp(bms) > 35))
-	{
-		// Turn on FANS
-		//IO_DO_Init(IO_DO_06); 
-		IO_DO_Set(IO_DO_06, TRUE); //pin 142 - sending 12V 
-		
-	}
-	else
-	{
-		IO_DO_Set(IO_DO_06, FALSE);
-	}
-		
-		
 }
