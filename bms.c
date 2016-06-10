@@ -6,298 +6,295 @@
 #include "IO_RTC.h"
 
 /**************************************************************************
- * 	REVISION HISTORY:
- *	2016-5-11 - Rabeel Elahi - Added bms_commands_getPower();
- *							 - Added bms_commands_getPackTemp();
- *							 
+ *     REVISION HISTORY:
+ *    2016-5-11 - Rabeel Elahi - Added bms_commands_getPower();
+ *                             - Added bms_commands_getPackTemp();
+ *                             
  *  2016-4-20 - Rabeel Elahi - Added bms_parseCANMessage()
- *						     - Moved cases back to bms.c
- *						     - Added #includes
- *						     - Leaving endian conversion functions until new CAN manager complete
+ *                             - Moved cases back to bms.c
+ *                             - Added #includes
+ *                             - Leaving endian conversion functions until new CAN manager complete
  *
- * 	2016-4-8 - Rabeel Elahi - Moved cases to canInput.c
- *							- Moved endian conversion functions to canInput.c
- *							- Changed uints to ubytes
+ *     2016-4-8 - Rabeel Elahi - Moved cases to canInput.c
+ *                            - Moved endian conversion functions to canInput.c
+ *                            - Changed uints to ubytes
  *
- *	2016-4-7 - Rabeel Elahi - Created this file.
- *							- Defined cases for BMS can messages
- *							- TODO: Rename variable types to VCU types
- *							- TODO: Move canInput_readMesagges to caninput.c
- *							- TODO: Move ENDIAN conversion helper functions to caninput.c?
+ *    2016-4-7 - Rabeel Elahi - Created this file.
+ *                            - Defined cases for BMS can messages
+ *                            - TODO: Rename variable types to VCU types
+ *                            - TODO: Move canInput_readMesagges to caninput.c
+ *                            - TODO: Move ENDIAN conversion helper functions to caninput.c?
  *
  *
  **************************************************************************/
 
 /**********************************************************
- *	 	 	 *********** CAUTION ***********              *
+ *               *********** CAUTION ***********              *
  * MULTI-BYTE VALUES FOR THE ELITHION BMS ARE BIG-ENDIAN  *
- *														  *
+ *                                                          *
  **********************************************************/
 
 
 
 struct _BatteryManagementSystem {
 
-	ubyte2 canMessageBaseId;
+    ubyte2 canMessageBaseId;
 
-	// 0x622h //
+    // 0x622h //
 
-	ubyte1  state; 			// state of system
-	ubyte2  timer;				// power up time
-	ubyte1  flags;				// flags
-	ubyte1  faultCode; 		// fault code, stored
-	ubyte1  levelFaults;		// Level fault flags (e.g. over voltage, under voltage, etc)
-	ubyte1  warnings;			// warning flags
+    ubyte1  state;             // state of system
+    ubyte2  timer;                // power up time
+    ubyte1  flags;                // flags
+    ubyte1  faultCode;         // fault code, stored
+    ubyte1  levelFaults;        // Level fault flags (e.g. over voltage, under voltage, etc)
+    ubyte1  warnings;            // warning flags
 
-	// 0x623h //
+    // 0x623h //
 
-//	ubyte2 packVoltage;		// Total voltage of pack
-	ubyte1  minVtg;			// Voltage of least charged cell
-	ubyte1  minVtgCell;     	// ID of cell with lowest voltage
-	ubyte1  maxVtg;			// Voltage of most charged cell
-	ubyte1  maxVtgCell;     	// ID of cell with highest voltage
+//    ubyte2 packVoltage;        // Total voltage of pack
+    ubyte1  minVtg;            // Voltage of least charged cell
+    ubyte1  minVtgCell;         // ID of cell with lowest voltage
+    ubyte1  maxVtg;            // Voltage of most charged cell
+    ubyte1  maxVtgCell;         // ID of cell with highest voltage
 
-	// 0x624h //
+    // 0x624h //
 
-//	sbyte2  packCurrent;		// Pack current
-	ubyte2  chargeLimit;		// Maximum current acceptable (charge)
-	ubyte2  dischargeLimit;	// Maximum current available (discharge)
+//    sbyte2  packCurrent;        // Pack current
+    ubyte2  chargeLimit;        // Maximum current acceptable (charge)
+    ubyte2  dischargeLimit;    // Maximum current available (discharge)
 
-	// 0x625h //
+    // 0x625h //
 
-	ubyte4 batteryEnergyIn; 	// Total energy into battery
-	ubyte4 batteryEnergyOut;	// Total energy out of battery
+    ubyte4 batteryEnergyIn;     // Total energy into battery
+    ubyte4 batteryEnergyOut;    // Total energy out of battery
 
 
-	// 0x626h //
+    // 0x626h //
 
-//	ubyte1  SOC; 				// state of charge
-//	ubyte2 DOD; 				// depth of discharge
-	ubyte2 capacity; 			// actual capacity of pack
-	ubyte1  SOH;				// State of Health
+//    ubyte1  SOC;                 // state of charge
+    ubyte2 DOD;                 // depth of discharge
+    ubyte2 capacity;             // actual capacity of pack
+    ubyte1  SOH;                // State of Health
 
-	// 0x627h //
+    // 0x627h //
 
-	sbyte1  packTemp;			// average pack temperature
-	sbyte1  minTemp;			// Temperature of coldest sensor
-	sbyte1  minTempCell; 		// ID of cell with lowest temperature
-//	sbyte1  maxTemp;			// Temperature of hottest sensor
-	sbyte1  maxTempCell; 		// ID of cell with highest temperature
+    sbyte1  packTemp;            // average pack temperature
+    sbyte1  minTemp;            // Temperature of coldest sensor
+    sbyte1  minTempCell;         // ID of cell with lowest temperature
+//    sbyte1  maxTemp;            // Temperature of hottest sensor
+    sbyte1  maxTempCell;         // ID of cell with highest temperature
 
-	// 0x628h //
+    // 0x628h //
 
-	ubyte2 	packRes;			// resistance of entire pack
-	ubyte1  minRes;  			// resistance of lowest resistance cells
-	ubyte1  minResCell;         // ID of cell with lowest resistance
-	ubyte1  maxRes;				// resistance of highest resistance cells
-	ubyte1  maxResCell;			// ID of cell with highest resistance
+    ubyte2     packRes;            // resistance of entire pack
+    ubyte1  minRes;              // resistance of lowest resistance cells
+    ubyte1  minResCell;         // ID of cell with lowest resistance
+    ubyte1  maxRes;                // resistance of highest resistance cells
+    ubyte1  maxResCell;            // ID of cell with highest resistance
 
-	// 0X629 //
+    // 0X629 //
 
-	sbyte4 packVoltage;
-	sbyte4 packCurrent;
-	sbyte1 maxTemp;
-	sbyte1 avgTemp;
-	ubyte1 SOC;
-	ubyte1 DOD;
+    sbyte4 packVoltage;  //Voltage(100mV)[022]
+    sbyte4 packCurrent;  //Current(100mA)[054]
+    sbyte1 maxTemp;      //Max Temp[104]
+    sbyte1 avgTemp;      //Avg Temp[096]
+    ubyte1 SOC;          //SOC(%)[112]
+    ubyte1 DCL;          //DOD(Ah)[144]
 
-	//Voltage(100mV)[022]
-	//Current(100mA)[054]
-	//Max Temp[104]
-	//Avg Temp[096]
-	//SOC(%)[112]
-	//DOD(Ah)[144]
+    
 
-	// signed = 2's complement: 0XfFF = -1, 0x00 = 0, 0x01 = 1
+    // signed = 2's complement: 0XfFF = -1, 0x00 = 0, 0x01 = 1
 
 };
 
 BatteryManagementSystem* BMS_new(ubyte2 canMessageBaseID){
 
-	BatteryManagementSystem* BMS_obj = (BatteryManagementSystem*)malloc(sizeof(struct _BatteryManagementSystem));
-	BMS_obj->canMessageBaseId = canMessageBaseID;
-	return BMS_obj;
+    BatteryManagementSystem* BMS_obj = (BatteryManagementSystem*)malloc(sizeof(struct _BatteryManagementSystem));
+    BMS_obj->canMessageBaseId = canMessageBaseID;
+    return BMS_obj;
 
 }
+
+void BMS_parseCanMessage(BatteryManagementSystem* bms, IO_CAN_DATA_FRAME* bmsCanMessage){
+    ubyte2 utemp16;
+//    sbyte1  temp16;
+    ubyte4 utemp32;
+
+
+    switch (bmsCanMessage->id)
+    {
+
+    case 0x622:
+
+        bms->state = bmsCanMessage->data[0];
+        utemp16 = (ubyte2)bmsCanMessage->data[1] << 8 | bmsCanMessage->data[2];
+        bms->timer = swap_uint16(utemp16);
+        bms->flags = bmsCanMessage->data[3];
+        bms->faultCode = bmsCanMessage->data[4];
+        bms->levelFaults = bmsCanMessage->data[5];
+        bms->warnings = bmsCanMessage->data[6];
+        break;
+
+    case 0x623:
+
+        //    utemp16 = ((bmsCanMessage->data[0] << 8) | (bmsCanMessage->data[1]));
+        //    bms->packVoltage = swap_uint16(utemp16);  //65535 = 65535V
+        bms->minVtg = (bmsCanMessage->data[2] / 10);    //255 = 25.5V
+        bms->minVtgCell = bmsCanMessage->data[3];       //1-254
+        bms->maxVtg = (bmsCanMessage->data[4] / 10);    //255 = 25.5V
+        bms->maxVtgCell = bmsCanMessage->data[5];       //1-254
+
+        break;
+
+    case 0x624:
+
+        //    temp16 = ((bmsCanMessage->data[0] << 8) | (bmsCanMessage->data[1]));
+        //    bms->packCurrent = swap_int16(temp16);
+
+        utemp16 = ((bmsCanMessage->data[2] << 8) | (bmsCanMessage->data[3]));
+        bms->chargeLimit = swap_uint16(utemp16);
+
+        utemp16 = ((bmsCanMessage->data[4] << 8) | (bmsCanMessage->data[5]));
+        bms->dischargeLimit = swap_uint16(utemp16);
+
+        break;
+
+    case 0x625:
+
+        utemp32 = ((((ubyte4)bmsCanMessage->data[0] << 24) |
+                ((ubyte4)bmsCanMessage->data[1] << 16) |
+                ((ubyte4)bmsCanMessage->data[2] << 8) |
+                (bmsCanMessage->data[3])));
+        bms->batteryEnergyIn = swap_uint32(utemp32);
+
+        utemp32 = ((((ubyte4)bmsCanMessage->data[4] << 24) |
+                ((ubyte4)bmsCanMessage->data[5] << 16) |
+                ((ubyte4)bmsCanMessage->data[6] << 8) |
+                ((ubyte4)bmsCanMessage->data[7])));
+        bms->batteryEnergyOut = swap_uint32(utemp32);
+
+        break;
+
+    case 0x626:
+
+        //    bms->SOC = bmsCanMessage->data[0];
+
+        utemp16 = ((bmsCanMessage->data[1] << 8) | (bmsCanMessage->data[2]));
+        bms->DOD = swap_uint16(utemp16);
+
+        utemp16 = ((bmsCanMessage->data[3] << 8) | (bmsCanMessage->data[4]));
+        bms->capacity = swap_uint16(utemp16);
+        bms->SOH = bmsCanMessage->data[6];
+
+        break;
+
+    case 0x627:
+
+        //bms->packTemp = bmsCanMessage->data[0];
+        bms->minTemp = bmsCanMessage->data[2];
+        bms->minTempCell = bmsCanMessage->data[3];
+        bms->maxTemp = bmsCanMessage->data[4];
+        bms->maxTempCell = bmsCanMessage->data[5];
+
+        break;
+
+    case 0x628:
+
+        utemp16 = ((bmsCanMessage->data[0] << 8) | (bmsCanMessage->data[1]));
+        bms->packRes = ((swap_uint16(utemp16)) / 10000);
+//        1 = 100 mOhm
+//        10 = 1000 mOhm = 0.001 ohm = 10/10000
+//        100 = 10000 mohm = 0.01 ohm
+//        1000 = 100000 mOhM = 0.1 ohm
+//        10000 = 1000000 mOhm = 1 ohm
+        bms->minRes = (bmsCanMessage->data[2] / 10000);
+        bms->minResCell = bmsCanMessage->data[3];
+        bms->maxRes = (bmsCanMessage->data[4] / 10000);
+        bms->maxResCell = bmsCanMessage->data[5];
+        break;
+
+    case 0x629:
+        //See https://onedrive.live.com/view.aspx?resid=F9BB8F0F8FDB5CF8!36803&ithint=file%2cxlsx&app=Excel&authkey=!AI-YHJrHmtUaWpI
+        //Voltage(100mV)[022] - 2 bytes little endian (1=100mV) 0000000000000001 = 1 = 100 mV = 0.1 V
+                                                        //        5 = 500 mV = 0.5 V
+                                                        //        10 = 1000 mV = 1 V
+                                                        //       100 = 10000 mV = 10 V
+                                                        //         1000 = 100000 mV = 100 V
+        //Current(100mA)[054] - 2 bytes little endian (1=100mA)
+        //Max Temp[104] - in C
+        //Avg Temp[096] - in C
+        //SOC(%)[112] - %
+        //DCL(%)[080]- %  //**CHANGED**
+        bms->packVoltage = (((bmsCanMessage->data[1] << 8) | (bmsCanMessage->data[0])) / 10); //V
+        bms->packCurrent = (((bmsCanMessage->data[3] << 8) | (bmsCanMessage->data[2])) / 10); //V
+        bms->maxTemp = ((bmsCanMessage->data[4]));  //C
+        bms->avgTemp = ((bmsCanMessage->data[5]));  //C
+        bms->SOC = ((bmsCanMessage->data[6]));    //%
+        bms->DCL = ((bmsCanMessage->data[7]));    //%
+        break;
+    }
+}
+
 sbyte1 BMS_getAvgTemp(BatteryManagementSystem* me)
 {
-	return (me->avgTemp);
+    char buffer[32];
+    sprintf(buffer, "AvgPackTemp: %i\n", me->avgTemp);
+    return (me->avgTemp);
 }
 sbyte1 BMS_getMaxTemp(BatteryManagementSystem* me)
 {
-	return (me->maxTemp);
+    char buffer[32];
+    sprintf(buffer, "MaxTemp: %i\n", me->maxTemp);
+    return (me->maxTemp);
 }
-
 
 // ***NOTE: packCurrent and and packVoltage are SIGNED variables and the return type for BMS_getPower is signed
 sbyte4 BMS_getPower(BatteryManagementSystem* me)
 {
-	return (me->packCurrent * me->packVoltage);
+    char buffer[32];
+    sprintf(buffer, "packVoltage: %f\n", me->packVoltage);
+    return (me->packCurrent * me->packVoltage);
 }
 
 ubyte2 BMS_getPackTemp(BatteryManagementSystem* me)
 {
-	return (me->packTemp);
+    char buffer[32];
+    sprintf(buffer, "PackTemp: %i\n", me->packTemp);
+    return (me->packTemp);
 }
-
-
-void BMS_parseCanMessage(BatteryManagementSystem* bms, IO_CAN_DATA_FRAME* bmsCanMessage){
-	ubyte2 utemp16;
-//	sbyte1  temp16;
-	ubyte4 utemp32;
-
-
-	switch (bmsCanMessage->id)
-	{
-
-	case 0x622:
-
-		bms->state = bmsCanMessage->data[0];
-		utemp16 = (ubyte2)bmsCanMessage->data[1] << 8 | bmsCanMessage->data[2];
-		bms->timer = swap_uint16(utemp16);
-		bms->flags = bmsCanMessage->data[3];
-		bms->faultCode = bmsCanMessage->data[4];
-		bms->levelFaults = bmsCanMessage->data[5];
-		bms->warnings = bmsCanMessage->data[6];
-		break;
-
-	case 0x623:
-
-		//	utemp16 = ((bmsCanMessage->data[0] << 8) | (bmsCanMessage->data[1]));
-		//	bms->packVoltage = swap_uint16(utemp16);
-		bms->minVtg = (bmsCanMessage->data[2] / 10);
-		bms->minVtgCell = bmsCanMessage->data[3];
-		bms->maxVtg = (bmsCanMessage->data[4] / 10);
-		bms->maxVtgCell = bmsCanMessage->data[5];
-
-		break;
-
-	case 0x624:
-
-		//	temp16 = ((bmsCanMessage->data[0] << 8) | (bmsCanMessage->data[1]));
-		//	bms->packCurrent = swap_int16(temp16);
-
-		utemp16 = ((bmsCanMessage->data[2] << 8) | (bmsCanMessage->data[3]));
-		bms->chargeLimit = swap_uint16(utemp16);
-
-		utemp16 = ((bmsCanMessage->data[4] << 8) | (bmsCanMessage->data[5]));
-		bms->dischargeLimit = swap_uint16(utemp16);
-
-		break;
-
-	case 0x625:
-
-		utemp32 = ((((ubyte4)bmsCanMessage->data[0] << 24) |
-				((ubyte4)bmsCanMessage->data[1] << 16) |
-				((ubyte4)bmsCanMessage->data[2] << 8) |
-				(bmsCanMessage->data[3])));
-		bms->batteryEnergyIn = swap_uint32(utemp32);
-
-		utemp32 = ((((ubyte4)bmsCanMessage->data[4] << 24) |
-				((ubyte4)bmsCanMessage->data[5] << 16) |
-				((ubyte4)bmsCanMessage->data[6] << 8) |
-				((ubyte4)bmsCanMessage->data[7])));
-		bms->batteryEnergyOut = swap_uint32(utemp32);
-
-		break;
-
-	case 0x626:
-
-		//	bms->SOC = bmsCanMessage->data[0];
-
-		//utemp16 = ((bmsCanMessage->data[1] << 8) | (bmsCanMessage->data[2]));
-		//	bms->DOD = swap_uint16(utemp16);
-
-		utemp16 = ((bmsCanMessage->data[3] << 8) | (bmsCanMessage->data[4]));
-		bms->capacity = swap_uint16(utemp16);
-		bms->SOH = bmsCanMessage->data[6];
-
-		break;
-
-	case 0x627:
-
-		//bms->packTemp = bmsCanMessage->data[0];
-		bms->minTemp = bmsCanMessage->data[2];
-		bms->minTempCell = bmsCanMessage->data[3];
-		bms->maxTemp = bmsCanMessage->data[4];
-		bms->maxTempCell = bmsCanMessage->data[5];
-
-		break;
-
-	case 0x628:
-
-		utemp16 = ((bmsCanMessage->data[0] << 8) | (bmsCanMessage->data[1]));
-		bms->packRes = ((swap_uint16(utemp16)) / 10000);
-//		1 = 100 mOhm
-//		10 = 1000 mOhm = 0.001 ohm = 10/10000
-//		100 = 10000 mohm = 0.01 ohm
-//		1000 = 100000 mOhM = 0.1 ohm
-//		10000 = 1000000 mOhm = 1 ohm
-		bms->minRes = (bmsCanMessage->data[2] / 10000);
-		bms->minResCell = bmsCanMessage->data[3];
-		bms->maxRes = (bmsCanMessage->data[4] / 10000);
-		bms->maxResCell = bmsCanMessage->data[5];
-		break;
-
-	case 0x629:
-		//See https://onedrive.live.com/view.aspx?resid=F9BB8F0F8FDB5CF8!36803&ithint=file%2cxlsx&app=Excel&authkey=!AI-YHJrHmtUaWpI
-		//Voltage(100mV)[022] - 2 bytes little endian (1=100mV) 0000000000000001 = 1 = 100 mV = 0.1 V
-														//		5 = 500 mV = 0.5 V
-														//		10 = 1000 mV = 1 V
-														//   	100 = 10000 mV = 10 V
-														// 		1000 = 100000 mV = 100 V
-
-
-
-		//Current(100mA)[054] - 2 bytes little endian (1=100mA)
-		//Max Temp[104] - in C
-		//Avg Temp[096] - in C
-		//SOC(%)[112] - %
-		//DOD(Ah)[144]- %
-		bms->packVoltage = (((bmsCanMessage->data[1] << 8) | (bmsCanMessage->data[0])) / 10);
-		bms->packCurrent = (((bmsCanMessage->data[3] << 8) | (bmsCanMessage->data[2])) / 10);
-		bms->maxTemp = ((bmsCanMessage->data[4]));
-		bms->avgTemp = ((bmsCanMessage->data[5]));
-		bms->SOC = ((bmsCanMessage->data[6]));
-		bms->DOD = ((bmsCanMessage->data[7]));
-		break;
-	}
-}
-
-
 
 ubyte1 swap_uint8(ubyte1 val)
 {
-	return (val << 4) | (val >> 4);
+    return (val << 4) | (val >> 4);
 }
 
 sbyte1 swap_int8(sbyte1 val)
 {
-	return (val << 4) | (val >> 4);
+    return (val << 4) | (val >> 4);
 }
 ubyte2 swap_uint16(ubyte2 val)
 {
-	return (val << 8) | (val >> 8 );
+    return (val << 8) | (val >> 8 );
 }
 
 //! Byte swap short
 sbyte2 swap_int16(sbyte2 val)
 {
-	return (val << 8) | ((val >> 8) & 0xFF);
+    return (val << 8) | ((val >> 8) & 0xFF);
 }
 
 //! Byte swap unsigned int
 ubyte4 swap_uint32(ubyte4 val)
 {
-	val = ((val << 8) & 0xFF00FF00 ) | ((val >> 8) & 0xFF00FF );
-	return (val << 16) | (val >> 16);
+    val = ((val << 8) & 0xFF00FF00 ) | ((val >> 8) & 0xFF00FF );
+    return (val << 16) | (val >> 16);
 }
 
 //! Byte swap int
 sbyte4 swap_int32(sbyte4 val)
 {
-	val = ((val << 8) & 0xFF00FF00) | ((val >> 8) & 0xFF00FF );
-	return (val << 16) | ((val >> 16) & 0xFFFF);
+    val = ((val << 8) & 0xFF00FF00) | ((val >> 8) & 0xFF00FF );
+    return (val << 16) | ((val >> 16) & 0xFFFF);
 }
 
 
@@ -313,36 +310,36 @@ sbyte4 swap_int32(sbyte4 val)
 //
 //// PACK //
 //
-//ubyte2 updatePackVoltage(); 	// volts
-//ubyte1  updateMinVtg(); 		// volts; individual cell voltage
+//ubyte2 updatePackVoltage();     // volts
+//ubyte1  updateMinVtg();         // volts; individual cell voltage
 //ubyte1  updateMaxVtg();
 //ubyte1  updateMinVtgCell();
 //ubyte1  updateMaxVtgCell();
 //
 //// CURRENT //
 //
-//sbyte2  updatePackCurrent(); 	 			// amps
-//ubyte2 updateChargeLimit();				// 0-100 percent; returns EROR_READING_LIMIT_VALUE on error
-//ubyte2 updateDischargeLimit();			// 0-100 percent; returns EROR_READING_LIMIT_VALUE on error
+//sbyte2  updatePackCurrent();                  // amps
+//ubyte2 updateChargeLimit();                // 0-100 percent; returns EROR_READING_LIMIT_VALUE on error
+//ubyte2 updateDischargeLimit();            // 0-100 percent; returns EROR_READING_LIMIT_VALUE on error
 //
-//ubyte1  updateSOC();			// Returns a value from 0-100
-//ubyte2 updateDOD();		    // (Ah)
+//ubyte1  updateSOC();            // Returns a value from 0-100
+//ubyte2 updateDOD();            // (Ah)
 //ubyte2 updateCapacity();
 //ubyte1  updateSOH();
 //
 //// TEMP //
 //
-//sbyte1  updatePackTemp();			// average pack temperature
-//sbyte1  updateMinTemp();			    // Temperature of coldest sensor
-//sbyte1  updateMinTempCell(); 		// ID of cell with lowest temperature
-//sbyte1  updateMaxTemp();			    // Temperature of hottest sensor
-//sbyte1  updateMaxTempCell(); 		// ID of cell with highest temperature
+//sbyte1  updatePackTemp();            // average pack temperature
+//sbyte1  updateMinTemp();                // Temperature of coldest sensor
+//sbyte1  updateMinTempCell();         // ID of cell with lowest temperature
+//sbyte1  updateMaxTemp();                // Temperature of hottest sensor
+//sbyte1  updateMaxTempCell();         // ID of cell with highest temperature
 //
-//ubyte2 updatePackRes();				// resistance of entire pack
-//ubyte1  updateMinRes();  			// resistance of lowest resistance cells
+//ubyte2 updatePackRes();                // resistance of entire pack
+//ubyte1  updateMinRes();              // resistance of lowest resistance cells
 //ubyte1  updateMinResCell();          // ID of cell with lowest resistance
-//ubyte1  updateMaxRes();				// resistance of highest resistance cells
-//ubyte1  updateMaxResCell();			// ID of cell with highest resistance
+//ubyte1  updateMaxRes();                // resistance of highest resistance cells
+//ubyte1  updateMaxResCell();            // ID of cell with highest resistance
 //
 //
 //LimitCause updateChargeLimitCause();
