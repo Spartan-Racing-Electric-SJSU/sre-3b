@@ -18,4 +18,5 @@ SerialManager* SerialManager_new(void);
 IO_ErrorType SerialManager_send(SerialManager* me, const ubyte1* data);
 //IO_ErrorType SerialManager_sendLen(SerialManager* me, const ubyte1* data, ubyte1* dataLength);
 
+IO_ErrorType SerialManager_sprintf(SerialManager* me, const ubyte1* message, void* dataValue);
 #endif // This header has been defined before
