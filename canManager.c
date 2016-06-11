@@ -368,9 +368,10 @@ void CanManager_read(CanManager* me, CanChannel channel, MotorController* mcm, B
 		case 0x624:
 		case 0x625:
 		case 0x626:
-		case 0x627:
-		case 0x628:
-			//bms_parseCanMessage(bms, &canMessages[currMessage]);
+        case 0x627:
+        case 0x628:
+        case 0x629:
+            BMS_parseCanMessage(bms, &canMessages[currMessage]);
 			break;
 
 			//default:
@@ -547,6 +548,8 @@ void canOutput_sendDebugMessage(CanManager* me, TorqueEncoder* tps, BrakePressur
     //canMessages[canMessageCount - 1].data[byteNum++] = 0;
     //canMessages[canMessageCount - 1].data[byteNum++] = 0;
     //canMessages[canMessageCount - 1].data[byteNum++] = 0;
+
+    //510 - 51F reserved for dash
 
 
     //Motor controller command message
