@@ -1,5 +1,6 @@
-#include <stdlib.h>  //Needed for malloc
+#include <stdlib.h> //malloc
 //#include <math.h>
+#include "IO_Driver.h"
 #include "IO_RTC.h"
 #include "IO_DIO.h"
 
@@ -42,12 +43,14 @@ static const ubyte4 F_lvsBatteryVeryLow = 0x10000;
 //static const ubyte4 F_tpsbpsImplausible = 0x4000;
 //static const ubyte4 UNUSED = 0x8000;
 
-
-
-
 //Warnings -------------------------------------------
-static const ubyte4 W_lvsBatteryLow = 1;
-//static const ubyte4 HVILTermSenseLost = 0x10;
+static const ubyte2 W_lvsBatteryLow = 1;
+
+//Notices
+static const ubyte2 N_HVILTermSenseLost = 1;
+
+static const ubyte2 N_Over75kW_BMS = 0x10;
+static const ubyte2 N_Over75kW_MCM = 0x20;
 
 
 /*****************************************************************************
@@ -61,7 +64,8 @@ struct _SafetyChecker {
 	//Problems that require motor torque to be disabled
     SerialManager* serialMan;
     ubyte4 faults;
-    ubyte4 warnings;
+    ubyte2 warnings;
+    ubyte2 notices;
 };
 
 /*****************************************************************************
@@ -83,7 +87,7 @@ SafetyChecker* SafetyChecker_new(SerialManager* sm)
 }
 
 //Updates all values based on sensor readings, safety checks, etc
-void SafetyChecker_update(SafetyChecker* me, TorqueEncoder* tps, BrakePressureSensor* bps, Sensor* HVILTermSense, Sensor* LVBattery)
+void SafetyChecker_update(SafetyChecker* me, MotorController* mcm, BatteryManagementSystem* bms, TorqueEncoder* tps, BrakePressureSensor* bps, Sensor* HVILTermSense, Sensor* LVBattery)
 {
     ubyte1* message[50];  //For sprintf'ing variables to print in serial
     //SerialManager_send(me->serialMan, "Entered SafetyChecker_update().\n");
@@ -197,10 +201,10 @@ void SafetyChecker_update(SafetyChecker* me, TorqueEncoder* tps, BrakePressureSe
 	TorqueEncoder_getIndividualSensorPercent(tps, 0, &tps0Percent); //borrow the pedal percent variable
 	TorqueEncoder_getIndividualSensorPercent(tps, 1, &tps1Percent);
 
-    sprintf(message, "TPS0: %f\n", tps0Percent);
-    SerialManager_send(me->serialMan, message);
-    sprintf(message, "TPS1: %f\n", tps1Percent);
-    SerialManager_send(me->serialMan, message);
+    //sprintf(message, "TPS0: %f\n", tps0Percent);
+    //SerialManager_send(me->serialMan, message);
+    //sprintf(message, "TPS1: %f\n", tps1Percent);
+    //SerialManager_send(me->serialMan, message);
 
 	if ((tps1Percent - tps0Percent) > .1 || (tps1Percent - tps0Percent) < -.1)  //Note: Individual TPS readings don't go negative, otherwise this wouldn't work
 	{
@@ -259,20 +263,21 @@ void SafetyChecker_update(SafetyChecker* me, TorqueEncoder* tps, BrakePressureSe
         me->faults |= F_lvsBatteryVeryLow;
         me->warnings |= W_lvsBatteryLow;
         sprintf(message, "LVS battery %.03fV BELOW 10%%!\n", (float4)LVBattery->sensorValue / 1000);
+        SerialManager_send(me->serialMan, message);
     }
     else if (LVBattery->sensorValue <= 13100)
     {
         me->warnings &= ~F_lvsBatteryVeryLow;
         me->warnings |= W_lvsBatteryLow;
         sprintf(message, "LVS battery %.03fV LOW.\n", (float4)LVBattery->sensorValue / 1000);
+        SerialManager_send(me->serialMan, message);
     }
     else
     {
         me->warnings &= ~F_lvsBatteryVeryLow;
         me->warnings &= ~W_lvsBatteryLow;
-        sprintf(message, "LVS battery %.03fV good.\n", (float4)LVBattery->sensorValue / 1000);
+        //sprintf(message, "LVS battery %.03fV good.\n", (float4)LVBattery->sensorValue / 1000);
     }
-    SerialManager_send(me->serialMan, message);
 
 
 
@@ -282,14 +287,35 @@ void SafetyChecker_update(SafetyChecker* me, TorqueEncoder* tps, BrakePressureSe
     // If HVIL term sense goes low (because HV went down), motor torque
     // command should be set to zero before turning off the controller
     //-------------------------------------------------------------------
-    /*if (HVILTermSense->sensorValue == FALSE)
+    if (HVILTermSense->sensorValue == FALSE)
     {
-        me->warnings |= HVILTermSenseLost;
+        me->notices |= N_HVILTermSenseLost;
     }
     else
     {
-        me->warnings &= ~HVILTermSenseLost;
-    }*/
+        me->notices &= ~N_HVILTermSenseLost;
+    }
+
+
+    if (BMS_getPower(bms) > 75000)
+    {
+        me->notices |= N_Over75kW_BMS;
+    }
+    else
+    {
+        me->notices &= ~N_Over75kW_BMS;
+    }
+
+        
+    if (MCM_getPower(mcm) > 75000)
+    {
+        me->notices |= N_Over75kW_MCM;
+    }
+    else
+    {
+        me->notices &= ~N_Over75kW_MCM;
+    }
+
 }
 
 
@@ -312,43 +338,81 @@ ubyte4 SafetyChecker_getWarnings(SafetyChecker* me)
     return (me->warnings);
 }
 
-void SafetyChecker_ReduceTorque(SafetyChecker* me, MotorController* mcm0)
+void SafetyChecker_reduceTorque(SafetyChecker* me, MotorController* mcm, BatteryManagementSystem* bms)
 {
-    //-------------------------------------------------------------------
-    // Faults - set 0 torque
-    //-------------------------------------------------------------------
-    if (me->faults > 0)
-    {
-        MCM_commands_setTorque(mcm0, 0);
-        //MCM_commands_setTorqueLimit(1)
-    }
-    else
-    {
-        //-------------------------------------------------------------------
-        // Other limits (% reduction)
-        //-------------------------------------------------------------------
-        //80kW
+    float4 multiplier = 1;
+    float4 tempMultiplier;
 
-        //Battery temp
+    ////////-------------------------------------------------------------------
+    //////// Faults - set 0 torque
+    ////////-------------------------------------------------------------------
+    //////if (me->faults > 0 || (me->notices & N_HVILTermSenseLost) > 0) //If faults, or HVIL is low
+    //////{
+    //////    multiplier = 0;
+    //////    //MCM_commands_setTorqueLimit(1)
+    //////}
+    ////////-------------------------------------------------------------------
+    ////////No regen below 5kph
+    ////////-------------------------------------------------------------------
+    ////////Motor to wheel RPM: 3:1
+    //////else if (MCM_getGroundSpeedKPH < 5 && MCM_commands_getTorque(mcm) < 0)
+    //////{
+    //////    multiplier = 0;
+    //////}
+    ////////-------------------------------------------------------------------
+    //////// Other limits (% reduction) - set torque to the lowest of all these
+    //////// IMPORTANT: Be aware of direction-sensitive situations (accel/regen)
+    ////////-------------------------------------------------------------------
+    //////else
+    //////{
+        //80kW ---------------------------------
+        // if either the bms or mcm goes over 75kw, limit torque 
+        if ((BMS_getPower(bms) > 75000) || (MCM_getPower(mcm) > 75000))
+        {
+            // using bmsPower since closer to e-meter
+            tempMultiplier = 1 - getPercent(max(BMS_getPower(bms), MCM_getPower(mcm)), 75000, 80000, TRUE);
+        }
+        if (tempMultiplier < multiplier) { multiplier = tempMultiplier; }
 
-        //Discharge Current Limit
-    }
+        //CCL/DCL from BMS --------------------------------
+        //Pack voltage too low
+        //Pack voltage too high
+        //Cell voltage too low
+        //Cell voltage too high
+        //Temperature too high
+        //Temperature too low
+        //Current peak lasted too long
+        if (MCM_commands_getTorque(mcm) > 0)
+        {
+            tempMultiplier = getPercent(BMS_getDCL(bms), 0, 0xFF, TRUE);
+        }
+        else //regen
+        {
+            tempMultiplier = getPercent(BMS_getCCL(bms), 0, 0xFF, TRUE);
+        }
+        if (tempMultiplier < multiplier)
+        {
+            multiplier = tempMultiplier; 
+        }
+    ///////////////////}
+
+    MCM_commands_setTorque(mcm, MCM_commands_getTorque(mcm) * multiplier);
 }
 
 //-------------------------------------------------------------------
 // 80kW Limit Check
 //-------------------------------------------------------------------
 //Change this to return a multiplier instead of torque value
-ubyte2 checkPowerDraw(BatteryManagementSystem* bms, MotorController* mcm )
-{
-	ubyte2 torqueThrottle = 0;
-	
-	// if either the bms or mcm goes over 75kw, limit torque 
-	if((BMS_getPower(bms) > 75000) || (MCM_getPower(mcm) > 75000))
-	{
-		// using bmsPower since closer to e-meter
-	    torqueThrottle = MCM_getCommandedTorque(mcm) - (((BMS_getPower(bms) - 80000)/80000) * MCM_getCommandedTorque(mcm));
-	}
-	
-	return torqueThrottle;
-}
+//ubyte2 checkPowerDraw(BatteryManagementSystem* bms, MotorController* mcm)
+//{
+//    ubyte2 torqueThrottle = 0;
+//
+//    // if either the bms or mcm goes over 75kw, limit torque 
+//    if ((BMS_getPower(bms) > 75000) || (MCM_getPower(mcm) > 75000))
+//    {
+//        // using bmsPower since closer to e-meter
+//        torqueThrottle = MCM_getCommandedTorque(mcm) - (((BMS_getPower(bms) - 80000) / 80000) * MCM_getCommandedTorque(mcm));
+//    }
+//
+//    return torqueThrottle;
+//}

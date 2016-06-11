@@ -21,11 +21,11 @@ typedef enum { CHECK_tpsOutOfRange    , CHECK_bpsOutOfRange
 typedef struct _SafetyChecker SafetyChecker;
 
 SafetyChecker* SafetyChecker_new(SerialManager* sm);
-void SafetyChecker_update(SafetyChecker* me, TorqueEncoder* tps, BrakePressureSensor* bps, Sensor* HVILTermSense, Sensor* LVBattery);
+void SafetyChecker_update(SafetyChecker* me, MotorController* mcm, BatteryManagementSystem* bms, TorqueEncoder* tps, BrakePressureSensor* bps, Sensor* HVILTermSense, Sensor* LVBattery);
 bool SafetyChecker_allSafe(SafetyChecker* me);
 ubyte4 SafetyChecker_getFaults(SafetyChecker* me);
 ubyte4 SafetyChecker_getWarnings(SafetyChecker* me);
-void SafetyChecker_ReduceTorque(SafetyChecker* me, MotorController* mcm);
+void SafetyChecker_reduceTorque(SafetyChecker* me, MotorController* mcm, BatteryManagementSystem* bms);
 //bool SafetyChecker_getError(SafetyChecker* me, SafetyCheck check);
 //bool SafetyChecker_getErrorByte(SafetyChecker* me, ubyte1* errorByte);
 

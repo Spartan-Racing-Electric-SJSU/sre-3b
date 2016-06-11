@@ -121,14 +121,13 @@ void main(void)
     //SerialManager_send(serialMan, IO_RTC_GetTimeUS(timestamp_startTime));
     SerialManager_send(serialMan, "VCU serial is online.\n");
 
-
     //----------------------------------------------------------------------------
     // Check if we're on the bench or not
     //----------------------------------------------------------------------------
     bool bench;
     IO_DI_Init(IO_DI_06, IO_DI_PD_10K);
     IO_RTC_StartTime(&timestamp_startTime);
-    while (IO_RTC_GetTimeUS(timestamp_startTime) < 999999) //This time doesn't matter
+    while (IO_RTC_GetTimeUS(timestamp_startTime) < 55555)
     {
         IO_Driver_TaskBegin();
 
@@ -140,7 +139,6 @@ void main(void)
         while (IO_RTC_GetTimeUS(timestamp_startTime) < 10000);   // wait until 10ms have passed
     }
     IO_DI_DeInit(IO_DI_06);
-    //Need to invert bench bceause grounded = false
     SerialManager_send(serialMan, bench == TRUE ? "VCU is in bench mode.\n" : "VCU is NOT in bench mode.\n");
     
     //----------------------------------------------------------------------------
@@ -179,7 +177,8 @@ void main(void)
 	BrakePressureSensor* bps = BrakePressureSensor_new();
 	WheelSpeeds* wss = WheelSpeeds_new(18, 18, 16, 16);
 	SafetyChecker* sc = SafetyChecker_new(serialMan);
-	BatteryManagementSystem* bms = BMS_new(0x620);
+	BatteryManagementSystem* bms = BMS_new(serialMan, 0x620);
+    CoolingSystem* cs = CoolingSystem_new(serialMan);
 
     //----------------------------------------------------------------------------
     // TODO: Additional Initial Power-up functions
@@ -281,18 +280,21 @@ void main(void)
 			StateObserver //choose driver command or ctrl law
 		*/	
 
+        CoolingSystem_calculations(cs, MCM_getTemp(mcm0), MCM_getMotorTemp(mcm0), BMS_getMaxTemp(bms));
+        //CoolingSystem_calculations(cs, 20, 20, 20);
+        CoolingSystem_enactCooling(cs); //This belongs under outputs but it doesn't really matter for cooling
 
         //Assign motor controls to MCM command message
         //motorController_setCommands(rtds);
         //DOES NOT set inverter command or rtds flag
         MCM_calculateCommands(mcm0, tps, bps);
 
-        SafetyChecker_update(sc, tps, bps, &Sensor_HVILTerminationSense, &Sensor_LVBattery);
+        SafetyChecker_update(sc, mcm0, bms, tps, bps, &Sensor_HVILTerminationSense, &Sensor_LVBattery);
 
         /*******************************************/
         /*  Output Adjustments by Safety Checker   */
         /*******************************************/
-        SafetyChecker_ReduceTorque(sc, mcm0);
+        SafetyChecker_reduceTorque(sc, mcm0, bms);
         //SafetyChecker_?
 
         /*******************************************/
@@ -314,7 +316,6 @@ void main(void)
         //canOutput_sendSensorMessages();
         //canOutput_sendStatusMessages(mcm0);
 
-        coolingSystemControl(bms);
         
 
         //----------------------------------------------------------------------------
