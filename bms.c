@@ -4,6 +4,8 @@
 #include <stdlib.h>
 #include "IO_Driver.h"
 #include "IO_RTC.h"
+#include "serial.h"
+#include "mathFunctions.h"
 
 /**************************************************************************
  *     REVISION HISTORY:
@@ -40,6 +42,8 @@ struct _BatteryManagementSystem {
 
     ubyte2 canMessageBaseId;
 
+    SerialManager* sm;
+
     // 0x622h //
 
     ubyte1  state;             // state of system
@@ -71,7 +75,7 @@ struct _BatteryManagementSystem {
 
     // 0x626h //
 
-//    ubyte1  SOC;                 // state of charge
+    ubyte1  SOC;                 // state of charge
     ubyte2 DOD;                 // depth of discharge
     ubyte2 capacity;             // actual capacity of pack
     ubyte1  SOH;                // State of Health
@@ -98,7 +102,9 @@ struct _BatteryManagementSystem {
     sbyte4 packCurrent;  //Current(100mA)[054]
     sbyte1 maxTemp;      //Max Temp[104]
     sbyte1 avgTemp;      //Avg Temp[096]
-    ubyte1 SOC;          //SOC(%)[112]
+    //ubyte1 SOC;          //SOC(%)[112]
+    //ubyte1 SOC;          //SOC(%)[112]
+    ubyte1 CCL;          //DOD(Ah)[144]
     ubyte1 DCL;          //DOD(Ah)[144]
 
     
@@ -107,11 +113,15 @@ struct _BatteryManagementSystem {
 
 };
 
-BatteryManagementSystem* BMS_new(ubyte2 canMessageBaseID){
+BatteryManagementSystem* BMS_new(SerialManager* serialMan, ubyte2 canMessageBaseID) {
 
-    BatteryManagementSystem* BMS_obj = (BatteryManagementSystem*)malloc(sizeof(struct _BatteryManagementSystem));
-    BMS_obj->canMessageBaseId = canMessageBaseID;
-    return BMS_obj;
+    BatteryManagementSystem* me = (BatteryManagementSystem*)malloc(sizeof(struct _BatteryManagementSystem));
+
+    me->canMessageBaseId = canMessageBaseID;
+    me->sm = serialMan;
+    me->maxTemp = 99;
+    
+    return me;
 
 }
 
@@ -177,7 +187,7 @@ void BMS_parseCanMessage(BatteryManagementSystem* bms, IO_CAN_DATA_FRAME* bmsCan
 
     case 0x626:
 
-        //    bms->SOC = bmsCanMessage->data[0];
+            bms->SOC = bmsCanMessage->data[0];
 
         utemp16 = ((bmsCanMessage->data[1] << 8) | (bmsCanMessage->data[2]));
         bms->DOD = swap_uint16(utemp16);
@@ -225,12 +235,14 @@ void BMS_parseCanMessage(BatteryManagementSystem* bms, IO_CAN_DATA_FRAME* bmsCan
         //Avg Temp[096] - in C
         //SOC(%)[112] - %
         //DCL(%)[080]- %  //**CHANGED**
+        
         bms->packVoltage = (((bmsCanMessage->data[1] << 8) | (bmsCanMessage->data[0])) / 10); //V
         bms->packCurrent = (((bmsCanMessage->data[3] << 8) | (bmsCanMessage->data[2])) / 10); //V
         bms->maxTemp = ((bmsCanMessage->data[4]));  //C
         bms->avgTemp = ((bmsCanMessage->data[5]));  //C
-        bms->SOC = ((bmsCanMessage->data[6]));    //%
+        bms->CCL = ((bmsCanMessage->data[6]));    //%
         bms->DCL = ((bmsCanMessage->data[7]));    //%
+
         break;
     }
 }
@@ -251,8 +263,8 @@ sbyte1 BMS_getMaxTemp(BatteryManagementSystem* me)
 // ***NOTE: packCurrent and and packVoltage are SIGNED variables and the return type for BMS_getPower is signed
 sbyte4 BMS_getPower(BatteryManagementSystem* me)
 {
-    char buffer[32];
-    sprintf(buffer, "packVoltage: %f\n", me->packVoltage);
+    //char buffer[32];
+    //sprintf(buffer, "packVoltage: %f\n", me->packVoltage);
     return (me->packCurrent * me->packVoltage);
 }
 
@@ -263,41 +275,15 @@ ubyte2 BMS_getPackTemp(BatteryManagementSystem* me)
     return (me->packTemp);
 }
 
-ubyte1 swap_uint8(ubyte1 val)
+ubyte1 BMS_getCCL(BatteryManagementSystem* me)
 {
-    return (val << 4) | (val >> 4);
+    return me->CCL;
 }
 
-sbyte1 swap_int8(sbyte1 val)
+ubyte1 BMS_getDCL(BatteryManagementSystem* me)
 {
-    return (val << 4) | (val >> 4);
+    return me->DCL;
 }
-ubyte2 swap_uint16(ubyte2 val)
-{
-    return (val << 8) | (val >> 8 );
-}
-
-//! Byte swap short
-sbyte2 swap_int16(sbyte2 val)
-{
-    return (val << 8) | ((val >> 8) & 0xFF);
-}
-
-//! Byte swap unsigned int
-ubyte4 swap_uint32(ubyte4 val)
-{
-    val = ((val << 8) & 0xFF00FF00 ) | ((val >> 8) & 0xFF00FF );
-    return (val << 16) | (val >> 16);
-}
-
-//! Byte swap int
-sbyte4 swap_int32(sbyte4 val)
-{
-    val = ((val << 8) & 0xFF00FF00) | ((val >> 8) & 0xFF00FF );
-    return (val << 16) | ((val >> 16) & 0xFFFF);
-}
-
-
 
 
 // ELITHION BMS OPTIONS //

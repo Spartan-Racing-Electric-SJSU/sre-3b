@@ -22,12 +22,13 @@
 #include <stdio.h>
 #include <stdint.h>
 
+#include "serial.h"
 #include "IO_CAN.h"
 
 
 typedef struct _BatteryManagementSystem BatteryManagementSystem;
 
-BatteryManagementSystem* BMS_new(ubyte2 canMessageBaseID);
+BatteryManagementSystem* BMS_new(SerialManager* serialMan, ubyte2 canMessageBaseID);
 void BMS_parseCanMessage(BatteryManagementSystem* bms, IO_CAN_DATA_FRAME* bmsCanMessage);
 
 // BMS COMMANDS // 
@@ -38,16 +39,8 @@ ubyte2 BMS_getPackTemp(BatteryManagementSystem* me);
 sbyte1 BMS_getAvgTemp(BatteryManagementSystem* me);
 sbyte1 BMS_getMaxTemp(BatteryManagementSystem* me);
 
-
-/*
- *  Functions for endian conversion
- */
-ubyte1 swap_uint8(ubyte1 val);
-sbyte1 swap_int8(sbyte1 val);
-ubyte2 swap_uint16(ubyte2 val);
-sbyte2 swap_int16(sbyte2 val);
-ubyte4 swap_uint32(ubyte4 val);
-sbyte4 swap_int32(sbyte4 val);
+ubyte1 BMS_getCCL(BatteryManagementSystem* me);
+ubyte1 BMS_getDCL(BatteryManagementSystem* me);
 
 typedef enum
 {
