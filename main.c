@@ -253,13 +253,16 @@ void main(void)
                 //calibrateTPS(TRUE, 5);
                 TorqueEncoder_startCalibration(tps, 5);
                 BrakePressureSensor_startCalibration(bps, 5);
-                Light_set(Light_dashEco, 1);
+                Light_set(Light_dashTCS, 1);
                 //DIGITAL OUTPUT 4 for STATUS LED
             }
 		}
         else
         {
-            //Light_set(Light_dashEco, 0);
+            if (IO_RTC_GetTimeUS(timestamp_EcoButton) > 10000 && IO_RTC_GetTimeUS(timestamp_EcoButton) < 1000000)
+            {
+                SerialManager_send(serialMan, "Eco mode requested\n");
+            }
             timestamp_EcoButton = 0;
         }
 		TorqueEncoder_update(tps);

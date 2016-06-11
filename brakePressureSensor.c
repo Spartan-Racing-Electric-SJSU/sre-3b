@@ -122,8 +122,6 @@ void BrakePressureSensor_startCalibration(BrakePressureSensor* me, ubyte1 second
         me->calibrated = FALSE;
         IO_RTC_StartTime(&(me->timestamp_calibrationStart));
         me->calibrationRunTime = secondsToRun;
-
-		//Light_set(Light_dashEco, 1);
     }
 }
 

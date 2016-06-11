@@ -105,21 +105,21 @@ void TorqueEncoder_update(TorqueEncoder* me)
 			//}
 		}
 
-        if (me->percent <= 0)
-        {
-            Light_set(Light_dashTCS, 0);
-        }
-        else
-        {
-            if (me->percent > 0 && me->percent <= .25)
-            {
-                Light_set(Light_dashTCS, .5 * me->percent);
-            }
-            else
-            {
-                Light_set(Light_dashTCS, me->percent);
-            }
-        }
+        //if (me->percent <= 0)
+        //{
+        //    Light_set(Light_dashTCS, 0);
+        //}
+        //else
+        //{
+        //    if (me->percent > 0 && me->percent <= .25)
+        //    {
+        //        Light_set(Light_dashTCS, .5 * me->percent);
+        //    }
+        //    else
+        //    {
+        //        Light_set(Light_dashTCS, me->percent);
+        //    }
+        //}
 
 
 	}
@@ -164,8 +164,6 @@ void TorqueEncoder_startCalibration(TorqueEncoder* me, ubyte1 secondsToRun)
         me->calibrated = FALSE;
         IO_RTC_StartTime(&(me->timestamp_calibrationStart));
         me->calibrationRunTime = secondsToRun;
-
-		//Light_set(Light_dashEco, 1);
     }
 }
 
@@ -233,7 +231,7 @@ void TorqueEncoder_calibrationCycle(TorqueEncoder* me, ubyte1* errorCount)
 
 			me->runCalibration = FALSE;
 			me->calibrated = TRUE;
-			Light_set(Light_dashEco, 0);
+			Light_set(Light_dashTCS, 0);
 			
 
         }
