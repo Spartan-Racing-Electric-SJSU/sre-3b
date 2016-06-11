@@ -27,19 +27,19 @@ MotorController* MotorController_new(SerialManager* sm, ubyte2 canMessageBaseID,
 //----------------------------------------------------------------------------
 //CAN Message Parameters
 //Note: Speed Command (angular velocity) not used when in torque mode
-void MCM_commands_setTorque(MotorController* me, ubyte2 torque); //Will be divided by 10 e.g. pass in 100 for 10.0 Nm
+void MCM_commands_setTorque(MotorController* me, sbyte2 torque); //Will be divided by 10 e.g. pass in 100 for 10.0 Nm
 void MCM_commands_setDirection(MotorController* me, Direction rotation);
 void MCM_commands_setInverter(MotorController* me, Status inverterState);
 void MCM_commands_setDischarge(MotorController* me, Status dischargeState);
-void MCM_commands_setTorqueLimit(MotorController* me, ubyte2 torqueLimit);
+void MCM_commands_setTorqueLimit(MotorController* me, sbyte2 torqueLimit);
 //void setCommand(MotorController* me, MCMCommand command, void* setting);
 
 
-ubyte2 MCM_commands_getTorque(MotorController* me); //Will be divided by 10 e.g. pass in 100 for 10.0 Nm
+sbyte2 MCM_commands_getTorque(MotorController* me); //Will be divided by 10 e.g. pass in 100 for 10.0 Nm
 Direction MCM_commands_getDirection(MotorController* me);
 Status MCM_commands_getInverter(MotorController* me);
 Status MCM_commands_getDischarge(MotorController* me);
-ubyte2 MCM_commands_getTorqueLimit(MotorController* me); 
+sbyte2 MCM_commands_getTorqueLimit(MotorController* me); 
 
 ubyte2 MCM_commands_getUpdateCount(MotorController* me);
 void MCM_commands_resetUpdateCountAndTime(MotorController* me);
@@ -69,8 +69,10 @@ bool MCM_getRTDSFlag(MotorController* me);
 //void motorController_SendControlMessage(IO_CAN_DATA_FRAME *canMessage); //This is an alias for canOutput_sendMcuControl
 //void motorController_setAllCommands(ReadyToDriveSound* rtds);
 
-ubyte1 MCM_getStartupStage(MotorController* me);
-void MCM_setStartupStage(MotorController* me, ubyte1 stage);
+sbyte1 MCM_getTemp(MotorController* me);
+sbyte1 MCM_getMotorTemp(MotorController* me);
+
+sbyte2 MCM_getGroundSpeedKPH(MotorController* me);
 
 //----------------------------------------------------------------------------
 //Inter-object functions
@@ -82,5 +84,7 @@ void MCM_inverterControl(MotorController* mcm, TorqueEncoder* tps, BrakePressure
 
 void MCM_parseCanMessage(MotorController* mcm, IO_CAN_DATA_FRAME* mcmCanMessage);
 
+ubyte1 MCM_getStartupStage(MotorController* me);
+void MCM_setStartupStage(MotorController* me, ubyte1 stage);
 
 #endif // _MOTORCONTROLLER_H

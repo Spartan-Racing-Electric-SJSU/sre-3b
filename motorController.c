@@ -144,6 +144,7 @@ MotorController* MotorController_new(SerialManager* sm, ubyte2 canMessageBaseID,
     
     me->relayState = FALSE; //Low
 
+    me->motor_temp = 99;
 	/*
 me->setTorque = &setTorque;
 me->setInverter = &setInverter;
@@ -308,18 +309,6 @@ void MCM_inverterControl(MotorController* me, TorqueEncoder* tps, BrakePressureS
         //but if we have trouble we can add that here.
 
     case 1: //MCM relay is on, lockout=enabled, inverter=disabled --> stay until lockout is disabled
-        /*if (MCM_getLockoutStatus(me) == ENABLED)
-        {
-            SerialManager_send(me->serialMan, "In stage 0/1. Lockout has NOT been disabled.\n");
-        }
-        else if (MCM_getLockoutStatus(me) == DISABLED)
-        {
-            SerialManager_send(me->serialMan, "In stage 0/1. Lockout has been disabled.\n");
-        }
-        else
-        {
-            SerialManager_send(me->serialMan, "In stage 0/1. Motor controller status unknown (off?).\n");
-        }*/
         //Actions to perform upon entering this state ------------------------------------------------
         MCM_commands_setInverter(me, DISABLED);
         //Light_set(Light_dashRTD, 0);
@@ -393,68 +382,6 @@ void MCM_inverterControl(MotorController* me, TorqueEncoder* tps, BrakePressureS
     //After all that, we can turn the RTD light on/off
     Light_set(Light_dashRTD, RTDPercent);
 
-    
-    //TEMPORARY Eco Switch startup code
-    //float4 RTDPercent = 0;
-    
-    //////////////////////////if (Sensor_RTDButton.sensorValue == TRUE)
-    //////////////////////////{
-    //////////////////////////    RTDPercent = 1;
-    //////////////////////////    if (MCM_getInverterStatus(me) == DISABLED)
-    //////////////////////////    {
-    //////////////////////////        MCM_setRTDSFlag(me, TRUE);
-    //////////////////////////        MCM_commands_setInverter(me, ENABLED);
-    //////////////////////////    }
-    //////////////////////////    else
-    //////////////////////////    {
-    //////////////////////////        //already on.  do nothing.
-    //////////////////////////    }
-    //////////////////////////}
-    //////////////////////////else
-    //////////////////////////{
-    //////////////////////////    if (MCM_getInverterStatus(me) == ENABLED)
-    //////////////////////////    {
-    //////////////////////////        RTDPercent = 1;
-    //////////////////////////        if (MCM_getRTDSFlag(me) == TRUE)
-    //////////////////////////        {
-    //////////////////////////            RTDS_setVolume(rtds, .01, 1250000);
-    //////////////////////////            MCM_setRTDSFlag(me, FALSE);
-    //////////////////////////        }
-    //////////////////////////    }
-    //////////////////////////    else
-    //////////////////////////    {
-    //////////////////////////        MCM_commands_setInverter(me, DISABLED);
-    //////////////////////////        RTDPercent = 0;
-    //////////////////////////    }
-    //////////////////////////}
-
-    //////if (Sensor_RTDButton.sensorValue == TRUE)
-    //////{
-    //////    MCM_commands_setInverter(me, ENABLED);
-    //////}
-    //////else
-    //////{
-    //////    MCM_commands_setInverter(me, DISABLED);
-    //////}
-
-
-    ////////////If the inverter is disabled, but we're turning it on now
-    //////////if (MCM_getInverterStatus(me) == DISABLED && MCM_commands_getInverter(me) == ENABLED)
-    //////////{
-    //////////    SerialManager_send(me->serialMan, "MCM inverter is disabled; Setting to enabled.\n");
-    //////////    MCM_setRTDSFlag(me, TRUE);
-    //////////    //Light_set(Light_dashTCS, .95);
-    //////////}
-    //////////
-    //////////if (MCM_getInverterStatus(me) == ENABLED && MCM_getRTDSFlag(me) == TRUE)
-    //////////{
-    //////////    SerialManager_send(me->serialMan, "MCM inverter has been enabled.\n");
-    //////////    RTDS_setVolume(rtds, .01, 1250000);
-    //////////    MCM_setRTDSFlag(me, FALSE);  //RTDS started, so don't restart it next loop
-    //////////    RTDPercent = 1;
-    //////////}
-
-    Light_set(Light_dashRTD, RTDPercent);
 }
 
 
@@ -589,7 +516,7 @@ void MCM_parseCanMessage(MotorController* me, IO_CAN_DATA_FRAME* mcmCanMessage)
 *
 ****************************************************************************/
 //Will be divided by 10 e.g. pass in 100 for 10.0 Nm
-void MCM_commands_setTorque(MotorController* me, ubyte2 newTorque)
+void MCM_commands_setTorque(MotorController* me, sbyte2 newTorque)
 {
 	me->updateCount += (me->commands_torque == newTorque) ? 0 : 1;
 	me->commands_torque = newTorque;
@@ -628,12 +555,12 @@ void MCM_commands_setDischarge(MotorController* me, Status setDischargeTo)
 	me->updateCount += (me->commands_discharge == setDischargeTo) ? 0 : 1;
 	me->commands_discharge = setDischargeTo;
 }
-void MCM_commands_setTorqueLimit(MotorController* me, ubyte2 newTorqueLimit)
+void MCM_commands_setTorqueLimit(MotorController* me, sbyte2 newTorqueLimit)
 {
 	me->updateCount += (me->commands_torqueLimit == newTorqueLimit) ? 0 : 1;
 	me->commands_torqueLimit = newTorqueLimit;
 }
-ubyte2 MCM_commands_getTorque(MotorController* me)
+sbyte2 MCM_commands_getTorque(MotorController* me)
 {
 	return me->commands_torque;
 }
@@ -649,7 +576,7 @@ Status MCM_commands_getDischarge(MotorController* me)
 {
 	return me->commands_discharge;
 }
-ubyte2 MCM_commands_getTorqueLimit(MotorController* me)
+sbyte2 MCM_commands_getTorqueLimit(MotorController* me)
 {
 	return me->commands_torqueLimit;
 }
@@ -720,6 +647,22 @@ ubyte2 MCM_getCommandedTorque(MotorController* me)
 }
 
 
+sbyte1 MCM_getTemp(MotorController* me)
+{
+    return me->motor_temp;
+}
+sbyte1 MCM_getMotorTemp(MotorController* me)
+{
+    return me->motor_temp;
+}
+
+sbyte2 MCM_getGroundSpeedKPH(MotorController* me)
+{
+    sbyte2 wheelRPM = me->motorRPM / 3;
+    float4 tireCircumference = 3.141592653589 * 18 * .0254; // (pi * diameter * in to m) = circumference in meters
+    sbyte2 groundKPH = wheelRPM / 60 * tireCircumference;
+    return groundKPH;
+}
 
 
 void MCM_setStartupStage(MotorController* me, ubyte1 stage)
