@@ -343,28 +343,28 @@ void SafetyChecker_reduceTorque(SafetyChecker* me, MotorController* mcm, Battery
     float4 multiplier = 1;
     float4 tempMultiplier;
 
-    ////////-------------------------------------------------------------------
-    //////// Faults - set 0 torque
-    ////////-------------------------------------------------------------------
-    //////if (me->faults > 0 || (me->notices & N_HVILTermSenseLost) > 0) //If faults, or HVIL is low
-    //////{
-    //////    multiplier = 0;
-    //////    //MCM_commands_setTorqueLimit(1)
-    //////}
-    ////////-------------------------------------------------------------------
-    ////////No regen below 5kph
-    ////////-------------------------------------------------------------------
-    ////////Motor to wheel RPM: 3:1
-    //////else if (MCM_getGroundSpeedKPH < 5 && MCM_commands_getTorque(mcm) < 0)
-    //////{
-    //////    multiplier = 0;
-    //////}
-    ////////-------------------------------------------------------------------
-    //////// Other limits (% reduction) - set torque to the lowest of all these
-    //////// IMPORTANT: Be aware of direction-sensitive situations (accel/regen)
-    ////////-------------------------------------------------------------------
-    //////else
-    //////{
+    //-------------------------------------------------------------------
+    // Faults - set 0 torque
+    //-------------------------------------------------------------------
+    if (me->faults > 0 || (me->notices & N_HVILTermSenseLost) > 0) //If faults, or HVIL is low
+    {
+        multiplier = 0;
+        //MCM_commands_setTorqueLimit(1)
+    }
+    //-------------------------------------------------------------------
+    //No regen below 5kph
+    //-------------------------------------------------------------------
+    //Motor to wheel RPM: 3:1
+    else if (MCM_getGroundSpeedKPH < 5 && MCM_commands_getTorque(mcm) < 0)
+    {
+        multiplier = 0;
+    }
+    //-------------------------------------------------------------------
+    // Other limits (% reduction) - set torque to the lowest of all these
+    // IMPORTANT: Be aware of direction-sensitive situations (accel/regen)
+    //-------------------------------------------------------------------
+    else
+    {
         //80kW ---------------------------------
         // if either the bms or mcm goes over 75kw, limit torque 
         if ((BMS_getPower(bms) > 75000) || (MCM_getPower(mcm) > 75000))
@@ -394,7 +394,7 @@ void SafetyChecker_reduceTorque(SafetyChecker* me, MotorController* mcm, Battery
         {
             multiplier = tempMultiplier; 
         }
-    ///////////////////}
+    }
 
     MCM_commands_setTorque(mcm, MCM_commands_getTorque(mcm) * multiplier);
 }
