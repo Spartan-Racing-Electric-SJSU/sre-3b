@@ -82,8 +82,6 @@ void BrakePressureSensor_update(BrakePressureSensor* me, bool bench)
 			Light_set(Light_brake, me->percent);
 		}
 	}
-    //TEMPORARY WATER PUMP PWM TEST
-    Light_set(Light_waterPump, me->percent);
 }
 
 void BrakePressureSensor_resetCalibration(BrakePressureSensor* me)

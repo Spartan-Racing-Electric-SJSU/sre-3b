@@ -13,21 +13,21 @@
 //All temperatures in C
 CoolingSystem* CoolingSystem_new(SerialManager* serialMan)
 {
-    CoolingSystem* CS_obj = (CoolingSystem*)malloc(sizeof(struct _CoolingSystem));
+    CoolingSystem* me = (CoolingSystem*)malloc(sizeof(struct _CoolingSystem));
     SerialManager* sm = serialMan;
 
     //Cooling systems:
     //Water pump (motor, controller) - PWM
-    float4 waterPumpMinPercent = 0.2;
-    sbyte1 waterPumpLow = 25;  //Start ramping beyond min at this temp
-    sbyte1 waterPumpHigh = 40;
-    float4 waterPumpPercent = .2;
+    me->waterPumpMinPercent = 0.2;
+    me->waterPumpLow = 25;  //Start ramping beyond min at this temp
+    me->waterPumpHigh = 40;
+    me->waterPumpPercent = .2;
 
     //PP fans (motor, radiator) - Relay
     //Motor fan + radiator on same circuit
-    sbyte1 motorFanLow = 30;    //Turn off BELOW tuhis point
-    sbyte1 motorFanHigh = 32;    //Turn on at this temperature
-    bool motorFanState = TRUE;        //float4 motorFanPercent;
+    me->motorFanLow = 30;    //Turn off BELOW tuhis point
+    me->motorFanHigh = 32;    //Turn on at this temperature
+    me->motorFanState = TRUE;        //float4 motorFanPercent;
     
     //Radiator fan
     //sbyte1 radiatorFanLo = 30; //Turn off BELOW tuhis point
@@ -35,11 +35,11 @@ CoolingSystem* CoolingSystem_new(SerialManager* serialMan)
     //bool motorFanState;
 
     //Battery fans (batteries) - Relay
-    sbyte1 batteryFanLow = 32;  //Turn off BELOW tuhis point
-    sbyte1 batteryFanHigh = 35;  //Turn on at this temperature
-    bool batteryFanState = TRUE;      //float4 batteryFanPercent;
+    me->batteryFanLow = 32;  //Turn off BELOW tuhis point
+    me->batteryFanHigh = 35;  //Turn on at this temperature
+    me->batteryFanState = TRUE;      //float4 batteryFanPercent;
     
-    return CS_obj;
+    return me;
 }
 
 //-------------------------------------------------------------------
@@ -66,15 +66,44 @@ void CoolingSystem_calculations(CoolingSystem* me, sbyte1 motorControllerTemp, s
     }
 
     //ubyte1* tempMsg[25];
-    //sprintf(tempMsg, "MCM temp: %d\n", motorControllerTemp);
-    //SerialManager_send(me->sm, tempMsg);
     //sprintf(tempMsg, "Motor temp: %d\n", motorTemp);
     //SerialManager_send(me->sm, tempMsg);
-    //sprintf(tempMsg, "Batt temp: %d\n\n", batteryTemp);
-    //SerialManager_send(me->sm, tempMsg);
+
+    // START - RABEEL's CODE
+    /*******************************
+    sprintf(tempMsg, "MCM temp %d >= %d ? ", motorControllerTemp, me->motorFanHigh);
+    SerialManager_send(me->sm, tempMsg);
+    if ((motorControllerTemp >= me->motorFanHigh)) // || (motorTemp >= me->motorFanHigh))
+    {
+        SerialManager_send(me->sm, "Yes.\n");
+        me->motorFanState = TRUE;
+    }
+    else
+    {
+        SerialManager_send(me->sm, "No.\n");
+        me->motorFanState = FALSE;
+    }
+
+    sprintf(tempMsg, "Batt temp %d > %d ? ", batteryTemp, me->batteryFanHigh);
+    SerialManager_send(me->sm, tempMsg);
+    if ((batteryTemp >= me->batteryFanHigh))
+    {
+        SerialManager_send(me->sm, "Yes.\n");
+        me->batteryFanState = TRUE;
+    }
+    else
+    {
+        SerialManager_send(me->sm, "No.\n");
+        me->batteryFanState = FALSE; 
+    }
+
+    // END - RABEEL's CODE
+    *******************************/
     
+
+
     //Motor fan / rad fan
-    if (me->motorFanState == FALSE)
+    if(me->motorFanState == FALSE)
     {
         if ((motorControllerTemp >= me->motorFanHigh) || (motorTemp >= me->motorFanHigh))
         {
@@ -85,6 +114,7 @@ void CoolingSystem_calculations(CoolingSystem* me, sbyte1 motorControllerTemp, s
     else  //motor fan is on
     {
         if ((motorControllerTemp < me->motorFanLow) && (motorTemp < me->motorFanLow))
+            // Shouldn't this be an || instead of an &&
         {
             me->motorFanState = FALSE;
             SerialManager_send(me->sm, "Turning motor fans off.\n");
@@ -94,7 +124,7 @@ void CoolingSystem_calculations(CoolingSystem* me, sbyte1 motorControllerTemp, s
     //Battery fans
     if (me->batteryFanState == TRUE)
     {
-        if (batteryTemp < 30)
+        if (batteryTemp < me->batteryFanLow)
         {
             me->batteryFanState = FALSE;
             SerialManager_send(me->sm, "Turning battery fans off.\n");
@@ -102,14 +132,13 @@ void CoolingSystem_calculations(CoolingSystem* me, sbyte1 motorControllerTemp, s
     }
     else //fans are off
     {
-        if (batteryTemp >= 32)
+        if (batteryTemp >= me->batteryFanHigh)
         {
             me->batteryFanState = TRUE;
             SerialManager_send(me->sm, "Turning battery fans on.\n");
         }
     }
-    me->batteryFanState = FALSE;
-    me->motorFanState = FALSE;
+
 }
 
 
