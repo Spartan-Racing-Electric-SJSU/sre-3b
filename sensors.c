@@ -118,12 +118,20 @@ void Light_set(Light light, float4 percent)
 		IO_PWM_SetDuty(IO_PWM_02, duty, NULL);  //Pin 116
 		break;
 
-    case Light_waterPump:
+    case Cooling_waterPump:
         IO_PWM_SetDuty(IO_PWM_05, duty, NULL);
         break;
 
-    //--------------------------------------------
-    //These devices moved from PWM to DIO
+    case Cooling_motorFans:
+        IO_DO_Set(IO_DO_03, power);
+        break;
+
+    case Cooling_batteryFans:
+        IO_DO_Set(IO_DO_04, power);
+        break;
+
+        //--------------------------------------------
+        //These devices moved from PWM to DIO
 
 	case Light_dashTCS:
         //IO_PWM_SetDuty(IO_PWM_03, duty, NULL);  //Pin 105
