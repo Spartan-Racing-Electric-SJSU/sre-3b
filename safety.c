@@ -341,31 +341,27 @@ ubyte4 SafetyChecker_getWarnings(SafetyChecker* me)
 void SafetyChecker_reduceTorque(SafetyChecker* me, MotorController* mcm, BatteryManagementSystem* bms)
 {
     float4 multiplier = 1;
-    float4 tempMultiplier;
+    float4 tempMultiplier = 1;
+    sbyte1 groundSpeedKPH = MCM_getGroundSpeedKPH(mcm);
 
     //-------------------------------------------------------------------
-    // Faults - set 0 torque
+    // Critical conditions - set 0 torque
     //-------------------------------------------------------------------
-    if (me->faults > 0 || (me->notices & N_HVILTermSenseLost) > 0) //If faults, or HVIL is low
-    {
-        multiplier = 0;
-        //MCM_commands_setTorqueLimit(1)
-    }
-    //-------------------------------------------------------------------
-    //No regen below 5kph
-    //-------------------------------------------------------------------
-    //Motor to wheel RPM: 3:1
-    else if (MCM_getGroundSpeedKPH < 5 && MCM_commands_getTorque(mcm) < 0)
-    {
+    if
+    (  (me->faults > 0) //Any VCU fault exists
+    || ((me->notices & N_HVILTermSenseLost) > 0) // HVIL is low (must command 0 torque before opening MCM relay
+    || (MCM_commands_getTorque(mcm) < 0 && groundSpeedKPH < 5)  //No regen below 5kph
+    ){
         multiplier = 0;
     }
+
     //-------------------------------------------------------------------
     // Other limits (% reduction) - set torque to the lowest of all these
     // IMPORTANT: Be aware of direction-sensitive situations (accel/regen)
     //-------------------------------------------------------------------
     else
     {
-        //80kW ---------------------------------
+        //80kW limit ---------------------------------
         // if either the bms or mcm goes over 75kw, limit torque 
         if ((BMS_getPower(bms) > 75000) || (MCM_getPower(mcm) > 75000))
         {
@@ -375,27 +371,39 @@ void SafetyChecker_reduceTorque(SafetyChecker* me, MotorController* mcm, Battery
         if (tempMultiplier < multiplier) { multiplier = tempMultiplier; }
 
         //CCL/DCL from BMS --------------------------------
-        //Pack voltage too low
-        //Pack voltage too high
-        //Cell voltage too low
-        //Cell voltage too high
-        //Temperature too high
-        //Temperature too low
-        //Current peak lasted too long
+        //why the DCL/CCL could be limited:
+        //0: No limit
+        //1 : Pack voltage too low
+        //2 : Pack voltage high
+        //3 : Cell voltage low
+        //4 : Cell voltage high
+        //5 : Temperature high for charging
+        //6 : Temperature too low for charging
+        //7 : Temperature high for discharging
+        //8 : Temperature too low for discharging
+        //9 : Charging current peak lasted too long
+        //10 = A : Discharging current peak lasted too long
+        //11 = B : Power up delay(Charge testing)
+        //12 = C : Fault
+        //13 = D : Contactors are off
         if (MCM_commands_getTorque(mcm) > 0)
         {
             tempMultiplier = getPercent(BMS_getDCL(bms), 0, 0xFF, TRUE);
         }
-        else //regen
+        else //regen - Pick the lowest of CCL and speed reductions
         {
             tempMultiplier = getPercent(BMS_getCCL(bms), 0, 0xFF, TRUE);
+            //Also, regen should be ramped down as speed approaches minimum
+            if (MCM_getGroundSpeedKPH(mcm) < 15)
+            {
+            }
         }
-        if (tempMultiplier < multiplier)
-        {
-            multiplier = tempMultiplier; 
-        }
+        if (tempMultiplier < multiplier) { multiplier = tempMultiplier; }
+
+
     }
 
+    //Reduce the torque command.  Multiplier should be a percent value (between 0 and 1)
     MCM_commands_setTorque(mcm, MCM_commands_getTorque(mcm) * multiplier);
 }
 

@@ -51,6 +51,8 @@ struct _MotorController {
     sbyte2 torqueMaximum_Regen;
     sbyte2 torqueRegenAtZeroPedal;
     float4 torquePercentBPSForMaxRegen;
+    sbyte1 regenSpeedMin;
+    sbyte1 regenSpeedRampStart;
 
     bool relayState;
     bool previousHVILState;
@@ -118,7 +120,7 @@ struct _MotorController {
     //};
 };
 
-MotorController* MotorController_new(SerialManager* sm, ubyte2 canMessageBaseID, Direction initialDirection, sbyte2 torqueMaxInDNm)
+MotorController* MotorController_new(SerialManager* sm, ubyte2 canMessageBaseID, Direction initialDirection, sbyte2 torqueMaxInDNm, sbyte1 minRegenSpeed, sbyte1 regenRampdownStartSpeed)
 {
 	MotorController* me = (MotorController*)malloc(sizeof(struct _MotorController));
     me->serialMan = sm;
@@ -135,6 +137,8 @@ MotorController* MotorController_new(SerialManager* sm, ubyte2 canMessageBaseID,
 	me->commands_torqueLimit = me->torqueMaximum = torqueMaxInDNm;
     me->torqueMaximum_Regen = torqueMaxInDNm * -.2;
     me->torqueRegenAtZeroPedal = me->torqueMaximum_Regen * .1;
+    me->regenSpeedMin = minRegenSpeed;
+    me->regenSpeedRampStart = regenRampdownStartSpeed;
 
     me->torquePercentBPSForMaxRegen = 0.5;
 
@@ -662,6 +666,15 @@ sbyte2 MCM_getGroundSpeedKPH(MotorController* me)
     float4 tireCircumference = 3.141592653589 * 18 * .0254; // (pi * diameter * in to m) = circumference in meters
     sbyte2 groundKPH = wheelRPM / 60 * tireCircumference;
     return groundKPH;
+}
+
+sbyte1 MCM_getRegenMinSpeed(MotorController* me)
+{
+    return me->regenSpeedMin;
+}
+sbyte1 MCM_getRegenRampdownStartSpeed(MotorController* me)
+{
+    return me->regenSpeedRampStart;
 }
 
 
