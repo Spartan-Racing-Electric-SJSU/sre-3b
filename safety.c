@@ -397,11 +397,10 @@ void SafetyChecker_reduceTorque(SafetyChecker* me, MotorController* mcm, Battery
             if (MCM_getGroundSpeedKPH(mcm) < 15)
             {
                 float4 regenMultiplier = 1 - getPercent(groundSpeedKPH, MCM_getRegenMinSpeed(mcm), MCM_getRegenRampdownStartSpeed(mcm), TRUE);
+                if (regenMultiplier < tempMultiplier) { tempMultiplier = regenMultiplier; } // Pick the lesser of CCL (tempMultiplier) or speed reduction (regenMultiplier)
             }
         }
         if (tempMultiplier < multiplier) { multiplier = tempMultiplier; }
-
-
     }
 
     //Reduce the torque command.  Multiplier should be a percent value (between 0 and 1)

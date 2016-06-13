@@ -104,8 +104,8 @@ struct _BatteryManagementSystem {
     sbyte1 avgTemp;      //Avg Temp[096]
     //ubyte1 SOC;          //SOC(%)[112]
     //ubyte1 SOC;          //SOC(%)[112]
-    ubyte1 CCL;          //DOD(Ah)[144]
-    ubyte1 DCL;          //DOD(Ah)[144]
+    ubyte1 CCL;          //
+    ubyte1 DCL;          //
 
     
 
@@ -120,6 +120,9 @@ BatteryManagementSystem* BMS_new(SerialManager* serialMan, ubyte2 canMessageBase
     me->canMessageBaseId = canMessageBaseID;
     me->sm = serialMan;
     me->maxTemp = 99;
+
+    me->CCL = 0;
+    me->DCL = 0;
     
     return me;
 
