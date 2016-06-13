@@ -133,6 +133,10 @@ MotorController* MotorController_new(SerialManager* sm, ubyte2 canMessageBaseID,
 	me->inverterStatus = UNKNOWN;
 	//me->startRTDS = FALSE;
 
+    me->motorRPM = 0;
+    me->DC_Voltage = 0;
+    me->DC_Current = 0;
+
 	me->commands_direction = initialDirection;
 	me->commands_torqueLimit = me->torqueMaximum = torqueMaxInDNm;
     me->torqueMaximum_Regen = torqueMaxInDNm * -.2;

@@ -394,7 +394,7 @@ void SafetyChecker_reduceTorque(SafetyChecker* me, MotorController* mcm, Battery
         {
             tempMultiplier = getPercent(BMS_getCCL(bms), 0, 0xFF, TRUE);
             //Also, regen should be ramped down as speed approaches minimum
-            if (MCM_getGroundSpeedKPH(mcm) < 15)
+            if (groundSpeedKPH < 15)
             {
                 float4 regenMultiplier = 1 - getPercent(groundSpeedKPH, MCM_getRegenMinSpeed(mcm), MCM_getRegenRampdownStartSpeed(mcm), TRUE);
                 if (regenMultiplier < tempMultiplier) { tempMultiplier = regenMultiplier; } // Pick the lesser of CCL (tempMultiplier) or speed reduction (regenMultiplier)

@@ -121,6 +121,9 @@ BatteryManagementSystem* BMS_new(SerialManager* serialMan, ubyte2 canMessageBase
     me->sm = serialMan;
     me->maxTemp = 99;
 
+    me->packCurrent = 0;
+    me->packVoltage = 0;
+
     me->CCL = 0;
     me->DCL = 0;
     
