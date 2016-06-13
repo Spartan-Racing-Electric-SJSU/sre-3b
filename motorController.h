@@ -20,7 +20,7 @@ typedef enum { CLOCKWISE, COUNTERCLOCKWISE, FORWARD, REVERSE, _0, _1 } Direction
 
 typedef struct _MotorController MotorController;
 
-MotorController* MotorController_new(SerialManager* sm, ubyte2 canMessageBaseID, Direction initialDirection, sbyte2 torqueMaxInDNm);
+MotorController* MotorController_new(SerialManager* sm, ubyte2 canMessageBaseID, Direction initialDirection, sbyte2 torqueMaxInDNm, sbyte1 minRegenSpeed, sbyte1 regenRampdownStartSpeed);
 
 //----------------------------------------------------------------------------
 // Command Functions
@@ -73,6 +73,8 @@ sbyte1 MCM_getTemp(MotorController* me);
 sbyte1 MCM_getMotorTemp(MotorController* me);
 
 sbyte2 MCM_getGroundSpeedKPH(MotorController* me);
+sbyte1 MCM_getRegenMinSpeed(MotorController* me);
+sbyte1 MCM_getRegenRampdownStartSpeed(MotorController* me);
 
 //----------------------------------------------------------------------------
 //Inter-object functions
