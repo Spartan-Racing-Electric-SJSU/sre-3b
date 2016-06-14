@@ -22,8 +22,8 @@ extern Sensor Sensor_BenchTPS1;
 
 extern Sensor Sensor_RTDButton;
 extern Sensor Sensor_EcoButton;
-extern Sensor Sensor_TCSSwitchA; // used currently for regen
-extern Sensor Sensor_TCSSwitchB; // used currently for regen
+extern Sensor Sensor_TCSSwitchUp; // used currently for regen
+extern Sensor Sensor_TCSSwitchDown; // used currently for regen
 extern Sensor Sensor_TCSKnob;    // used currently for regen
 extern Sensor Sensor_HVILTerminationSense;
 
@@ -50,6 +50,7 @@ struct _MotorController {
 	sbyte2 torqueMaximum;  //Max torque that can be commanded in deciNewton*meters ("100" = 10.0 Nm)
     sbyte2 torqueMaximum_Regen;
     sbyte2 torqueRegenAtZeroPedal;
+    sbyte2 torqueRegenLimit;
     float4 torquePercentBPSForMaxRegen;
     sbyte1 regenSpeedMin;
     sbyte1 regenSpeedRampStart;
@@ -69,6 +70,16 @@ struct _MotorController {
     ubyte4 faultCodesPOST; //0xAB Byte 0-3
     ubyte4 faultCodesRUN;  //0xAB Byte 4-7*/
 
+    ubyte1 faultHistory[8];
+
+	sbyte2 motor_temp;
+	sbyte4 DC_Voltage;
+	sbyte4 DC_Current;
+
+	sbyte2 commandedTorque;
+	ubyte4 currentPower;
+
+	sbyte2 motorRPM;
 	//----------------------------------------------------------------------------
 	// Control parameters
 	//----------------------------------------------------------------------------
@@ -81,21 +92,11 @@ struct _MotorController {
 	sbyte2 commands_torque;
 	sbyte2 commands_torqueLimit;
 	ubyte1 commands_direction;
-    ubyte1 faultHistory[8];
-
-	sbyte2 motor_temp;
-	sbyte4 DC_Voltage;
-	sbyte4 DC_Current;
-
-	sbyte2 commandedTorque;
-	ubyte4 currentPower;
-
-	sbyte2 motorRPM;
 	//unused/unused/unused/unused unused/unused/Discharge/Inverter Enable
 	Status commands_discharge;
 	Status commands_inverter;
-	//ubyte1 controlSwitches; // example: 0b00000001 = inverter is enabled, discharge is disabled.
-
+	//ubyte1 controlSwitches; // example: 0b00000001 = inverter is enabled, discharge is disabled
+    
     /*
     //----------------------------------------------------------------------------
     // Control functions - for functions nested within struct
@@ -166,7 +167,46 @@ me->getInverterStatus = &getInverterStatus;
 	return me;
 }
 
+//TEMPORARY: Sets regen settings based on TCS switches/pot
+//A selector switch on the dash drives high either "Switch A" or "Switch B", or neither.
+//Switch up   = switch2 high      -> adjust BPS % at which max regen occurs -> me->torqueRegenAtZeroPedal
+//Switch mid  = both switches low -> adjust amount of regen at 0 pedal      -> me->torquePercentBPSForMaxRegen;
+//Switch down = Switch1 high      -> regen Off                              -> me->torqueRegenLimit = 0
+void MCM_readTCSSettings(MotorController* me, Sensor* TCSSwitch1, Sensor* TCSSwitch2, Sensor* TCSPot)
+{
+    me->torqueRegenLimit = me->torqueMaximum_Regen; //default regen limit
+    ubyte2 TCSPotMin = 100;  //Important: Leave some dead zones at the ends of the pot
+    ubyte2 TCSPotMax = 900;  //Todo? Use the sensor->min/max instead?  No - not really appropriate because of hardcoded deadzones
 
+    //First, check for illegal switch value
+    if (TCSSwitch1->sensorValue && TCSSwitch2->sensorValue)
+    {
+        SerialManager_send(me->serialMan, "ERROR: TCS switch up and down at same time.");
+        me->torqueRegenLimit = 0;
+        SerialManager_send(me->serialMan, "Regen disabled.");
+    }
+    //Down or pot clicked off (open): Regen Off
+    else if (TCSSwitch1->sensorValue == TRUE || TCSPot->sensorValue > 15000)
+    {
+        me->torqueRegenLimit = 0;
+    }
+    //Middle: Zerop pedal adjust
+    else if (TCSSwitch1->sensorValue == FALSE && TCSSwitch2->sensorValue == FALSE)
+    {
+        me->torqueRegenAtZeroPedal = me->torqueRegenLimit * getPercent(TCSPot->sensorValue, TCSPotMin, TCSPotMax, TRUE);
+    }
+    //Up: BPS % for max regen
+    else if (TCSSwitch2->sensorValue == TRUE)
+    {
+        me->torquePercentBPSForMaxRegen = getPercent(TCSPot->sensorValue, TCSPotMin, TCSPotMax, TRUE);
+    }
+    else //This shouldn't happen - all cases covered above.  If statement structured this way for clarity only.
+    {
+        SerialManager_send(me->serialMan, "ERROR: Impossible TCS/Regen if case.");
+        me->torqueRegenLimit = 0;
+        SerialManager_send(me->serialMan, "Regen disabled.");
+    }
+}
 
 
 
@@ -178,7 +218,10 @@ me->getInverterStatus = &getInverterStatus;
 * > Torque
 *   > Delay command after inverter enable (temporary until noise fix)
 *   > Calculate Nm to request based on pedal position
-*   > Keep track of update count to prevent CANbus overload //MOVE ALL COUNT UPDATES INTO INTERNAL MCM FUNCTIONS
+*   > DO NOT limit Nm based on external system limits - that is handled by safety.c,
+*     and we still want to know the driver's requested torque
+*   > DO limit Nm based on driver inputs (dash settings for regen)
+*   > Keep track of update count to prevent CANbus overload
 * > Torque limit
 *   > Get from TCS function
 * Manages the different phases startup/ready-to-drive procedure
@@ -192,62 +235,25 @@ void MCM_calculateCommands(MotorController* me, TorqueEncoder* tps, BrakePressur
 {
 	//----------------------------------------------------------------------------
 	// Control commands
-	//----------------------------------------------------------------------------
-	//Temp hardcode
-	MCM_commands_setDischarge(me, DISABLED);
-
-	//1 = forwards for our car, 0 = reverse
-	MCM_commands_setDirection(me, FORWARD);
-
     //Note: Safety checks (torque command limiting) are done EXTERNALLY.  This is a preliminary calculation
     //which should return the intended torque based on pedals
+    //----------------------------------------------------------------------------
+	MCM_commands_setDischarge(me, DISABLED);
+	MCM_commands_setDirection(me, FORWARD); //1 = forwards for our car, 0 = reverse
     
-    //NOTE: Brake/regen is currently prioritized over accel for safety.  However, plausibility check can still
-    //fail even though car is not even accelerating if both pedals are actuated simultaneously.
-
-    /*=================BEGIN REGEN CODE=================== */
-
-    if(Sensor_TCSSwitchA.sensorValue ^ Sensor_TCSSwitchB.sensorValue)
-    {
-        if(Sensor_TCSSwitchA.sensorValue != 0) //I'm guessing this value will only equal zero if the switch is not in this position
-        {
-            //If switch is in position 
-            //me->torqueRegenAtZeroPedal = some_function_of(Sensor_TCSKnob.sensorValue);
-        }
-        else
-        {
-            //If switch is in position 
-            //me->torquePercentBPSForMaxRegen = some_function_of(Sensor_TCSKnob.sensorValue);
-        }
-
-    } 
-    else if (Sensor_TCSSwitchA.sensorValue && Sensor_TCSSwitchB.sensorValue)
-    {
-        //REGEN WILL BE ON BUT NO OTHER FURTHER IMPLEMENTATION YET       
-    } 
-    else
-    {
-        //REGEN OFF
-        //me->torqueMaximum_Regen = 0;
-    }
-    /*====================END REGEN CODE====================== */
-
-
-
     sbyte2 torqueOutput = 0;
-    /*    if (bps > 0)
+    if (bps > 0)
     {
-        torqueOutput = me->torqueMaximum_Regen * getPercent(bps->percent, 0, .5, TRUE) + me->torqueRegenAtZeroPedal;
+        torqueOutput = me->torqueRegenAtZeroPedal + (me->torqueRegenLimit - me->torqueRegenAtZeroPedal) * getPercent(bps->percent, 0, me->torquePercentBPSForMaxRegen, TRUE);
     }
+    
     else
     {
         torqueOutput = (me->torqueMaximum - me->torqueRegenAtZeroPedal) * tps->percent + me->torqueRegenAtZeroPedal;
     }
-    */
-
-    torqueOutput = me->torqueMaximum * tps->percent;
+    SerialManager_sprintf(me->serialMan, "Tq cmd w/regen: %f", &torqueOutput);
+    torqueOutput = me->torqueMaximum * tps->percent;  //REMOVE THIS LINE TO ENABLE REGEN
     MCM_commands_setTorque(me, torqueOutput);
-    
 }
 
 void MCM_relayControl(MotorController* me, Sensor* HVILTermSense)

@@ -42,8 +42,8 @@ extern Sensor Sensor_BenchTPS1;
 extern Sensor Sensor_RTDButton;
 extern Sensor Sensor_EcoButton;
 extern Sensor Sensor_TCSKnob;
-extern Sensor Sensor_TCSSwitchA;
-extern Sensor Sensor_TCSSwitchB;
+extern Sensor Sensor_TCSSwitchUp;
+extern Sensor Sensor_TCSSwitchDown;
 extern Sensor Sensor_HVILTerminationSense;
 
 /*-------------------------------------------------------------------
@@ -95,8 +95,8 @@ void sensors_updateSensors(void)
     //Switches / Digital ---------------------------------------------------
 	Sensor_RTDButton.ioErr_signalGet = IO_DI_Get(IO_DI_00, &Sensor_RTDButton.sensorValue);
 	Sensor_EcoButton.ioErr_signalGet = IO_DI_Get(IO_DI_01, &Sensor_EcoButton.sensorValue);
-	Sensor_TCSSwitchA.ioErr_signalGet = IO_DI_Get(IO_DI_02, &Sensor_TCSSwitchA.sensorValue);
-	Sensor_TCSSwitchB.ioErr_signalGet = IO_DI_Get(IO_DI_03, &Sensor_TCSSwitchB.sensorValue);
+	Sensor_TCSSwitchUp.ioErr_signalGet = IO_DI_Get(IO_DI_02, &Sensor_TCSSwitchUp.sensorValue);
+	Sensor_TCSSwitchDown.ioErr_signalGet = IO_DI_Get(IO_DI_03, &Sensor_TCSSwitchDown.sensorValue);
 	Sensor_HVILTerminationSense.ioErr_signalGet = IO_DI_Get(IO_DI_07, &Sensor_HVILTerminationSense.sensorValue);
 
     //Other stuff ---------------------------------------------------

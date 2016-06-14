@@ -93,7 +93,8 @@ extern Sensor Sensor_WPS_FR;
 extern Sensor Sensor_WPS_RL;
 extern Sensor Sensor_WPS_RR;
 extern Sensor Sensor_SAS;
- 
+extern Sensor Sensor_TCSKnob;
+
 extern Sensor Sensor_RTDButton;
 extern Sensor Sensor_TEMP_BrakingSwitch;
 extern Sensor Sensor_EcoButton;
@@ -290,6 +291,7 @@ void main(void)
         //Assign motor controls to MCM command message
         //motorController_setCommands(rtds);
         //DOES NOT set inverter command or rtds flag
+        MCM_readTCSSettings(mcm0, &Sensor_TCSSwitchUp, &Sensor_TCSSwitchDown, &Sensor_TCSKnob);
         MCM_calculateCommands(mcm0, tps, bps);
 
         SafetyChecker_update(sc, mcm0, bms, tps, bps, &Sensor_HVILTerminationSense, &Sensor_LVBattery);

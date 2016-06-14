@@ -52,8 +52,8 @@ extern Sensor Sensor_BenchTPS1;
 
 extern Sensor Sensor_RTDButton;
 extern Sensor Sensor_EcoButton;
-extern Sensor Sensor_TCSSwitchA;
-extern Sensor Sensor_TCSSwitchB;
+extern Sensor Sensor_TCSSwitchUp;
+extern Sensor Sensor_TCSSwitchDown;
 extern Sensor Sensor_HVILTerminationSense;
 
 /*****************************************************************************

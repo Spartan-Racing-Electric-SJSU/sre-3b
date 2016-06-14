@@ -110,8 +110,8 @@ void vcu_initializeADC(bool benchMode)
 	//----------------------------------------------------------------------------
 	Sensor_RTDButton.ioErr_signalInit = IO_DI_Init(IO_DI_00, IO_DI_PD_10K); //RTD Button
     Sensor_EcoButton.ioErr_signalInit = IO_DI_Init(IO_DI_01, IO_DI_PD_10K); //Eco Button
-    Sensor_TCSSwitchA.ioErr_signalInit = IO_DI_Init(IO_DI_02, IO_DI_PD_10K); //TCS Switch A
-	Sensor_TCSSwitchB.ioErr_signalInit = IO_DI_Init(IO_DI_03, IO_DI_PD_10K); //TCS Switch B
+    Sensor_TCSSwitchUp.ioErr_signalInit = IO_DI_Init(IO_DI_02, IO_DI_PD_10K); //TCS Switch A
+	Sensor_TCSSwitchDown.ioErr_signalInit = IO_DI_Init(IO_DI_03, IO_DI_PD_10K); //TCS Switch B
     Sensor_HVILTerminationSense.ioErr_signalInit = IO_DI_Init(IO_DI_07, IO_DI_PD_10K); //HVIL Term sense, high = HV present
 
     //
@@ -172,8 +172,8 @@ Sensor Sensor_TCSKnob;
 
 Sensor Sensor_RTDButton;
 Sensor Sensor_EcoButton;
-Sensor Sensor_TCSSwitchA;
-Sensor Sensor_TCSSwitchB;
+Sensor Sensor_TCSSwitchUp;
+Sensor Sensor_TCSSwitchDown;
 Sensor Sensor_HVILTerminationSense;
 
 //Switches
