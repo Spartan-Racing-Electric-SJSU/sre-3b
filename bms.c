@@ -104,8 +104,8 @@ struct _BatteryManagementSystem {
     sbyte1 avgTemp;      //Avg Temp[096]
     //ubyte1 SOC;          //SOC(%)[112]
     //ubyte1 SOC;          //SOC(%)[112]
-    ubyte1 CCL;          //
-    ubyte1 DCL;          //
+    ubyte1 CCL;          //DO NOT USE
+    ubyte1 DCL;          //DO NOT USE
 
     
 
@@ -126,6 +126,8 @@ BatteryManagementSystem* BMS_new(SerialManager* serialMan, ubyte2 canMessageBase
 
     me->CCL = 0;
     me->DCL = 0;
+    me->chargeLimit = 0;
+    me->dischargeLimit = 0;
     
     return me;
 
@@ -283,12 +285,14 @@ ubyte2 BMS_getPackTemp(BatteryManagementSystem* me)
 
 ubyte1 BMS_getCCL(BatteryManagementSystem* me)
 {
-    return me->CCL;
+    //return me->CCL;
+    return me->chargeLimit;
 }
 
 ubyte1 BMS_getDCL(BatteryManagementSystem* me)
 {
-    return me->DCL;
+    //return me->DCL;
+    return me->dischargeLimit;
 }
 
 

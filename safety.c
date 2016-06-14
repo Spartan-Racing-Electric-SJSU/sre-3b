@@ -66,6 +66,8 @@ struct _SafetyChecker {
     ubyte4 faults;
     ubyte2 warnings;
     ubyte2 notices;
+    ubyte1 maxAmpsCharge;
+    ubyte1 maxAmpsDischarge;
 };
 
 /*****************************************************************************
@@ -74,15 +76,17 @@ struct _SafetyChecker {
 * If an implausibility occurs between the values of these two sensors the power to the motor(s) must be immediately shut down completely.
 * It is not necessary to completely deactivate the tractive system, the motor controller(s) shutting down the power to the motor(s) is sufficient.
 ****************************************************************************/
-SafetyChecker* SafetyChecker_new(SerialManager* sm)
+SafetyChecker* SafetyChecker_new(SerialManager* sm, ubyte1 maxChargeAmps, ubyte1 maxDischargeAmps)
 {
     SafetyChecker* me = (SafetyChecker*)malloc(sizeof(struct _SafetyChecker));
 
     me->serialMan = sm;
-    SerialManager_send(me->serialMan, "SafetyChecker's reference to SerialManager was created.\n");
 	//Initialize all safety checks to FAIL? Not anymore
     me->faults = 0;
     me->warnings = 0;
+
+    me->maxAmpsCharge = maxChargeAmps;
+    me->maxAmpsDischarge = maxDischargeAmps;
     return me;
 }
 
@@ -116,7 +120,6 @@ void SafetyChecker_update(SafetyChecker* me, MotorController* mcm, BatteryManage
         me->faults &= ~F_tpsPowerFailure;
     }
 
-    
 	if (   tps->tps0->ioErr_signalInit != IO_E_OK
 		|| tps->tps1->ioErr_signalInit != IO_E_OK
 		|| tps->tps0->ioErr_signalGet != IO_E_OK
@@ -388,11 +391,11 @@ void SafetyChecker_reduceTorque(SafetyChecker* me, MotorController* mcm, Battery
         //13 = D : Contactors are off
         if (MCM_commands_getTorque(mcm) > 0)
         {
-            tempMultiplier = getPercent(BMS_getDCL(bms), 0, 0xFF, TRUE);
+            tempMultiplier = getPercent(BMS_getDCL(bms), 0, me->maxAmpsDischarge, TRUE);
         }
         else //regen - Pick the lowest of CCL and speed reductions
         {
-            tempMultiplier = getPercent(BMS_getCCL(bms), 0, 0xFF, TRUE);
+            tempMultiplier = getPercent(BMS_getCCL(bms), 0, me->maxAmpsCharge, TRUE);
             //Also, regen should be ramped down as speed approaches minimum
             if (groundSpeedKPH < 15)
             {

@@ -177,7 +177,7 @@ void main(void)
 	TorqueEncoder* tps = TorqueEncoder_new(bench);
 	BrakePressureSensor* bps = BrakePressureSensor_new();
 	WheelSpeeds* wss = WheelSpeeds_new(18, 18, 16, 16);
-	SafetyChecker* sc = SafetyChecker_new(serialMan);
+	SafetyChecker* sc = SafetyChecker_new(serialMan, 320, 32);  //Must match amp limits 
 	BatteryManagementSystem* bms = BMS_new(serialMan, 0x620);
     CoolingSystem* cs = CoolingSystem_new(serialMan);
 
