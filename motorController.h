@@ -69,12 +69,16 @@ bool MCM_getRTDSFlag(MotorController* me);
 //void motorController_SendControlMessage(IO_CAN_DATA_FRAME *canMessage); //This is an alias for canOutput_sendMcuControl
 //void motorController_setAllCommands(ReadyToDriveSound* rtds);
 
-sbyte1 MCM_getTemp(MotorController* me);
-sbyte1 MCM_getMotorTemp(MotorController* me);
+sbyte2 MCM_getTemp(MotorController* me);
+sbyte2 MCM_getMotorTemp(MotorController* me);
 
 sbyte2 MCM_getGroundSpeedKPH(MotorController* me);
 sbyte1 MCM_getRegenMinSpeed(MotorController* me);
 sbyte1 MCM_getRegenRampdownStartSpeed(MotorController* me);
+
+ubyte1 MCM_getRegenMode(MotorController* me);
+sbyte2 MCM_getRegenAtZeroPedal(MotorController* me);
+sbyte2 MCM_getBPSForMaxRegenZeroToFF(MotorController* me);
 
 //----------------------------------------------------------------------------
 //Inter-object functions

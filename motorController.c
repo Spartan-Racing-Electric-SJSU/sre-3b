@@ -47,10 +47,11 @@ struct _MotorController {
     //All torque units are in 10ths (500 = 50.0 Nm)
     //Positive = accel, negative = regen
     //Reverse not allowed
-	sbyte2 torqueMaximum;  //Max torque that can be commanded in deciNewton*meters ("100" = 10.0 Nm)
-    sbyte2 torqueMaximum_Regen;
-    sbyte2 torqueRegenAtZeroPedal;
-    sbyte2 torqueRegenLimit;
+	ubyte2 torqueMaximum;  //Max torque that can be commanded in deciNewton*meters ("100" = 10.0 Nm)
+    ubyte2 torqueMaximum_Regen;
+    ubyte1 regenMode;
+    ubyte2 torqueRegenLimit;
+    ubyte2 torqueRegenAtZeroPedal;
     float4 torquePercentBPSForMaxRegen;
     sbyte1 regenSpeedMin;
     sbyte1 regenSpeedRampStart;
@@ -181,6 +182,7 @@ void MCM_readTCSSettings(MotorController* me, Sensor* TCSSwitch1, Sensor* TCSSwi
     //First, check for illegal switch value
     if (TCSSwitch1->sensorValue && TCSSwitch2->sensorValue)
     {
+        me->regenMode = 0xFF;
         SerialManager_send(me->serialMan, "ERROR: TCS switch up and down at same time.");
         me->torqueRegenLimit = 0;
         SerialManager_send(me->serialMan, "Regen disabled.");
@@ -188,20 +190,24 @@ void MCM_readTCSSettings(MotorController* me, Sensor* TCSSwitch1, Sensor* TCSSwi
     //Down or pot clicked off (open): Regen Off
     else if (TCSSwitch1->sensorValue == TRUE || TCSPot->sensorValue > 15000)
     {
+        me->regenMode = 0;
         me->torqueRegenLimit = 0;
     }
     //Middle: Zerop pedal adjust
     else if (TCSSwitch1->sensorValue == FALSE && TCSSwitch2->sensorValue == FALSE)
     {
+        me->regenMode = 1;
         me->torqueRegenAtZeroPedal = me->torqueRegenLimit * getPercent(TCSPot->sensorValue, TCSPotMin, TCSPotMax, TRUE);
     }
     //Up: BPS % for max regen
     else if (TCSSwitch2->sensorValue == TRUE)
     {
+        me->regenMode = 2;
         me->torquePercentBPSForMaxRegen = getPercent(TCSPot->sensorValue, TCSPotMin, TCSPotMax, TRUE);
     }
     else //This shouldn't happen - all cases covered above.  If statement structured this way for clarity only.
     {
+        me->regenMode = 0xFF;
         SerialManager_send(me->serialMan, "ERROR: Impossible TCS/Regen if case.");
         me->torqueRegenLimit = 0;
         SerialManager_send(me->serialMan, "Regen disabled.");
@@ -237,6 +243,7 @@ void MCM_calculateCommands(MotorController* me, TorqueEncoder* tps, BrakePressur
 	// Control commands
     //Note: Safety checks (torque command limiting) are done EXTERNALLY.  This is a preliminary calculation
     //which should return the intended torque based on pedals
+    //Note: All stored torque values should be positive / unsigned
     //----------------------------------------------------------------------------
 	MCM_commands_setDischarge(me, DISABLED);
 	MCM_commands_setDirection(me, FORWARD); //1 = forwards for our car, 0 = reverse
@@ -244,7 +251,8 @@ void MCM_calculateCommands(MotorController* me, TorqueEncoder* tps, BrakePressur
     sbyte2 torqueOutput = 0;
     if (bps > 0)
     {
-        torqueOutput = me->torqueRegenAtZeroPedal + (me->torqueRegenLimit - me->torqueRegenAtZeroPedal) * getPercent(bps->percent, 0, me->torquePercentBPSForMaxRegen, TRUE);
+        //0 - (zero pedal regen) - (remaining regen * pedal percent)
+        torqueOutput = 0 - me->torqueRegenAtZeroPedal - (me->torqueRegenLimit - me->torqueRegenAtZeroPedal) * getPercent(bps->percent, 0, me->torquePercentBPSForMaxRegen, TRUE);
     }
     
     else
@@ -661,11 +669,11 @@ ubyte2 MCM_getCommandedTorque(MotorController* me)
 }
 
 
-sbyte1 MCM_getTemp(MotorController* me)
+sbyte2 MCM_getTemp(MotorController* me)
 {
     return me->motor_temp;
 }
-sbyte1 MCM_getMotorTemp(MotorController* me)
+sbyte2 MCM_getMotorTemp(MotorController* me)
 {
     return me->motor_temp;
 }
@@ -677,6 +685,20 @@ sbyte2 MCM_getGroundSpeedKPH(MotorController* me)
     sbyte2 groundKPH = wheelRPM / 60 * tireCircumference;
     return groundKPH;
 }
+
+ubyte1 MCM_getRegenMode(MotorController* me)
+{
+    return me->regenMode;
+}
+sbyte2 MCM_getRegenAtZeroPedal(MotorController* me)
+{
+    return me->torqueRegenAtZeroPedal;
+}
+sbyte2 MCM_getBPSForMaxRegenZeroToFF(MotorController* me)
+{
+    return 0xFF * me->torquePercentBPSForMaxRegen;
+}
+
 
 sbyte1 MCM_getRegenMinSpeed(MotorController* me)
 {
