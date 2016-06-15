@@ -106,7 +106,7 @@ void SafetyChecker_update(SafetyChecker* me, MotorController* mcm, BatteryManage
     if (bps->calibrated == FALSE) { me->faults |= F_bpsNotCalibrated; }
 
 	//===================================================================
-	// Check if VCU was able to get a reading
+	// Check if VCU was able to get a TPS/BPS reading
 	//===================================================================
 	if (tps->tps0->ioErr_powerInit != IO_E_OK
 		|| tps->tps1->ioErr_powerInit != IO_E_OK
@@ -261,16 +261,16 @@ void SafetyChecker_update(SafetyChecker* me, MotorController* mcm, BatteryManage
     //===================================================================
     //  IO_ADC_UBAT: 0..40106  (0V..40.106V)
     //-------------------------------------------------------------------
-    if (LVBattery->sensorValue <= 12730)
+    if (LVBattery->sensorValue <= 12730)  //10% SOC
     {
         me->faults |= F_lvsBatteryVeryLow;
         me->warnings |= W_lvsBatteryLow;
         sprintf(message, "LVS battery %.03fV BELOW 10%%!\n", (float4)LVBattery->sensorValue / 1000);
         SerialManager_send(me->serialMan, message);
     }
-    else if (LVBattery->sensorValue <= 13100)
+    else if (LVBattery->sensorValue <= 13100)  //Recharge percentage, per Shorai
     {
-        me->warnings &= ~F_lvsBatteryVeryLow;
+        me->faults &= ~F_lvsBatteryVeryLow;
         me->warnings |= W_lvsBatteryLow;
         sprintf(message, "LVS battery %.03fV LOW.\n", (float4)LVBattery->sensorValue / 1000);
         SerialManager_send(me->serialMan, message);
@@ -334,7 +334,6 @@ ubyte4 SafetyChecker_getFaults(SafetyChecker* me)
     return (me->faults);
 }
 
-
 //Updates all values based on sensor readings, safety checks, etc
 ubyte4 SafetyChecker_getWarnings(SafetyChecker* me)
 {
@@ -350,61 +349,74 @@ void SafetyChecker_reduceTorque(SafetyChecker* me, MotorController* mcm, Battery
     //-------------------------------------------------------------------
     // Critical conditions - set 0 torque
     //-------------------------------------------------------------------
-    if
-    (  (me->faults > 0) //Any VCU fault exists
-    || ((me->notices & N_HVILTermSenseLost) > 0) // HVIL is low (must command 0 torque before opening MCM relay
-    || (MCM_commands_getTorque(mcm) < 0 && groundSpeedKPH < 5)  //No regen below 5kph
-    ){
+    if (me->faults > 0) //Any VCU fault exists
+    {
         multiplier = 0;
     }
-
+    if ((me->notices & N_HVILTermSenseLost) > 0) // HVIL is low (must command 0 torque before opening MCM relay
+    {
+        multiplier = 0;
+        SerialManager_send(me->serialMan, "SC.0: HVIL term sense low\n");
+    }
+    if (MCM_commands_getTorque(mcm) < 0 && groundSpeedKPH < 5)  //No regen below 5kph
+    {
+        SerialManager_send(me->serialMan, "SC.0: Regen < 5kph\n");
+        multiplier = 0;
+    }
     //-------------------------------------------------------------------
     // Other limits (% reduction) - set torque to the lowest of all these
     // IMPORTANT: Be aware of direction-sensitive situations (accel/regen)
     //-------------------------------------------------------------------
-    else
+    //80kW limit ---------------------------------
+    // if either the bms or mcm goes over 75kw, limit torque 
+    if ((BMS_getPower(bms) > 75000) || (MCM_getPower(mcm) > 75000))
     {
-        //80kW limit ---------------------------------
-        // if either the bms or mcm goes over 75kw, limit torque 
-        if ((BMS_getPower(bms) > 75000) || (MCM_getPower(mcm) > 75000))
-        {
-            // using bmsPower since closer to e-meter
-            tempMultiplier = 1 - getPercent(max(BMS_getPower(bms), MCM_getPower(mcm)), 75000, 80000, TRUE);
-        }
-        if (tempMultiplier < multiplier) { multiplier = tempMultiplier; }
-
-        //CCL/DCL from BMS --------------------------------
-        //why the DCL/CCL could be limited:
-        //0: No limit
-        //1 : Pack voltage too low
-        //2 : Pack voltage high
-        //3 : Cell voltage low
-        //4 : Cell voltage high
-        //5 : Temperature high for charging
-        //6 : Temperature too low for charging
-        //7 : Temperature high for discharging
-        //8 : Temperature too low for discharging
-        //9 : Charging current peak lasted too long
-        //10 = A : Discharging current peak lasted too long
-        //11 = B : Power up delay(Charge testing)
-        //12 = C : Fault
-        //13 = D : Contactors are off
-        if (MCM_commands_getTorque(mcm) > 0)
-        {
-            tempMultiplier = getPercent(BMS_getDCL(bms), 0, me->maxAmpsDischarge, TRUE);
-        }
-        else //regen - Pick the lowest of CCL and speed reductions
-        {
-            tempMultiplier = getPercent(BMS_getCCL(bms), 0, me->maxAmpsCharge, TRUE);
-            //Also, regen should be ramped down as speed approaches minimum
-            if (groundSpeedKPH < 15)
-            {
-                float4 regenMultiplier = 1 - getPercent(groundSpeedKPH, MCM_getRegenMinSpeed(mcm), MCM_getRegenRampdownStartSpeed(mcm), TRUE);
-                if (regenMultiplier < tempMultiplier) { tempMultiplier = regenMultiplier; } // Pick the lesser of CCL (tempMultiplier) or speed reduction (regenMultiplier)
-            }
-        }
-        if (tempMultiplier < multiplier) { multiplier = tempMultiplier; }
+        // using bmsPower since closer to e-meter
+        tempMultiplier = 1 - getPercent(max(BMS_getPower(bms), MCM_getPower(mcm)), 75000, 80000, TRUE);
+        SerialManager_send(me->serialMan, "SC.Mult: 80kW\n");
     }
+    if (tempMultiplier < multiplier) { multiplier = tempMultiplier; }
+
+    //CCL/DCL from BMS --------------------------------
+    //why the DCL/CCL could be limited:
+    //0: No limit
+    //1 : Pack voltage too low
+    //2 : Pack voltage high
+    //3 : Cell voltage low
+    //4 : Cell voltage high
+    //5 : Temperature high for charging
+    //6 : Temperature too low for charging
+    //7 : Temperature high for discharging
+    //8 : Temperature too low for discharging
+    //9 : Charging current peak lasted too long
+    //10 = A : Discharging current peak lasted too long
+    //11 = B : Power up delay(Charge testing)
+    //12 = C : Fault
+    //13 = D : Contactors are off
+    if (MCM_commands_getTorque(mcm) >= 0)
+    {
+        tempMultiplier = getPercent(BMS_getDCL(bms), 0, me->maxAmpsDischarge, TRUE);
+        if (tempMultiplier < 1)
+        {
+            SerialManager_send(me->serialMan, "SC.Mult: DCL\n");
+        }
+    }
+    else //regen - Pick the lowest of CCL and speed reductions
+    {
+        tempMultiplier = getPercent(BMS_getCCL(bms), 0, me->maxAmpsCharge, TRUE);
+        if (tempMultiplier < 1)
+        {
+            SerialManager_send(me->serialMan, "SC.Mult: CCL\n");
+        }
+        //Also, regen should be ramped down as speed approaches minimum
+        if ( groundSpeedKPH < 15)
+        {
+            float4 regenMultiplier = 1 - getPercent(groundSpeedKPH, MCM_getRegenMinSpeed(mcm), MCM_getRegenRampdownStartSpeed(mcm), TRUE);
+            if (tempMultiplier < 1) { SerialManager_send(me->serialMan, "SC.Mult: Regen < 15kph\n"); }
+            if (regenMultiplier < tempMultiplier) { tempMultiplier = regenMultiplier; } // Pick the lesser of CCL (tempMultiplier) or speed reduction (regenMultiplier)
+        }
+    }
+    if (tempMultiplier < multiplier) { multiplier = tempMultiplier; }
 
     //Reduce the torque command.  Multiplier should be a percent value (between 0 and 1)
     MCM_commands_setTorque(mcm, MCM_commands_getTorque(mcm) * multiplier);

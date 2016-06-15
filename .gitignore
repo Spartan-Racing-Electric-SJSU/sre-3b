@@ -39,3 +39,5 @@ SRE2
 AddAPDB.html
 build/*
 #!build/main.hex
+
+release/*

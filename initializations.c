@@ -185,9 +185,6 @@ extern Sensor Sensor_LVBattery; // = { 0xA };  //Note: There will be no init for
 //Initialize the sensors with default values
 void vcu_initializeSensors(bool bench)
 {
-    //Torque Encoders (TPS is not really accurate since there's no throttle to position in an EV)
-    //TODO: specMin/specMax are ints, won't store decimal values!!!!!!!
-
 	//TPS: Ratiometric voltage sensor
 	//Sensor_TPS0.specMin = 0.5;
 	//Sensor_TPS0.specMax = 4.5;
@@ -200,24 +197,24 @@ void vcu_initializeSensors(bool bench)
 	//VCU max sensible pulse: 100ms
 	//Sensor min: 1ms * 5% = .000050 = 50 microseconds
 	//Sensor max: 1ms * 95% = .000950 = 950 microseconds
-    if (bench == TRUE)
-    {
-        //Resistive
-        Sensor_TPS0.specMin = 0;
-        Sensor_TPS1.specMin = 0;
-        Sensor_BPS0.specMin = 0;
-        Sensor_TPS0.specMax = 12500;
-        Sensor_TPS1.specMax = 12500;
-        Sensor_BPS0.specMax = 6500; //6.5k
-        //TPS: Pot
-        //Do not reverse sensor values here.fd
-    }
-    else
-    {
+    //////if (bench == TRUE)
+    //////{
+    //////    //Resistive
+    //////    Sensor_TPS0.specMin = 0;
+    //////    Sensor_TPS1.specMin = 0;
+    //////    Sensor_BPS0.specMin = 0;
+    //////    Sensor_TPS0.specMax = 12500;
+    //////    Sensor_TPS1.specMax = 12500;
+    //////    Sensor_BPS0.specMax = 6500; //6.5k
+    //////    //TPS: Pot
+    //////    //Do not reverse sensor values here.fd
+    //////}
+    //////else
+    //////{
         //Ratiometric
-        Sensor_TPS0.specMin = 00500; //00.500 Volts +/- 0.6% of active electrical angle
+        Sensor_TPS0.specMin = 500; //00.500 Volts +/- 0.6% of active electrical angle
+        Sensor_TPS0.specMax = 4500; //04.500 Volts
         Sensor_TPS1.specMin = 500;
-        Sensor_TPS0.specMax = 04500; //04.500 Volts
         Sensor_TPS1.specMax = 4500;
 
         //Note: BPS sits slightly below 0.5V but it's still within range
@@ -229,7 +226,7 @@ void vcu_initializeSensors(bool bench)
         //Sensor_TPS0.specMax = .001 * .95;
         //Sensor_TPS1.specMin = .001 * .95;
         //Sensor_TPS1.specMax = .001 * .05;
-    }
+    //////}
 
     //Brake Position Sensors
 	//Sensor_BPS0.specMin = 0.5;
