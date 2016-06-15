@@ -46,10 +46,8 @@ CoolingSystem* CoolingSystem_new(SerialManager* serialMan)
 // Cooling system calculations - turns fans on/off, sends water pump PWM control signal
 //Rinehart water temperature operating range: -30C to +80C before derating
 //-------------------------------------------------------------------
-void CoolingSystem_calculations(CoolingSystem* me, sbyte1 motorControllerTemp, sbyte1 motorTemp, sbyte1 batteryTemp)
+void CoolingSystem_calculations(CoolingSystem* me, sbyte2 motorControllerTemp, sbyte2 motorTemp, sbyte1 batteryTemp)
 {
-
-
     //Water pump ------------------
     //Water pump PWM protocol unknown
     if (motorControllerTemp >= me->waterPumpHigh || motorTemp >= me->waterPumpHigh)

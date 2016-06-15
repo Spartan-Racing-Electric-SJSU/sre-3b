@@ -30,7 +30,7 @@ typedef struct _CoolingSystem
 CoolingSystem;
 
 CoolingSystem* CoolingSystem_new(SerialManager* sm);
-void CoolingSystem_calculations(CoolingSystem* me, sbyte1 motorControllerTemp, sbyte1 motorTemp, sbyte1 batteryTemp);
+void CoolingSystem_calculations(CoolingSystem* me, sbyte2 motorControllerTemp, sbyte2 motorTemp, sbyte1 batteryTemp);
 void CoolingSystem_enactCooling(CoolingSystem* me);
 
 
