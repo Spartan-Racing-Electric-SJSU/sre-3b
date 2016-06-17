@@ -41,6 +41,10 @@ TorqueEncoder* TorqueEncoder_new(bool benchMode)
     me->tps0_calibMax = 2304;  //me->tps0->sensorValue;
     me->tps1_calibMin = 2702;  //me->tps1->sensorValue;
     me->tps1_calibMax = 3890;  //me->tps1->sensorValue;
+    //me->tps0_calibMin = 558;  //me->tps0->sensorValue;
+    //me->tps0_calibMax = 2649;  //me->tps0->sensorValue;
+    //me->tps1_calibMin = 2382;  //me->tps1->sensorValue;
+    //me->tps1_calibMax = 4441;  //me->tps1->sensorValue;
     me->calibrated = TRUE;
 
     return me;
@@ -93,7 +97,6 @@ void TorqueEncoder_update(TorqueEncoder* me)
 			if (travel > range) { me->tps1_percent = 1; }
 			if (travel > me->tps1_calibMax) { me->tps1_percent = 0; }
 
-
 			//TorqueEncoder_plausibilityCheck(me, 0, &me->implausibility);
 			/*if (me->implausibility == TRUE)
 			{
@@ -104,24 +107,6 @@ void TorqueEncoder_update(TorqueEncoder* me)
 				me->percent = (me->tps0_percent + me->tps1_percent) / 2;
 			//}
 		}
-
-        //if (me->percent <= 0)
-        //{
-        //    Light_set(Light_dashTCS, 0);
-        //}
-        //else
-        //{
-        //    if (me->percent > 0 && me->percent <= .25)
-        //    {
-        //        Light_set(Light_dashTCS, .5 * me->percent);
-        //    }
-        //    else
-        //    {
-        //        Light_set(Light_dashTCS, me->percent);
-        //    }
-        //}
-
-
 	}
 }
 
@@ -164,6 +149,10 @@ void TorqueEncoder_startCalibration(TorqueEncoder* me, ubyte1 secondsToRun)
         me->calibrated = FALSE;
         IO_RTC_StartTime(&(me->timestamp_calibrationStart));
         me->calibrationRunTime = secondsToRun;
+    }
+    else
+    {
+        IO_RTC_StartTime(&(me->timestamp_calibrationStart));  //extend the calibration time
     }
 }
 
@@ -232,7 +221,6 @@ void TorqueEncoder_calibrationCycle(TorqueEncoder* me, ubyte1* errorCount)
 			me->runCalibration = FALSE;
 			me->calibrated = TRUE;
 			Light_set(Light_dashTCS, 0);
-			
 
         }
 
