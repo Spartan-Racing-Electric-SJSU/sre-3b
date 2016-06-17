@@ -31,6 +31,10 @@ static const ubyte4 F_bpsNotCalibrated = 0x80;
 static const ubyte4 F_tpsOutOfSync = 0x100;
 static const ubyte4 F_bpsOutOfSync = 0x200; //NOT USED
 static const ubyte4 F_tpsbpsImplausible = 0x400;
+
+
+static const ubyte4 F_unusedFaults = 0xFFFFF800;
+
 //static const ubyte4 UNUSED = 0x800;
 
 //static const ubyte4 F_tpsOutOfSync = 0x1000;
@@ -68,6 +72,8 @@ struct _SafetyChecker {
     ubyte2 notices;
     ubyte1 maxAmpsCharge;
     ubyte1 maxAmpsDischarge;
+
+    bool tpsbpsImplausible;
 };
 
 /*****************************************************************************
@@ -76,14 +82,16 @@ struct _SafetyChecker {
 * If an implausibility occurs between the values of these two sensors the power to the motor(s) must be immediately shut down completely.
 * It is not necessary to completely deactivate the tractive system, the motor controller(s) shutting down the power to the motor(s) is sufficient.
 ****************************************************************************/
-SafetyChecker* SafetyChecker_new(SerialManager* sm, ubyte1 maxChargeAmps, ubyte1 maxDischargeAmps)
+SafetyChecker* SafetyChecker_new(SerialManager* sm, ubyte2 maxChargeAmps, ubyte2 maxDischargeAmps)
 {
     SafetyChecker* me = (SafetyChecker*)malloc(sizeof(struct _SafetyChecker));
 
     me->serialMan = sm;
 	//Initialize all safety checks to FAIL? Not anymore
-    me->faults = 0;
+    me->faults = 1;
     me->warnings = 0;
+
+    me->tpsbpsImplausible = TRUE;
 
     me->maxAmpsCharge = maxChargeAmps;
     me->maxAmpsDischarge = maxDischargeAmps;
@@ -101,9 +109,15 @@ void SafetyChecker_update(SafetyChecker* me, MotorController* mcm, BatteryManage
 	//===================================================================
 	// Get calibration status
 	//===================================================================
-    me->faults = 0;
+    //me->faults = 0xFFFF; //Set ALL faults by default.  only clear if truly safe
+    me->faults &= ~F_unusedFaults;
+
+    //me->faults = 1;
     if (tps->calibrated == FALSE) { me->faults |= F_tpsNotCalibrated; }
+    else { me->faults &= ~F_tpsNotCalibrated; }
+
     if (bps->calibrated == FALSE) { me->faults |= F_bpsNotCalibrated; }
+    else { me->faults &= ~F_bpsNotCalibrated; }
 
 	//===================================================================
 	// Check if VCU was able to get a TPS/BPS reading
@@ -222,6 +236,7 @@ void SafetyChecker_update(SafetyChecker* me, MotorController* mcm, BatteryManage
         me->faults &= ~F_tpsOutOfSync;
     }
 
+    me->faults &= ~F_bpsOutOfSync;
 
 
 	//===================================================================
@@ -235,20 +250,55 @@ void SafetyChecker_update(SafetyChecker* me, MotorController* mcm, BatteryManage
 	//  no matter whether the brakes are still actuated or not.
 	//-------------------------------------------------------------------
 	//Implausibility if..
-	if (bps->percent > .02 && tps->percent > .25) //If mechanical brakes actuated && tps > 25%
-	{
-		me->faults |= F_tpsbpsImplausible;
-		//From here, assume that motor controller will check for implausibility before accepting commands
-	}
+    //float4 twelve = 12.0;
+    //SerialManager_sprintf(me->serialMan, "The number twelve: %d\n", &twelve);
+    bool tpsHigh = FALSE;
+    bool bpsHigh = FALSE;
+    if (bps->percent > .02) 
+    {
+        bpsHigh = TRUE;
+        SerialManager_send(me->serialMan, "BPS > .02\n"); 
+    }
+    else
+    {
+        bpsHigh = FALSE;
+    }
 
+    if (tps->percent > .25) 
+    {
+        tpsHigh = TRUE;
+        SerialManager_send(me->serialMan, "TPS > .25\n"); 
+    }
+    else
+    {
+        tpsHigh = FALSE;
+    }
+    
+    
+    
+    //if (bps->percent > .05 && tps->percent > .25)
+    if (tpsHigh == TRUE && bpsHigh == TRUE)
+    {
+        //If mechanical brakes actuated && tps > 25%
+       
+            me->faults |= F_tpsbpsImplausible;
+            me->tpsbpsImplausible = TRUE;
+            SerialManager_send(me->serialMan, "TPS BPS implausiblity detected.\n");
+            //From here, assume that motor controller will check for implausibility before accepting commands
+       
+    }
 	//Clear implausibility if...
-	if ((me->faults & F_tpsbpsImplausible) > 0)
-	{
-		if (tps->percent < .05) //TPS is reduced to < 5%
+	//if ((me->faults & F_tpsbpsImplausible) > 0)
+	//{
+		if (tps->percent < .10) //TPS is reduced to < 5%
 		{
-			me->faults &= ~F_tpsbpsImplausible;  //turn off the implausibility flag
+            //me->tpsbpsImplausible = FALSE;
+            SerialManager_send(me->serialMan, "TPS below .05.  No implausibility.\n");
+			me->faults &= ~(F_tpsbpsImplausible);  //turn off the implausibility flag
 		}
-	}
+	//}
+
+        SerialManager_send(me->serialMan, "\n");
 
 
 
@@ -261,14 +311,14 @@ void SafetyChecker_update(SafetyChecker* me, MotorController* mcm, BatteryManage
     //===================================================================
     //  IO_ADC_UBAT: 0..40106  (0V..40.106V)
     //-------------------------------------------------------------------
-    if (LVBattery->sensorValue <= 12730)  //10% SOC
+    if (LVBattery->sensorValue <= 9200)  //12730 = 10% SOC but hard to tell under load. 9200 = empty
     {
         me->faults |= F_lvsBatteryVeryLow;
         me->warnings |= W_lvsBatteryLow;
-        sprintf(message, "LVS battery %.03fV BELOW 10%%!\n", (float4)LVBattery->sensorValue / 1000);
+        sprintf(message, "LVS battery %.03fV EXTREMELY LOW!\n", (float4)LVBattery->sensorValue / 1000);
         SerialManager_send(me->serialMan, message);
     }
-    else if (LVBattery->sensorValue <= 13100)  //Recharge percentage, per Shorai
+    else if (LVBattery->sensorValue <= 12730)  //13100 = Recharge percentage, per Shorai
     {
         me->faults &= ~F_lvsBatteryVeryLow;
         me->warnings |= W_lvsBatteryLow;
@@ -343,7 +393,7 @@ ubyte4 SafetyChecker_getWarnings(SafetyChecker* me)
 void SafetyChecker_reduceTorque(SafetyChecker* me, MotorController* mcm, BatteryManagementSystem* bms)
 {
     float4 multiplier = 1;
-    float4 tempMultiplier = 1;
+    //float4 tempMultiplier = 1;
     sbyte1 groundSpeedKPH = MCM_getGroundSpeedKPH(mcm);
 
     //-------------------------------------------------------------------
@@ -353,29 +403,29 @@ void SafetyChecker_reduceTorque(SafetyChecker* me, MotorController* mcm, Battery
     {
         multiplier = 0;
     }
-    if ((me->notices & N_HVILTermSenseLost) > 0) // HVIL is low (must command 0 torque before opening MCM relay
-    {
-        multiplier = 0;
-        SerialManager_send(me->serialMan, "SC.0: HVIL term sense low\n");
-    }
-    if (MCM_commands_getTorque(mcm) < 0 && groundSpeedKPH < 5)  //No regen below 5kph
-    {
-        SerialManager_send(me->serialMan, "SC.0: Regen < 5kph\n");
-        multiplier = 0;
-    }
+    //////////if ((me->notices & N_HVILTermSenseLost) > 0) // HVIL is low (must command 0 torque before opening MCM relay
+    //////////{
+    //////////    multiplier = 0;
+    //////////    SerialManager_send(me->serialMan, "SC.0: HVIL term sense low\n");
+    //////////}
+    ////////if (MCM_commands_getTorque(mcm) < 0 && groundSpeedKPH < 5)  //No regen below 5kph
+    ////////{
+    ////////    SerialManager_send(me->serialMan, "SC.0: Regen < 5kph\n");
+    ////////    multiplier = 0;
+    ////////}
     //-------------------------------------------------------------------
     // Other limits (% reduction) - set torque to the lowest of all these
     // IMPORTANT: Be aware of direction-sensitive situations (accel/regen)
     //-------------------------------------------------------------------
     //80kW limit ---------------------------------
     // if either the bms or mcm goes over 75kw, limit torque 
-    if ((BMS_getPower(bms) > 75000) || (MCM_getPower(mcm) > 75000))
-    {
-        // using bmsPower since closer to e-meter
-        tempMultiplier = 1 - getPercent(max(BMS_getPower(bms), MCM_getPower(mcm)), 75000, 80000, TRUE);
-        SerialManager_send(me->serialMan, "SC.Mult: 80kW\n");
-    }
-    if (tempMultiplier < multiplier) { multiplier = tempMultiplier; }
+    //////////if ((BMS_getPower(bms) > 75000) || (MCM_getPower(mcm) > 75000))
+    //////////{
+    //////////    // using bmsPower since closer to e-meter
+    //////////    tempMultiplier = 1 - getPercent(max(BMS_getPower(bms), MCM_getPower(mcm)), 75000, 80000, TRUE);
+    //////////    SerialManager_send(me->serialMan, "SC.Mult: 80kW\n");
+    //////////}
+    //////////if (tempMultiplier < multiplier) { multiplier = tempMultiplier; }
 
     //CCL/DCL from BMS --------------------------------
     //why the DCL/CCL could be limited:
@@ -393,30 +443,30 @@ void SafetyChecker_reduceTorque(SafetyChecker* me, MotorController* mcm, Battery
     //11 = B : Power up delay(Charge testing)
     //12 = C : Fault
     //13 = D : Contactors are off
-    if (MCM_commands_getTorque(mcm) >= 0)
-    {
-        tempMultiplier = getPercent(BMS_getDCL(bms), 0, me->maxAmpsDischarge, TRUE);
-        if (tempMultiplier < 1)
-        {
-            SerialManager_send(me->serialMan, "SC.Mult: DCL\n");
-        }
-    }
-    else //regen - Pick the lowest of CCL and speed reductions
-    {
-        tempMultiplier = getPercent(BMS_getCCL(bms), 0, me->maxAmpsCharge, TRUE);
-        if (tempMultiplier < 1)
-        {
-            SerialManager_send(me->serialMan, "SC.Mult: CCL\n");
-        }
-        //Also, regen should be ramped down as speed approaches minimum
-        if ( groundSpeedKPH < 15)
-        {
-            float4 regenMultiplier = 1 - getPercent(groundSpeedKPH, MCM_getRegenMinSpeed(mcm), MCM_getRegenRampdownStartSpeed(mcm), TRUE);
-            if (tempMultiplier < 1) { SerialManager_send(me->serialMan, "SC.Mult: Regen < 15kph\n"); }
-            if (regenMultiplier < tempMultiplier) { tempMultiplier = regenMultiplier; } // Pick the lesser of CCL (tempMultiplier) or speed reduction (regenMultiplier)
-        }
-    }
-    if (tempMultiplier < multiplier) { multiplier = tempMultiplier; }
+    ////////if (MCM_commands/*_getTorque(mcm) >= 0)
+    ////////{*/
+        ///////////*tempMultiplier = getPercent(BMS_getDCL(bms), 0, me->maxAmpsDischarge, TRUE);
+        //////////if (tempMultiplier < 1)
+        //////////{
+        //////////    SerialManager_send(me->serialMan, "SC.Mult: DCL\n");
+        //////////}*/
+    //////////}
+    //////////else //regen - Pick the lowest of CCL and speed reductions
+    //////////{
+    //////////    tempMultiplier = getPercent(BMS_getCCL(bms), 0, me->maxAmpsCharge, TRUE);
+    //////////    if (tempMultiplier < 1)
+    //////////    {
+    //////////        SerialManager_send(me->serialMan, "SC.Mult: CCL\n");
+    //////////    }
+    //////////    //Also, regen should be ramped down as speed approaches minimum
+    //////////    if ( groundSpeedKPH < 15)
+    //////////    {
+    //////////        float4 regenMultiplier = 1 - getPercent(groundSpeedKPH, MCM_getRegenMinSpeed(mcm), MCM_getRegenRampdownStartSpeed(mcm), TRUE);
+    //////////        if (tempMultiplier < 1) { SerialManager_send(me->serialMan, "SC.Mult: Regen < 15kph\n"); }
+    //////////        if (regenMultiplier < tempMultiplier) { tempMultiplier = regenMultiplier; } // Pick the lesser of CCL (tempMultiplier) or speed reduction (regenMultiplier)
+    //////////    }
+    //////////}
+    ////////if (tempMultiplier < multiplier) { multiplier = tempMultiplier; }
 
     //Reduce the torque command.  Multiplier should be a percent value (between 0 and 1)
     MCM_commands_setTorque(mcm, MCM_commands_getTorque(mcm) * multiplier);
