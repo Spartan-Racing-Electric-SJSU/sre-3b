@@ -390,6 +390,12 @@ ubyte4 SafetyChecker_getWarnings(SafetyChecker* me)
     return (me->warnings);
 }
 
+//Updates all values based on sensor readings, safety checks, etc
+ubyte4 SafetyChecker_getNotices(SafetyChecker* me)
+{
+    return (me->notices);
+}
+
 void SafetyChecker_reduceTorque(SafetyChecker* me, MotorController* mcm, BatteryManagementSystem* bms)
 {
     float4 multiplier = 1;

@@ -532,8 +532,8 @@ void canOutput_sendDebugMessage(CanManager* me, TorqueEncoder* tps, BrakePressur
     canMessages[canMessageCount - 1].data[byteNum++] = SafetyChecker_getFaults(sc) >> 24;
     canMessages[canMessageCount - 1].data[byteNum++] = SafetyChecker_getWarnings(sc);
     canMessages[canMessageCount - 1].data[byteNum++] = SafetyChecker_getWarnings(sc) >> 8;
-    canMessages[canMessageCount - 1].data[byteNum++] = SafetyChecker_getWarnings(sc) >> 16;
-    canMessages[canMessageCount - 1].data[byteNum++] = SafetyChecker_getWarnings(sc) >> 24;
+    canMessages[canMessageCount - 1].data[byteNum++] = SafetyChecker_getNotices(sc);
+    canMessages[canMessageCount - 1].data[byteNum++] = SafetyChecker_getNotices(sc) >> 8;
     canMessages[canMessageCount - 1].length = byteNum;
 
     //12v battery

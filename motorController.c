@@ -623,7 +623,6 @@ Status MCM_getInverterStatus(MotorController* me)
 
 void MCM_setRTDSFlag(MotorController* me, bool enableRTDS)
 {
-	//me->updateCount += (me->commands_torqueLimit == newTorqueLimit) ? 0 : 1;
 	me->startRTDS = enableRTDS;
 }
 bool MCM_getRTDSFlag(MotorController* me)
