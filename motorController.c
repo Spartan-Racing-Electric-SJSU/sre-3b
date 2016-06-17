@@ -141,12 +141,12 @@ MotorController* MotorController_new(SerialManager* sm, ubyte2 canMessageBaseID,
 
 	me->commands_direction = initialDirection;
 	me->commands_torqueLimit = me->torqueMaximum = torqueMaxInDNm;
-    me->torqueMaximum_Regen = torqueMaxInDNm * -.2;
-    me->torqueRegenAtZeroPedal = me->torqueMaximum_Regen * .1;
+    me->torqueMaximum_Regen = torqueMaxInDNm * .1;
+    me->torqueRegenAtZeroPedal = me->torqueMaximum_Regen * .3;
+    me->torquePercentBPSForMaxRegen = 0.5;
     me->regenSpeedMin = minRegenSpeed;
     me->regenSpeedRampStart = regenRampdownStartSpeed;
 
-    me->torquePercentBPSForMaxRegen = 0.5;
 
     //me->faultHistory = { 0,0,0,0,0,0,0,0 };  //Todo: read from eeprom instead of defaulting to 0
 
@@ -173,14 +173,14 @@ me->getInverterStatus = &getInverterStatus;
 //Switch up   = switch2 high      -> adjust BPS % at which max regen occurs -> me->torqueRegenAtZeroPedal
 //Switch mid  = both switches low -> adjust amount of regen at 0 pedal      -> me->torquePercentBPSForMaxRegen;
 //Switch down = Switch1 high      -> regen Off                              -> me->torqueRegenLimit = 0
-void MCM_readTCSSettings(MotorController* me, Sensor* TCSSwitch1, Sensor* TCSSwitch2, Sensor* TCSPot)
+void MCM_readTCSSettings(MotorController* me, Sensor* TCSSwitchUp, Sensor* TCSSwitchDown, Sensor* TCSPot)
 {
     me->torqueRegenLimit = me->torqueMaximum_Regen; //default regen limit
-    ubyte2 TCSPotMin = 100;  //Important: Leave some dead zones at the ends of the pot
-    ubyte2 TCSPotMax = 900;  //Todo? Use the sensor->min/max instead?  No - not really appropriate because of hardcoded deadzones
+    ubyte2 TCSPotMin = 50;  //Important: Leave some dead zones at the ends of the pot
+    ubyte2 TCSPotMax = 950;  //Todo? Use the sensor->min/max instead?  No - not really appropriate because of hardcoded deadzones
 
     //First, check for illegal switch value
-    if (TCSSwitch1->sensorValue && TCSSwitch2->sensorValue)
+    if (TCSSwitchUp->sensorValue && TCSSwitchDown->sensorValue)
     {
         me->regenMode = 0xFF;
         SerialManager_send(me->serialMan, "ERROR: TCS switch up and down at same time.");
@@ -188,19 +188,19 @@ void MCM_readTCSSettings(MotorController* me, Sensor* TCSSwitch1, Sensor* TCSSwi
         SerialManager_send(me->serialMan, "Regen disabled.");
     }
     //Down or pot clicked off (open): Regen Off
-    else if (TCSSwitch1->sensorValue == TRUE || TCSPot->sensorValue > 15000)
+    else if (TCSSwitchDown->sensorValue == TRUE || TCSPot->sensorValue > 1000)
     {
         me->regenMode = 0;
         me->torqueRegenLimit = 0;
     }
-    //Middle: Zerop pedal adjust
-    else if (TCSSwitch1->sensorValue == FALSE && TCSSwitch2->sensorValue == FALSE)
+    //Middle: Zero pedal adjust
+    else if (TCSSwitchUp->sensorValue == FALSE && TCSSwitchDown->sensorValue == FALSE)
     {
         me->regenMode = 1;
         me->torqueRegenAtZeroPedal = me->torqueRegenLimit * getPercent(TCSPot->sensorValue, TCSPotMin, TCSPotMax, TRUE);
     }
     //Up: BPS % for max regen
-    else if (TCSSwitch2->sensorValue == TRUE)
+    else if (TCSSwitchUp->sensorValue == TRUE)
     {
         me->regenMode = 2;
         me->torquePercentBPSForMaxRegen = getPercent(TCSPot->sensorValue, TCSPotMin, TCSPotMax, TRUE);
@@ -249,17 +249,16 @@ void MCM_calculateCommands(MotorController* me, TorqueEncoder* tps, BrakePressur
 	MCM_commands_setDirection(me, FORWARD); //1 = forwards for our car, 0 = reverse
     
     sbyte2 torqueOutput = 0;
-    if (bps > 0)
+    if (bps->percent > 0)
     {
         //0 - (zero pedal regen) - (remaining regen * pedal percent)
         torqueOutput = 0 - me->torqueRegenAtZeroPedal - (me->torqueRegenLimit - me->torqueRegenAtZeroPedal) * getPercent(bps->percent, 0, me->torquePercentBPSForMaxRegen, TRUE);
     }
-    
     else
     {
         torqueOutput = (me->torqueMaximum - me->torqueRegenAtZeroPedal) * tps->percent + me->torqueRegenAtZeroPedal;
     }
-    SerialManager_sprintf(me->serialMan, "Tq cmd w/regen: %f", &torqueOutput);
+    SerialManager_sprintf(me->serialMan, "Tq cmd w/regen: %d\n", &torqueOutput);
     torqueOutput = me->torqueMaximum * tps->percent;  //REMOVE THIS LINE TO ENABLE REGEN
     MCM_commands_setTorque(me, torqueOutput);
 }
@@ -371,7 +370,7 @@ void MCM_inverterControl(MotorController* me, TorqueEncoder* tps, BrakePressureS
         {
             RTDPercent = 1; //Doesn't matter if button is no longer pressed - RTD light should be on if car is driveable
             SerialManager_send(me->serialMan, "Inverter has been enabled.  Starting RTDS.  Car is ready to drive.\n");
-            RTDS_setVolume(rtds, .01, 1500000);
+            RTDS_setVolume(rtds, 1, 1500000);
             MCM_setStartupStage(me, 4); //MCM_getStartupStage(me) + 1);  //leave this stage since we've already kicked off the RTDS
         }
         break;

@@ -83,7 +83,7 @@ sbyte2 MCM_getBPSForMaxRegenZeroToFF(MotorController* me);
 //----------------------------------------------------------------------------
 //Inter-object functions
 //----------------------------------------------------------------------------
-void MCM_readTCSSettings(MotorController* me, Sensor* TCSSwitch1, Sensor* TCSSwitch2, Sensor* TCSPot);
+void MCM_readTCSSettings(MotorController* me, Sensor* TCSSwitchUp, Sensor* TCSSwitchDown, Sensor* TCSPot);
 void MCM_calculateCommands(MotorController* mcm, TorqueEncoder* tps, BrakePressureSensor* bps);
 
 void MCM_relayControl(MotorController* mcm, Sensor* HVILTermSense);
