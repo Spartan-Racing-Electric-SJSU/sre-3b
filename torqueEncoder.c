@@ -184,22 +184,6 @@ void TorqueEncoder_calibrationCycle(TorqueEncoder* me, ubyte1* errorCount)
         }
         else  //Calibration shutdown
         {
-			////If the sensor goes in reverse direction then flip the min/max values
-			//if (me->tps0_reverse == TRUE)
-			//{
-			//	float4 temp = me->tps0_calibMin;
-			//	me->tps0_calibMin = me->tps0_calibMax;
-			//	me->tps0_calibMax = temp;
-			//}
-
-			//if (me->tps1_reverse == TRUE)
-			//{
-			//	float4 temp = me->tps1_calibMin;
-			//	me->tps1_calibMin = me->tps1_calibMax;
-			//	me->tps1_calibMax = temp;
-			//}
-
-            //From Ryan: Should be less than 2 degrees of play on top, 5-10 at bottom of pedal travel
             //90 degree sensor active range.. so just say % = degrees
             //float4 pedalTopPlay = 1.05;
             //float4 pedalBottomPlay = .95;

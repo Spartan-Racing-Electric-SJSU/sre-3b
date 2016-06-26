@@ -16,36 +16,43 @@
 #include "bms.h"
 #include "serial.h"
 
-//last flag is 0x 8000 0000 (32 flags)
+//last flag is 0x 8000 0000 (32 flags, 8 hex characters)
 //Faults -------------------------------------------
+//nibble 1
 static const ubyte4 F_tpsOutOfRange = 1;
 static const ubyte4 F_bpsOutOfRange = 2;
 static const ubyte4 F_tpsPowerFailure = 4;
 static const ubyte4 F_bpsPowerFailure = 8;
-
+//nibble 2
 static const ubyte4 F_tpsSignalFailure = 0x10;
 static const ubyte4 F_bpsSignalFailure = 0x20;
 static const ubyte4 F_tpsNotCalibrated = 0x40;
 static const ubyte4 F_bpsNotCalibrated = 0x80;
 
+//nibble 3
 static const ubyte4 F_tpsOutOfSync = 0x100;
 static const ubyte4 F_bpsOutOfSync = 0x200; //NOT USED
 static const ubyte4 F_tpsbpsImplausible = 0x400;
-
-
-static const ubyte4 F_unusedFaults = 0xFFFFF800;
-
 //static const ubyte4 UNUSED = 0x800;
 
-//static const ubyte4 F_tpsOutOfSync = 0x1000;
-//static const ubyte4 F_bpsOutOfSync = 0x2000; //NOT USED
-//static const ubyte4 F_tpsbpsImplausible = 0x4000;
-//static const ubyte4 UNUSED = 0x8000;
+//nibble 4
+//static const ubyte4 F_ = 0x1000;
+//static const ubyte4 F_ = 0x2000;
+//static const ubyte4 F_ = 0x4000;
+//static const ubyte4 F_ = 0x8000;
 
+//nibble 5
 static const ubyte4 F_lvsBatteryVeryLow = 0x10000;
-//static const ubyte4 F_bpsOutOfSync = 0x2000; //NOT USED
-//static const ubyte4 F_tpsbpsImplausible = 0x4000;
-//static const ubyte4 UNUSED = 0x8000;
+//static const ubyte4 F_ = 0x20000;
+//static const ubyte4 F_ = 0x40000;
+//static const ubyte4 F_ = 0x80000;
+
+//nibble 6
+//nibble 7
+//nibble 8
+//                             nibble: 87654321
+static const ubyte4 F_unusedFaults = 0xFFFEF800;
+
 
 //Warnings -------------------------------------------
 static const ubyte2 W_lvsBatteryLow = 1;
@@ -255,7 +262,7 @@ void SafetyChecker_update(SafetyChecker* me, MotorController* mcm, BatteryManage
     //SerialManager_sprintf(me->serialMan, "The number twelve: %d\n", &twelve);
     bool tpsHigh = FALSE;
     bool bpsHigh = FALSE;
-    if (bps->percent > .02) 
+    if (bps->percent > .25) 
     {
         bpsHigh = TRUE;
         SerialManager_send(me->serialMan, "BPS > .02\n"); 
@@ -308,7 +315,7 @@ void SafetyChecker_update(SafetyChecker* me, MotorController* mcm, BatteryManage
     * Warnings
     ****************************************************************************/
     //===================================================================
-    // LVS Battery Check
+    // LVS Battery Check - FAULTS LATCH UNTIL RETURN TO PREVIOUS STAGE
     //===================================================================
     //  IO_ADC_UBAT: 0..40106  (0V..40.106V)
     //-------------------------------------------------------------------
