@@ -52,7 +52,7 @@ void CoolingSystem_calculations(CoolingSystem* me, sbyte2 motorControllerTemp, s
     //Water pump PWM protocol unknown
     if (motorControllerTemp >= me->waterPumpHigh || motorTemp >= me->waterPumpHigh)
     {
-        me->waterPumpPercent = 1;
+        me->waterPumpPercent = .9;
     }
     else if (motorControllerTemp < me->waterPumpLow && motorTemp < me->waterPumpLow)
     {
@@ -60,7 +60,7 @@ void CoolingSystem_calculations(CoolingSystem* me, sbyte2 motorControllerTemp, s
     }
     else
     {
-        me->waterPumpPercent = .2 + .8 * getPercent(max(motorControllerTemp, motorTemp), me->waterPumpLow, me->waterPumpHigh, TRUE);
+        me->waterPumpPercent = .2 + .7 * getPercent(max(motorControllerTemp, motorTemp), me->waterPumpLow, me->waterPumpHigh, TRUE);
     }
 
     //ubyte1* tempMsg[25];
