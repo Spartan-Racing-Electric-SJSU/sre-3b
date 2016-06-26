@@ -236,6 +236,7 @@ void SafetyChecker_update(SafetyChecker* me, MotorController* mcm, BatteryManage
         me->faults &= ~F_tpsOutOfSync;
     }
 
+    //Only one BPS right now - this fault doesn't happen
     me->faults &= ~F_bpsOutOfSync;
 
 
