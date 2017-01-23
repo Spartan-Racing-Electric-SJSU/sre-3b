@@ -87,15 +87,19 @@ void TorqueEncoder_update(TorqueEncoder* me)
 			//float4 TPS1PedalPercent = getPercent(TPS1_Val, TPS1_CalMin, TPS1_CalMax, TRUE); //Analog input 1
 
 			me->tps0_percent = getPercent(me->tps0_value, me->tps0_calibMin, me->tps0_calibMax, TRUE);
+			me->tps1_percent = getPercent(me->tps1_value, me->tps1_calibMin, me->tps1_calibMax, TRUE);
 
-			//Todo: Fix percent calculator to make this work
-			//me->tps1_percent = getPercent(me->tps1_value, me->tps1_calibMin, me->tps1_calibMax, TRUE);
-			float4 range = me->tps1_calibMax - me->tps1_calibMin;
-			float4 travel = me->tps1_calibMax - me->tps1_value;
-			
-			me->tps1_percent = travel / range;
-			if (travel > range) { me->tps1_percent = 1; }
-			if (travel > me->tps1_calibMax) { me->tps1_percent = 0; }
+			//-------------------------------------------------------------------
+			// OLD: TPS1 calculation for 95% to 5% ratiometric output (reversed voltage)
+			//-------------------------------------------------------------------
+			////////Todo: Fix percent calculator to make this work
+			////////me->tps1_percent = getPercent(me->tps1_value, me->tps1_calibMin, me->tps1_calibMax, TRUE);
+			//////float4 range = me->tps1_calibMax - me->tps1_calibMin;
+			//////float4 travel = me->tps1_calibMax - me->tps1_value;
+			//////
+			//////me->tps1_percent = travel / range;
+			//////if (travel > range) { me->tps1_percent = 1; }
+			//////if (travel > me->tps1_calibMax) { me->tps1_percent = 0; }
 
 			//TorqueEncoder_plausibilityCheck(me, 0, &me->implausibility);
 			/*if (me->implausibility == TRUE)
