@@ -37,10 +37,17 @@ TorqueEncoder* TorqueEncoder_new(bool benchMode)
     //TorqueEncoder_resetCalibration(me);
 
     //Default calibration values
-    me->tps0_calibMin = 1117;  //me->tps0->sensorValue;
-    me->tps0_calibMax = 2304;  //me->tps0->sensorValue;
-    me->tps1_calibMin = 2702;  //me->tps1->sensorValue;
-    me->tps1_calibMax = 3890;  //me->tps1->sensorValue;
+	//SRE-3 sensor
+	me->tps0_calibMin = 249;  //me->tps0->sensorValue;
+	me->tps0_calibMax = 1376;  //me->tps0->sensorValue;
+	me->tps1_calibMin = 2773;  //me->tps1->sensorValue;
+	me->tps1_calibMax = 3898;  //me->tps1->sensorValue;
+
+	//SRE-2 sensor default calibrations
+	//me->tps0_calibMin = 1117;  //me->tps0->sensorValue;
+	//me->tps0_calibMax = 2304;  //me->tps0->sensorValue;
+	//me->tps1_calibMin = 2702;  //me->tps1->sensorValue;
+	//me->tps1_calibMax = 3890;  //me->tps1->sensorValue;
     //me->tps0_calibMin = 558;  //me->tps0->sensorValue;
     //me->tps0_calibMax = 2649;  //me->tps0->sensorValue;
     //me->tps1_calibMin = 2382;  //me->tps1->sensorValue;

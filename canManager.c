@@ -429,7 +429,8 @@ void canOutput_sendDebugMessage(CanManager* me, TorqueEncoder* tps, BrakePressur
     TorqueEncoder_getIndividualSensorPercent(tps, 0, &tempPedalPercent); //borrow the pedal percent variable
     tps0Percent = 0xFF * tempPedalPercent;
     TorqueEncoder_getIndividualSensorPercent(tps, 1, &tempPedalPercent);
-    tps1Percent = 0xFF * (1 - tempPedalPercent);
+	tps1Percent = 0xFF * (tempPedalPercent);
+    //tps1Percent = 0xFF * (1 - tempPedalPercent);  //OLD: flipped over pedal percent (this value for display in CAN only)
 
     TorqueEncoder_getPedalTravel(tps, &errorCount, &tempPedalPercent); //getThrottlePercent(TRUE, &errorCount);
     ubyte1 throttlePercent = 0xFF * tempPedalPercent;
@@ -566,6 +567,7 @@ void canOutput_sendDebugMessage(CanManager* me, TorqueEncoder* tps, BrakePressur
     canMessages[canMessageCount - 1].data[byteNum++] = MCM_getBPSForMaxRegenZeroToFF(mcm);
     canMessages[canMessageCount - 1].length = byteNum;
 
+	//Cooling?
 
 
 
