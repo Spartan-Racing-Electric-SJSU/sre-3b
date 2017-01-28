@@ -141,7 +141,7 @@ MotorController* MotorController_new(SerialManager* sm, ubyte2 canMessageBaseID,
 
 	me->commands_direction = initialDirection;
 	me->commands_torqueLimit = me->torqueMaximum = torqueMaxInDNm;
-    me->torqueMaximum_Regen = torqueMaxInDNm * .1;
+    me->torqueMaximum_Regen = torqueMaxInDNm * .1;   //If torqueMaxInDNM is 1000 then forwards torque limit is 100.0 Nm.  Multilplier of .1 means max regen is also 100 Nm.
     me->torqueRegenAtZeroPedal = me->torqueMaximum_Regen * .3;
     me->torquePercentBPSForMaxRegen = 0.5;
     me->regenSpeedMin = minRegenSpeed;
@@ -256,10 +256,10 @@ void MCM_calculateCommands(MotorController* me, TorqueEncoder* tps, BrakePressur
     }
     else
     {
-        torqueOutput = (me->torqueMaximum - me->torqueRegenAtZeroPedal) * tps->percent + me->torqueRegenAtZeroPedal;
+        torqueOutput = (me->torqueMaximum - me->torqueRegenAtZeroPedal) * tps->percent - me->torqueRegenAtZeroPedal;
     }
     SerialManager_sprintf(me->serialMan, "Tq cmd w/regen: %d\n", &torqueOutput);
-    torqueOutput = me->torqueMaximum * tps->percent;  //REMOVE THIS LINE TO ENABLE REGEN
+    //////////////////////////////torqueOutput = me->torqueMaximum * tps->percent;  //REMOVE THIS LINE TO ENABLE REGEN
     MCM_commands_setTorque(me, torqueOutput);
 }
 
@@ -669,7 +669,7 @@ ubyte2 MCM_getCommandedTorque(MotorController* me)
 
 sbyte2 MCM_getTemp(MotorController* me)
 {
-    return me->motor_temp;
+    return me->motor_temp;  //TODO: Figure out which temperature to return for Motor Controller
 }
 sbyte2 MCM_getMotorTemp(MotorController* me)
 {
