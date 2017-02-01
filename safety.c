@@ -483,7 +483,7 @@ void SafetyChecker_reduceTorque(SafetyChecker* me, MotorController* mcm, Battery
     ////////if (tempMultiplier < multiplier) { multiplier = tempMultiplier; }
 
     //Reduce the torque command.  Multiplier should be a percent value (between 0 and 1)
-    MCM_commands_setTorque(mcm, MCM_commands_getTorque(mcm) * multiplier);
+    MCM_commands_setTorqueDNm(mcm, MCM_commands_getTorque(mcm) * multiplier);
 }
 
 //-------------------------------------------------------------------
