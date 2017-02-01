@@ -44,17 +44,19 @@ struct _MotorController {
 	ubyte2 canMessageBaseId;  //Starting message ID for messages that will come in from this controller
 	ubyte4 timeStamp_inverterEnabled;
 
-    //All torque units are in 10ths (500 = 50.0 Nm)
+    //Motor controller torque units are in 10ths (500 = 50.0 Nm)
     //Positive = accel, negative = regen
     //Reverse not allowed
-	ubyte2 torqueMaximum;  //Max torque that can be commanded in deciNewton*meters ("100" = 10.0 Nm)
-    ubyte2 torqueMaximum_Regen;
-    ubyte1 regenMode;
-    ubyte2 torqueRegenLimit;
-    ubyte2 torqueRegenAtZeroPedal;
-    float4 torquePercentBPSForMaxRegen;
-    sbyte1 regenSpeedMin;
-    sbyte1 regenSpeedRampStart;
+	ubyte2 torqueMaximumDNm;  //Max torque that can be commanded in deciNewton*meters ("100" = 10.0 Nm)
+	
+	//Regen torque calculations in whole Nm..?
+	ubyte1 regen_mode;  //Software reading of regen knob position
+	ubyte2 regen_torqueLimitNm;           //Tuneable value.  Regen torque (in Nm) at full regen.  Positive value.
+	ubyte2 regen_torqueAtZeroPedalNm;     //Tuneable value.  Amount of regen torque (in Nm) to apply when both pedals at 0% travel.  Positive value.
+	float4 regen_percentBPSForMaxRegen;   //Tuneable value.  Amount of brake pedal required for full regen. Value between zero and one.
+	float4 regen_percentAPPSForCoasting;  //Tuneable value.  Amount of accel pedal required to exit regen.  Value between zero and one.
+    sbyte1 regen_minimumSpeedKPH;  //Assigned by main
+    sbyte1 regen_SpeedRampStart;
 
     bool relayState;
     bool previousHVILState;
@@ -122,7 +124,7 @@ struct _MotorController {
     //};
 };
 
-MotorController* MotorController_new(SerialManager* sm, ubyte2 canMessageBaseID, Direction initialDirection, sbyte2 torqueMaxInDNm, sbyte1 minRegenSpeed, sbyte1 regenRampdownStartSpeed)
+MotorController* MotorController_new(SerialManager* sm, ubyte2 canMessageBaseID, Direction initialDirection, sbyte2 torqueMaxInDNm, sbyte1 minRegenSpeedKPH, sbyte1 regenRampdownStartSpeed)
 {
 	MotorController* me = (MotorController*)malloc(sizeof(struct _MotorController));
     me->serialMan = sm;
@@ -140,13 +142,15 @@ MotorController* MotorController_new(SerialManager* sm, ubyte2 canMessageBaseID,
     me->DC_Current = 0;
 
 	me->commands_direction = initialDirection;
-	me->commands_torqueLimit = me->torqueMaximum = torqueMaxInDNm;
-    me->torqueMaximum_Regen = torqueMaxInDNm * .1;   //If torqueMaxInDNM is 1000 then forwards torque limit is 100.0 Nm.  Multilplier of .1 means max regen is also 100 Nm.
-    me->torqueRegenAtZeroPedal = me->torqueMaximum_Regen * .3;
-    me->torquePercentBPSForMaxRegen = 0.5;
-    me->regenSpeedMin = minRegenSpeed;
-    me->regenSpeedRampStart = regenRampdownStartSpeed;
+	me->commands_torqueLimit = me->torqueMaximumDNm = torqueMaxInDNm;
 
+	me->regen_mode = 0xFF;
+	me->regen_torqueLimitNm = 0;
+	me->regen_torqueAtZeroPedalNm = 0;
+    me->regen_percentBPSForMaxRegen = 1; //zero to one.. 1 = 100%
+	me->regen_percentAPPSForCoasting = 0;
+    me->regen_minimumSpeedKPH = minRegenSpeedKPH;  //Assigned by main
+    me->regen_SpeedRampStart = regenRampdownStartSpeed;  //Assigned by main
 
     //me->faultHistory = { 0,0,0,0,0,0,0,0 };  //Todo: read from eeprom instead of defaulting to 0
 
@@ -168,50 +172,71 @@ me->getInverterStatus = &getInverterStatus;
 	return me;
 }
 
-//TEMPORARY: Sets regen settings based on TCS switches/pot
-//A selector switch on the dash drives high either "Switch A" or "Switch B", or neither.
-//Switch up   = switch2 high      -> adjust BPS % at which max regen occurs -> me->torqueRegenAtZeroPedal
-//Switch mid  = both switches low -> adjust amount of regen at 0 pedal      -> me->torquePercentBPSForMaxRegen;
-//Switch down = Switch1 high      -> regen Off                              -> me->torqueRegenLimit = 0
+//Note: As of 2017-01-27, TCS Switch has been removed from SRE-2.  Control is now selected based on 8-position knob (pot)
+//This function sets all of the regen variables based on the knob's position (relative to 5 positions marked on dash)
+//Knob Positions
+//Pos  Hex   Dec  Comment
+// 0   FFFF       Knob clicked off
+// .      1    1
+// 1      4    4
+// .     A1  161
+// 2    17E  382
+// .    230  560
+// 3    2FF  767
+// .    383  899
+// 4    3DA  986
+// .    3DA  986
+
 void MCM_readTCSSettings(MotorController* me, Sensor* TCSSwitchUp, Sensor* TCSSwitchDown, Sensor* TCSPot)
 {
-    me->torqueRegenLimit = me->torqueMaximum_Regen; //default regen limit
     ubyte2 TCSPotMin = 50;  //Important: Leave some dead zones at the ends of the pot
     ubyte2 TCSPotMax = 950;  //Todo? Use the sensor->min/max instead?  No - not really appropriate because of hardcoded deadzones
 
-    //First, check for illegal switch value
-    if (TCSSwitchUp->sensorValue && TCSSwitchDown->sensorValue)
+
+	//me->regen_torqueLimitNm = 0;
+	//me->regen_torqueAtZeroPedalNm = 0;
+	//me->regen_percentBPSForMaxRegen = 1; //zero to one.. 1 = 100%
+	//me->regen_percentAPPSForCoasting = 0;
+
+	//If the pot is clicked off (resistance goes to FFFF)
+	if (TCSPot->sensorValue > 5000)  //Position 0 = Regen Off
     {
-        me->regenMode = 0xFF;
-        SerialManager_send(me->serialMan, "ERROR: TCS switch up and down at same time.");
-        me->torqueRegenLimit = 0;
-        SerialManager_send(me->serialMan, "Regen disabled.");
+		me->regen_mode = 0;
+		//Note: If regen torque limit is 0 then regen is disabled completely (special behavior)
+		me->regen_torqueLimitNm = 0;
     }
-    //Down or pot clicked off (open): Regen Off
-    else if (TCSSwitchDown->sensorValue == TRUE || TCSPot->sensorValue > 1000)
-    {
-        me->regenMode = 0;
-        me->torqueRegenLimit = 0;
-    }
-    //Middle: Zero pedal adjust
-    else if (TCSSwitchUp->sensorValue == FALSE && TCSSwitchDown->sensorValue == FALSE)
-    {
-        me->regenMode = 1;
-        me->torqueRegenAtZeroPedal = me->torqueRegenLimit * getPercent(TCSPot->sensorValue, TCSPotMin, TCSPotMax, TRUE);
-    }
-    //Up: BPS % for max regen
-    else if (TCSSwitchUp->sensorValue == TRUE)
-    {
-        me->regenMode = 2;
-        me->torquePercentBPSForMaxRegen = getPercent(TCSPot->sensorValue, TCSPotMin, TCSPotMax, TRUE);
-    }
-    else //This shouldn't happen - all cases covered above.  If statement structured this way for clarity only.
-    {
-        me->regenMode = 0xFF;
-        SerialManager_send(me->serialMan, "ERROR: Impossible TCS/Regen if case.");
-        me->torqueRegenLimit = 0;
-        SerialManager_send(me->serialMan, "Regen disabled.");
-    }
+	else if (TCSPot->sensorValue < 0xA1)  //Position 1 = Coasting mode (Formula E mode)
+	{
+		me->regen_mode = 1;
+		me->regen_torqueLimitNm = me->torqueMaximumDNm * 0.1;
+		me->regen_torqueAtZeroPedalNm = 0;
+		me->regen_percentBPSForMaxRegen = .5; //zero to one.. 1 = 100%
+		me->regen_percentAPPSForCoasting = 0;
+	}
+	else if (TCSPot->sensorValue < 0x230)  //Position 2 = light engine braking mode
+	{
+		me->regen_mode = 2;
+		me->regen_torqueLimitNm = me->torqueMaximumDNm * 0.1;
+		me->regen_torqueAtZeroPedalNm = me->regen_torqueLimitNm * 0.3;
+		me->regen_percentBPSForMaxRegen = .5; //zero to one.. 1 = 100%
+		me->regen_percentAPPSForCoasting = .2;
+	}
+	else if (TCSPot->sensorValue < 0x383)  //Position 3 = stronger engine braking
+	{
+		me->regen_mode = 3;
+		me->regen_torqueLimitNm = me->torqueMaximumDNm * 0.1;
+		me->regen_torqueAtZeroPedalNm = me->regen_torqueLimitNm * 0.6;
+		me->regen_percentBPSForMaxRegen = .5; //zero to one.. 1 = 100%
+		me->regen_percentAPPSForCoasting = .2;
+	}
+	else if (TCSPot->sensorValue >= 0x383)  //Position 4 = One pedal driving (Tesla mode)
+	{
+		me->regen_mode = 4;
+		me->regen_torqueLimitNm = me->torqueMaximumDNm * 0.1;
+		me->regen_torqueAtZeroPedalNm = me->regen_torqueLimitNm;
+		me->regen_percentAPPSForCoasting = 0;
+		me->regen_percentBPSForMaxRegen = 1;
+	}
 }
 
 
@@ -222,14 +247,14 @@ void MCM_readTCSSettings(MotorController* me, Sensor* TCSSwitchUp, Sensor* TCSSw
 * later by CAN function
 * > Direction
 * > Torque
-*   > Delay command after inverter enable (temporary until noise fix)
-*   > Calculate Nm to request based on pedal position
-*   > DO NOT limit Nm based on external system limits - that is handled by safety.c,
+*   - Delay command after inverter enable (temporary until noise fix)
+*   - Calculate Nm to request based on pedal position
+*   - DO NOT limit Nm based on external system limits - that is handled by safety.c,
 *     and we still want to know the driver's requested torque
-*   > DO limit Nm based on driver inputs (dash settings for regen)
-*   > Keep track of update count to prevent CANbus overload
+*   - DO limit Nm based on driver inputs (dash settings for regen)
+*   - Keep track of update count to prevent CANbus overload
 * > Torque limit
-*   > Get from TCS function
+*   - Get from TCS function
 * Manages the different phases startup/ready-to-drive procedure
 * > Turn on MCM relay?  Should this be done elsewhere?
 * > Disable inverter lockout
@@ -248,18 +273,46 @@ void MCM_calculateCommands(MotorController* me, TorqueEncoder* tps, BrakePressur
 	MCM_commands_setDischarge(me, DISABLED);
 	MCM_commands_setDirection(me, FORWARD); //1 = forwards for our car, 0 = reverse
     
-    sbyte2 torqueOutput = 0;
+	sbyte2 torqueOutput = 0;
+
+	if (me->regen_torqueLimitNm = 0)
+	{
+		torqueOutput = me->torqueMaximumDNm * tps->percent;
+	}
+	else
+	{
+		//Calculate torque commanded by APPS
+		sbyte2 appsTorque;
+		if (tps->percent < me->regen_percentAPPSForCoasting)  //if APPS is commanding regen
+		{
+			IO_DO_Set(IO_PIN_106, TRUE);
+
+			appsTorque = 0 - me->regen_torqueAtZeroPedalNm * getPercent(tps->percent, me->regen_percentAPPSForCoasting, 0, TRUE);
+
+		}
+
+			//Calculate torque commanded by BPS
+
+		torqueOutput = APPStorque - BPStorque;
+	}
+
+    
+		me->regen_torqueLimitNm = me->torqueMaximumDNm * 0.1;
+		me->regen_torqueAtZeroPedalNm = me->regen_torqueLimitNm * 0.3;
+		me->regen_percentBPSForMaxRegen = .5; //zero to one.. 1 = 100%
+		me->regen_percentAPPSForCoasting = .2;
+
     if (bps->percent > 0)
     {
         //0 - (zero pedal regen) - (remaining regen * pedal percent)
-        torqueOutput = 0 - me->torqueRegenAtZeroPedal - (me->torqueRegenLimit - me->torqueRegenAtZeroPedal) * getPercent(bps->percent, 0, me->torquePercentBPSForMaxRegen, TRUE);
+        //OLD WRONG CALC: torqueOutput = 0 - me->regen_torqueAtZeroPedalNm - (me->regen_torqueLimitBasedOnMode - me->regen_torqueAtZeroPedalNm) * getPercent(bps->percent, 0, me->regen_percentBPSForMaxRegen, TRUE);
     }
     else
     {
-        torqueOutput = (me->torqueMaximum - me->torqueRegenAtZeroPedal) * tps->percent - me->torqueRegenAtZeroPedal;
+        //OLD WRONG torqueOutput = (me->torqueMaximumDNm - me->regen_torqueAtZeroPedalNm) * tps->percent - me->regen_torqueAtZeroPedalNm;
     }
     SerialManager_sprintf(me->serialMan, "Tq cmd w/regen: %d\n", &torqueOutput);
-    //////////////////////////////torqueOutput = me->torqueMaximum * tps->percent;  //REMOVE THIS LINE TO ENABLE REGEN
+    //////////////////////////////torqueOutput = me->torqueMaximumDNm * tps->percent;  //REMOVE THIS LINE TO ENABLE REGEN
     MCM_commands_setTorque(me, torqueOutput);
 }
 
@@ -651,7 +704,7 @@ ubyte4 MCM_commands_getTimeSinceLastCommandSent(MotorController* me)
 
 ubyte2 MCM_getTorqueMax(MotorController* me)
 {
-	return me->torqueMaximum;
+	return me->torqueMaximumDNm;
 }
 
 
@@ -686,25 +739,23 @@ sbyte2 MCM_getGroundSpeedKPH(MotorController* me)
 
 ubyte1 MCM_getRegenMode(MotorController* me)
 {
-    return me->regenMode;
+	return me->regen_mode;
 }
 sbyte2 MCM_getRegenAtZeroPedal(MotorController* me)
 {
-    return me->torqueRegenAtZeroPedal;
+    return me->regen_torqueAtZeroPedalNm;
 }
 sbyte2 MCM_getBPSForMaxRegenZeroToFF(MotorController* me)
 {
-    return 0xFF * me->torquePercentBPSForMaxRegen;
+    return 0xFF * me->regen_percentBPSForMaxRegen;
 }
-
-
 sbyte1 MCM_getRegenMinSpeed(MotorController* me)
 {
-    return me->regenSpeedMin;
+    return me->regen_minimumSpeedKPH;
 }
 sbyte1 MCM_getRegenRampdownStartSpeed(MotorController* me)
 {
-    return me->regenSpeedRampStart;
+    return me->regen_SpeedRampStart;
 }
 
 

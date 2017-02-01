@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<PCANExplorerProject Version="5.0" Name="SRE2">
+    <Connections AutoReset="0" IgnoreRTRLength="0" ProcessRTR="1">
+        <Connection Bus="1" Enabled="1" Protocol="0" CalcBusLoad="1" SymbolsFileName="SRE2.sym" BitRate="28" Connection="SRE-2@pcan_usb" Name="SRE-2"/>
+    </Connections>
+    <MessageFilters/>
+    <TransmitList>
+        <TransmitListItem Bus="1" CanId="80" Type="0" DLC="8" Data="0102030405060708" CycleTime="1" IsPaused="1" Creator="User"/>
+        <TransmitListItem Bus="1" CanId="96" Type="0" DLC="8" Data="0102030405060708" CycleTime="1" IsPaused="1" Creator="User"/>
+        <TransmitListItem Bus="1" CanId="112" Type="0" DLC="8" Data="0102030405060708" CycleTime="1" IsPaused="1" Creator="User"/>
+        <TransmitListItem Bus="1" CanId="128" Type="0" DLC="8" Data="0102030405060708" CycleTime="1" IsPaused="1" Creator="User"/>
+    </TransmitList>
+    <Files>
+        <File RelativePath="SRE2.sym"/>
+    </Files>
+</PCANExplorerProject>

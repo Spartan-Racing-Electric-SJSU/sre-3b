@@ -213,7 +213,7 @@ IO_ErrorType CanManager_send(CanManager* me, CanChannel channel, IO_CAN_DATA_FRA
         //----------------------------------------------------------------------------
         // Check if this message exists in the array
         //----------------------------------------------------------------------------
-        firstTimeMessage = (me->canMessageHistory[outboundMessageID] == 0);
+        firstTimeMessage = (me->canMessageHistory[outboundMessageID] == 0);  //############################## ALWAYS FALSE? ##############################
         if (firstTimeMessage)
         {
             me->canMessageHistory[outboundMessageID]->timeBetweenMessages_Min = 25000;
@@ -438,7 +438,7 @@ void canOutput_sendDebugMessage(CanManager* me, TorqueEncoder* tps, BrakePressur
     BrakePressureSensor_getPedalTravel(bps, &errorCount, &tempPedalPercent); //getThrottlePercent(TRUE, &errorCount);
     ubyte1 brakePercent = 0xFF * tempPedalPercent;
 
-	//TPS 0
+	//500: TPS 0
     canMessageCount++;
     byteNum = 0;
     canMessages[canMessageCount - 1].id_format = IO_CAN_STD_FRAME;
@@ -498,52 +498,37 @@ void canOutput_sendDebugMessage(CanManager* me, TorqueEncoder* tps, BrakePressur
     canMessages[canMessageCount - 1].data[byteNum++] = ((ubyte2)(WheelSpeeds_getWheelSpeed(wss, RR) + 0.5)) >> 8;
     canMessages[canMessageCount - 1].length = byteNum;
 
-	//Regen settings
+	//TEMP: WSS2
 	canMessageCount++;
 	byteNum = 0;
-	canMessages[canMessageCount - 1].id = canMessageID + canMessageCount - 1;
 	canMessages[canMessageCount - 1].id_format = IO_CAN_STD_FRAME;
-	canMessages[canMessageCount - 1].data[byteNum++] = (ubyte1)Sensor_TCSKnob.sensorValue; //Regen knob //TEMPORARILY USING TCS KNOB
-	canMessages[canMessageCount - 1].data[byteNum++] = Sensor_TCSKnob.sensorValue >> 8;
-	canMessages[canMessageCount - 1].data[byteNum++] = MCM_getRegenMode(mcm);
-	canMessages[canMessageCount - 1].data[byteNum++] = (ubyte1)Sensor_TCSKnob.sensorValue;
-	canMessages[canMessageCount - 1].data[byteNum++] = Sensor_TCSKnob.sensorValue >> 8;
-	canMessages[canMessageCount - 1].data[byteNum++] = (ubyte1)MCM_getRegenAtZeroPedal(mcm);
-	canMessages[canMessageCount - 1].data[byteNum++] = MCM_getRegenAtZeroPedal(mcm) >> 8;
-	canMessages[canMessageCount - 1].data[byteNum++] = MCM_getBPSForMaxRegenZeroToFF(mcm);
+	canMessages[canMessageCount - 1].id = canMessageID + canMessageCount - 1;
+	canMessages[canMessageCount - 1].data[byteNum++] = Sensor_WSS_FL.sensorValue;
+	canMessages[canMessageCount - 1].data[byteNum++] = Sensor_WSS_FL.sensorValue >> 8;
+	canMessages[canMessageCount - 1].data[byteNum++] = Sensor_WSS_FL.sensorValue >> 16;
+	canMessages[canMessageCount - 1].data[byteNum++] = Sensor_WSS_FL.sensorValue >> 24;
+	canMessages[canMessageCount - 1].data[byteNum++] = Sensor_WSS_FR.sensorValue;
+	canMessages[canMessageCount - 1].data[byteNum++] = Sensor_WSS_FR.sensorValue >> 8;
+	canMessages[canMessageCount - 1].data[byteNum++] = Sensor_WSS_FR.sensorValue >> 16;
+	canMessages[canMessageCount - 1].data[byteNum++] = Sensor_WSS_FR.sensorValue >> 24;
 	canMessages[canMessageCount - 1].length = byteNum;
 
-	////TEMP: WSS2
-	//canMessageCount++;
-	//byteNum = 0;
-	//canMessages[canMessageCount - 1].id_format = IO_CAN_STD_FRAME;
-	//canMessages[canMessageCount - 1].id = canMessageID + canMessageCount - 1;
-	//canMessages[canMessageCount - 1].data[byteNum++] = Sensor_WSS_FL.sensorValue;
-	//canMessages[canMessageCount - 1].data[byteNum++] = Sensor_WSS_FL.sensorValue >> 8;
-	//canMessages[canMessageCount - 1].data[byteNum++] = Sensor_WSS_FL.sensorValue >> 16;
-	//canMessages[canMessageCount - 1].data[byteNum++] = Sensor_WSS_FL.sensorValue >> 24;
-	//canMessages[canMessageCount - 1].data[byteNum++] = Sensor_WSS_FR.sensorValue;
-	//canMessages[canMessageCount - 1].data[byteNum++] = Sensor_WSS_FR.sensorValue >> 8;
-	//canMessages[canMessageCount - 1].data[byteNum++] = Sensor_WSS_FR.sensorValue >> 16;
-	//canMessages[canMessageCount - 1].data[byteNum++] = Sensor_WSS_FR.sensorValue >> 24;
-	//canMessages[canMessageCount - 1].length = byteNum;
+	//TEMP: WSS3
+	canMessageCount++;
+	byteNum = 0;
+	canMessages[canMessageCount - 1].id_format = IO_CAN_STD_FRAME;
+	canMessages[canMessageCount - 1].id = canMessageID + canMessageCount - 1;  //505
+	canMessages[canMessageCount - 1].data[byteNum++] = Sensor_WSS_RL.sensorValue;
+	canMessages[canMessageCount - 1].data[byteNum++] = Sensor_WSS_RL.sensorValue >> 8;
+	canMessages[canMessageCount - 1].data[byteNum++] = Sensor_WSS_RL.sensorValue >> 16;
+	canMessages[canMessageCount - 1].data[byteNum++] = Sensor_WSS_RL.sensorValue >> 24;
+	canMessages[canMessageCount - 1].data[byteNum++] = Sensor_WSS_RR.sensorValue;
+	canMessages[canMessageCount - 1].data[byteNum++] = Sensor_WSS_RR.sensorValue >> 8;
+	canMessages[canMessageCount - 1].data[byteNum++] = Sensor_WSS_RR.sensorValue >> 16;
+	canMessages[canMessageCount - 1].data[byteNum++] = Sensor_WSS_RR.sensorValue >> 24;
+	canMessages[canMessageCount - 1].length = byteNum;
 
-	////TEMP: WSS3
-	//canMessageCount++;
-	//byteNum = 0;
-	//canMessages[canMessageCount - 1].id_format = IO_CAN_STD_FRAME;
-	//canMessages[canMessageCount - 1].id = canMessageID + canMessageCount - 1;  //505
-	//canMessages[canMessageCount - 1].data[byteNum++] = Sensor_WSS_RL.sensorValue;
-	//canMessages[canMessageCount - 1].data[byteNum++] = Sensor_WSS_RL.sensorValue >> 8;
-	//canMessages[canMessageCount - 1].data[byteNum++] = Sensor_WSS_RL.sensorValue >> 16;
-	//canMessages[canMessageCount - 1].data[byteNum++] = Sensor_WSS_RL.sensorValue >> 24;
-	//canMessages[canMessageCount - 1].data[byteNum++] = Sensor_WSS_RR.sensorValue;
-	//canMessages[canMessageCount - 1].data[byteNum++] = Sensor_WSS_RR.sensorValue >> 8;
-	//canMessages[canMessageCount - 1].data[byteNum++] = Sensor_WSS_RR.sensorValue >> 16;
-	//canMessages[canMessageCount - 1].data[byteNum++] = Sensor_WSS_RR.sensorValue >> 24;
-	//canMessages[canMessageCount - 1].length = byteNum;
-
-    //Safety Checker
+    //506: Safety Checker
     canMessageCount++;
     byteNum = 0;
     canMessages[canMessageCount - 1].id_format = IO_CAN_STD_FRAME;
@@ -573,9 +558,22 @@ void canOutput_sendDebugMessage(CanManager* me, TorqueEncoder* tps, BrakePressur
     //canMessages[canMessageCount - 1].data[byteNum++] = 0;
     canMessages[canMessageCount - 1].length = byteNum;
 
+	//Regen settings
+	canMessageCount++;
+	byteNum = 0;
+	canMessages[canMessageCount - 1].id = canMessageID + canMessageCount - 1;
+	canMessages[canMessageCount - 1].id_format = IO_CAN_STD_FRAME;
+	canMessages[canMessageCount - 1].data[byteNum++] = (ubyte1)Sensor_TCSKnob.sensorValue; //Regen knob //TEMPORARILY USING TCS KNOB
+	canMessages[canMessageCount - 1].data[byteNum++] = Sensor_TCSKnob.sensorValue >> 8;
+	canMessages[canMessageCount - 1].data[byteNum++] = MCM_getRegenMode(mcm);
+	canMessages[canMessageCount - 1].data[byteNum++] = 0;
+	canMessages[canMessageCount - 1].data[byteNum++] = 0;
+	canMessages[canMessageCount - 1].data[byteNum++] = (ubyte1)MCM_getRegenAtZeroPedal(mcm);
+	canMessages[canMessageCount - 1].data[byteNum++] = MCM_getRegenAtZeroPedal(mcm) >> 8;
+	canMessages[canMessageCount - 1].data[byteNum++] = MCM_getBPSForMaxRegenZeroToFF(mcm);
+	canMessages[canMessageCount - 1].length = byteNum;
+
 	//Cooling?
-
-
 
     //510 - 51F reserved for dash
 
