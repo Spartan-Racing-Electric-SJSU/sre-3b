@@ -232,8 +232,8 @@ Var=D8_14V_Current_Monitor unsigned 48,7
 ID=500h
 DLC=8
 CycleTime=100
-Var="1- Throttle Percent (0-FF)" unsigned 0,8 -h
-Var="2- TPS0 Percent (0-FF)" unsigned 8,8 -h
+Var="1- Throttle Percent (0-FF)" unsigned 0,8 /u:% /f:0.392156862746 /p:0
+Var="2- TPS0 Percent (0-FF)" unsigned 8,8 /u:% /f:0.392156862746
 Var="3- TPS0 Voltage" unsigned 16,16 /u:V /f:0.001 /p:3
 Var="4- TPS0 CalibMin" unsigned 32,16 /u:V /f:0.001 /p:3
 Var="5- TPS0 CalibMax" unsigned 48,16 /u:V /f:0.001 /p:3
@@ -243,7 +243,7 @@ ID=501h
 DLC=8
 CycleTime=100
 Var="1- Throttle Percent (0-FF)" unsigned 0,8 -h
-Var="2- TPS1 Percent (0-FF)" unsigned 8,8 -h
+Var="2- TPS1 Percent (0-FF)" unsigned 8,8 -h /u:% /f:0.392156862746
 Var="3- TPS1 Voltage" unsigned 16,16 /u:V /f:0.001 /p:3
 Var="4- TPS1 CalibMin" unsigned 32,16 /u:V /f:0.001 /p:3
 Var="5- TPS1 CalibMax" unsigned 48,16 /u:V /f:0.001 /p:3
@@ -252,7 +252,7 @@ Var="5- TPS1 CalibMax" unsigned 48,16 /u:V /f:0.001 /p:3
 ID=502h
 DLC=8
 CycleTime=100
-Var="1- Brake Percent (0-FF)" unsigned 0,8 -h
+Var="1- Brake Percent (0-FF)" unsigned 0,8 -h /u:% /f:0.392156862746
 Var="2- unused" unsigned 8,8 -h
 Var="3- BPS0 Voltage" unsigned 16,16 /u:V /f:0.001 /p:3
 Var="4- BPS0 CalibMin" unsigned 32,16 /u:V /f:0.001 /p:3
@@ -399,14 +399,22 @@ DLC=8
 CycleTime=1000
 Var="1- Pack resistance" unsigned 0,16 /u:mO /f:0.1
 Var="2- Min res" unsigned 16,8 /u:mO /f:0.1
-Var="3- Lowest res cell" unsigned 24,8 
+Var="3- Lowest res cell" unsigned 24,8
 Var="4- Max res" unsigned 32,8 /u:mO /f:0.1
 Var="5- Highest res cell" unsigned 40,8
-
 
 [B629_Custom]
 ID=629h
 DLC=8
 CycleTime=10
 Var=Custom char 0,8
+
+["V508_Regen Mode"]
+ID=508h
+DLC=8
+Var="Regen Torque Limit" unsigned 8,16 /u:Nm /f:0.1
+Var="Regen Mode" unsigned 0,8
+Var="Regen BPS% for full regen torque" unsigned 56,8 /u:% /f:0.392156862746
+Var="Regen At Zero Pedal" unsigned 24,16 /u:Nm /f:0.392156862746
+Var="Regen APPS% for coasting" unsigned 48,8 /u:% /f:0.1
 

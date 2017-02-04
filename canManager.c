@@ -563,14 +563,14 @@ void canOutput_sendDebugMessage(CanManager* me, TorqueEncoder* tps, BrakePressur
 	byteNum = 0;
 	canMessages[canMessageCount - 1].id = canMessageID + canMessageCount - 1;
 	canMessages[canMessageCount - 1].id_format = IO_CAN_STD_FRAME;
-	canMessages[canMessageCount - 1].data[byteNum++] = (ubyte1)Sensor_TCSKnob.sensorValue; //Regen knob //TEMPORARILY USING TCS KNOB
-	canMessages[canMessageCount - 1].data[byteNum++] = Sensor_TCSKnob.sensorValue >> 8;
 	canMessages[canMessageCount - 1].data[byteNum++] = MCM_getRegenMode(mcm);
+	canMessages[canMessageCount - 1].data[byteNum++] = (ubyte1)MCM_getRegenTorqueLimitDNm(mcm);
+	canMessages[canMessageCount - 1].data[byteNum++] = MCM_getRegenTorqueLimitDNm(mcm) >> 8;
+	canMessages[canMessageCount - 1].data[byteNum++] = (ubyte1)MCM_getRegenTorqueAtZeroPedalDNm(mcm);
+	canMessages[canMessageCount - 1].data[byteNum++] = MCM_getRegenTorqueAtZeroPedalDNm(mcm) >> 8;
 	canMessages[canMessageCount - 1].data[byteNum++] = 0;
-	canMessages[canMessageCount - 1].data[byteNum++] = 0;
-	canMessages[canMessageCount - 1].data[byteNum++] = (ubyte1)MCM_getRegenAtZeroPedal(mcm);
-	canMessages[canMessageCount - 1].data[byteNum++] = MCM_getRegenAtZeroPedal(mcm) >> 8;
-	canMessages[canMessageCount - 1].data[byteNum++] = MCM_getBPSForMaxRegenZeroToFF(mcm);
+	canMessages[canMessageCount - 1].data[byteNum++] = MCM_getRegenAPPSForMaxCoastingZeroToFF(mcm);
+	canMessages[canMessageCount - 1].data[byteNum++] = MCM_getRegenBPSForMaxRegenZeroToFF(mcm);
 	canMessages[canMessageCount - 1].length = byteNum;
 
 	//Cooling?
