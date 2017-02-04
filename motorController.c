@@ -50,9 +50,9 @@ struct _MotorController {
 	ubyte2 torqueMaximumDNm;  //Max torque that can be commanded in deciNewton*meters ("100" = 10.0 Nm)
 	
 	//Regen torque calculations in whole Nm..?
-	ubyte1 regen_mode;  //Software reading of regen knob position
-	ubyte2 regen_torqueLimitDNm;           //Tuneable value.  Regen torque (in Nm) at full regen.  Positive value.
-	ubyte2 regen_torqueAtZeroPedalDNm;     //Tuneable value.  Amount of regen torque (in Nm) to apply when both pedals at 0% travel.  Positive value.
+	ubyte1 regen_mode;					  //Software reading of regen knob position.  Each mode has different regen behavior (variables below).
+	ubyte2 regen_torqueLimitDNm;          //Tuneable value.  Regen torque (in Nm) at full regen.  Positive value.
+	ubyte2 regen_torqueAtZeroPedalDNm;    //Tuneable value.  Amount of regen torque (in Nm) to apply when both pedals at 0% travel.  Positive value.
 	float4 regen_percentBPSForMaxRegen;   //Tuneable value.  Amount of brake pedal required for full regen. Value between zero and one.
 	float4 regen_percentAPPSForCoasting;  //Tuneable value.  Amount of accel pedal required to exit regen.  Value between zero and one.
     sbyte1 regen_minimumSpeedKPH;  //Assigned by main
@@ -189,10 +189,12 @@ me->getInverterStatus = &getInverterStatus;
 
 void MCM_readTCSSettings(MotorController* me, Sensor* TCSSwitchUp, Sensor* TCSSwitchDown, Sensor* TCSPot)
 {	
+	me->regen_mode = 0;  //Default: Regen off
+
 	//If the pot is clicked off (resistance goes to FFFF)
 	if (TCSPot->sensorValue > 5000)  //Position 0 = Regen Off
     {
-		me->regen_mode = 0;  //For instrumentation purposes only.. not used in any calculations
+		me->regen_mode = 0;  
 
 		//Note: If regen torque limit is 0 then regen is disabled completely (special behavior)
 		me->regen_torqueLimitDNm = 0;
@@ -207,7 +209,7 @@ void MCM_readTCSSettings(MotorController* me, Sensor* TCSSwitchUp, Sensor* TCSSw
 		me->regen_mode = 1;
 		me->regen_torqueLimitDNm = me->torqueMaximumDNm * 0.5;
 		me->regen_torqueAtZeroPedalDNm = 0;
-		me->regen_percentBPSForMaxRegen = .5; //zero to one.. 1 = 100%
+		me->regen_percentBPSForMaxRegen = .3; //zero to one.. 1 = 100%
 		me->regen_percentAPPSForCoasting = 0;
 	}
 	else if (TCSPot->sensorValue < 0x230)  //Position 2 = light "engine braking"
@@ -215,7 +217,7 @@ void MCM_readTCSSettings(MotorController* me, Sensor* TCSSwitchUp, Sensor* TCSSw
 		me->regen_mode = 2;
 		me->regen_torqueLimitDNm = me->torqueMaximumDNm * 0.5;
 		me->regen_torqueAtZeroPedalDNm = me->regen_torqueLimitDNm * 0.3;
-		me->regen_percentBPSForMaxRegen = .5; //zero to one.. 1 = 100%
+		me->regen_percentBPSForMaxRegen = .3; //zero to one.. 1 = 100%
 		me->regen_percentAPPSForCoasting = .2;
 	}
 	else if (TCSPot->sensorValue < 0x383)  //Position 3 = stronger "engine braking"
@@ -223,7 +225,7 @@ void MCM_readTCSSettings(MotorController* me, Sensor* TCSSwitchUp, Sensor* TCSSw
 		me->regen_mode = 3;
 		me->regen_torqueLimitDNm = me->torqueMaximumDNm * 0.5;
 		me->regen_torqueAtZeroPedalDNm = me->regen_torqueLimitDNm * 0.6;
-		me->regen_percentBPSForMaxRegen = .5; //zero to one.. 1 = 100%
+		me->regen_percentBPSForMaxRegen = .3; //zero to one.. 1 = 100%
 		me->regen_percentAPPSForCoasting = .2;
 	}
 	else if (TCSPot->sensorValue >= 0x383)  //Position 4 = One pedal driving (Tesla mode)
@@ -232,11 +234,9 @@ void MCM_readTCSSettings(MotorController* me, Sensor* TCSSwitchUp, Sensor* TCSSw
 		me->regen_torqueLimitDNm = me->torqueMaximumDNm * 0.5;
 		me->regen_torqueAtZeroPedalDNm = me->regen_torqueLimitDNm;
 		me->regen_percentAPPSForCoasting = 0;
-		me->regen_percentBPSForMaxRegen = 1;
+		me->regen_percentBPSForMaxRegen = 0;
 	}
 }
-
-
 
 /*****************************************************************************
 * Motor Control Functions
@@ -271,52 +271,14 @@ void MCM_calculateCommands(MotorController* me, TorqueEncoder* tps, BrakePressur
 	MCM_commands_setDirection(me, FORWARD); //1 = forwards for our car, 0 = reverse
     
 	sbyte2 torqueOutput = 0;
+	sbyte2 appsTorque = 0;
+	sbyte2 bpsTorque = 0;
 
-	//If the regen limit is 0, or if there's no regen on the accelerator pedal
-	if (me->regen_torqueLimitDNm = 0 || me->regen_percentAPPSForCoasting == 0)
-	{
-		//Calculate APPS torque based solely on forward torque limit
-		torqueOutput = me->torqueMaximumDNm * tps->percent;
-	}
-	else
-	{
-		//Calculate torque commanded by APPS
-		sbyte2 appsTorque;
-		if (tps->percent < me->regen_percentAPPSForCoasting)  //if APPS is commanding regen
-		{
-			//Regen increases (becomes more negative) as the pedal is RELEASED, FROM the coasting position TO the top of the pedal / fully released / 0% depressed)
-			appsTorque = 0 - me->regen_torqueAtZeroPedalDNm * getPercent(tps->percent, me->regen_percentAPPSForCoasting, 0, TRUE);
-		}
-		else //APPS is commanding acceleration
-		{
-			//Torque is only commanded FROM the coasting position TO the BOTTOM of the pedal / 100% depressed)
-			appsTorque = me->torqueMaximumDNm * getPercent(tps->percent, me->regen_percentAPPSForCoasting, 1, TRUE);
-		}
-
-		sbyte2 bpsTorque;
-		????????????????????????
-
-		//Calculate torque commanded by BPS
-		torqueOutput = appsTorque - BPStorque;
-	}
-
-    
-		me->regen_torqueLimitDNm = me->torqueMaximumDNm;
-		me->regen_torqueAtZeroPedalDNm = me->regen_torqueLimitDNm * 0.3;
-		me->regen_percentBPSForMaxRegen = .5; //zero to one.. 1 = 100%
-		me->regen_percentAPPSForCoasting = .2;
-
-    if (bps->percent > 0)
-    {
-        //0 - (zero pedal regen) - (remaining regen * pedal percent)
-        //OLD WRONG CALC: torqueOutput = 0 - me->regen_torqueAtZeroPedalDNm - (me->regen_torqueLimitBasedOnMode - me->regen_torqueAtZeroPedalDNm) * getPercent(bps->percent, 0, me->regen_percentBPSForMaxRegen, TRUE);
-    }
-    else
-    {
-        //OLD WRONG torqueOutput = (me->torqueMaximumDNm - me->regen_torqueAtZeroPedalDNm) * tps->percent - me->regen_torqueAtZeroPedalDNm;
-    }
-    SerialManager_sprintf(me->serialMan, "Tq cmd w/regen: %d\n", &torqueOutput);
-    //////////////////////////////torqueOutput = me->torqueMaximumDNm * tps->percent;  //REMOVE THIS LINE TO ENABLE REGEN
+	appsTorque = me->torqueMaximumDNm * getPercent(tps->percent, me->regen_percentAPPSForCoasting, 1, TRUE) - me->regen_torqueAtZeroPedalDNm * getPercent(tps->percent, me->regen_percentAPPSForCoasting, 0, TRUE);
+	bpsTorque = 0 - (me->regen_torqueLimitDNm - me->regen_torqueAtZeroPedalDNm) * getPercent(bps->percent, 0, me->regen_percentBPSForMaxRegen, TRUE);
+	
+	torqueOutput = appsTorque + bpsTorque;
+    //torqueOutput = me->torqueMaximumDNm * tps->percent;  //REMOVE THIS LINE TO ENABLE REGEN
     MCM_commands_setTorqueDNm(me, torqueOutput);
 }
 
@@ -745,14 +707,23 @@ ubyte1 MCM_getRegenMode(MotorController* me)
 {
 	return me->regen_mode;
 }
-sbyte2 MCM_getRegenAtZeroPedal(MotorController* me)
+sbyte2 MCM_getRegenTorqueLimitDNm(MotorController* me)
 {
-    return me->regen_torqueAtZeroPedalDNm;
+	return 0xFF * me->regen_torqueLimitDNm;
 }
-sbyte2 MCM_getBPSForMaxRegenZeroToFF(MotorController* me)
+sbyte2 MCM_getRegenTorqueAtZeroPedalDNm(MotorController* me)
 {
-    return 0xFF * me->regen_percentBPSForMaxRegen;
+	return me->regen_torqueAtZeroPedalDNm;
 }
+sbyte2 MCM_getRegenBPSForMaxRegenZeroToFF(MotorController* me)
+{
+	return 0xFF * me->regen_percentBPSForMaxRegen;
+}
+sbyte2 MCM_getRegenAPPSForMaxCoastingZeroToFF(MotorController* me)
+{
+	return 0xFF * me->regen_percentAPPSForCoasting;
+}
+
 sbyte1 MCM_getRegenMinSpeed(MotorController* me)
 {
     return me->regen_minimumSpeedKPH;

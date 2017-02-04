@@ -77,8 +77,10 @@ sbyte1 MCM_getRegenMinSpeed(MotorController* me);
 sbyte1 MCM_getRegenRampdownStartSpeed(MotorController* me);
 
 ubyte1 MCM_getRegenMode(MotorController* me);
-sbyte2 MCM_getRegenAtZeroPedal(MotorController* me);
-sbyte2 MCM_getBPSForMaxRegenZeroToFF(MotorController* me);
+sbyte2 MCM_getRegenTorqueLimitDNm(MotorController* me);
+sbyte2 MCM_getRegenTorqueAtZeroPedalDNm(MotorController* me);
+sbyte2 MCM_getRegenBPSForMaxRegenZeroToFF(MotorController* me);
+sbyte2 MCM_getRegenAPPSForMaxCoastingZeroToFF(MotorController* me);
 
 //----------------------------------------------------------------------------
 //Inter-object functions
