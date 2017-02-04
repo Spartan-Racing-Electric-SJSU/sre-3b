@@ -16,55 +16,18 @@
 * If zeroToOneOnly is true, then % will be capped at 0%-100% (no negative % or > 100%)
 * If range == 0, then 0 will be returned.  (Safety: in case of problem during regen torque calculation)
 -------------------------------------------------------------------*/
-
 float4 getPercent(float4 value, float4 start, float4 end, bool zeroToOneOnly)
 {
-	float4 min;      //The smaller of the start/end points
-	float4 max;      //THe larger of the start/end points
-	float4 range;    //The distance between start/end
-	float4 travel;   //The distance travelled from start to value
-	float4 retVal;   //The percent of range that value has traversed (between start and end)
+	float4 retVal = (value - start) / (end - start);
 
-	typedef enum { FORWARDS, BACKWARDS } Directions;
-	Directions direction;
-
-	if (start < end)
+	if (zeroToOneOnly == TRUE)
 	{
-		direction = FORWARDS;
-		min = start;
-		max = end;
-	}
-	else
-	{
-		direction = BACKWARDS;
-		min = end;
-		max = start;
+		if (retVal < 0) { retVal = 0; }
+		if (retVal > 1) { retVal = 1; }
 	}
 
-    range = fabs(max - min);
-    travel = (direction == FORWARDS) ? value - start : end - value;
-
-	if (range == 0)
-	{
-		retVal = 0;
-	}
-	else if (zeroToOneOnly == TRUE)
-    {
-/*            if (value >= max) { retVal = 1; }
-            else if (value <= min) { retVal = 0; }
-            else { retVal = travel / (max - min); */
-        if (travel < 0) { retVal = 0; }
-        else if (travel > range) { retVal = 1; }
-        else { retVal = travel / range; }
-    }
-    else
-    {
-        retVal = (travel) / range; //(max - min);
-    }
-
-    return retVal;
+	return retVal;
 }
-
 
 // A utility function to get maximum of two integers
 ubyte2 max(ubyte2 a, ubyte2 b)
