@@ -189,52 +189,57 @@ me->getInverterStatus = &getInverterStatus;
 
 void MCM_readTCSSettings(MotorController* me, Sensor* TCSSwitchUp, Sensor* TCSSwitchDown, Sensor* TCSPot)
 {	
-	me->regen_mode = 0;  //Default: Regen off
+	 
 
 	//If the pot is clicked off (resistance goes to FFFF)
 	if (TCSPot->sensorValue > 5000)  //Position 0 = Regen Off
     {
 		me->regen_mode = 0;  
 
-		//Note: If regen torque limit is 0 then regen is disabled completely (special behavior)
 		me->regen_torqueLimitDNm = 0;
-
-		//The rest of these don't matter
 		me->regen_torqueAtZeroPedalDNm = 0;
-		me->regen_percentBPSForMaxRegen = 0; //zero to one.. 1 = 100%
 		me->regen_percentAPPSForCoasting = 0;
+		me->regen_percentBPSForMaxRegen = 0; //zero to one.. 1 = 100%
 	}
 	else if (TCSPot->sensorValue < 0xA1)  //Position 1 = Coasting mode (Formula E mode)
 	{
 		me->regen_mode = 1;
 		me->regen_torqueLimitDNm = me->torqueMaximumDNm * 0.5;
 		me->regen_torqueAtZeroPedalDNm = 0;
-		me->regen_percentBPSForMaxRegen = .3; //zero to one.. 1 = 100%
 		me->regen_percentAPPSForCoasting = 0;
+		me->regen_percentBPSForMaxRegen = .3; //zero to one.. 1 = 100%
 	}
-	else if (TCSPot->sensorValue < 0x230)  //Position 2 = light "engine braking"
+	else if (TCSPot->sensorValue < 0x230)  //Position 2 = light "engine braking" (Hybrid mode)
 	{
 		me->regen_mode = 2;
 		me->regen_torqueLimitDNm = me->torqueMaximumDNm * 0.5;
 		me->regen_torqueAtZeroPedalDNm = me->regen_torqueLimitDNm * 0.3;
-		me->regen_percentBPSForMaxRegen = .3; //zero to one.. 1 = 100%
 		me->regen_percentAPPSForCoasting = .2;
+		me->regen_percentBPSForMaxRegen = .3; //zero to one.. 1 = 100%
 	}
-	else if (TCSPot->sensorValue < 0x383)  //Position 3 = stronger "engine braking"
+	else if (TCSPot->sensorValue < 0x383)  //Position 3 = One pedal driving (Tesla mode)
 	{
 		me->regen_mode = 3;
 		me->regen_torqueLimitDNm = me->torqueMaximumDNm * 0.5;
-		me->regen_torqueAtZeroPedalDNm = me->regen_torqueLimitDNm * 0.6;
-		me->regen_percentBPSForMaxRegen = .3; //zero to one.. 1 = 100%
-		me->regen_percentAPPSForCoasting = .2;
+		me->regen_torqueAtZeroPedalDNm = me->regen_torqueLimitDNm;
+		me->regen_percentAPPSForCoasting = .1;
+		me->regen_percentBPSForMaxRegen = 0;
 	}
-	else if (TCSPot->sensorValue >= 0x383)  //Position 4 = One pedal driving (Tesla mode)
+	else if (TCSPot->sensorValue >= 0x383)  //Position 4 = User customizable
 	{
 		me->regen_mode = 4;
-		me->regen_torqueLimitDNm = me->torqueMaximumDNm * 0.5;
-		me->regen_torqueAtZeroPedalDNm = me->regen_torqueLimitDNm;
+		me->regen_torqueLimitDNm = 0;
+		me->regen_torqueAtZeroPedalDNm = 0;
+		me->regen_percentBPSForMaxRegen = 0; //zero to one.. 1 = 100%
 		me->regen_percentAPPSForCoasting = 0;
-		me->regen_percentBPSForMaxRegen = 0;
+	}
+	else  //This should never happen
+	{
+		me->regen_mode = 0xFFFF;  //Default: Regen off
+		me->regen_torqueLimitDNm = 0;
+		me->regen_torqueAtZeroPedalDNm = 0;
+		me->regen_percentBPSForMaxRegen = 0; //zero to one.. 1 = 100%
+		me->regen_percentAPPSForCoasting = 0;
 	}
 }
 

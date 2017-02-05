@@ -299,7 +299,7 @@ void main(void)
         /*******************************************/
         /*  Output Adjustments by Safety Checker   */
         /*******************************************/
-        SafetyChecker_reduceTorque(sc, mcm0, bms);
+        //SafetyChecker_reduceTorque(sc, mcm0, bms);
 
         /*******************************************/
         /*              Enact Outputs              */

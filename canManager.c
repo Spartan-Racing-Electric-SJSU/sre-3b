@@ -5,6 +5,7 @@
 #include "IO_CAN.h"
 #include "IO_RTC.h"
 
+#include "mathFunctions.h"
 #include "sensors.h"
 #include "canManager.h"
 #include "avlTree.h"
@@ -445,8 +446,8 @@ void canOutput_sendDebugMessage(CanManager* me, TorqueEncoder* tps, BrakePressur
     canMessages[canMessageCount - 1].id = canMessageID + canMessageCount - 1; //500
     canMessages[canMessageCount - 1].data[byteNum++] = throttlePercent;
     canMessages[canMessageCount - 1].data[byteNum++] = tps0Percent;
-    canMessages[canMessageCount - 1].data[byteNum++] = tps->tps0_value;
-    canMessages[canMessageCount - 1].data[byteNum++] = tps->tps0_value >> 8;
+	canMessages[canMessageCount - 1].data[byteNum++] = Sensor_TPS0.sensorValue; // tps->tps0_value;
+	canMessages[canMessageCount - 1].data[byteNum++] = Sensor_TPS0.sensorValue >> 8; //tps->tps0_value >> 8;
     canMessages[canMessageCount - 1].data[byteNum++] = tps->tps0_calibMin;
     canMessages[canMessageCount - 1].data[byteNum++] = tps->tps0_calibMin >> 8;
     canMessages[canMessageCount - 1].data[byteNum++] = tps->tps0_calibMax;
@@ -543,20 +544,37 @@ void canOutput_sendDebugMessage(CanManager* me, TorqueEncoder* tps, BrakePressur
     canMessages[canMessageCount - 1].data[byteNum++] = SafetyChecker_getNotices(sc) >> 8;
     canMessages[canMessageCount - 1].length = byteNum;
 
-    //12v battery
-    canMessageCount++;
-    byteNum = 0;
-    canMessages[canMessageCount - 1].id = canMessageID + canMessageCount - 1;
-    canMessages[canMessageCount - 1].id_format = IO_CAN_STD_FRAME;
-    canMessages[canMessageCount - 1].data[byteNum++] = (ubyte1)Sensor_LVBattery.sensorValue;
-    canMessages[canMessageCount - 1].data[byteNum++] = Sensor_LVBattery.sensorValue >> 8;
-    //canMessages[canMessageCount - 1].data[byteNum++] = 0;
-    //canMessages[canMessageCount - 1].data[byteNum++] = 0;
-    //canMessages[canMessageCount - 1].data[byteNum++] = 0;
-    //canMessages[canMessageCount - 1].data[byteNum++] = 0;
-    //canMessages[canMessageCount - 1].data[byteNum++] = 0;
-    //canMessages[canMessageCount - 1].data[byteNum++] = 0;
-    canMessages[canMessageCount - 1].length = byteNum;
+	//12v battery
+	float4 LVBatterySOC = 0;
+	if (Sensor_LVBattery.sensorValue < 12730)
+		LVBatterySOC = .0 + .1 * getPercent(Sensor_LVBattery.sensorValue, 9200, 12730, FALSE);
+	else if (Sensor_LVBattery.sensorValue < 12866)
+		LVBatterySOC = .1 + .1 * getPercent(Sensor_LVBattery.sensorValue, 12730, 12866, FALSE);
+	else if (Sensor_LVBattery.sensorValue < 12996)
+		LVBatterySOC = .2 + .1 * getPercent(Sensor_LVBattery.sensorValue, 12866, 12996, FALSE);
+	else if (Sensor_LVBattery.sensorValue < 13104)
+		LVBatterySOC = .3 + .1 * getPercent(Sensor_LVBattery.sensorValue, 12996, 13104, FALSE);
+	else if (Sensor_LVBattery.sensorValue < 13116)
+		LVBatterySOC = .4 + .1 * getPercent(Sensor_LVBattery.sensorValue, 13104, 13116, FALSE);
+	else if (Sensor_LVBattery.sensorValue < 13130)
+		LVBatterySOC = .5 + .1 * getPercent(Sensor_LVBattery.sensorValue, 13116, 13130, FALSE);
+	else if (Sensor_LVBattery.sensorValue < 13160)
+		LVBatterySOC = .6 + .1 * getPercent(Sensor_LVBattery.sensorValue, 13130, 13160, FALSE);
+	else if (Sensor_LVBattery.sensorValue < 13270)
+		LVBatterySOC = .7 + .1 * getPercent(Sensor_LVBattery.sensorValue, 13160, 13270, FALSE);
+	else if (Sensor_LVBattery.sensorValue < 13300)
+		LVBatterySOC = .8 + .1 * getPercent(Sensor_LVBattery.sensorValue, 13270, 13300, FALSE);
+	else //if (Sensor_LVBattery.sensorValue < 14340)
+		LVBatterySOC = .9 + .1 * getPercent(Sensor_LVBattery.sensorValue, 13300, 14340, FALSE);
+
+	canMessageCount++;
+	byteNum = 0;
+	canMessages[canMessageCount - 1].id = canMessageID + canMessageCount - 1;
+	canMessages[canMessageCount - 1].id_format = IO_CAN_STD_FRAME;
+	canMessages[canMessageCount - 1].data[byteNum++] = (ubyte1)Sensor_LVBattery.sensorValue;
+	canMessages[canMessageCount - 1].data[byteNum++] = Sensor_LVBattery.sensorValue >> 8;
+	canMessages[canMessageCount - 1].data[byteNum++] = (sbyte1)(100 * LVBatterySOC);
+	canMessages[canMessageCount - 1].length = byteNum;
 
 	//Regen settings
 	canMessageCount++;

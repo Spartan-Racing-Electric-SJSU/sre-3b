@@ -304,12 +304,6 @@ Var="E-16 (unused)" unsigned 15,1
 Var="E-17 LVS Battery Empty" unsigned 16,1
 Var="W-1 LVS Battery Low" unsigned 32,1
 
-[V507_12VBattery]
-ID=507h
-DLC=8
-CycleTime=1000
-Var="1- Battery Voltage" unsigned 0,16 /u:V /f:0.001 /p:3
-
 [B620_Elithion]
 ID=620h
 DLC=8
@@ -416,5 +410,16 @@ Var="Regen Torque Limit" unsigned 8,16 /u:Nm /f:0.1
 Var="Regen Mode" unsigned 0,8
 Var="Regen BPS% for full regen torque" unsigned 56,8 /u:% /f:0.392156862746
 Var="Regen At Zero Pedal" unsigned 24,16 /u:Nm /f:0.392156862746
-Var="Regen APPS% for coasting" unsigned 48,8 /u:% /f:0.1
+Var="Regen APPS% for coasting" unsigned 48,8 /u:% /f:0.392156862746
+
+["V5FF VCU Debug"]
+ID=5FFh
+DLC=8
+CycleTime=100
+Var="VCU Safety Disable (0xC4)" unsigned 0,8
+
+[V507_LVS_Battery]
+ID=507h
+Var="LVS Battery Voltage" unsigned 0,16 /u:V /f:0.001
+Var="LVS Battery SOC" signed 16,8 /u:%
 
