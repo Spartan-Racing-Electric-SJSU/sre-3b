@@ -43,6 +43,11 @@ TorqueEncoder* TorqueEncoder_new(bool benchMode)
 	me->tps1_calibMin = 2773;  //me->tps1->sensorValue;
 	me->tps1_calibMax = 3898;  //me->tps1->sensorValue;
 
+	me->tps0->specMin = 5000 * .05;  //TODO: Add accuracy range for all these?
+	me->tps0->specMax = 5000 * .45;  //Or don't worry about it since we'll
+	me->tps1->specMin = 5000 * .55;  //always have some distance from the
+	me->tps1->specMax = 5000 * .95;  //ends anyway...
+
 	//SRE-2 sensor default calibrations
 	//me->tps0_calibMin = 1117;  //me->tps0->sensorValue;
 	//me->tps0_calibMax = 2304;  //me->tps0->sensorValue;
@@ -124,15 +129,6 @@ void TorqueEncoder_update(TorqueEncoder* me)
 void TorqueEncoder_resetCalibration(TorqueEncoder* me)
 {
     me->calibrated = FALSE;
-    //me->tps0_rawCalibMin = me->tps0->specMax;
-    //me->tps0_rawCalibMax = me->tps0->specMin;
-    //me->tps0_calibMin = me->tps0->specMax;
-	//me->tps0_calibMax = me->tps0->specMin;
-    
-    //me->tps1_rawCalibMin = me->tps1->specMax;
-    //me->tps1_rawCalibMax = me->tps1->specMin;
-	//me->tps1_calibMin = me->tps1->specMax;
-	//me->tps1_calibMax = me->tps1->specMin;
     
     //Normal
     me->tps0_calibMin = me->tps0->sensorValue;

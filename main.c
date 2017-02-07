@@ -150,7 +150,6 @@ void main(void)
     SerialManager_send(serialMan, "VCU objects/subsystems initializing.\n");
     vcu_initializeADC(bench);  //Configure and activate all I/O pins on the VCU
     //vcu_initializeCAN();
-    vcu_initializeSensors(bench);
     //vcu_initializeMCU();
 
     //Do some loops until the ADC stops outputting garbage values
@@ -299,7 +298,7 @@ void main(void)
         /*******************************************/
         /*  Output Adjustments by Safety Checker   */
         /*******************************************/
-        //SafetyChecker_reduceTorque(sc, mcm0, bms);
+        SafetyChecker_reduceTorque(sc, mcm0, bms);
 
         /*******************************************/
         /*              Enact Outputs              */

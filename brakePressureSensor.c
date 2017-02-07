@@ -23,7 +23,11 @@ BrakePressureSensor* BrakePressureSensor_new(void)
     //TODO: Make sure the main loop is running before doing this
     me->bps0 = &Sensor_BPS0;
     //me->tps1 = (benchMode == TRUE) ? &Sensor_BenchTPS1 : &Sensor_TPS1;
-	
+
+	//Note: BPS sits slightly below 0.5V but it's still within range
+	Sensor_BPS0.specMin = 500 - 4000 * .005; //0.5V +/- 0.5%
+	Sensor_BPS0.specMax = 4500 + 4000 * .0025; //+/- 0.25%
+
 	//Where/should these be hardcoded?
 	me->bps0_reverse = FALSE;
 	//me->bps1_reverse = TRUE;
