@@ -3,6 +3,7 @@
 #include "IO_Driver.h"
 #include "IO_RTC.h"
 #include "IO_DIO.h"
+#include "IO_CAN.h"
 
 #include "safety.h"
 #include "mathFunctions.h"
@@ -16,8 +17,10 @@
 #include "bms.h"
 #include "serial.h"
 
+//----------------------------------------------------------------------------
+//Faults
 //last flag is 0x 8000 0000 (32 flags, 8 hex characters)
-//Faults -------------------------------------------
+//----------------------------------------------------------------------------
 //nibble 1
 static const ubyte4 F_tpsOutOfRange = 1;
 static const ubyte4 F_bpsOutOfRange = 2;
@@ -56,6 +59,7 @@ static const ubyte4 F_unusedFaults = 0xFFFEF800;
 
 //Warnings -------------------------------------------
 static const ubyte2 W_lvsBatteryLow = 1;
+static const ubyte2 W_safetyBypassEnabled = 0x80;
 
 //Notices
 static const ubyte2 N_HVILTermSenseLost = 1;
@@ -81,6 +85,9 @@ struct _SafetyChecker {
     ubyte1 maxAmpsDischarge;
 
     bool tpsbpsImplausible;
+
+	ubyte4 timestamp_bypassSafetyChecks;
+	ubyte4 bypassSafetyChecksTimeout_us;
 };
 
 /*****************************************************************************
@@ -102,6 +109,9 @@ SafetyChecker* SafetyChecker_new(SerialManager* sm, ubyte2 maxChargeAmps, ubyte2
 
     me->maxAmpsCharge = maxChargeAmps;
     me->maxAmpsDischarge = maxDischargeAmps;
+
+	me->timestamp_bypassSafetyChecks = 0;
+	me->bypassSafetyChecksTimeout_us = 500000; //If safety bypass command is not neceived in this time then safety is re-enabled
     return me;
 }
 
@@ -340,7 +350,24 @@ void SafetyChecker_update(SafetyChecker* me, MotorController* mcm, BatteryManage
         //sprintf(message, "LVS battery %.03fV good.\n", (float4)LVBattery->sensorValue / 1000);
     }
 
+	//===================================================================
+	// Safety checker bypass
+	//===================================================================
+	// The safety checker should only be bypassed by a CAN message sent by
+	// the PCAN Explorer dashboard.  This is only used during debugging.
+	//-------------------------------------------------------------------
+	if (IO_RTC_GetTimeUS(me->timestamp_bypassSafetyChecks) > me->bypassSafetyChecksTimeout_us)
+	{
+		me->warnings |= W_safetyBypassEnabled;
+	}
+	else
+	{
+		me->warnings &= ~W_safetyBypassEnabled;
+	}
 
+	/*****************************************************************************
+	* Notices
+	****************************************************************************/
 
     //===================================================================
     // HVIL Term Sense Check
@@ -483,6 +510,12 @@ void SafetyChecker_reduceTorque(SafetyChecker* me, MotorController* mcm, Battery
     ////////if (tempMultiplier < multiplier) { multiplier = tempMultiplier; }
 
     //Reduce the torque command.  Multiplier should be a percent value (between 0 and 1)
+
+	//If the safety bypass is enabled, then override the multiplier to 100% (no reduction)
+	if (me->warnings && W_safetyBypassEnabled == W_safetyBypassEnabled)
+	{
+		multiplier = 1;
+	}
     MCM_commands_setTorqueDNm(mcm, MCM_commands_getTorque(mcm) * multiplier);
 }
 
@@ -503,3 +536,24 @@ void SafetyChecker_reduceTorque(SafetyChecker* me, MotorController* mcm, Battery
 //
 //    return torqueThrottle;
 //}
+
+
+void SafetyChecker_parseCanMessage(SafetyChecker* me, IO_CAN_DATA_FRAME* canMessage)
+{
+	//0xAA
+	static const ubyte1 bitInverter = 1; //bit 1
+	static const ubyte1 bitLockout = 128; //bit 7
+
+	switch (canMessage->id)
+	{
+	case 0x5FF:
+		//If the safety bypass code (0xC4) is received on the VCU debug address (0x5FF) at byte 0
+		if (canMessage->data[0] == 0xC4)
+		{
+			//Start the clock to enable safety bypass
+			IO_RTC_StartTime(me->bypassSafetyChecksTimeout_us);
+		}
+		break;
+
+	}
+}

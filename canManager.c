@@ -322,7 +322,7 @@ bool CanManager_dataChangedSinceLastTransmit(IO_CAN_DATA_FRAME* canMessage) //bi
 /*****************************************************************************
 * read
 ****************************************************************************/
-void CanManager_read(CanManager* me, CanChannel channel, MotorController* mcm, BatteryManagementSystem* bms)
+void CanManager_read(CanManager* me, CanChannel channel, MotorController* mcm, BatteryManagementSystem* bms, SafetyChecker* sc)
 {
     IO_CAN_DATA_FRAME canMessages[(channel == CAN0_HIPRI ? me->can0_read_messageLimit : me->can1_read_messageLimit)];
     ubyte1 canMessageCount;  //FIFO queue only holds 128 messages max
@@ -376,7 +376,13 @@ void CanManager_read(CanManager* me, CanChannel channel, MotorController* mcm, B
         case 0x629:
             BMS_parseCanMessage(bms, &canMessages[currMessage]);
 			break;
-
+			
+		//-------------------------------------------------------------------------
+		//VCU Debug Control
+		//-------------------------------------------------------------------------
+		case 0x5FF:
+			SafetyChecker_parseCanMessage(sc, &canMessages[currMessage]);
+			break;
 			//default:
 
 		}
