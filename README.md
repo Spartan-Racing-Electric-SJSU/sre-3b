@@ -1,3 +1,8 @@
+# General Info
+
+Using the low voltage power supply
+https://github.com/spartanracingelectric/SRE-2/raw/master/XHR-33-18%20Power%20Supply%20Instructions.docx
+
 # SRE-2
 
 Programming for the HY-TTC50
