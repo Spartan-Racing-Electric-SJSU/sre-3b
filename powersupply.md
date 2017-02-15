@@ -5,27 +5,27 @@
 ![DC Power Supply](https://github.com/spartanracingelectric/SRE-2/blob/master/dcpower.jpg)
 
 ### How to Turn On  
-0.	DON’T TURN ON THE POWER SWITCH YET   
-1.	Press in red STANDBY button.  Make sure it is clicks in.  
+0.	**DON’T TURN ON THE POWER SWITCH YET**   
+1.	Press in red **STANDBY** button.  Make sure it is clicks in.  
 2.	If anything is plugged into the output jacks that you will not be using, unplug that stuff.  
 3.	Turn on power supply (big switch on bottom left).  
 4.	Hold down V/I button.  Don’t let go until step 7.  
 5.	Set voltage  
-* a.	Turn voltage knob.  
-* b.	Set appropriate value for the circuit you are powering.  
-* i.	Car: 12.7 to 14.3 volts  
-** ii.	VCU dev board: 12.7 to 14.3 volts  
-** iii.	LTC demo board: 7 volts  
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;a.	Turn voltage knob.  
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;b.	Set appropriate value for the circuit you are powering.  
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;i.	Car: 12.7 to 14.3 volts  
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ii.	VCU dev board: 12.7 to 14.3 volts  
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;iii.	LTC demo board: 7 volts  
 6.	Set current limit  
-* a.	Turn current knob.  
-* b.	Set the value as low as possible for the circuit you are powering.  
-** i.	Car: 7 amps (with cooling circuits)  
-** ii.	VCU dev board: 2 amps (with relays)  
-** iii.	LTC demo board: ???  
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;a.	Turn current knob.  
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;b.	Set the value as low as possible for the circuit you are powering.  
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;i.	Car: 7 amps (with cooling circuits)  
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ii.	VCU dev board: 2 amps (with relays)  
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;iii.	LTC demo board: ???  
 7.	Release V/I button.  
 8.	Connect the circuit you will be powering  
 9.	Turn on power supply  
-10.	Unclick the STANDBY button.  The power outputs will then be enabled.  
+10.	Unclick the **STANDBY** button.  The power outputs will then be enabled.  
 ### Other Settings  
 *Overvoltage Protection*  
 We use overvoltage protection to protect the car in case someone accidentally turns the voltage knob and sets the voltage too high.  It’s set to 15 volts right now, because nothing in the shop needs more than that.  Hold down OVP to adjust.  
