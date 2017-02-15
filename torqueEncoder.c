@@ -38,15 +38,15 @@ TorqueEncoder* TorqueEncoder_new(bool benchMode)
 
     //Default calibration values
 	//SRE-3 sensor
-	me->tps0_calibMin = 249;  //me->tps0->sensorValue;
-	me->tps0_calibMax = 1376;  //me->tps0->sensorValue;
-	me->tps1_calibMin = 2773;  //me->tps1->sensorValue;
-	me->tps1_calibMax = 3898;  //me->tps1->sensorValue;
+	me->tps0_calibMin = 300;  //me->tps0->sensorValue;
+	me->tps0_calibMax = 1235;  //me->tps0->sensorValue;
+	me->tps1_calibMin = 2824;  //me->tps1->sensorValue;
+	me->tps1_calibMax = 3758;  //me->tps1->sensorValue;
 
-	me->tps0->specMin = 5000 * .05;  //TODO: Add accuracy range for all these?
-	me->tps0->specMax = 5000 * .45;  //Or don't worry about it since we'll
-	me->tps1->specMin = 5000 * .55;  //always have some distance from the
-	me->tps1->specMax = 5000 * .95;  //ends anyway...
+	me->tps0->specMin = 5000 * .05 - 5000 * .006; // = 220
+	me->tps0->specMax = 5000 * .45 + 5000 * .006;
+	me->tps1->specMin = 5000 * .55 - 5000 * .006;
+	me->tps1->specMax = 5000 * .95 + 5000 * .006;
 
 	//SRE-2 sensor default calibrations
 	//me->tps0_calibMin = 1117;  //me->tps0->sensorValue;
@@ -235,26 +235,15 @@ void TorqueEncoder_calibrationCycle(TorqueEncoder* me, ubyte1* errorCount)
 
 void TorqueEncoder_getIndividualSensorPercent(TorqueEncoder* me, ubyte1 sensorNumber, float4* percent)
 {
-	//Sensor* tps;
-	//ubyte2 calMin;
-	//ubyte2 calMax;
-
 	switch (sensorNumber)
 	{
 	case 0:
 		*percent = me->tps0_percent;
-		//tps = me->tps0;
-		//calMin = me->tps0_calibMin;
-		//calMax = me->tps0_calibMax;
 		break;
 	case 1:
 		*percent = me->tps1_percent;
-		//tps = me->tps1;
-		//calMin = me->tps1_calibMin;
-		//calMax = me->tps1_calibMax;
 		break;
 	}
-	//float4 TPS0PedalPercent = getPercent(me->tps0->sensorValue, calMin, calMax, TRUE); //Analog Input 0
 }
 
 
