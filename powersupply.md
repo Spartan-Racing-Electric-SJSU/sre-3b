@@ -31,5 +31,5 @@
   
 *Overvoltage Protection*             
 We use overvoltage protection to protect the car in case someone accidentally turns the voltage knob and sets the voltage too high.  It’s set to 15 volts right now, because nothing in the shop needs more than that.  Hold down OVP to adjust.  
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; I once came into the shop to flash the VCU, and I decided to check the power supply voltage before I started.  Good thing I did, because the power supply was set to 28V.  ALWAYS check the voltage before you get started.    
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; I once came into the shop to flash the VCU, and I decided to check the power supply voltage before I started. Good thing &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;I did, because the power supply was set to 28V.  ALWAYS check the voltage before you get started.    
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; -Rusty
