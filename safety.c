@@ -59,7 +59,7 @@ static const ubyte4 F_unusedFaults = 0xFFFEF800;
 
 //Warnings -------------------------------------------
 static const ubyte2 W_lvsBatteryLow = 1;
-static const ubyte2 W_safetyBypassEnabled = 0x80;
+static const ubyte2 W_safetyBypassEnabled = 0x80;  //This flag controls the safety bypass
 
 //Notices
 static const ubyte2 N_HVILTermSenseLost = 1;
@@ -86,6 +86,7 @@ struct _SafetyChecker {
 
     bool tpsbpsImplausible;
 
+    bool bypass;
 	ubyte4 timestamp_bypassSafetyChecks;
 	ubyte4 bypassSafetyChecksTimeout_us;
 };
@@ -101,8 +102,7 @@ SafetyChecker* SafetyChecker_new(SerialManager* sm, ubyte2 maxChargeAmps, ubyte2
     SafetyChecker* me = (SafetyChecker*)malloc(sizeof(struct _SafetyChecker));
 
     me->serialMan = sm;
-	//Initialize all safety checks to FAIL? Not anymore
-    me->faults = 1;
+    me->faults = 0;
     me->warnings = 0;
 
     me->tpsbpsImplausible = TRUE;
@@ -110,9 +110,25 @@ SafetyChecker* SafetyChecker_new(SerialManager* sm, ubyte2 maxChargeAmps, ubyte2
     me->maxAmpsCharge = maxChargeAmps;
     me->maxAmpsDischarge = maxDischargeAmps;
 
+    me->bypass = FALSE;
 	me->timestamp_bypassSafetyChecks = 0;
 	me->bypassSafetyChecksTimeout_us = 500000; //If safety bypass command is not neceived in this time then safety is re-enabled
+	//Note: The safety bypass warning flag is the determining factor in bypassing the multiplier.
     return me;
+}
+
+void SafetyChecker_parseCanMessage(SafetyChecker* me, IO_CAN_DATA_FRAME* canMessage)
+{
+	switch (canMessage->id)
+	{
+	case 0x5FF:
+		//If the safety bypass code (0xC4) is received on the VCU debug address (0x5FF) at byte 0 (data[0])
+        if (canMessage->data[0] == 0xC4)
+        {
+            IO_RTC_StartTime(&me->timestamp_bypassSafetyChecks);
+        }
+		break;
+	}
 }
 
 //Updates all values based on sensor readings, safety checks, etc
@@ -272,10 +288,9 @@ void SafetyChecker_update(SafetyChecker* me, MotorController* mcm, BatteryManage
     //SerialManager_sprintf(me->serialMan, "The number twelve: %d\n", &twelve);
     bool tpsHigh = FALSE;
     bool bpsHigh = FALSE;
-    if (bps->percent > .25) 
+    if (bps->percent > .05) 
     {
         bpsHigh = TRUE;
-        SerialManager_send(me->serialMan, "BPS > .02\n"); 
     }
     else
     {
@@ -285,7 +300,6 @@ void SafetyChecker_update(SafetyChecker* me, MotorController* mcm, BatteryManage
     if (tps->percent > .25) 
     {
         tpsHigh = TRUE;
-        SerialManager_send(me->serialMan, "TPS > .25\n"); 
     }
     else
     {
@@ -356,14 +370,15 @@ void SafetyChecker_update(SafetyChecker* me, MotorController* mcm, BatteryManage
 	// The safety checker should only be bypassed by a CAN message sent by
 	// the PCAN Explorer dashboard.  This is only used during debugging.
 	//-------------------------------------------------------------------
-	if (IO_RTC_GetTimeUS(me->timestamp_bypassSafetyChecks) > me->bypassSafetyChecksTimeout_us)
-	{
-		me->warnings |= W_safetyBypassEnabled;
-	}
-	else
-	{
-		me->warnings &= ~W_safetyBypassEnabled;
-	}
+    //In case CAN communication is lost, the bypass should be disabled after some time, 
+    if (IO_RTC_GetTimeUS(me->timestamp_bypassSafetyChecks) < me->bypassSafetyChecksTimeout_us)
+    {
+        me->warnings |= W_safetyBypassEnabled;
+    }
+    else
+    {
+        me->warnings &= ~W_safetyBypassEnabled;
+    }
 
 	/*****************************************************************************
 	* Notices
@@ -512,7 +527,7 @@ void SafetyChecker_reduceTorque(SafetyChecker* me, MotorController* mcm, Battery
     //Reduce the torque command.  Multiplier should be a percent value (between 0 and 1)
 
 	//If the safety bypass is enabled, then override the multiplier to 100% (no reduction)
-	if (me->warnings && W_safetyBypassEnabled == W_safetyBypassEnabled)
+    if ((me->warnings & W_safetyBypassEnabled) == W_safetyBypassEnabled)
 	{
 		multiplier = 1;
 	}
@@ -536,24 +551,3 @@ void SafetyChecker_reduceTorque(SafetyChecker* me, MotorController* mcm, Battery
 //
 //    return torqueThrottle;
 //}
-
-
-void SafetyChecker_parseCanMessage(SafetyChecker* me, IO_CAN_DATA_FRAME* canMessage)
-{
-	//0xAA
-	static const ubyte1 bitInverter = 1; //bit 1
-	static const ubyte1 bitLockout = 128; //bit 7
-
-	switch (canMessage->id)
-	{
-	case 0x5FF:
-		//If the safety bypass code (0xC4) is received on the VCU debug address (0x5FF) at byte 0
-		if (canMessage->data[0] == 0xC4)
-		{
-			//Start the clock to enable safety bypass
-			IO_RTC_StartTime(me->bypassSafetyChecksTimeout_us);
-		}
-		break;
-
-	}
-}

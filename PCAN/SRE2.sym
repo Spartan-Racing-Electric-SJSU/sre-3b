@@ -421,6 +421,6 @@ Var="VCU Safety Disable (0xC4)" unsigned 0,8
 
 [V507_LVS_Battery]
 ID=507h
-Var="LVS Battery Voltage" unsigned 0,16 /u:V /f:0.001
+Var="LVS Battery Voltage" unsigned 0,16 /u:V /f:0.001 /p:3
 Var="LVS Battery SOC" signed 16,8 /u:%
 

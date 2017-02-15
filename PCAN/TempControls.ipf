@@ -1,22 +1,24 @@
 CLSID = {DFAFFAC0-2F50-428E-824C-B97089CD5F3F}
 object _FormData
   FormatVersion = '3.0'
-  Locked = False
+  Locked = True
   AutoFrameRate = False
 end
 object Scene1: _Scene
   Color = 3947580
   Scaled = False
   Index = 0
+  ExplicitWidth = 771
+  ExplicitHeight = 577
   PixelsPerInch = 96
   TextHeight = 13
   object VerticalBar1: _VerticalBar
-    Left = 680
-    Top = 40
+    Left = 192
+    Top = 328
     Width = 32
     Height = 208
     SignalName = 'V507_LVS_Battery.LVS Battery SOC'
-    Digit = 69000
+    Digit = 0
     LimitUpper = 100.000000000000000000
     LimitLower = -1.000000000000000000
     HintOptions = [hoValue, hoMin, hoMax, hoMinMaxDate, hoMinMaxTime]
@@ -38,7 +40,6 @@ object Scene1: _Scene
     MinMax.UseSectorCol = False
     MinMax.MinVisible = False
     MinMax.MaxVisible = False
-    Value = 69.000000000000000000
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
     Font.Height = -11
@@ -118,7 +119,7 @@ object Scene1: _Scene
     Width = 176
     Height = 120
     SignalName = 'M192_Command_Message.Torque_Command'
-    Digit = 0
+    Digit = 33333
     LimitUpper = 90.000000000000000000
     LimitLower = -1.000000000000000000
     HintOptions = [hoValue, hoMin, hoMax, hoMinMaxDate, hoMinMaxTime]
@@ -141,7 +142,6 @@ object Scene1: _Scene
     MinMax.MaxColor = clRed
     MinMax.MinColor = clLime
     MinMax.UseSectorCol = False
-    Value = -50.000000000000000000
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
     Font.Height = -11
@@ -487,139 +487,13 @@ object Scene1: _Scene
     WordWrap = True
     TextAlign = 4
   end
-  object LED1: _LED
-    Left = 416
-    Top = 464
-    Width = 16
-    Height = 16
-    IsTransparent = True
-    SignalName = 'V508_Regen Mode.Regen Mode'
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = clWindowText
-    Font.Height = -11
-    Font.Name = 'Tahoma'
-    Font.Style = [fsBold]
-    ParentFont = False
-    LED.ColorOff = clGray
-    LED_Position = lpLeft
-    Spacing = 5
-    Checked = True
-    Flashing = False
-    Frequency = ff1Hz
-    StatusInt = 1
-    StatusBit = 0
-    GroupIndex = 0
-    Mode = mIndicator
-    Threshold = 0.500000000000000000
-    BinarySignal = False
-  end
-  object LED2: _LED
-    Left = 416
-    Top = 512
-    Width = 16
-    Height = 16
-    IsTransparent = True
-    SignalName = 'V508_Regen Mode.Regen Mode'
-    Caption = 'LED2'
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = clWindowText
-    Font.Height = -11
-    Font.Name = 'Tahoma'
-    Font.Style = [fsBold]
-    ParentFont = False
-    LED.ColorOff = clGray
-    LED_Position = lpLeft
-    Spacing = 5
-    Checked = False
-    Flashing = False
-    Frequency = ff1Hz
-    StatusInt = 0
-    StatusBit = 0
-    GroupIndex = 0
-    Mode = mIndicator
-    Threshold = 3.500000000000000000
-    BinarySignal = False
-  end
-  object LED3: _LED
-    Left = 416
-    Top = 496
-    Width = 16
-    Height = 16
-    IsTransparent = True
-    SignalName = 'V508_Regen Mode.Regen Mode'
-    Caption = 'LED3'
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = clWindowText
-    Font.Height = -11
-    Font.Name = 'Tahoma'
-    Font.Style = [fsBold]
-    ParentFont = False
-    LED.ColorOff = clGray
-    LED_Position = lpLeft
-    Spacing = 5
-    Checked = True
-    Flashing = False
-    Frequency = ff1Hz
-    StatusInt = 1
-    StatusBit = 0
-    GroupIndex = 0
-    Mode = mIndicator
-    Threshold = 2.500000000000000000
-    BinarySignal = False
-  end
-  object LED4: _LED
-    Left = 416
-    Top = 480
-    Width = 16
-    Height = 16
-    IsTransparent = True
-    SignalName = 'V508_Regen Mode.Regen Mode'
-    Caption = 'LED4'
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = clWindowText
-    Font.Height = -11
-    Font.Name = 'Tahoma'
-    Font.Style = [fsBold]
-    ParentFont = False
-    LED.ColorOff = clGray
-    LED_Position = lpLeft
-    Spacing = 5
-    Checked = True
-    Flashing = False
-    Frequency = ff1Hz
-    StatusInt = 1
-    StatusBit = 0
-    GroupIndex = 0
-    Mode = mIndicator
-    Threshold = 1.500000000000000000
-    BinarySignal = False
-  end
-  object Label7: _Label
-    Left = 416
-    Top = 424
-    Width = 104
-    Height = 16
-    Caption = 'Regen Mode'
-    Color = 7344656
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = 7068414
-    Font.Height = -11
-    Font.Name = 'Tahoma'
-    Font.Style = []
-    ParentColor = False
-    ParentFont = False
-    ShowAccelChar = False
-    Transparent = False
-    WordWrap = True
-    TextAlign = 4
-  end
   object ValueIndicator1: _ValueIndicator
-    Left = 464
-    Top = 376
+    Left = 576
+    Top = 232
     Width = 104
     Height = 48
     SignalName = 'V508_Regen Mode.Regen APPS% for coasting'
-    Digit = 9804
+    Digit = 0
     LimitUpper = 90.000000000000000000
     LimitLower = -1.000000000000000000
     HintOptions = [hoValue, hoMin, hoMax, hoMinMaxDate, hoMinMaxTime]
@@ -637,7 +511,6 @@ object Scene1: _Scene
     SignalSettings.ValueTo = 100.000000000000000000
     SignalSettings.ValueUnit = '%'
     MinMax.UseSectorCol = False
-    Value = 9.803921568649999000
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
     Font.Height = -11
@@ -676,12 +549,12 @@ object Scene1: _Scene
     Options = [opBevelOuter, opName1, opUnit]
   end
   object ValueIndicator2: _ValueIndicator
-    Left = 360
-    Top = 376
+    Left = 576
+    Top = 176
     Width = 104
     Height = 48
     SignalName = 'V508_Regen Mode.Regen BPS% for full regen torque'
-    Digit = 0
+    Digit = 29804
     LimitUpper = 90.000000000000000000
     LimitLower = -1.000000000000000000
     HintOptions = [hoValue, hoMin, hoMax, hoMinMaxDate, hoMinMaxTime]
@@ -699,6 +572,7 @@ object Scene1: _Scene
     SignalSettings.ValueTo = 100.000000000000000000
     SignalSettings.ValueUnit = '%'
     MinMax.UseSectorCol = False
+    Value = 29.803921568696000000
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
     Font.Height = -11
@@ -768,10 +642,10 @@ object Scene1: _Scene
     Font.Name = 'Tahoma'
     Font.Style = [fsBold]
     ParentFont = False
-    StatusInt = 0
+    StatusInt = 1
     StatusBit = 0
     GroupIndex = 0
-    Checked = False
+    Checked = True
     OnValue = 196.000000000000000000
     BinarySignal = False
     UseSignalCycleTime = True
@@ -808,7 +682,7 @@ object Scene1: _Scene
     Width = 56
     Height = 24
     SignalName = 'M192_Command_Message.Torque_Command'
-    Digit = -50000
+    Digit = 0
     LimitUpper = 90.000000000000000000
     LimitLower = -1.000000000000000000
     HintOptions = [hoValue, hoMin, hoMax, hoMinMaxDate, hoMinMaxTime]
@@ -825,7 +699,6 @@ object Scene1: _Scene
     SignalSettings.ValueTo = 100.000000000000000000
     SignalSettings.ValueUnit = 'Nm'
     MinMax.UseSectorCol = False
-    Value = -50.000000000000000000
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
     Font.Height = -11
@@ -864,8 +737,8 @@ object Scene1: _Scene
     Options = [opBevelOuter, opName1]
   end
   object LED5: _LED
-    Left = 712
-    Top = 232
+    Left = 224
+    Top = 520
     Width = 16
     Height = 16
     IsTransparent = True
@@ -891,12 +764,12 @@ object Scene1: _Scene
     BinarySignal = False
   end
   object ValueIndicator4: _ValueIndicator
-    Left = 712
-    Top = 128
+    Left = 224
+    Top = 416
     Width = 80
     Height = 24
     SignalName = 'V507_LVS_Battery.LVS Battery Voltage'
-    Digit = 13159
+    Digit = 9086
     LimitUpper = 90.000000000000000000
     LimitLower = -1.000000000000000000
     HintOptions = [hoValue, hoMin, hoMax, hoMinMaxDate, hoMinMaxTime]
@@ -913,7 +786,7 @@ object Scene1: _Scene
     SignalSettings.ValueTo = 100.000000000000000000
     SignalSettings.ValueUnit = 'V'
     MinMax.UseSectorCol = False
-    Value = 13.159000000000000000
+    Value = 9.086000000000000000
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
     Font.Height = -11
@@ -952,8 +825,8 @@ object Scene1: _Scene
     Options = [opBevelOuter, opName1, opUnit]
   end
   object Label9: _Label
-    Left = 728
-    Top = 232
+    Left = 240
+    Top = 520
     Width = 64
     Height = 16
     Caption = 'Undervolt'
@@ -970,85 +843,9 @@ object Scene1: _Scene
     WordWrap = True
     TextAlign = 3
   end
-  object Label10: _Label
-    Left = 432
-    Top = 448
-    Width = 88
-    Height = 16
-    Caption = 'Off'
-    Color = 3947580
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = 7068414
-    Font.Height = -11
-    Font.Name = 'Tahoma'
-    Font.Style = []
-    ParentColor = False
-    ParentFont = False
-    ShowAccelChar = False
-    Transparent = False
-    WordWrap = True
-    TextAlign = 3
-  end
-  object Label11: _Label
-    Left = 432
-    Top = 480
-    Width = 88
-    Height = 16
-    Caption = 'Hybrid'
-    Color = 3947580
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = 7068414
-    Font.Height = -11
-    Font.Name = 'Tahoma'
-    Font.Style = []
-    ParentColor = False
-    ParentFont = False
-    ShowAccelChar = False
-    Transparent = False
-    WordWrap = True
-    TextAlign = 3
-  end
-  object Label12: _Label
-    Left = 432
-    Top = 496
-    Width = 88
-    Height = 16
-    Caption = 'Tesla'
-    Color = 3947580
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = 7068414
-    Font.Height = -11
-    Font.Name = 'Tahoma'
-    Font.Style = []
-    ParentColor = False
-    ParentFont = False
-    ShowAccelChar = False
-    Transparent = False
-    WordWrap = True
-    TextAlign = 3
-  end
-  object Label13: _Label
-    Left = 432
-    Top = 512
-    Width = 88
-    Height = 16
-    Caption = 'Custom'
-    Color = 3947580
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = 7068414
-    Font.Height = -11
-    Font.Name = 'Tahoma'
-    Font.Style = []
-    ParentColor = False
-    ParentFont = False
-    ShowAccelChar = False
-    Transparent = False
-    WordWrap = True
-    TextAlign = 3
-  end
   object Label14: _Label
-    Left = 680
-    Top = 16
+    Left = 192
+    Top = 304
     Width = 112
     Height = 16
     Caption = '12V Battery'
@@ -1066,8 +863,8 @@ object Scene1: _Scene
     TextAlign = 4
   end
   object LED6: _LED
-    Left = 712
-    Top = 40
+    Left = 224
+    Top = 328
     Width = 16
     Height = 16
     IsTransparent = True
@@ -1094,8 +891,8 @@ object Scene1: _Scene
     BinarySignal = False
   end
   object Label15: _Label
-    Left = 728
-    Top = 40
+    Left = 240
+    Top = 328
     Width = 64
     Height = 16
     Caption = 'Overvolt'
@@ -1112,56 +909,9 @@ object Scene1: _Scene
     WordWrap = True
     TextAlign = 3
   end
-  object Label3: _Label
-    Left = 432
-    Top = 464
-    Width = 88
-    Height = 16
-    Caption = 'Formula E'
-    Color = 3947580
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = 7068414
-    Font.Height = -11
-    Font.Name = 'Tahoma'
-    Font.Style = []
-    ParentColor = False
-    ParentFont = False
-    ShowAccelChar = False
-    Transparent = False
-    WordWrap = True
-    TextAlign = 3
-  end
-  object LED7: _LED
-    Left = 416
-    Top = 448
-    Width = 16
-    Height = 16
-    IsTransparent = True
-    SignalName = 'V508_Regen Mode.Regen Mode'
-    Caption = 'LED7'
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = clWindowText
-    Font.Height = -11
-    Font.Name = 'Tahoma'
-    Font.Style = [fsBold]
-    ParentFont = False
-    LED.ColorOn = clGray
-    LED.ColorOff = clRed
-    LED_Position = lpLeft
-    Spacing = 5
-    Checked = True
-    Flashing = False
-    Frequency = ff1Hz
-    StatusInt = 1
-    StatusBit = 0
-    GroupIndex = 0
-    Mode = mIndicator
-    Threshold = 0.500000000000000000
-    BinarySignal = False
-  end
   object LED8: _LED
-    Left = 416
-    Top = 568
+    Left = 616
+    Top = 80
     Width = 16
     Height = 16
     IsTransparent = True
@@ -1187,8 +937,8 @@ object Scene1: _Scene
     BinarySignal = False
   end
   object LED9: _LED
-    Left = 432
-    Top = 568
+    Left = 632
+    Top = 80
     Width = 16
     Height = 16
     IsTransparent = True
@@ -1203,10 +953,10 @@ object Scene1: _Scene
     LED.ColorOff = clGray
     LED_Position = lpLeft
     Spacing = 5
-    Checked = True
+    Checked = False
     Flashing = False
     Frequency = ff1Hz
-    StatusInt = 1
+    StatusInt = 0
     StatusBit = 0
     GroupIndex = 0
     Mode = mIndicator
@@ -1214,8 +964,8 @@ object Scene1: _Scene
     BinarySignal = False
   end
   object LED10: _LED
-    Left = 448
-    Top = 568
+    Left = 648
+    Top = 80
     Width = 16
     Height = 16
     IsTransparent = True
@@ -1230,10 +980,10 @@ object Scene1: _Scene
     LED.ColorOff = clGray
     LED_Position = lpLeft
     Spacing = 5
-    Checked = True
+    Checked = False
     Flashing = False
     Frequency = ff1Hz
-    StatusInt = 1
+    StatusInt = 0
     StatusBit = 0
     GroupIndex = 0
     Mode = mIndicator
@@ -1241,8 +991,8 @@ object Scene1: _Scene
     BinarySignal = False
   end
   object LED11: _LED
-    Left = 464
-    Top = 568
+    Left = 664
+    Top = 80
     Width = 16
     Height = 16
     IsTransparent = True
@@ -1268,8 +1018,8 @@ object Scene1: _Scene
     BinarySignal = False
   end
   object Label16: _Label
-    Left = 392
-    Top = 552
+    Left = 600
+    Top = 64
     Width = 104
     Height = 16
     Caption = 'Regen Mode'
@@ -1285,6 +1035,53 @@ object Scene1: _Scene
     Transparent = False
     WordWrap = True
     TextAlign = 4
+  end
+  object LED1: _LED
+    Left = 32
+    Top = 416
+    Width = 16
+    Height = 16
+    IsTransparent = True
+    SignalName = 'V506_VCU_Faults_and_Warnings.W-8 Safety Disabled'
+    Caption = 'LED1'
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -11
+    Font.Name = 'Tahoma'
+    Font.Style = [fsBold]
+    ParentFont = False
+    LED.ColorOn = clRed
+    LED.ColorOff = clGray
+    LED_Position = lpLeft
+    Spacing = 5
+    Checked = True
+    Flashing = False
+    Frequency = ff1Hz
+    StatusInt = 1
+    StatusBit = 0
+    GroupIndex = 0
+    Mode = mIndicator
+    Threshold = 0.500000000000000000
+    BinarySignal = False
+  end
+  object Label3: _Label
+    Left = 48
+    Top = 416
+    Width = 96
+    Height = 12
+    Caption = 'Multiplier disabled'
+    Color = 3947580
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = 7068414
+    Font.Height = -11
+    Font.Name = 'Tahoma'
+    Font.Style = []
+    ParentColor = False
+    ParentFont = False
+    ShowAccelChar = False
+    Transparent = False
+    WordWrap = True
+    TextAlign = 3
   end
   object VerticalSlider1: _VerticalSlider
     Left = 16
