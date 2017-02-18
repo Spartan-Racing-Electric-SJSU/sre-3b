@@ -62,6 +62,9 @@ struct _MotorController {
     bool previousHVILState;
     ubyte4 timeStamp_HVILLost;
 
+    ubyte4 timeStamp_HVILOverrideCommandReceived;
+    bool HVILOverride;
+
     ubyte1 startupStage;
     Status lockoutStatus;
 	Status inverterStatus;
@@ -285,12 +288,14 @@ void MCM_calculateCommands(MotorController* me, TorqueEncoder* tps, BrakePressur
 	torqueOutput = appsTorque + bpsTorque;
     //torqueOutput = me->torqueMaximumDNm * tps->percent;  //REMOVE THIS LINE TO ENABLE REGEN
     MCM_commands_setTorqueDNm(me, torqueOutput);
+
+    me->HVILOverride = (IO_RTC_GetTimeUS(me->timeStamp_HVILOverrideCommandReceived) < 1000000);
 }
 
 void MCM_relayControl(MotorController* me, Sensor* HVILTermSense)
 {    
     //If HVIL Term Sense is low (HV is down)
-    if (HVILTermSense->sensorValue == FALSE)
+    if (HVILTermSense->sensorValue == FALSE && me->HVILOverride == FALSE)
     {
         //If we just noticed the HVIL went low
         if (me->previousHVILState == TRUE)
@@ -303,7 +308,7 @@ void MCM_relayControl(MotorController* me, Sensor* HVILTermSense)
         if (me->relayState == TRUE)
         {
             //Okay to turn MCM off once 0 torque is commanded, or after 2 sec
-            //SIMILAR CODE SHOULD BE EMPLOYED AT HVIL SHUTDOWN CONTROL PIN
+            //TODO: SIMILAR CODE SHOULD BE EMPLOYED AT HVIL SHUTDOWN CONTROL PIN
             if (me->commandedTorque == 0 || IO_RTC_GetTimeUS(me->timeStamp_HVILLost) > 2000000)  //EXTRA 0
             {
                 IO_DO_Set(IO_DO_00, FALSE);  //Need MCM relay object
@@ -321,7 +326,7 @@ void MCM_relayControl(MotorController* me, Sensor* HVILTermSense)
 
         me->previousHVILState = FALSE;
     }
-    else  // HVILTermSense->sensorValue == TRUE
+    else  // HVILTermSense->sensorValue == TRUE || me->HVILOverride == TRUE
     {
         //If HVIL just changed, send a message
         if (me->previousHVILState == FALSE)
@@ -551,6 +556,16 @@ void MCM_parseCanMessage(MotorController* me, IO_CAN_DATA_FRAME* mcmCanMessage)
         //2,3 Torque Feedback
         break;
 
+
+    case 0x5FF:
+        //0,1 Commanded Torque
+        if (mcmCanMessage->data[1] > 0)
+        {
+            IO_RTC_StartTime(&me->timeStamp_HVILOverrideCommandReceived);
+        }
+        //2,3 Torque Feedback
+        break;
+
     }
 }
 
@@ -643,6 +658,11 @@ Status MCM_getLockoutStatus(MotorController* me)
 Status MCM_getInverterStatus(MotorController* me)
 {
 	return me->inverterStatus;
+}
+
+bool MCM_getHvilOverrideStatus(MotorController* me)
+{
+    return me->HVILOverride;
 }
 
 void MCM_setRTDSFlag(MotorController* me, bool enableRTDS)

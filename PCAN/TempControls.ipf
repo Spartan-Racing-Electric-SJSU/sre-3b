@@ -8,13 +8,13 @@ object Scene1: _Scene
   Color = 3947580
   Scaled = False
   Index = 0
-  ExplicitWidth = 771
-  ExplicitHeight = 577
+  ExplicitWidth = 559
+  ExplicitHeight = 345
   PixelsPerInch = 96
   TextHeight = 13
   object VerticalBar1: _VerticalBar
-    Left = 192
-    Top = 328
+    Left = 736
+    Top = 40
     Width = 32
     Height = 208
     SignalName = 'V507_LVS_Battery.LVS Battery SOC'
@@ -432,7 +432,7 @@ object Scene1: _Scene
   end
   object Label4: _Label
     Left = 16
-    Top = 256
+    Top = 40
     Width = 104
     Height = 16
     Caption = 'Motor'
@@ -451,7 +451,7 @@ object Scene1: _Scene
   end
   object Label5: _Label
     Left = 128
-    Top = 256
+    Top = 40
     Width = 104
     Height = 16
     Caption = 'Motor Controller'
@@ -470,7 +470,7 @@ object Scene1: _Scene
   end
   object Label6: _Label
     Left = 240
-    Top = 256
+    Top = 40
     Width = 104
     Height = 16
     Caption = 'Batteries'
@@ -554,7 +554,7 @@ object Scene1: _Scene
     Width = 104
     Height = 48
     SignalName = 'V508_Regen Mode.Regen BPS% for full regen torque'
-    Digit = 29804
+    Digit = 0
     LimitUpper = 90.000000000000000000
     LimitLower = -1.000000000000000000
     HintOptions = [hoValue, hoMin, hoMax, hoMinMaxDate, hoMinMaxTime]
@@ -572,7 +572,6 @@ object Scene1: _Scene
     SignalSettings.ValueTo = 100.000000000000000000
     SignalSettings.ValueUnit = '%'
     MinMax.UseSectorCol = False
-    Value = 29.803921568696000000
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
     Font.Height = -11
@@ -611,8 +610,8 @@ object Scene1: _Scene
     Options = [opBevelOuter, opName1, opUnit]
   end
   object ToggleSwitch1: _ToggleSwitch
-    Left = 64
-    Top = 352
+    Left = 48
+    Top = 312
     Width = 32
     Height = 56
     SignalName = 'V5FF VCU Debug.VCU Safety Disable (0xC4)'
@@ -642,10 +641,10 @@ object Scene1: _Scene
     Font.Name = 'Tahoma'
     Font.Style = [fsBold]
     ParentFont = False
-    StatusInt = 1
+    StatusInt = 0
     StatusBit = 0
     GroupIndex = 0
-    Checked = True
+    Checked = False
     OnValue = 196.000000000000000000
     BinarySignal = False
     UseSignalCycleTime = True
@@ -658,8 +657,8 @@ object Scene1: _Scene
     ColorOff = clSilver
   end
   object Label8: _Label
-    Left = 32
-    Top = 328
+    Left = 16
+    Top = 288
     Width = 104
     Height = 16
     Caption = 'VCU Safety Disable'
@@ -737,8 +736,8 @@ object Scene1: _Scene
     Options = [opBevelOuter, opName1]
   end
   object LED5: _LED
-    Left = 224
-    Top = 520
+    Left = 768
+    Top = 232
     Width = 16
     Height = 16
     IsTransparent = True
@@ -764,12 +763,12 @@ object Scene1: _Scene
     BinarySignal = False
   end
   object ValueIndicator4: _ValueIndicator
-    Left = 224
-    Top = 416
+    Left = 768
+    Top = 128
     Width = 80
     Height = 24
     SignalName = 'V507_LVS_Battery.LVS Battery Voltage'
-    Digit = 9086
+    Digit = 0
     LimitUpper = 90.000000000000000000
     LimitLower = -1.000000000000000000
     HintOptions = [hoValue, hoMin, hoMax, hoMinMaxDate, hoMinMaxTime]
@@ -786,7 +785,6 @@ object Scene1: _Scene
     SignalSettings.ValueTo = 100.000000000000000000
     SignalSettings.ValueUnit = 'V'
     MinMax.UseSectorCol = False
-    Value = 9.086000000000000000
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
     Font.Height = -11
@@ -825,8 +823,8 @@ object Scene1: _Scene
     Options = [opBevelOuter, opName1, opUnit]
   end
   object Label9: _Label
-    Left = 240
-    Top = 520
+    Left = 784
+    Top = 232
     Width = 64
     Height = 16
     Caption = 'Undervolt'
@@ -844,8 +842,8 @@ object Scene1: _Scene
     TextAlign = 3
   end
   object Label14: _Label
-    Left = 192
-    Top = 304
+    Left = 736
+    Top = 16
     Width = 112
     Height = 16
     Caption = '12V Battery'
@@ -863,8 +861,8 @@ object Scene1: _Scene
     TextAlign = 4
   end
   object LED6: _LED
-    Left = 224
-    Top = 328
+    Left = 768
+    Top = 40
     Width = 16
     Height = 16
     IsTransparent = True
@@ -891,8 +889,8 @@ object Scene1: _Scene
     BinarySignal = False
   end
   object Label15: _Label
-    Left = 240
-    Top = 328
+    Left = 784
+    Top = 40
     Width = 64
     Height = 16
     Caption = 'Overvolt'
@@ -910,8 +908,8 @@ object Scene1: _Scene
     TextAlign = 3
   end
   object LED8: _LED
-    Left = 616
-    Top = 80
+    Left = 584
+    Top = 56
     Width = 16
     Height = 16
     IsTransparent = True
@@ -926,10 +924,10 @@ object Scene1: _Scene
     LED.ColorOff = clGray
     LED_Position = lpLeft
     Spacing = 5
-    Checked = True
+    Checked = False
     Flashing = False
     Frequency = ff1Hz
-    StatusInt = 1
+    StatusInt = 0
     StatusBit = 0
     GroupIndex = 0
     Mode = mIndicator
@@ -937,8 +935,8 @@ object Scene1: _Scene
     BinarySignal = False
   end
   object LED9: _LED
-    Left = 632
-    Top = 80
+    Left = 600
+    Top = 56
     Width = 16
     Height = 16
     IsTransparent = True
@@ -964,8 +962,8 @@ object Scene1: _Scene
     BinarySignal = False
   end
   object LED10: _LED
-    Left = 648
-    Top = 80
+    Left = 616
+    Top = 56
     Width = 16
     Height = 16
     IsTransparent = True
@@ -991,8 +989,8 @@ object Scene1: _Scene
     BinarySignal = False
   end
   object LED11: _LED
-    Left = 664
-    Top = 80
+    Left = 632
+    Top = 56
     Width = 16
     Height = 16
     IsTransparent = True
@@ -1018,8 +1016,8 @@ object Scene1: _Scene
     BinarySignal = False
   end
   object Label16: _Label
-    Left = 600
-    Top = 64
+    Left = 568
+    Top = 40
     Width = 104
     Height = 16
     Caption = 'Regen Mode'
@@ -1037,8 +1035,8 @@ object Scene1: _Scene
     TextAlign = 4
   end
   object LED1: _LED
-    Left = 32
-    Top = 416
+    Left = 16
+    Top = 376
     Width = 16
     Height = 16
     IsTransparent = True
@@ -1054,10 +1052,10 @@ object Scene1: _Scene
     LED.ColorOff = clGray
     LED_Position = lpLeft
     Spacing = 5
-    Checked = True
+    Checked = False
     Flashing = False
     Frequency = ff1Hz
-    StatusInt = 1
+    StatusInt = 0
     StatusBit = 0
     GroupIndex = 0
     Mode = mIndicator
@@ -1065,8 +1063,8 @@ object Scene1: _Scene
     BinarySignal = False
   end
   object Label3: _Label
-    Left = 48
-    Top = 416
+    Left = 32
+    Top = 376
     Width = 96
     Height = 12
     Caption = 'Multiplier disabled'
@@ -1083,9 +1081,121 @@ object Scene1: _Scene
     WordWrap = True
     TextAlign = 3
   end
+  object ToggleSwitch2: _ToggleSwitch
+    Left = 160
+    Top = 312
+    Width = 32
+    Height = 56
+    SignalName = 'V5FF VCU Debug.VCU MCM HVIL Override'
+    BevelOuter.BorderSpacing = 1
+    BevelOuter.BevelLine = blNone
+    BevelOuter.BorderWidth = 1
+    BevelOuter.BkColor = clBtnShadow
+    BevelOuter.ColorShadowFrom = clBlack
+    BevelOuter.ColorShadowTo = clBlack
+    BevelOuter.ColorHighLightFrom = clBlack
+    BevelOuter.ColorHighLightTo = clBlack
+    BevelOuter.BorderStyle = 2
+    BevelOuter.SurfaceGrad.Visible = False
+    BevelOuter.SurfaceGrad.Style = gsHorizontal1
+    BevelOuter.GradientStyle = gsHorizontal1
+    BevelOuter.StartColor = 14869218
+    BevelOuter.StopColor = 9408399
+    BtnColorHighlight = clBtnHighlight
+    BtnColorShadow = clBtnShadow
+    BtnColorFace = clBtnFace
+    BtnBevelWidth = 2
+    Orientation = boVertical
+    Mode = mSwitch
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWhite
+    Font.Height = -11
+    Font.Name = 'Tahoma'
+    Font.Style = [fsBold]
+    ParentFont = False
+    StatusInt = 0
+    StatusBit = 0
+    GroupIndex = 0
+    Checked = False
+    OnValue = 1.000000000000000000
+    BinarySignal = False
+    UseSignalCycleTime = True
+    CycleTime = 100
+    IsPaused = False
+    SwapGraphic = False
+    TextOff = 'Off'
+    TextOn = 'On'
+    ColorOn = clGreen
+    ColorOff = clSilver
+  end
+  object Label7: _Label
+    Left = 128
+    Top = 288
+    Width = 104
+    Height = 16
+    Caption = 'MCM HVIL Bypass'
+    Color = 7344656
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = 7068414
+    Font.Height = -11
+    Font.Name = 'Tahoma'
+    Font.Style = []
+    ParentColor = False
+    ParentFont = False
+    ShowAccelChar = False
+    Transparent = False
+    WordWrap = True
+    TextAlign = 4
+  end
+  object LED2: _LED
+    Left = 128
+    Top = 376
+    Width = 16
+    Height = 16
+    IsTransparent = True
+    SignalName = 'V506_VCU_Faults_and_Warnings.W-7 HVIL Override'
+    Caption = 'LED2'
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -11
+    Font.Name = 'Tahoma'
+    Font.Style = [fsBold]
+    ParentFont = False
+    LED.ColorOff = clGray
+    LED_Position = lpLeft
+    Spacing = 5
+    Checked = False
+    Flashing = False
+    Frequency = ff1Hz
+    StatusInt = 0
+    StatusBit = 0
+    GroupIndex = 0
+    Mode = mIndicator
+    Threshold = 0.500000000000000000
+    BinarySignal = False
+  end
+  object Label10: _Label
+    Left = 144
+    Top = 376
+    Width = 96
+    Height = 12
+    Caption = 'Power on w/o HVIL'
+    Color = 3947580
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = 7068414
+    Font.Height = -11
+    Font.Name = 'Tahoma'
+    Font.Style = []
+    ParentColor = False
+    ParentFont = False
+    ShowAccelChar = False
+    Transparent = False
+    WordWrap = True
+    TextAlign = 3
+  end
   object VerticalSlider1: _VerticalSlider
     Left = 16
-    Top = 40
+    Top = 56
     Width = 104
     Height = 210
     Cursor = 5
@@ -1160,7 +1270,7 @@ object Scene1: _Scene
   end
   object VerticalSlider3: _VerticalSlider
     Left = 128
-    Top = 40
+    Top = 56
     Width = 104
     Height = 210
     UseSignalCycleTime = True
@@ -1234,7 +1344,7 @@ object Scene1: _Scene
   end
   object VerticalSlider2: _VerticalSlider
     Left = 240
-    Top = 40
+    Top = 56
     Width = 104
     Height = 210
     UseSignalCycleTime = True

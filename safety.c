@@ -59,6 +59,7 @@ static const ubyte4 F_unusedFaults = 0xFFFEF800;
 
 //Warnings -------------------------------------------
 static const ubyte2 W_lvsBatteryLow = 1;
+static const ubyte2 W_hvilOverrideEnabled = 0x40;  //This flag indicates HVIL bypass (MCM turn on)
 static const ubyte2 W_safetyBypassEnabled = 0x80;  //This flag controls the safety bypass
 
 //Notices
@@ -364,12 +365,12 @@ void SafetyChecker_update(SafetyChecker* me, MotorController* mcm, BatteryManage
         //sprintf(message, "LVS battery %.03fV good.\n", (float4)LVBattery->sensorValue / 1000);
     }
 
-	//===================================================================
-	// Safety checker bypass
-	//===================================================================
-	// The safety checker should only be bypassed by a CAN message sent by
-	// the PCAN Explorer dashboard.  This is only used during debugging.
-	//-------------------------------------------------------------------
+    //===================================================================
+    // Safety checker bypass
+    //===================================================================
+    // The safety checker should only be bypassed by a CAN message sent by
+    // the PCAN Explorer dashboard.  This is only used during debugging.
+    //-------------------------------------------------------------------
     //In case CAN communication is lost, the bypass should be disabled after some time, 
     if (IO_RTC_GetTimeUS(me->timestamp_bypassSafetyChecks) < me->bypassSafetyChecksTimeout_us)
     {
@@ -378,6 +379,18 @@ void SafetyChecker_update(SafetyChecker* me, MotorController* mcm, BatteryManage
     else
     {
         me->warnings &= ~W_safetyBypassEnabled;
+    }
+
+    //===================================================================
+    // HVIL Override
+    //===================================================================
+    if (MCM_getHvilOverrideStatus(mcm) == TRUE)
+    {
+        me->warnings |= W_hvilOverrideEnabled;
+    }
+    else
+    {
+        me->warnings &= ~W_hvilOverrideEnabled;
     }
 
 	/*****************************************************************************

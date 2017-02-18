@@ -4,10 +4,10 @@ RightDockPanelSize=275
 TopDockPanelSize=156
 BottomDockPanelSize=102
 RightDockZones=00000800000100000000B3030000000000000113010000000000000100000000380100002800000057696E646F77315F34384637423746423343453634413036393331303434343837314333423437370100000000B30300002800000057696E646F77315F3741384133324334423731383430443639423842363838463644454633303638FFFFFFFF
-MDITabIndex=2
+MDITabIndex=1
 MaximizedMDIChildren=1
 WindowCount=9
-ClosedWindowsCount=0
+ClosedWindowsCount=1
 
 [ConnectionsWindow]
 Columns=ebncBsoqOl,-24,-40,215,215,110,90,80,80,80,130
@@ -38,7 +38,7 @@ Top=104
 Width=1519
 Height=788
 Style=3
-RcvSize=500
+RcvSize=762
 SplitState=1
 HexViewSize=60
 HexViewVisible=0
@@ -48,10 +48,10 @@ Name=Window1_DFAFFAC02F50428E824CB97089CD5F3F
 ObjectKind={DFAFFAC0-2F50-428E-824C-B97089CD5F3F}
 FileName=TempControls.ipf
 Visible=1
-Left=130
-Top=130
-Width=1133
-Height=610
+Left=0
+Top=0
+Width=787
+Height=616
 Style=3
 StructureVisible=0
 StructureLastVisible=0
@@ -135,8 +135,8 @@ RowHeaderWidth=652
 Name=Window1_0EFDD5ED3FFB4FECAA56927B865C3B3A
 ObjectKind={0EFDD5ED-3FFB-4FEC-AA56-927B865C3B3A}
 Visible=0
-Left=-1976
-Top=-3356
+Left=-2082
+Top=-3482
 Width=183
 Height=539
 FloatLeft=110
@@ -145,6 +145,16 @@ FloatWidth=250
 FloatHeight=450
 Style=2
 DockedTo=LeftDockPanel
+
+[Closed0]
+Ident=SRE2.sym
+Left=130
+Top=130
+Width=1239
+Height=623
+SelCol=28
+SelLine=37
+FirstVisibleLine=0
 
 [WatchWindow]
 Columns=nvm
