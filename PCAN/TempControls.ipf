@@ -1,15 +1,14 @@
 CLSID = {DFAFFAC0-2F50-428E-824C-B97089CD5F3F}
 object _FormData
   FormatVersion = '3.0'
-  Locked = True
+  Locked = False
   AutoFrameRate = False
 end
 object Scene1: _Scene
   Color = 3947580
   Scaled = False
   Index = 0
-  ExplicitWidth = 559
-  ExplicitHeight = 345
+  ExplicitHeight = 577
   PixelsPerInch = 96
   TextHeight = 13
   object VerticalBar1: _VerticalBar
@@ -18,7 +17,7 @@ object Scene1: _Scene
     Width = 32
     Height = 208
     SignalName = 'V507_LVS_Battery.LVS Battery SOC'
-    Digit = 0
+    Digit = 24000
     LimitUpper = 100.000000000000000000
     LimitLower = -1.000000000000000000
     HintOptions = [hoValue, hoMin, hoMax, hoMinMaxDate, hoMinMaxTime]
@@ -40,6 +39,7 @@ object Scene1: _Scene
     MinMax.UseSectorCol = False
     MinMax.MinVisible = False
     MinMax.MaxVisible = False
+    Value = 24.000000000000000000
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
     Font.Height = -11
@@ -554,7 +554,7 @@ object Scene1: _Scene
     Width = 104
     Height = 48
     SignalName = 'V508_Regen Mode.Regen BPS% for full regen torque'
-    Digit = 0
+    Digit = 29804
     LimitUpper = 90.000000000000000000
     LimitLower = -1.000000000000000000
     HintOptions = [hoValue, hoMin, hoMax, hoMinMaxDate, hoMinMaxTime]
@@ -572,6 +572,7 @@ object Scene1: _Scene
     SignalSettings.ValueTo = 100.000000000000000000
     SignalSettings.ValueUnit = '%'
     MinMax.UseSectorCol = False
+    Value = 29.803921568696000000
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
     Font.Height = -11
@@ -610,10 +611,10 @@ object Scene1: _Scene
     Options = [opBevelOuter, opName1, opUnit]
   end
   object ToggleSwitch1: _ToggleSwitch
-    Left = 48
-    Top = 312
-    Width = 32
-    Height = 56
+    Left = 128
+    Top = 456
+    Width = 56
+    Height = 32
     SignalName = 'V5FF VCU Debug.VCU Safety Disable (0xC4)'
     BevelOuter.BorderSpacing = 1
     BevelOuter.BevelLine = blNone
@@ -633,7 +634,7 @@ object Scene1: _Scene
     BtnColorShadow = clBtnShadow
     BtnColorFace = clBtnFace
     BtnBevelWidth = 2
-    Orientation = boVertical
+    Orientation = boHorizontal
     Mode = mSwitch
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWhite
@@ -657,8 +658,8 @@ object Scene1: _Scene
     ColorOff = clSilver
   end
   object Label8: _Label
-    Left = 16
-    Top = 288
+    Left = 192
+    Top = 456
     Width = 104
     Height = 16
     Caption = 'VCU Safety Disable'
@@ -768,7 +769,7 @@ object Scene1: _Scene
     Width = 80
     Height = 24
     SignalName = 'V507_LVS_Battery.LVS Battery Voltage'
-    Digit = 0
+    Digit = 12924
     LimitUpper = 90.000000000000000000
     LimitLower = -1.000000000000000000
     HintOptions = [hoValue, hoMin, hoMax, hoMinMaxDate, hoMinMaxTime]
@@ -785,6 +786,7 @@ object Scene1: _Scene
     SignalSettings.ValueTo = 100.000000000000000000
     SignalSettings.ValueUnit = 'V'
     MinMax.UseSectorCol = False
+    Value = 12.924000000000000000
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
     Font.Height = -11
@@ -924,10 +926,10 @@ object Scene1: _Scene
     LED.ColorOff = clGray
     LED_Position = lpLeft
     Spacing = 5
-    Checked = False
+    Checked = True
     Flashing = False
     Frequency = ff1Hz
-    StatusInt = 0
+    StatusInt = 1
     StatusBit = 0
     GroupIndex = 0
     Mode = mIndicator
@@ -1035,8 +1037,8 @@ object Scene1: _Scene
     TextAlign = 4
   end
   object LED1: _LED
-    Left = 16
-    Top = 376
+    Left = 184
+    Top = 472
     Width = 16
     Height = 16
     IsTransparent = True
@@ -1063,8 +1065,8 @@ object Scene1: _Scene
     BinarySignal = False
   end
   object Label3: _Label
-    Left = 32
-    Top = 376
+    Left = 200
+    Top = 472
     Width = 96
     Height = 12
     Caption = 'Multiplier disabled'
@@ -1201,7 +1203,7 @@ object Scene1: _Scene
     Cursor = 5
     UseSignalCycleTime = True
     CycleTime = 100
-    IsPaused = False
+    IsPaused = True
     SignalFeedback = True
     SignalName = 'M162_Temperature_Set_3.D3_Motor_Temperature'
     ChangeLarge = 100
@@ -1212,6 +1214,7 @@ object Scene1: _Scene
     SignalSettings.ValueFormat = '##0.0'
     SignalSettings.ValueTo = 160.000000000000000000
     SignalSettings.ValueUnit = 'degC'
+    Value = 21.800000000000000000
     TabOrder = 0
     EnableMouseJump = False
     Font.Charset = DEFAULT_CHARSET
@@ -1275,7 +1278,7 @@ object Scene1: _Scene
     Height = 210
     UseSignalCycleTime = True
     CycleTime = 100
-    IsPaused = False
+    IsPaused = True
     SignalFeedback = True
     SignalName = 'M161_Temperature_Set_2.D1_Control_Board_Temperature'
     ChangeLarge = 100
@@ -1286,6 +1289,7 @@ object Scene1: _Scene
     SignalSettings.ValueFormat = '##0.0'
     SignalSettings.ValueTo = 160.000000000000000000
     SignalSettings.ValueUnit = 'degC'
+    Value = 18.600000000000000000
     TabOrder = 2
     EnableMouseJump = False
     Font.Charset = DEFAULT_CHARSET
