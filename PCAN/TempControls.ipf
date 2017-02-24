@@ -1,14 +1,15 @@
 CLSID = {DFAFFAC0-2F50-428E-824C-B97089CD5F3F}
 object _FormData
   FormatVersion = '3.0'
-  Locked = False
+  Locked = True
   AutoFrameRate = False
 end
 object Scene1: _Scene
   Color = 3947580
   Scaled = False
   Index = 0
-  ExplicitHeight = 577
+  ExplicitWidth = 559
+  ExplicitHeight = 326
   PixelsPerInch = 96
   TextHeight = 13
   object VerticalBar1: _VerticalBar
@@ -17,7 +18,7 @@ object Scene1: _Scene
     Width = 32
     Height = 208
     SignalName = 'V507_LVS_Battery.LVS Battery SOC'
-    Digit = 24000
+    Digit = 90000
     LimitUpper = 100.000000000000000000
     LimitLower = -1.000000000000000000
     HintOptions = [hoValue, hoMin, hoMax, hoMinMaxDate, hoMinMaxTime]
@@ -39,7 +40,7 @@ object Scene1: _Scene
     MinMax.UseSectorCol = False
     MinMax.MinVisible = False
     MinMax.MaxVisible = False
-    Value = 24.000000000000000000
+    Value = 90.000000000000000000
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
     Font.Height = -11
@@ -554,7 +555,7 @@ object Scene1: _Scene
     Width = 104
     Height = 48
     SignalName = 'V508_Regen Mode.Regen BPS% for full regen torque'
-    Digit = 29804
+    Digit = 0
     LimitUpper = 90.000000000000000000
     LimitLower = -1.000000000000000000
     HintOptions = [hoValue, hoMin, hoMax, hoMinMaxDate, hoMinMaxTime]
@@ -572,7 +573,6 @@ object Scene1: _Scene
     SignalSettings.ValueTo = 100.000000000000000000
     SignalSettings.ValueUnit = '%'
     MinMax.UseSectorCol = False
-    Value = 29.803921568696000000
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
     Font.Height = -11
@@ -769,7 +769,7 @@ object Scene1: _Scene
     Width = 80
     Height = 24
     SignalName = 'V507_LVS_Battery.LVS Battery Voltage'
-    Digit = 12924
+    Digit = 13316
     LimitUpper = 90.000000000000000000
     LimitLower = -1.000000000000000000
     HintOptions = [hoValue, hoMin, hoMax, hoMinMaxDate, hoMinMaxTime]
@@ -786,7 +786,7 @@ object Scene1: _Scene
     SignalSettings.ValueTo = 100.000000000000000000
     SignalSettings.ValueUnit = 'V'
     MinMax.UseSectorCol = False
-    Value = 12.924000000000000000
+    Value = 13.316000000000000000
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
     Font.Height = -11
@@ -926,10 +926,10 @@ object Scene1: _Scene
     LED.ColorOff = clGray
     LED_Position = lpLeft
     Spacing = 5
-    Checked = True
+    Checked = False
     Flashing = False
     Frequency = ff1Hz
-    StatusInt = 1
+    StatusInt = 0
     StatusBit = 0
     GroupIndex = 0
     Mode = mIndicator
@@ -1084,10 +1084,10 @@ object Scene1: _Scene
     TextAlign = 3
   end
   object ToggleSwitch2: _ToggleSwitch
-    Left = 160
-    Top = 312
-    Width = 32
-    Height = 56
+    Left = 128
+    Top = 416
+    Width = 56
+    Height = 32
     SignalName = 'V5FF VCU Debug.VCU MCM HVIL Override'
     BevelOuter.BorderSpacing = 1
     BevelOuter.BevelLine = blNone
@@ -1107,7 +1107,7 @@ object Scene1: _Scene
     BtnColorShadow = clBtnShadow
     BtnColorFace = clBtnFace
     BtnBevelWidth = 2
-    Orientation = boVertical
+    Orientation = boHorizontal
     Mode = mSwitch
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWhite
@@ -1131,8 +1131,8 @@ object Scene1: _Scene
     ColorOff = clSilver
   end
   object Label7: _Label
-    Left = 128
-    Top = 288
+    Left = 184
+    Top = 416
     Width = 104
     Height = 16
     Caption = 'MCM HVIL Bypass'
@@ -1150,8 +1150,8 @@ object Scene1: _Scene
     TextAlign = 4
   end
   object LED2: _LED
-    Left = 128
-    Top = 376
+    Left = 184
+    Top = 432
     Width = 16
     Height = 16
     IsTransparent = True
@@ -1177,8 +1177,8 @@ object Scene1: _Scene
     BinarySignal = False
   end
   object Label10: _Label
-    Left = 144
-    Top = 376
+    Left = 200
+    Top = 432
     Width = 96
     Height = 12
     Caption = 'Power on w/o HVIL'
@@ -1214,7 +1214,7 @@ object Scene1: _Scene
     SignalSettings.ValueFormat = '##0.0'
     SignalSettings.ValueTo = 160.000000000000000000
     SignalSettings.ValueUnit = 'degC'
-    Value = 21.800000000000000000
+    Value = 22.200000000000000000
     TabOrder = 0
     EnableMouseJump = False
     Font.Charset = DEFAULT_CHARSET
@@ -1289,7 +1289,7 @@ object Scene1: _Scene
     SignalSettings.ValueFormat = '##0.0'
     SignalSettings.ValueTo = 160.000000000000000000
     SignalSettings.ValueUnit = 'degC'
-    Value = 18.600000000000000000
+    Value = 21.800000000000000000
     TabOrder = 2
     EnableMouseJump = False
     Font.Charset = DEFAULT_CHARSET

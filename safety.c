@@ -326,7 +326,7 @@ void SafetyChecker_update(SafetyChecker* me, MotorController* mcm, BatteryManage
 		if (tps->percent < .10) //TPS is reduced to < 5%
 		{
             //me->tpsbpsImplausible = FALSE;
-            SerialManager_send(me->serialMan, "TPS below .05.  No implausibility.\n");
+            //SerialManager_send(me->serialMan, "TPS below .05.  No implausibility.\n");
 			me->faults &= ~(F_tpsbpsImplausible);  //turn off the implausibility flag
 		}
 	//}
