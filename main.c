@@ -109,18 +109,26 @@ void main(void)
     ubyte4 timestamp_startTime = 0;
     ubyte4 timestamp_EcoButton = 0;
     ubyte1 calibrationErrors;  //NOT USED
-
+    
     /*******************************************/
-    /*            Initializations              */
+    /*        Low Level Initializations        */
     /*******************************************/
     IO_Driver_Init(NULL); //Handles basic startup for all VCU subsystems
 
-    //Special: Initialize serial first so we can use it to debug init of other subsystems
+    //Initialize serial first so we can use it to debug init of other subsystems
     SerialManager* serialMan = SerialManager_new();
     IO_RTC_StartTime(&timestamp_startTime);
     SerialManager_send(serialMan, "\n\n\n\n\n\n\n\n\n\n----------------------------------------------------\n");
-    //SerialManager_send(serialMan, IO_RTC_GetTimeUS(timestamp_startTime));
     SerialManager_send(serialMan, "VCU serial is online.\n");
+
+    //Read initial values from EEPROM
+    //EEPROMManager* EEPROMManager_new();
+
+
+    /*******************************************/
+    /*      System Level Initializations       */
+    /*******************************************/
+
 
     //----------------------------------------------------------------------------
     // Check if we're on the bench or not
