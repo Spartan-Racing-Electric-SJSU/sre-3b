@@ -1,0 +1,25 @@
+1: [0.070s]: [Info] Started application on 11/15/2017 9:53:54 PM
+2: [10.137s]: [Error] [CANDriver] A Device-specific error occurred (CCANPeakImpl.Initialize() returned with code [2048])
+3: [10.234s]: [Error] Connect failed: [CANDriver] A Device-specific error occurred (CCANPeakImpl.Initialize() returned with code [2048])
+4: [23.574s]: [Error] [CANDriver] A Device-specific error occurred (CCANPeakImpl.Initialize() returned with code [2048])
+5: [23.591s]: [Error] Connect failed: [CANDriver] A Device-specific error occurred (CCANPeakImpl.Initialize() returned with code [2048])
+6: [29.622s]: [Error] [CANDriver] A Device-specific error occurred (CCANPeakImpl.Initialize() returned with code [2048])
+7: [29.634s]: [Error] Connect failed: [CANDriver] A Device-specific error occurred (CCANPeakImpl.Initialize() returned with code [2048])
+8: [84.524s]: [Error] [CANDriver] A Device-specific error occurred (CCANPeakImpl.Initialize() returned with code [2048])
+9: [84.604s]: [Error] Connect failed: [CANDriver] A Device-specific error occurred (CCANPeakImpl.Initialize() returned with code [2048])
+10: [120.482s]: [Info] Connected to targets
+11: [120.485s]: [Warning] No targets found!
+12: [154.093s]: [Info] Connected to targets
+13: [154.318s]: [Warning] No targets found!
+14: [1067.045s]: [Info] Connected to targets
+15: [1067.062s]: [Warning] No targets found!
+16: [1080.372s]: [Info] Connected to targets
+17: [1080.376s]: [Warning] No targets found!
+18: [8676.528s]: [Info] Connected to targets
+19: [8676.744s]: [Warning] No targets found!
+20: [8691.294s]: [Info] Connected to targets
+21: [8691.300s]: [Warning] No targets found!
+22: [9062.216s]: [Info] Connected to targets
+23: [9063.813s]: [Warning] No targets found!
+24: [9077.466s]: [Info] Connected to targets
+25: [9077.469s]: [Warning] No targets found!

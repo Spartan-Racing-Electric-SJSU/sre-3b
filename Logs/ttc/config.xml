@@ -1,0 +1,56 @@
+﻿<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<config>
+  <Advanced>True</Advanced>
+  <LogSeverity>Note</LogSeverity>
+  <LogShowLines>True</LogShowLines>
+  <LogShowTimestamp>True</LogShowTimestamp>
+  <CAN>
+    <Baud>bd500K</Baud>
+    <Channel>ch0</Channel>
+    <IdTypeDownload>Standard</IdTypeDownload>
+    <IdTypeUpload>Standard</IdTypeUpload>
+    <IdDownload>1</IdDownload>
+    <IdUpload>2</IdUpload>
+    <DefaultController>Peak-CAN USB</DefaultController>
+  </CAN>
+  <Window>
+    <PosX>55</PosX>
+    <PosY>0</PosY>
+    <Height>876</Height>
+    <Width>1490</Width>
+    <SplitterPos>594</SplitterPos>
+  </Window>
+  <AutoSave>False</AutoSave>
+  <ConnectionDuration>5</ConnectionDuration>
+  <ProjectPath>
+  </ProjectPath>
+  <AppFilePath>C:\Users\Timothy Le\Documents\SRE\SRE SDK 2017-18\VCU\Environment\dev\Brake_light\build</AppFilePath>
+  <QuickIdentify>0; 1; 5; 10; 105; </QuickIdentify>
+  <QuickIdentifyEnable>False</QuickIdentifyEnable>
+  <ConnectMessageBox>False</ConnectMessageBox>
+  <SavePassword>False</SavePassword>
+  <Password>
+  </Password>
+  <AdvancedPath>
+  </AdvancedPath>
+  <SerialVersion>
+  </SerialVersion>
+  <SerialPathProduction>
+  </SerialPathProduction>
+  <SerialPathFirststage>
+  </SerialPathFirststage>
+  <SerialPathBootstrap>
+  </SerialPathBootstrap>
+  <SerialHWType>
+  </SerialHWType>
+  <SerialCOMPort>
+  </SerialCOMPort>
+  <OverrideCompCheck>True</OverrideCompCheck>
+  <AutomaticReset>True</AutomaticReset>
+  <Ethernet>
+    <NetworkInterface>
+    </NetworkInterface>
+    <MulticastIP>239.0.0.1</MulticastIP>
+    <UdpPort>8500</UdpPort>
+  </Ethernet>
+</config>
