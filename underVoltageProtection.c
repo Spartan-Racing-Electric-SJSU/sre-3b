@@ -129,7 +129,7 @@ void main(void)
 			LVBattery.currentBatteryLevel = IO_ADC_Get(IO_ADC_5v_04, IO_ADC_ABSOLUTE, TRUE); 
 		}
 		
-		if(LVBattery.currentBatteryLevel > LVBattery.maxBatteryThreshold) {
+		if(LVBattery.currentBatteryLevel < LVBattery.minBatteryThreshold) {
 			
 			IO_PWM_SetDuty(IO_PWM_02,
                            dutyCycle, //Should be 100% duty cycle input
@@ -208,10 +208,22 @@ bool PWM_Channel_OK( IO_ErrorType status ) {
 	return PWM_Channel_OK;
 }
 
-float4 getLV_Voltage(){
-	return LVBattery.currentBatteryLevel;
+float4 getLV_Voltage( void ){ //returns the voltage of the LV Battery 
+	return LVBattery.betterTemperature;
 }
 
-float4 getLV_Temperature() {
-	return LVBattery.batteryTemperature
+float4 getLV_Temperature( void ) { //returns the temperature of the LV Battery
+	return LVBattery.batteryTemperature;
+}
+
+float4 motorcontroller_Voltage( void ){
+	return (me->DC_Voltage);
+}
+
+float4 motorcontroller_Current( void ){
+	return (me->DC_Current);
+}
+
+float4 motorcontroller_Temperature( void ){ //returns the temperature of the motor controller
+	return MCM_getTemp(mcm0); 
 }
