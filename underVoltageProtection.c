@@ -42,20 +42,6 @@ volatile ubyte4 count = 0;
 ubyte4 timestamp = 0;
 
 
-
-/* Function initialization */
-bool ADC_Channel_OK( IO_ErrorType status );
-bool PWM_Channel_OK( IO_ErrorType status );
-float4 getLV_Voltage();
-float4 getLV_Temperature(); 
-
-
-float4 motorcontroller_Voltage();
-float4 motorcontroller_Current();
-float4 motorcontroller_Temperature();
-float4 cooling_Voltage();
-float4 cooling_Temperature();
-
 /* Global variables */
 bool ADC_Channel_OK = FALSE; //In order for the adc value keep being read, this value must be true
 bool PWM_Channel_OK = FALSE;
