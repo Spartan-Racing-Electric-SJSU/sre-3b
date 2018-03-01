@@ -195,18 +195,18 @@ bool PWM_Channel_OK( IO_ErrorType status ) {
 }
 
 float4 getLV_Voltage( void ){ //returns the voltage of the LV Battery 
-	return LVBattery.betterTemperature;
+	return LVBattery.currentBatteryLevel;
 }
 
 float4 getLV_Temperature( void ) { //returns the temperature of the LV Battery
 	return LVBattery.batteryTemperature;
 }
 
-float4 motorcontroller_Voltage( void ){
+float4 motorcontroller_Voltage( void ){ //returns the voltage of the motor controller
 	return (me->DC_Voltage);
 }
 
-float4 motorcontroller_Current( void ){
+float4 motorcontroller_Current( void ){ //returns the current of the motor controller
 	return (me->DC_Current);
 }
 
