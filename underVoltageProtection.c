@@ -4,6 +4,7 @@
 #include "IO_Driver.h"
 #include "IO_RTC.h"
 #include "IO_ADC.h"
+#include "IO_CAN.h"
 #include "IO_PWM"
 #include "underVoltageProtection.h"
 
@@ -64,6 +65,7 @@ void main(void)
 	IO_Driver_Init( NULL );
 	IO_DI_DeInit( IO_ADC_5V_02 ); //TODO: change the IO_DI_DeInit to the right input and check with tim to makes sure all arguments are correct
 	
+	
 	/* ADC CHANNEL INITIALIZATION */
 	IO_ErrorType ADC_Pin_Status = IO_ADC_ChannelInit (IO_ADC_5v_04, //adc channel
 	                    IO_ADC_ABSOLUTE, //type. Absolute means normal voltage input
@@ -71,6 +73,13 @@ void main(void)
 	                    IO_ADC_PU_10K, // pupd. IO_ADC_PU_10K means pull up resistor
 	                    IO_ADC_SENSOR_SUPPLY_0, //sensor supply. Unclear on this one
 	                    IO_ADC_SAFETY_CONF const * const safety_conf ); // Safety_conf. also unclear on this one
+
+	/* CAN CHANNEL INITIALIZATION */
+	 IO_ErrorType IO_CAN_Init( ubyte1 channel
+                         , ubyte2 baudrate
+                         , ubyte1 tseg1
+                         , ubyte1 tseg2
+                         , ubyte1 sjw );
 	
 	/* POSSIBLE RETURN VALUES FOR ADC_Pin_Status 
  	* \return IO_ErrorType:
@@ -80,6 +89,11 @@ void main(void)
  	* \retval IO_E_CHANNEL_BUSY                the ADC input channel is currently used by another function
  	* \retval IO_E_DRV_SAFETY_CONF_NOT_CONFIG  Global safety configuration is missing  */
 	IO_ADC_ChannelDeInit( ubyte1 adc_channel );
+
+
+	/* CAN CHANNEL DENINITIALIZATION */
+	IO_CAN_DeInit( ubyte1 );
+
 
 	IO_ErrorType PWM_Pin_Status = IO_PWM_Init( IO_PWM_02, //IO_PWM_02 is the channel for the brake light
                         					   50, //???
@@ -212,4 +226,7 @@ float4 motorcontroller_Current( void ){ //returns the current of the motor contr
 
 float4 motorcontroller_Temperature( void ){ //returns the temperature of the motor controller
 	return MCM_getTemp(mcm0); 
+}
+void cooling_Regulate( CoolingSystem* me, sbyte2 motorControllerTemp ){ //regulates cooling based on undervoltage and temperature of the motors and the motor controller
+	
 }
