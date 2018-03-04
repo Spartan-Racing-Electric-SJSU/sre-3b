@@ -1,11 +1,18 @@
 //Undervoltage Detection and Preventative Measures
+//TODO: lots and lots of documentation to take care of
 #ifndef _UNDERVOLTAGE_H
 #define _UNDERVOLTAGE_H
 
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include "IO_Driver.h"
+#include "IO_RTC.h"
+#include "IO_ADC.h"
+#include "IO_CAN.h"
+#include "IO_PWM"
 
-
-typedef struct batteryFaults{
+struct batteryFaults{
 
 	float4 currentBatteryLevel; //gets information from the LV battery about it's current battery life (look at how other sensors extract voltage data from the LV battery)
 	float4 warningBatteryConstant // = batteryPercentage - 0.5; get voltage value from the LV battery and subtract it by a placeholder constant value
@@ -19,7 +26,7 @@ typedef struct batteryFaults{
 
 } LVBattery;
 
-typedef struct LVComponent{
+struct LVComponent{
 
 	float current; //gets feedback from the LV components on what its current is
 	float voltage; //gets feedback from the LV components on what its voltage is
@@ -45,16 +52,16 @@ float4 motorcontroller_Voltage();
 float4 motorcontroller_Current();
 float4 motorcontroller_Temperature();
 
-float4 cooling_Voltage()
-float4 cooling_Temperature()
+float4 cooling_Voltage();
+float4 cooling_Temperature();
 
 
-float brakePressure_Voltage()
+float brakePressure_Voltage();
 float wheelSpeeds_Voltage();
 																		
 
 /*Mutators*/
-void setConstants()
-void setToDash()
+void setConstants();
+void setToDash();
 
 #endif
