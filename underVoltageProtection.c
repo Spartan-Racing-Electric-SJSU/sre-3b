@@ -15,17 +15,25 @@ bool ADC_Channel_OK = FALSE;
 */
 bool PWM_Channel_OK = FALSE; 
 
-IO_ErrorType ADC_Pin_Status = NULL; //Stores the current IO_ErrorType of the ADC pin
-IO_ErrorType PWM_Pin_Status = NULL; //Stores the current IO_ErrorType of the PWM pin
+BatteryFaults* BatteryFaults_new(){
 
-LVBattery.warningBatteryConstant=0;
-LVBattery.minBatteryThreshold= 12.8; 
-LVBattery.maxBatteryThreshold= 14.8;
+	batteryFaults* me = (batteryFaults*)malloc(sizeof(struct _batteryFaults));
 
-LVBattery.batteryTemperature= NULL;
-LVBattery.warningTempConstant= NULL;
-LVBattery.maxTempThreshold= NULL;
-LVBattery.minTempThreshold= NULL;
+
+	IO_ErrorType ADC_Pin_Status = NULL; //Stores the current IO_ErrorType of the ADC pin
+    IO_ErrorType PWM_Pin_Status = NULL; //Stores the current IO_ErrorType of the PWM pin
+
+	LVBattery.warningBatteryConstant=0;
+	LVBattery.minBatteryThreshold= 12.8; 
+	LVBattery.maxBatteryThreshold= 14.8;
+
+	LVBattery.batteryTemperature= NULL;
+	LVBattery.warningTempConstant= NULL;
+	LVBattery.maxTempThreshold= NULL;
+	LVBattery.minTempThreshold= NULL;
+
+	return me;
+}
 
 
  /** FUNCTION DEFINITIONS **/

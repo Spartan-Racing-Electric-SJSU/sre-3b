@@ -1,5 +1,6 @@
 //Undervoltage Detection and Preventative Measures
 //TODO: lots and lots of documentation to take care of
+
 #ifndef _UNDERVOLTAGE_H
 #define _UNDERVOLTAGE_H
 
@@ -10,26 +11,26 @@
 #include "IO_RTC.h"
 #include "IO_ADC.h"
 #include "IO_CAN.h"
-#include "IO_PWM"
+#include "IO_PWM.h"
 
 struct batteryFaults{
 
-	float4 currentBatteryLevel; //gets information from the LV battery about it's current battery life (look at how other sensors extract voltage data from the LV battery)
-	float4 warningBatteryConstant // = batteryPercentage - 0.5; get voltage value from the LV battery and subtract it by a placeholder constant value
-	int    minBatteryThreshold; //a constant for the minimum battery threshold
-	int    maxBatteryThreshold; 
+float4 currentBatteryLevel, //gets information from the LV battery about it's current battery life (look at how other sensors extract voltage data from the LV battery)
+float4 warningBatteryConstant, // = batteryPercentage - 0.5; get voltage value from the LV battery and subtract it by a placeholder constant value
+int minBatteryThreshold, //a constant for the minimum battery threshold
+int maxBatteryThreshold,
 
-	float4 batteryTemperature; //maximum threshold for the battery temperature
-	float4 warningTempConstant; //= batteryTemperature + 0.5;
-	int    maxTempThreshold;
-	int    minTempThreshold;
+float4 batteryTemperature, //maximum threshold for the battery temperature
+float4 warningTempConstant, //= batteryTemperature + 0.5
+int maxTempThreshold,
+int minTempThreshold,
 
 } LVBattery;
 
 struct LVComponent{
 
-	float current; //gets feedback from the LV components on what its current is
-	float voltage; //gets feedback from the LV components on what its voltage is
+	float current, //gets feedback from the LV components on what its current is
+	float voltage, //gets feedback from the LV components on what its voltage is
 
 
 } motorcontroller, cooling, wheelSpeedsSensor, brakePressureSensor, dcu, steeringAngleSensor;
