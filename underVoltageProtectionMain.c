@@ -47,7 +47,7 @@ void main(void)
 	                    IO_ADC_SAFETY_CONF const * const safety_conf ); // Safety_conf. also unclear on this one
 
 	 /* CAN CHANNEL INITIALIZATION */
-	 IO_ErrorType IO_CAN_Init( ubyte1 channel
+	/*	IO_ErrorType IO_CAN_Init( ubyte1 channel
                          , ubyte2 baudrate
                          , ubyte1 tseg1
                          , ubyte1 tseg2
@@ -75,6 +75,7 @@ void main(void)
 	/* SERIAL DEINITIALIZATION */
 	IO_UART_DeInit(ubyte1 channel);
 
+
 	IO_ErrorType PWM_Pin_Status = IO_PWM_Init( IO_PWM_02, 50, TRUE, bool cur_measurement, ubyte1 cur_channel, bool diag_margin, NULL ); 
 /* POSSIBLE RETURN VALUES FOR PWM_Pin_Status
 	* \return IO_ErrorType:
@@ -87,6 +88,11 @@ void main(void)
 	* \retval IO_E_DRV_SAFETY_CONF_NOT_CONFIG  Global safety configuration is missing 
 	*/
     IO_PWM_DeInit( IO_PWM_02 );
+
+
+    //Initialization of UART goes here
+
+    //Deinitialization of UART goes here
 
 	
 	while (1)
@@ -103,6 +109,11 @@ void main(void)
 				if(LVBattery.currentBatteryLevel - 0.5 < LVBattery.minBatteryThreshold)
 				{
 					IO_PWM_SetDuty(IO_PWM_02, 100, NULL); //100% duty cycle
+
+
+					//Wilson's code of sending a message to indicate undervolate goes here!
+
+
 				}
 				else { IO_PWM_SetDuty(IO_PWM_02, 0, NULL); } //0% duty cycle
 		}

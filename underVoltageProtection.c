@@ -1,7 +1,10 @@
 #include "underVoltageProtection.h"
+<<<<<<< HEAD
 #include "IO_CAN.h"
 #include "motorController.h"
 #include "bms.h"
+=======
+>>>>>>> 5a23efdd91c6362e123cd016893721f1ab293a50
 
 
 /* Global variables */
@@ -18,6 +21,7 @@ bool ADC_Channel_OK = FALSE;
 */
 bool PWM_Channel_OK = FALSE; 
 
+<<<<<<< HEAD
 IO_ErrorType ADC_Pin_Status = NULL; //Stores the current IO_ErrorType of the ADC pin
 IO_ErrorType PWM_Pin_Status = NULL; //Stores the current IO_ErrorType of the PWM pin
 
@@ -29,6 +33,27 @@ LVBattery.batteryTemperature= NULL;
 LVBattery.warningTempConstant= NULL;
 LVBattery.maxTempThreshold= NULL;
 LVBattery.minTempThreshold= NULL;
+=======
+BatteryFaults* BatteryFaults_new(){
+
+	batteryFaults* me = (batteryFaults*)malloc(sizeof(struct _batteryFaults));
+
+
+	IO_ErrorType ADC_Pin_Status = NULL; //Stores the current IO_ErrorType of the ADC pin
+    IO_ErrorType PWM_Pin_Status = NULL; //Stores the current IO_ErrorType of the PWM pin
+
+	LVBattery.warningBatteryConstant=0;
+	LVBattery.minBatteryThreshold= 12.8; 
+	LVBattery.maxBatteryThreshold= 14.8;
+
+	LVBattery.batteryTemperature= NULL;
+	LVBattery.warningTempConstant= NULL;
+	LVBattery.maxTempThreshold= NULL;
+	LVBattery.minTempThreshold= NULL;
+
+	return me;
+}
+>>>>>>> 5a23efdd91c6362e123cd016893721f1ab293a50
 
 
  /** FUNCTION DEFINITIONS **/
@@ -109,4 +134,8 @@ float4 motorcontroller_Temperature( void ){ //returns the temperature of the mot
 }
 void cooling_Regulate( CoolingSystem* me, sbyte2 motorControllerTemp ){ //regulates cooling based on undervoltage and temperature of the motors and the motor controller
 	
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> 5a23efdd91c6362e123cd016893721f1ab293a50
