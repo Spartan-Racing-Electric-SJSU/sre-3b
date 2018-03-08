@@ -1,8 +1,8 @@
 //Undervoltage Detection and Preventative Measures
 //TODO: lots and lots of documentation to take care of
 
-#ifndef _UNDERVOLTAGE_H
-#define _UNDERVOLTAGE_H
+//#ifndef _UNDERVOLTAGE_H
+//#define _UNDERVOLTAGE_H
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -12,31 +12,35 @@
 #include "IO_ADC.h"
 #include "IO_CAN.h"
 #include "IO_PWM.h"
+#include "IO_UART.h" //Potentially used in case CAN does not work
+#include "bms.h"
 
-struct batteryFaults{
+struct _BatteryFaults{
 
-float4 currentBatteryLevel, //gets information from the LV battery about it's current battery life (look at how other sensors extract voltage data from the LV battery)
-float4 warningBatteryConstant, // = batteryPercentage - 0.5; get voltage value from the LV battery and subtract it by a placeholder constant value
-int minBatteryThreshold, //a constant for the minimum battery threshold
-int maxBatteryThreshold,
+BattteryManagementSystem* bms;
 
-float4 batteryTemperature, //maximum threshold for the battery temperature
-float4 warningTempConstant, //= batteryTemperature + 0.5
-int maxTempThreshold,
-int minTempThreshold,
+float4 currentBatteryLevel; //gets information from the LV battery about it's current battery life (look at how other sensors extract voltage data from the LV battery)
+float4 warningBatteryConstant; // = batteryPercentage - 0.5; get voltage value from the LV battery and subtract it by a placeholder constant value
+int minBatteryThreshold; //a constant for the minimum battery threshold
+int maxBatteryThreshold;
 
-} LVBattery;
+float4 batteryTemperature; //maximum threshold for the battery temperature
+float4 warningTempConstant; //= batteryTemperature + 0.5
+int maxTempThreshold;
+int minTempThreshold;
+
+}; //LVBattery
 
 struct LVComponent{
 
-	float current, //gets feedback from the LV components on what its current is
-	float voltage, //gets feedback from the LV components on what its voltage is
+	float current; //gets feedback from the LV components on what its current is
+	float voltage; //gets feedback from the LV components on what its voltage is
 
 
-} motorcontroller, cooling, wheelSpeedsSensor, brakePressureSensor, dcu, steeringAngleSensor;
+}; //motorcontroller, cooling, wheelSpeedsSensor, brakePressureSensor, dcu, steeringAngleSensor;
 
 
-struct _MotorController lvMotorController;
+//struct _MotorController lvMotorController;
 
 //motorcontroller.current
 
@@ -65,4 +69,4 @@ float wheelSpeeds_Voltage();
 void setConstants();
 void setToDash();
 
-#endif
+//#endif
