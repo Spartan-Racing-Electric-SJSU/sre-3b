@@ -68,6 +68,9 @@ void main(void)
 	*/
     IO_PWM_DeInit( IO_PWM_02 );
 
+    //Initialization of UART goes here
+
+    //Deinitialization of UART goes here
 	
 	while (1)
 	{
@@ -83,6 +86,9 @@ void main(void)
 				if(LVBattery.currentBatteryLevel - 0.5 < LVBattery.minBatteryThreshold)
 				{
 					IO_PWM_SetDuty(IO_PWM_02, 100, NULL); //100% duty cycle
+
+					//Wilson's code of sending a message to indicate undervolate goes here!
+
 				}
 				else { IO_PWM_SetDuty(IO_PWM_02, 0, NULL); } //0% duty cycle
 		}
