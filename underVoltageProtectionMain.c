@@ -53,7 +53,7 @@ void main(void)
  	* \retval IO_E_INVALID_PARAMETER           parameter is out of range
  	* \retval IO_E_CHANNEL_BUSY                the ADC input channel is currently used by another function
  	* \retval IO_E_DRV_SAFETY_CONF_NOT_CONFIG  Global safety configuration is missing  */
-	IO_ADC_ChannelDeInit( ubyte1 adc_channel );
+	IO_ADC_ChannelDeInit( IO_ADC_5v_04 );
 
 	IO_ErrorType PWM_Pin_Status = IO_PWM_Init( IO_PWM_02, 50, TRUE, bool cur_measurement, ubyte1 cur_channel, bool diag_margin, NULL ); 
 /* POSSIBLE RETURN VALUES FOR PWM_Pin_Status

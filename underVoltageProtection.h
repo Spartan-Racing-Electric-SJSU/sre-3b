@@ -1,11 +1,11 @@
 //Undervoltage Detection and Preventative Measures
 //TODO: lots and lots of documentation to take care of
 
-//#ifndef _UNDERVOLTAGE_H
-//#define _UNDERVOLTAGE_H
+#ifndef _UNDERVOLTAGE_H
+#define _UNDERVOLTAGE_H
 
 #include <stdio.h>
-#include <stdlib.h>
+#include <stdlib.h> 
 #include <string.h>
 #include "IO_Driver.h"
 #include "IO_RTC.h"
@@ -15,9 +15,9 @@
 #include "IO_UART.h" //Potentially used in case CAN does not work
 #include "bms.h"
 
-struct _BatteryFaults{
+struct BatteryFaults{
 
-BattteryManagementSystem* bms;
+//BattteryManagementSystem* bms;
 
 float4 currentBatteryLevel; //gets information from the LV battery about it's current battery life (look at how other sensors extract voltage data from the LV battery)
 float4 warningBatteryConstant; // = batteryPercentage - 0.5; get voltage value from the LV battery and subtract it by a placeholder constant value
@@ -29,7 +29,9 @@ float4 warningTempConstant; //= batteryTemperature + 0.5
 int maxTempThreshold;
 int minTempThreshold;
 
-}; //LVBattery
+};
+ 
+struct BatteryFaults LVBattery;
 
 struct LVComponent{
 
@@ -50,23 +52,23 @@ struct LVComponent{
 //Functions
 /*Acessors*/
 
-float4 getLV_Voltage();
-float4 getLV_Temperature(); 
+ float4 getLV_Voltage( void );
+ float4 getLV_Temperature( void ); 
 
-float4 motorcontroller_Voltage();
-float4 motorcontroller_Current();
-float4 motorcontroller_Temperature();
+ float4 motorcontroller_Voltage( void );
+ float4 motorcontroller_Current( void );
+ float4 motorcontroller_Temperature( void );
 
-float4 cooling_Voltage();
-float4 cooling_Temperature();
+ float4 cooling_Voltage( void );
+ float4 cooling_Temperature( void );
 
 
-float brakePressure_Voltage();
-float wheelSpeeds_Voltage();
+ float brakePressure_Voltage( void );
+ float wheelSpeeds_Voltage( void );
 																		
 
-/*Mutators*/
-void setConstants();
-void setToDash();
+// /*Mutators*/
+ //void setConstants( void );
+ //void setToDash( void );
 
-//#endif
+#endif
