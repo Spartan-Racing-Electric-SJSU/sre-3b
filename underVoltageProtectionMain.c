@@ -45,6 +45,20 @@ void main(void)
 	                    IO_ADC_PU_10K, // pupd. IO_ADC_PU_10K means pull up resistor
 	                    IO_ADC_SENSOR_SUPPLY_0, //sensor supply. Unclear on this one
 	                    IO_ADC_SAFETY_CONF const * const safety_conf ); // Safety_conf. also unclear on this one
+
+	 /* CAN CHANNEL INITIALIZATION */
+	/*	IO_ErrorType IO_CAN_Init( ubyte1 channel
+                         , ubyte2 baudrate
+                         , ubyte1 tseg1
+                         , ubyte1 tseg2
+                         , ubyte1 sjw );
+
+	 /* SERIAL INITIALIZATION */
+	  IO_ErrorType IO_UART_Init( ubyte1 channel
+                          , ubyte4 baudrate
+                          , ubyte1 dbits
+                          , ubyte1 par
+                          , ubyte1 sbits);
 	
 	/* POSSIBLE RETURN VALUES FOR ADC_Pin_Status 
  	* \return IO_ErrorType:
@@ -54,6 +68,13 @@ void main(void)
  	* \retval IO_E_CHANNEL_BUSY                the ADC input channel is currently used by another function
  	* \retval IO_E_DRV_SAFETY_CONF_NOT_CONFIG  Global safety configuration is missing  */
 	IO_ADC_ChannelDeInit( IO_ADC_5v_04 );
+
+	/* CAN CHANNEL DENINITIALIZATION */
+	IO_CAN_DeInit( ubyte1 );
+
+	/* SERIAL DEINITIALIZATION */
+	IO_UART_DeInit(ubyte1 channel);
+
 
 	IO_ErrorType PWM_Pin_Status = IO_PWM_Init( IO_PWM_02, 50, TRUE, bool cur_measurement, ubyte1 cur_channel, bool diag_margin, NULL ); 
 /* POSSIBLE RETURN VALUES FOR PWM_Pin_Status
@@ -68,9 +89,11 @@ void main(void)
 	*/
     IO_PWM_DeInit( IO_PWM_02 );
 
+
     //Initialization of UART goes here
 
     //Deinitialization of UART goes here
+
 	
 	while (1)
 	{
@@ -87,7 +110,9 @@ void main(void)
 				{
 					IO_PWM_SetDuty(IO_PWM_02, 100, NULL); //100% duty cycle
 
+
 					//Wilson's code of sending a message to indicate undervolate goes here!
+
 
 				}
 				else { IO_PWM_SetDuty(IO_PWM_02, 0, NULL); } //0% duty cycle
