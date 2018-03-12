@@ -15,58 +15,62 @@
 #include "IO_UART.h" //Potentially used in case CAN does not work
 #include "bms.h"
 
-struct BatteryFaults{
+typedef struct underVoltage {
 
-//BattteryManagementSystem* bms;
+		BatteryManagementSystem* bms;
 
-float4 currentBatteryLevel; //gets information from the LV battery about it's current battery life (look at how other sensors extract voltage data from the LV battery)
-float4 warningBatteryConstant; // = batteryPercentage - 0.5; get voltage value from the LV battery and subtract it by a placeholder constant value
-int minBatteryThreshold; //a constant for the minimum battery threshold
-int maxBatteryThreshold;
+		float4 currentBatteryLevel; //gets information from the LV battery about it's current battery life (look at how other sensors extract voltage data from the LV battery)
+		float4 warningBatteryConstant; // = batteryPercentage - 0.5; get voltage value from the LV battery and subtract it by a placeholder constant value
+		int minBatteryThreshold; //a constant for the minimum battery threshold
+		int maxBatteryThreshold;
 
-float4 batteryTemperature; //maximum threshold for the battery temperature
-float4 warningTempConstant; //= batteryTemperature + 0.5
-int maxTempThreshold;
-int minTempThreshold;
+		float4 batteryTemperature; //maximum threshold for the battery temperature
+		float4 warningTempConstant; //= batteryTemperature + 0.5
+		int maxTempThreshold;
+		int minTempThreshold;
 
-};
- 
-struct BatteryFaults LVBattery;
+		IO_ErrorType ADC_Pin_Status;  //Stores the current IO_ErrorType of the ADC pin
+		IO_ErrorType PWM_Pin_Status;  //Stores the current IO_ErrorType of the PWM pin
 
-struct LVComponent{
+		bool PWM_Channel_OK;
+		bool ADC_Channel_OK; 
 
-	float current; //gets feedback from the LV components on what its current is
-	float voltage; //gets feedback from the LV components on what its voltage is
-
-
-}; //motorcontroller, cooling, wheelSpeedsSensor, brakePressureSensor, dcu, steeringAngleSensor;
+} underVoltage_ ;
 
 
-//struct _MotorController lvMotorController;
+/**
+*Don't know if we need this honestly????
+*/
+//  struct {
 
-//motorcontroller.current
+// 		float current; //gets feedback from the LV components on what its current is
+// 		float voltage; //gets feedback from the LV components on what its voltage is
 
-//functions for the undervoltage 
+
+// } LVComponents; //motorcontroller, cooling, wheelSpeedsSensor, brakePressureSensor, dcu, steeringAngleSensor;
 
 
-//Functions
-/*Acessors*/
 
+ //Constructor for initializing "me" variable
+ underVoltage_* UnderVoltage_new( void );
+
+ //global "me" pointer
+ underVoltage_* me;
+
+
+
+/******** FUNCTIONS ********/
  float4 getLV_Voltage( void );
  float4 getLV_Temperature( void ); 
-
  float4 motorcontroller_Voltage( void );
  float4 motorcontroller_Current( void );
  float4 motorcontroller_Temperature( void );
-
  float4 cooling_Voltage( void );
  float4 cooling_Temperature( void );
-
-
  float brakePressure_Voltage( void );
- float wheelSpeeds_Voltage( void );
-																		
-
+ float wheelSpeeds_Voltage( void );																
+ bool ADC_Channel_OK( IO_ErrorType status );
+ bool PWM_Channel_OK( IO_ErrorType status );
 // /*Mutators*/
  //void setConstants( void );
  //void setToDash( void );
