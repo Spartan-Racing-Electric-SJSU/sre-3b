@@ -99,7 +99,7 @@ bool PWM_Channel_OK( IO_ErrorType status ) {
 	return me->PWM_Channel_OK;
 }
 
-void UV_parseCanMessage(UnderVoltage *uv, IO_CAN_DATA_FRAME* uvCanMessage){ //cases with different IDs that represent UnderVoltage CAN messages 
+void UV_parseCanMessage(underVoltage_ *uv, IO_CAN_DATA_FRAME* uvCanMessage){ //cases with different IDs that represent UnderVoltage CAN messages 
 	
 	switch(uvCanMessage->id){
 		case 0x900: //id that represents the warningTempConstant decreases past the minBatteryThreshold
