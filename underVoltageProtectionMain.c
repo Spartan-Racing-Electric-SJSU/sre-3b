@@ -47,14 +47,14 @@ void main(void)
 	                    IO_ADC_SAFETY_CONF const * const safety_conf ); // Safety_conf. also unclear on this one
 
 	 /* CAN CHANNEL INITIALIZATION */
-	/*	IO_ErrorType IO_CAN_Init( ubyte1 channel
+	/*IO_ErrorType IO_CAN_Init( ubyte1 channel
                          , ubyte2 baudrate
                          , ubyte1 tseg1
                          , ubyte1 tseg2
                          , ubyte1 sjw );
 
 	 /* SERIAL INITIALIZATION */
-	  IO_ErrorType IO_UART_Init( ubyte1 channel
+	 /* IO_ErrorType IO_UART_Init( ubyte1 channel
                           , ubyte4 baudrate
                           , ubyte1 dbits
                           , ubyte1 par
@@ -70,10 +70,10 @@ void main(void)
 	IO_ADC_ChannelDeInit( IO_ADC_5v_04 );
 
 	/* CAN CHANNEL DENINITIALIZATION */
-	IO_CAN_DeInit( ubyte1 );
+	/* IO_CAN_DeInit( ubyte1 );
 
 	/* SERIAL DEINITIALIZATION */
-	IO_UART_DeInit(ubyte1 channel);
+	/*IO_UART_DeInit(ubyte1 channel);*/
 
 
 	IO_ErrorType PWM_Pin_Status = IO_PWM_Init( IO_PWM_02, 50, TRUE, bool cur_measurement, ubyte1 cur_channel, bool diag_margin, NULL ); 
@@ -112,6 +112,8 @@ void main(void)
 
 
 					//Wilson's code of sending a message to indicate undervolate goes here!
+
+					UV_parseCanMessage(me, 0x700); //calls the UV CAN function to display CAN message
 
 
 				}
