@@ -44,7 +44,7 @@ void main(void)
 	IO_ADC_ChannelDeInit( IO_ADC_5v_04 );
 
 	/***** PWM CHANNEL INITIALIZATION *****/
-	IO_ErrorType PWM_Pin_Status = IO_PWM_Init( IO_PWM_02, 50, TRUE, bool cur_measurement, ubyte1 cur_channel, bool diag_margin, NULL ); 
+	IO_ErrorType PWM_Pin_Status = IO_PWM_Init( IO_PWM_02, 50, TRUE, TRUE, IO_ADC_CUR_00, FALSE, NULL ); 
 	IO_PWM_DeInit( IO_PWM_02 );
 
 
