@@ -12,7 +12,6 @@
 #include "IO_ADC.h"
 #include "IO_CAN.h"
 #include "IO_PWM.h"
-#include "IO_UART.h" //Potentially used in case CAN does not work
 #include "bms.h"
 
 typedef struct underVoltage {
@@ -38,15 +37,10 @@ typedef struct underVoltage {
 } underVoltage_ ;
 
 
-/**
-*Don't know if we need this honestly????
-*/
+/*Don't think we need this*/
 //  struct {
-
 // 		float current; //gets feedback from the LV components on what its current is
 // 		float voltage; //gets feedback from the LV components on what its voltage is
-
-
 // } LVComponents; //motorcontroller, cooling, wheelSpeedsSensor, brakePressureSensor, dcu, steeringAngleSensor;
 
 
