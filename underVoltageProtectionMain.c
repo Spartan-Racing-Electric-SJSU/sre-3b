@@ -43,7 +43,6 @@ void main(void)
 	IO_ErrorType ADC_Pin_Status = IO_ADC_ChannelInit (IO_ADC_5v_04, IO_ADC_ABSOLUTE, IO_ADC_RANGE_5V, IO_ADC_PU_10K, IO_ADC_SENSOR_SUPPLY_0, NULL); 
 	IO_ADC_ChannelDeInit( IO_ADC_5v_04 );
 
-
 	/***** PWM CHANNEL INITIALIZATION *****/
 	IO_ErrorType PWM_Pin_Status = IO_PWM_Init( IO_PWM_02, 50, TRUE, bool cur_measurement, ubyte1 cur_channel, bool diag_margin, NULL ); 
 	IO_PWM_DeInit( IO_PWM_02 );
@@ -70,6 +69,8 @@ void main(void)
 
 
 					//Wilson's code of sending a message to indicate undervolate goes here!
+
+					UV_parseCanMessage(me, 0x700); //calls the UV CAN function to display CAN message
 
 
 				}  

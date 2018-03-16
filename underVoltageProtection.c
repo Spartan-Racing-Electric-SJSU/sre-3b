@@ -97,6 +97,19 @@ bool PWM_Channel_OK( IO_ErrorType status ) {
 			break;
 	}
 	return me->PWM_Channel_OK;
+
+}
+
+void UV_parseCanMessage(underVoltage_ *uv, IO_CAN_DATA_FRAME* uvCanMessage){ //cases with different IDs that represent UnderVoltage CAN messages 
+	
+	switch(uvCanMessage->id){
+		case 0x900: //id that represents the warningTempConstant decreases past the minBatteryThreshold
+			uv->warningTempConstant = ((ubyte2)uvCanMessage->data[5] << 8 | uvCanMessage->data[4]) / 10; //placeholder message
+			break;
+	}
+
+
+
 }
 
 float4 getLV_Voltage( void ){ //returns the voltage of the LV Battery 

@@ -65,6 +65,9 @@ typedef struct underVoltage {
  float wheelSpeeds_Voltage( void );																
  bool ADC_Channel_OK( IO_ErrorType status );
  bool PWM_Channel_OK( IO_ErrorType status );
+ void UV_parseCanMessage(underVoltage_ *uv, IO_CAN_DATA_FRAME* uvCanMessage);
+
+
 // /*Mutators*/
  //void setConstants( void );
  //void setToDash( void );
