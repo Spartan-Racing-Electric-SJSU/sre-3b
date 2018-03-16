@@ -669,4 +669,7 @@ void canOutput_sendDebugMessage(CanManager* me, underVoltage_* uv /* TorqueEncod
 
 }
 
+<<<<<<< HEAD
+=======
 
+>>>>>>> 160f1e04387b90c7682bd143a645485f7a8d91f2

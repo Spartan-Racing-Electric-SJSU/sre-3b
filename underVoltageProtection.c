@@ -97,7 +97,11 @@ bool PWM_Channel_OK( IO_ErrorType status ) {
 			break;
 	}
 	return me->PWM_Channel_OK;
+<<<<<<< HEAD
+<<<<<<< HEAD
+=======
 
+>>>>>>> 160f1e04387b90c7682bd143a645485f7a8d91f2
 }
 
 void UV_parseCanMessage(underVoltage_ *uv, IO_CAN_DATA_FRAME* uvCanMessage) { //cases with different IDs that represent UnderVoltage CAN messages 
@@ -109,8 +113,13 @@ void UV_parseCanMessage(underVoltage_ *uv, IO_CAN_DATA_FRAME* uvCanMessage) { //
 
 	}
 
+<<<<<<< HEAD
+=======
+>>>>>>> 77798e40a445d2709473dbcdb5a81185b3a4611f
+=======
 
 
+>>>>>>> 160f1e04387b90c7682bd143a645485f7a8d91f2
 }
 
 float4 getLV_Voltage( void ){ //returns the voltage of the LV Battery 
