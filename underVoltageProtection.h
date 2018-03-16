@@ -13,6 +13,8 @@
 #include "IO_CAN.h"
 #include "IO_PWM.h"
 #include "bms.h"
+#include "canManager.h"
+
 
 typedef struct underVoltage {
 

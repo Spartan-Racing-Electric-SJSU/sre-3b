@@ -1,10 +1,10 @@
-#include "underVoltageProtection.h"
+#include "testFile.h"
 
 
 underVoltage_* BatteryFaults_new( void ) 
 {
-	//I don't think we need this
-	//underVoltage_* me = (underVoltage_*) malloc(sizeof(underVoltage_));
+	//Memory allocation
+	underVoltage_* me = (underVoltage_*) malloc(sizeof(underVoltage_));
 
 	me->ADC_Pin_Status = NULL; //Stores the current IO_ErrorType of the ADC pin
     me->PWM_Pin_Status = NULL; //Stores the current IO_ErrorType of the PWM pin
@@ -35,7 +35,7 @@ underVoltage_* BatteryFaults_new( void )
 	me->minTempThreshold= NULL;
 
 
-	//free(me);
+	free(me);
 
 	return me;
 }
@@ -100,12 +100,13 @@ bool PWM_Channel_OK( IO_ErrorType status ) {
 
 }
 
-void UV_parseCanMessage(underVoltage_ *uv, IO_CAN_DATA_FRAME* uvCanMessage){ //cases with different IDs that represent UnderVoltage CAN messages 
+void UV_parseCanMessage(underVoltage_ *uv, IO_CAN_DATA_FRAME* uvCanMessage) { //cases with different IDs that represent UnderVoltage CAN messages 
 	
 	switch(uvCanMessage->id){
-		case 0x900: //id that represents the warningTempConstant decreases past the minBatteryThreshold
+		case 0x700: //id that represents the warningTempConstant decreases past the minBatteryThreshold
 			uv->warningTempConstant = ((ubyte2)uvCanMessage->data[5] << 8 | uvCanMessage->data[4]) / 10; //placeholder message
 			break;
+
 	}
 
 
