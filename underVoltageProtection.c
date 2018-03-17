@@ -1,7 +1,7 @@
 #include "underVoltageProtection.h"
 
 
-underVoltage_* BatteryFaults_new( void ) 
+underVoltage_* UnderVoltage_new( void ) 
 {
 	//Memory allocation
 	underVoltage_* me = (underVoltage_*) malloc(sizeof(underVoltage_));
@@ -29,13 +29,10 @@ underVoltage_* BatteryFaults_new( void )
 	me->minBatteryThreshold= 12.8; 
 	me->maxBatteryThreshold= 14.8;
 
-	me->batteryTemperature= NULL;
+	me->batteryTemperature= NULL; //NULL's because we don't exactly know these thresholds yet
 	me->warningTempConstant= NULL;
 	me->maxTempThreshold= NULL;
 	me->minTempThreshold= NULL;
-
-
-	free(me);
 
 	return me;
 }
@@ -43,7 +40,7 @@ underVoltage_* BatteryFaults_new( void )
 
 
  /** FUNCTION DEFINITIONS **/
-bool ADC_Channel_OK( IO_ErrorType status ) {
+underVoltage_* ADC_Channel_OK( IO_ErrorType status, underVoltage_* me ) {
 	switch(status) 
 	{
 		case IO_E_OK:
@@ -68,10 +65,10 @@ bool ADC_Channel_OK( IO_ErrorType status ) {
 			me->ADC_Channel_OK = FALSE;
 			break;
 	}
-	return me->ADC_Channel_OK;
+	return me;
 }
 
-bool PWM_Channel_OK( IO_ErrorType status ) {
+underVoltage_* PWM_Channel_OK( IO_ErrorType status, underVoltage_* me ) {
 	switch(status) 
 	{
 		case IO_E_OK:
@@ -96,7 +93,7 @@ bool PWM_Channel_OK( IO_ErrorType status ) {
 			me->PWM_Channel_OK = FALSE;
 			break;
 	}
-	return me->PWM_Channel_OK;
+	return me;
 
 }
 

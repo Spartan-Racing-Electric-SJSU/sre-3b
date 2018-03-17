@@ -1,7 +1,6 @@
 //This will be the implementation file of the under voltage code
-#include "underVoltageProtection.c"
-#include "APDB.h"
-#include "IO_Constants.h"
+#include "underVoltageProtection.h"
+
 
 //Application Database, needed for TTC-Downloader
 APDB appl_db =
@@ -40,11 +39,8 @@ void main(void)
 	ubyte4 timestamp_startTime = 0;
 	IO_RTC_StartTime(&timestamp_startTime);
 	
-
 	//Initialize the driver
 	IO_Driver_Init( NULL );
-	IO_DI_DeInit( IO_ADC_5V_02 ); //TODO: change the IO_DI_DeInit to the right input and check with tim to makes sure all arguments are correct
-	
 
 	/***** ADC CHANNEL INITIALIZATION *****/
 	IO_ErrorType ADC_Pin_Status = IO_ADC_ChannelInit (IO_ADC_5V_04, IO_ADC_ABSOLUTE, IO_ADC_RANGE_5V, IO_ADC_PU_10K, IO_ADC_SENSOR_SUPPLY_0, NULL); 
@@ -59,22 +55,25 @@ void main(void)
 	//IO_ErrorType IO_CAN_Init( ubyte1 channel, ubyte2 baudrate, ubyte1 tseg1, ubyte1 tseg2, ubyte1 sjw);
 	//IO_CAN_DeInit( ubyte1 channel );
 
+	underVoltage_* myUV= UnderVoltage_new(); 
+
 	
 	while (1)
 	{
-
+		ADC_Channel_OK(ADC_Pin_Status, myUV);
+		PWM_Channel_OK(PWM_Pin_Status, myUV);
 
 		//While the ADC channel and PWM channel doesn't return an error, the ADC will read the value and PWM write is allowed
-		if( ADC_Channel_OK(ADC_Pin_Status) == TRUE && PWM_Channel_OK(PWM_Pin_Status) == TRUE ) 
+		if( myUV->PWM_Channel_OK == TRUE && myUV->ADC_Channel_OK == TRUE ) 
 		{
-			me->currentBatteryLevel = IO_ADC_Get(IO_ADC_5V_04, IO_ADC_ABSOLUTE, TRUE); 
+			myUV->currentBatteryLevel = IO_ADC_Get(IO_ADC_5V_04, IO_ADC_ABSOLUTE, TRUE); 
 
-				if(me->currentBatteryLevel - 0.4 < me->minBatteryThreshold)
+				if(myUV->currentBatteryLevel - 0.4 < myUV->minBatteryThreshold)
 				{
 					IO_PWM_SetDuty(IO_PWM_02, 100, NULL); //100% duty cycle
 
 					//Wilson's code of sending a message to indicate undervolate goes here!
-					UV_parseCanMessage(me, 0x700); //calls the UV CAN function to display CAN message
+					UV_parseCanMessage(myUV, 0x700); //calls the UV CAN function to display CAN message
 
 				} 
 				else 
