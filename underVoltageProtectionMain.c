@@ -1,7 +1,6 @@
 //This will be the implementation file of the under voltage code
 #include "underVoltageProtection.h"
 
-
 //Application Database, needed for TTC-Downloader
 APDB appl_db =
     { 0                      /* ubyte4 versionAPDB        */
@@ -36,10 +35,11 @@ APDB appl_db =
 
 void main(void)
 {
+	//Don't know what this timestampt_starTime variable should be initialized to
 	ubyte4 timestamp_startTime = 0;
 	IO_RTC_StartTime(&timestamp_startTime);
 	
-	//Initialize the driver
+	/***** DRIVER INITIALIZATION *****/
 	IO_Driver_Init( NULL );
 
 	/***** ADC CHANNEL INITIALIZATION *****/
@@ -50,14 +50,13 @@ void main(void)
 	IO_ErrorType PWM_Pin_Status = IO_PWM_Init( IO_PWM_02, 50, TRUE, TRUE, IO_ADC_CUR_00, FALSE, NULL ); 
 	IO_PWM_DeInit( IO_PWM_02 );
 
-
 	/***** CAN CHANNEL INITIALIZATION *****/
 	//IO_ErrorType IO_CAN_Init( ubyte1 channel, ubyte2 baudrate, ubyte1 tseg1, ubyte1 tseg2, ubyte1 sjw);
 	//IO_CAN_DeInit( ubyte1 channel );
 
 	underVoltage_* myUV= UnderVoltage_new(); 
-
-	
+	bool messageSent= FALSE;
+	bool fixed= TRUE;
 	while (1)
 	{
 		ADC_Channel_OK(ADC_Pin_Status, myUV);
@@ -68,21 +67,23 @@ void main(void)
 		{
 			myUV->currentBatteryLevel = IO_ADC_Get(IO_ADC_5V_04, IO_ADC_ABSOLUTE, TRUE); 
 
-				if(myUV->currentBatteryLevel - 0.4 < myUV->minBatteryThreshold)
+				//If the the current battery level is just about to pass the threshold, turn on the brake light to signal undervoltage will happen
+				if((myUV->currentBatteryLevel - 0.4 < myUV->minBatteryThreshold) && !messageSent)
 				{
-					IO_PWM_SetDuty(IO_PWM_02, 100, NULL); //100% duty cycle
+					//turn on brake light, stores error type
+					PWM_Pin_Status= IO_PWM_SetDuty(IO_PWM_02, 100, NULL); 
 
-					//Wilson's code of sending a message to indicate undervolate goes here!
+					//Wilson's code of sending a message to indicate undervolate goes here
 					UV_parseCanMessage(myUV, 0x700); //calls the UV CAN function to display CAN message
-
+					messageSent=TRUE;
+					fixed=FALSE;
 				} 
-				else 
+				if(fixed)  
 				{
-					IO_PWM_SetDuty(IO_PWM_02, 0, NULL); //0% duty cycle
+					//brake light off and no message is necessary. Also stores error type
+					PWM_Pin_Status= IO_PWM_SetDuty(IO_PWM_02, 0, NULL); //0% duty cycle
 				} 
 		}
-			
-
 		IO_Driver_TaskEnd();
 		while (IO_RTC_GetTimeUS(timestamp_startTime) < 50000);
 		{
@@ -90,3 +91,5 @@ void main(void)
 	
     }
 }
+
+//TODO: Need to know if all of the driver/rtc stuff is set up correctly. e.g lines IO_Driver_TaskEnd() to the end of the "while" loop.

@@ -1,7 +1,7 @@
 #include "underVoltageProtection.h"
 
 
-underVoltage_* UnderVoltage_new( void ) 
+underVoltage_* UnderVoltage_new(void) 
 {
 	//Memory allocation
 	underVoltage_* me = (underVoltage_*) malloc(sizeof(underVoltage_));
@@ -24,10 +24,9 @@ underVoltage_* UnderVoltage_new( void )
 	me->PWM_Channel_OK = FALSE;
 
 
-	//initializing faults
-	me->warningBatteryConstant= 0;
-	me->minBatteryThreshold= 12.8; 
-	me->maxBatteryThreshold= 14.8;
+	//Initializing faults
+	me->minBatteryThreshold= 1; //12.8V will be the real value, 1V is for testing on the dev board  
+	me->maxBatteryThreshold= 5; //14.8V will be the real value, 5V is for testing on the dev board
 
 	me->batteryTemperature= NULL; //NULL's because we don't exactly know these thresholds yet
 	me->warningTempConstant= NULL;
@@ -94,7 +93,6 @@ underVoltage_* PWM_Channel_OK( IO_ErrorType status, underVoltage_* me ) {
 			break;
 	}
 	return me;
-
 }
 
 void UV_parseCanMessage(underVoltage_ *uv, IO_CAN_DATA_FRAME* uvCanMessage) { //cases with different IDs that represent UnderVoltage CAN messages 
@@ -105,17 +103,14 @@ void UV_parseCanMessage(underVoltage_ *uv, IO_CAN_DATA_FRAME* uvCanMessage) { //
 			break;
 
 	}
-
 }
 
-float4 getLV_Voltage( void ){ //returns the voltage of the LV Battery 
-	//return me->currentBatteryLevel;
-	return 0;
+float4 getLV_Voltage( underVoltage_* me ){ //returns the voltage of the LV Battery 
+	return me->currentBatteryLevel;
 }
 
-float4 getLV_Temperature( void ) { //returns the temperature of the LV Battery
-	//return me->batteryTemperature;
-	return 0;
+float4 getLV_Temperature( underVoltage_* me ) { //returns the temperature of the LV Battery
+	return me->batteryTemperature;
 }
 
 float4 motorcontroller_Voltage( void ){ //returns the voltage of the motor controller
@@ -134,6 +129,4 @@ float4 motorcontroller_Temperature( void ){ //returns the temperature of the mot
 }
 
 //void cooling_Regulate( CoolingSystem* me, sbyte2 motorControllerTemp ){ //regulates cooling based on undervoltage and temperature of the motors and the motor controller
-	
-
 //}
