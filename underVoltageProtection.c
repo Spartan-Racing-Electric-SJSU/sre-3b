@@ -4,7 +4,7 @@
 underVoltage_* UnderVoltage_new(void) 
 {
 	//Memory allocation
-	underVoltage_* me = (underVoltage_*) malloc(sizeof(underVoltage_));
+	underVoltage_* me = (underVoltage_*) malloc(sizeof(struct underVoltage));
 
 	me->ADC_Pin_Status = NULL; //Stores the current IO_ErrorType of the ADC pin
     me->PWM_Pin_Status = NULL; //Stores the current IO_ErrorType of the PWM pin
