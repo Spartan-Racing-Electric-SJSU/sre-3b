@@ -1,5 +1,5 @@
 	; TASKING VX-toolset for C166: C compiler v4.0r1 Build 741 SN 07744515
-	; Options: -f cc708a -c99 -Mh --fp-model=FT -Cxc2287 --core=xc16x -DTASKING_VIPER -D__USIC_MEM_TYPE=__PAGE_080_MEM_TYPE -D__MULTICAN_MEM_TYPE=__PAGE_080_MEM_TYPE -DTTC50 -DRTS_TTC_FLASH_DATE_YEAR=2018 -DRTS_TTC_FLASH_DATE_MONTH=3 -DRTS_TTC_FLASH_DATE_DAY=16 -DRTS_TTC_FLASH_DATE_HOUR=17 -DRTS_TTC_FLASH_DATE_MINUTE=47 -I..\..\..\Environment\inc -I..\..\..\Environment\inc_int -I..\..\..\Environment\bsp -I. --tradeoff=0 --no-tasking-sfr -ga --language=+cmp14,+div32,-gcc,-strings -O3 --source --mac -o build\my_test.src
+	; Options: -f cc1344a -c99 -Mh --fp-model=FT -Cxc2287 --core=xc16x -DTASKING_VIPER -D__USIC_MEM_TYPE=__PAGE_080_MEM_TYPE -D__MULTICAN_MEM_TYPE=__PAGE_080_MEM_TYPE -DTTC50 -DRTS_TTC_FLASH_DATE_YEAR=2018 -DRTS_TTC_FLASH_DATE_MONTH=4 -DRTS_TTC_FLASH_DATE_DAY=6 -DRTS_TTC_FLASH_DATE_HOUR=0 -DRTS_TTC_FLASH_DATE_MINUTE=39 -I..\..\..\Environment\inc -I..\..\..\Environment\inc_int -I..\..\..\Environment\bsp -I. --tradeoff=0 --no-tasking-sfr -ga --language=+cmp14,+div32,-gcc,-strings -O3 --source --mac -o build\my_test.src
 	; Module start
 	.source	'my_test.c'
 code_main	.section	code, cluster 'main', new
@@ -128,7 +128,7 @@ _appl_db	.label	word
 	.db	0x0
 	.db	0x0
 	.db	0x0
-	.dl	0xbe3037e2
+	.dl	0x9c0647e2
 	.db	0x0
 	.db	0x0
 	.db	0x0
@@ -247,7 +247,7 @@ _appl_db	.label	word
 	.extern	__INDIRECT__ : far
 	.debug		.debug_info
 _16:
-	.dl	1658
+	.dl	1653
 	.dw	3
 	.dl	_17
 	.db	4
@@ -255,229 +255,229 @@ _15:
 	.db	1
 	.db	'my_test.c',0
 	.db	'TASKING VX-toolset for C166: C compiler',0
-	.db	'C:\\Users\\helix\\Desktop\\SRE\\SRE SDK 2017-18\\VCU\\Environment\\dev\\Example_\\',0,12,1
+	.db	'C:\\Users\\helix\\Desktop\\SRE\\SRE SDK 2017-18\\VCU\\Environment\\dev\\BPS\\',0,12,1
 	.dl	_18
 	.db	2
 	.db	'unsigned int',0,2,7,2
 	.db	'unsigned char',0,1,8,3
 	.db	'_io_driver_safety_conf',0,1,237,2,17,8,4
 	.db	'glitch_filter_time',0
-	.dl	157
+	.dl	152
 	.db	1,2,35,0,4
 	.db	'command_period',0
-	.dl	141
+	.dl	136
 	.db	2,2,35,2,4
 	.db	'timeout_count',0
-	.dl	157
+	.dl	152
 	.db	1,2,35,4,4
 	.db	'CPU_check_loopcount',0
-	.dl	141
+	.dl	136
 	.db	2,2,35,6,0,5
-	.dl	174
+	.dl	169
 	.db	6,5
-	.dl	308
+	.dl	303
 	.db	5
-	.dl	313
+	.dl	308
 	.db	7
 	.db	'IO_Driver_Init',0,1,163,3,15,6
-	.dl	141
+	.dl	136
 	.db	1,1,1,1,8
 	.db	'safety_conf',0,1,163,3,67,2
-	.dl	319
+	.dl	314
 	.db	0,9
 	.db	'IO_Driver_TaskBegin',0,1,192,3,15,6
-	.dl	141
+	.dl	136
 	.db	1,1,1,1,9
 	.db	'IO_Driver_TaskEnd',0,1,207,3,15,6
-	.dl	141
+	.dl	136
 	.db	1,1,1,1
 _26:
 	.db	2
 	.db	'unsigned long int',0,4,7,6,5
-	.dl	442
+	.dl	437
 	.db	5
-	.dl	463
+	.dl	458
 	.db	7
 	.db	'IO_RTC_StartTime',0,2,118,15,6
-	.dl	141
+	.dl	136
 	.db	1,1,1,1,8
 	.db	'timestamp',0,2,118,49,2
-	.dl	469
+	.dl	464
 	.db	0,10
 	.db	'_INDIRECT__',0,3,1,1,6,1,1,1,2
 	.db	'unsigned short int',0,2,7,11
 	.db	'__wchar_t',0,3,1,1
-	.dl	544
+	.dl	539
 	.db	11
 	.db	'__size_t',0,3,1,1
-	.dl	141
+	.dl	136
 	.db	12
 	.db	'void',0,6,5
-	.dl	601
+	.dl	596
 	.db	11
 	.db	'__prof_adm',0,3,1,1
-	.dl	607
+	.dl	602
 	.db	11
 	.db	'__codeptr',0,3,1,1
-	.dl	442
+	.dl	437
 	.db	11
 	.db	'ubyte1',0,4,21,29
-	.dl	157
+	.dl	152
 	.db	11
 	.db	'ubyte2',0,4,22,29
-	.dl	141
+	.dl	136
 	.db	11
 	.db	'ubyte4',0,4,23,29
-	.dl	442
+	.dl	437
 	.db	2
 	.db	'float',0,4,4,11
 	.db	'float4',0,4,29,29
-	.dl	695
+	.dl	690
 	.db	11
 	.db	'bool',0,4,31,29
-	.dl	157
+	.dl	152
 	.db	11
 	.db	'IO_ErrorType',0,5,150,1,17
-	.dl	141
+	.dl	136
 	.db	11
 	.db	'IO_DRIVER_SAFETY_CONF',0,1,252,2,4
-	.dl	174
+	.dl	169
 	.db	3
 	.db	'_bl_t_date',0,6,90,16,4,4
 	.db	'date',0
-	.dl	442
+	.dl	437
 	.db	4,2,35,0,0,11
 	.db	'BL_T_DATE',0,6,93,2
-	.dl	785
+	.dl	780
 	.db	3
 	.db	'_bl_t_can_id',0,6,102,16,8,4
 	.db	'extended',0
-	.dl	442
+	.dl	437
 	.db	4,2,35,0,4
 	.db	'ID',0
-	.dl	442
+	.dl	437
 	.db	4,2,35,4,0,11
 	.db	'BL_T_CAN_ID',0,6,106,2
-	.dl	834
+	.dl	829
 	.db	13,24
-	.dl	157
+	.dl	152
 	.db	14,23,0,3
 	.db	'_bl_apdb',0,6,116,16,128,1,4
 	.db	'versionAPDB',0
-	.dl	442
+	.dl	437
 	.db	4,2,35,0,4
 	.db	'flashDate',0
-	.dl	785
+	.dl	780
 	.db	4,2,35,4,4
 	.db	'buildDate',0
-	.dl	785
+	.dl	780
 	.db	4,2,35,8,4
 	.db	'nodeType',0
-	.dl	442
+	.dl	437
 	.db	4,2,35,12,4
 	.db	'startAddress',0
-	.dl	442
+	.dl	437
 	.db	4,2,35,16,4
 	.db	'codeSize',0
-	.dl	442
+	.dl	437
 	.db	4,2,35,20,4
 	.db	'legacyAppCRC',0
-	.dl	442
+	.dl	437
 	.db	4,2,35,24,4
 	.db	'appCRC',0
-	.dl	442
+	.dl	437
 	.db	4,2,35,28,4
 	.db	'nodeNr',0
-	.dl	442
+	.dl	437
 	.db	4,2,35,32,4
 	.db	'CRCInit',0
-	.dl	442
+	.dl	437
 	.db	4,2,35,36,4
 	.db	'flags',0
-	.dl	442
+	.dl	437
 	.db	4,2,35,40,4
 	.db	'hook1',0
-	.dl	442
+	.dl	437
 	.db	4,2,35,44,4
 	.db	'hook2',0
-	.dl	442
+	.dl	437
 	.db	4,2,35,48,4
 	.db	'hook3',0
-	.dl	442
+	.dl	437
 	.db	4,2,35,52,4
 	.db	'mainAddress',0
-	.dl	442
+	.dl	437
 	.db	4,2,35,56,4
 	.db	'canDownloadID',0
-	.dl	834
+	.dl	829
 	.db	8,2,35,60,4
 	.db	'canUploadID',0
-	.dl	834
+	.dl	829
 	.db	8,2,35,68,4
 	.db	'legacyHeaderCRC',0
-	.dl	442
+	.dl	437
 	.db	4,2,35,76,4
 	.db	'version',0
-	.dl	442
+	.dl	437
 	.db	4,2,35,80,4
 	.db	'canBaudrate',0
-	.dl	442
+	.dl	437
 	.db	4,2,35,84,4
 	.db	'canChannel',0
-	.dl	442
+	.dl	437
 	.db	4,2,35,88,4
 	.db	'password',0
-	.dl	442
+	.dl	437
 	.db	4,2,35,92,4
 	.db	'magicSeed',0
-	.dl	442
+	.dl	437
 	.db	4,2,35,96,4
 	.db	'reserved',0
-	.dl	903
+	.dl	898
 	.db	24,2,35,100,4
 	.db	'headerCRC',0
-	.dl	442
+	.dl	437
 	.db	4,2,35,124,0,11
 	.db	'BL_APDB',0,6,150,1,2
-	.dl	912
+	.dl	907
 	.db	3
-	.db	'_Sensor',0,7,126,16,22,4
+	.db	'_Sensor',0,7,126,16,20,4
 	.db	'specMin',0
-	.dl	442
+	.dl	437
 	.db	4,2,35,0,4
 	.db	'specMax',0
-	.dl	442
+	.dl	437
 	.db	4,2,35,4,4
 	.db	'sensorValue',0
-	.dl	442
-	.db	4,2,35,8,4
+	.dl	136
+	.db	2,2,35,8,4
 	.db	'fresh',0
-	.dl	157
-	.db	1,2,35,12,4
+	.dl	152
+	.db	1,2,35,10,4
 	.db	'ioErr_powerInit',0
-	.dl	141
-	.db	2,2,35,14,4
+	.dl	136
+	.db	2,2,35,12,4
 	.db	'ioErr_powerSet',0
-	.dl	141
-	.db	2,2,35,16,4
+	.dl	136
+	.db	2,2,35,14,4
 	.db	'ioErr_signalInit',0
-	.dl	141
-	.db	2,2,35,18,4
+	.dl	136
+	.db	2,2,35,16,4
 	.db	'ioErr_signalGet',0
-	.dl	141
-	.db	2,2,35,20,0,11
+	.dl	136
+	.db	2,2,35,18,0,11
 	.db	'Sensor',0,7,143,1,3
-	.dl	1415
+	.dl	1410
 	.db	15
-	.dl	912
+	.dl	907
 _28:
 	.db	5
-	.dl	1615
+	.dl	1610
 	.db	16
-	.dl	157
+	.dl	152
 	.db	17,0,18
 	.db	'_lc_ub_user_stack',0,3,1,1,2
-	.dl	1625
+	.dl	1620
 	.db	1,1,0
 	; End of section
 
@@ -515,28 +515,28 @@ _51:
 	.debug		.debug_pubnames
 	.dl	116
 	.dw	2
-	.dl	_16,1662,324
+	.dl	_16,1657,319
 	.db	'IO_Driver_Init',0
-	.dl	376
+	.dl	371
 	.db	'IO_Driver_TaskBegin',0
-	.dl	410
+	.dl	405
 	.db	'IO_Driver_TaskEnd',0
-	.dl	474
+	.dl	469
 	.db	'IO_RTC_StartTime',0
-	.dl	524
+	.dl	519
 	.db	'_INDIRECT__',0
 	.dl	0
 	; End of section
 
 	.debug		.debug_info, cluster 'main'
 _19:
-	.dl	219
+	.dl	214
 	.dw	3
 	.dl	_20
 	.db	4,1
 	.db	'my_test.c',0
 	.db	'TASKING VX-toolset for C166: C compiler',0
-	.db	'C:\\Users\\helix\\Desktop\\SRE\\SRE SDK 2017-18\\VCU\\Environment\\dev\\Example_\\',0,12,1
+	.db	'C:\\Users\\helix\\Desktop\\SRE\\SRE SDK 2017-18\\VCU\\Environment\\dev\\BPS\\',0,12,1
 	.dl	_22,_21
 	.db	2
 	.dl	_15
@@ -594,20 +594,20 @@ _22:
 	.debug		.debug_pubnames
 	.dl	23
 	.dw	2
-	.dl	_19,223,150
+	.dl	_19,218,145
 	.db	'main',0
 	.dl	0
 	; End of section
 
 	.debug		.debug_info, cluster 'appl_db'
 _24:
-	.dl	163
+	.dl	158
 	.dw	3
 	.dl	_25
 	.db	4,1
 	.db	'my_test.c',0
 	.db	'TASKING VX-toolset for C166: C compiler',0
-	.db	'C:\\Users\\helix\\Desktop\\SRE\\SRE SDK 2017-18\\VCU\\Environment\\dev\\Example_\\',0,12,1,2
+	.db	'C:\\Users\\helix\\Desktop\\SRE\\SRE SDK 2017-18\\VCU\\Environment\\dev\\BPS\\',0,12,1,2
 	.dl	_15
 	.db	3
 	.db	'appl_db',0,3,33,6,5

@@ -1,5 +1,5 @@
 	; TASKING VX-toolset for C166: C compiler v4.0r1 Build 741 SN 07744515
-	; Options: -f cc12256a -c99 -Mh --fp-model=FT -Cxc2287 --core=xc16x -DTASKING_VIPER -D__USIC_MEM_TYPE=__PAGE_080_MEM_TYPE -D__MULTICAN_MEM_TYPE=__PAGE_080_MEM_TYPE -DTTC50 -DRTS_TTC_FLASH_DATE_YEAR=2018 -DRTS_TTC_FLASH_DATE_MONTH=3 -DRTS_TTC_FLASH_DATE_DAY=16 -DRTS_TTC_FLASH_DATE_HOUR=18 -DRTS_TTC_FLASH_DATE_MINUTE=4 -I..\..\..\Environment\inc -I..\..\..\Environment\inc_int -I..\..\..\Environment\bsp -I. --tradeoff=0 --no-tasking-sfr -ga --language=+cmp14,+div32,-gcc,-strings -O3 --source --mac -o build\sensors.src
+	; Options: -f cc14676a -c99 -Mh --fp-model=FT -Cxc2287 --core=xc16x -DTASKING_VIPER -D__USIC_MEM_TYPE=__PAGE_080_MEM_TYPE -D__MULTICAN_MEM_TYPE=__PAGE_080_MEM_TYPE -DTTC50 -DRTS_TTC_FLASH_DATE_YEAR=2018 -DRTS_TTC_FLASH_DATE_MONTH=4 -DRTS_TTC_FLASH_DATE_DAY=6 -DRTS_TTC_FLASH_DATE_HOUR=0 -DRTS_TTC_FLASH_DATE_MINUTE=39 -I..\..\..\Environment\inc -I..\..\..\Environment\inc_int -I..\..\..\Environment\bsp -I. --tradeoff=0 --no-tasking-sfr -ga --language=+cmp14,+div32,-gcc,-strings -O3 --source --mac -o build\sensors.src
 	; Module start
 	.source	'sensors.c'
 code_sensors_updateSensors	.section	code, cluster 'sensors_updateSensors', new
@@ -542,7 +542,7 @@ _56:
 	.extern	__spf2us : far
 	.debug		.debug_info
 _44:
-	.dl	1565
+	.dl	1560
 	.dw	3
 	.dl	_45
 	.db	4
@@ -550,7 +550,7 @@ _43:
 	.db	1
 	.db	'sensors.c',0
 	.db	'TASKING VX-toolset for C166: C compiler',0
-	.db	'C:\\Users\\helix\\Desktop\\SRE\\SRE SDK 2017-18\\VCU\\Environment\\dev\\Example_\\',0,12,1
+	.db	'C:\\Users\\helix\\Desktop\\SRE\\SRE SDK 2017-18\\VCU\\Environment\\dev\\BPS\\',0,12,1
 	.dl	_46
 _57:
 	.db	2
@@ -558,73 +558,73 @@ _57:
 _69:
 	.db	2
 	.db	'unsigned char',0,1,8,3,5
-	.dl	141
+	.dl	136
 	.db	4
-	.dl	174
+	.dl	169
 	.db	5
 	.db	'IO_PWD_FreqGet',0,1,240,4,14,6
-	.dl	141
+	.dl	136
 	.db	1,1,1,1,6
 	.db	'timer_channel',0,1,240,4,37,2
-	.dl	157
+	.dl	152
 	.db	6
 	.db	'frequency',0,1,241,4,45,2
-	.dl	180
+	.dl	175
 	.db	0,4
-	.dl	174
+	.dl	169
 	.db	3,5
-	.dl	157
+	.dl	152
 	.db	4
-	.dl	264
+	.dl	259
 	.db	5
 	.db	'IO_ADC_Get',0,2,131,3,14,6
-	.dl	141
+	.dl	136
 	.db	1,1,1,1,6
 	.db	'adc_channel',0,2,131,3,33,2
-	.dl	157
+	.dl	152
 	.db	6
 	.db	'adc_value',0,2,132,3,41,2
-	.dl	259
+	.dl	254
 	.db	6
 	.db	'fresh',0,2,133,3,39,2
-	.dl	270
+	.dl	265
 	.db	0,2
 	.db	'unsigned long int',0,4,7,3,5
-	.dl	359
+	.dl	354
 	.db	4
-	.dl	380
+	.dl	375
 	.db	5
 	.db	'IO_PWM_SetDuty',0,3,235,2,14,6
-	.dl	141
+	.dl	136
 	.db	1,1,1,1,6
 	.db	'pwm_channel',0,3,235,2,37,2
-	.dl	157
+	.dl	152
 	.db	6
 	.db	'duty_cycle',0,3,236,2,37,2
-	.dl	141
+	.dl	136
 	.db	6
 	.db	'duty_cycle_fb',0,3,237,2,45,2
-	.dl	386
+	.dl	381
 	.db	0,4
-	.dl	264
+	.dl	259
 	.db	5
 	.db	'IO_DI_Get',0,4,220,1,14,6
-	.dl	141
+	.dl	136
 	.db	1,1,1,1,6
 	.db	'di_channel',0,4,220,1,32,2
-	.dl	157
+	.dl	152
 	.db	6
 	.db	'di_value',0,4,221,1,38,2
-	.dl	488
+	.dl	483
 	.db	0,5
 	.db	'IO_DO_Set',0,4,141,2,14,6
-	.dl	141
+	.dl	136
 	.db	1,1,1,1,6
 	.db	'do_channel',0,4,141,2,32,2
-	.dl	157
+	.dl	152
 	.db	6
 	.db	'do_value',0,4,142,2,30,2
-	.dl	157
+	.dl	152
 	.db	0
 _64:
 	.db	7,5,103,9,1,8
@@ -640,109 +640,109 @@ _66:
 	.db	2
 	.db	'float',0,4,4,9
 	.db	'void',0,3,5
-	.dl	780
+	.dl	775
 	.db	10
 	.db	'__prof_adm',0,6,1,1
-	.dl	786
+	.dl	781
 	.db	10
 	.db	'__codeptr',0,6,1,1
-	.dl	359
+	.dl	354
 	.db	10
 	.db	'ubyte1',0,7,21,29
-	.dl	157
+	.dl	152
 	.db	10
 	.db	'ubyte2',0,7,22,29
-	.dl	141
+	.dl	136
 	.db	10
 	.db	'ubyte4',0,7,23,29
-	.dl	359
+	.dl	354
 	.db	10
 	.db	'float4',0,7,29,29
-	.dl	771
+	.dl	766
 	.db	10
 	.db	'bool',0,7,31,29
-	.dl	157
+	.dl	152
 	.db	10
 	.db	'IO_ErrorType',0,8,150,1,17
-	.dl	141
+	.dl	136
 	.db	10
 	.db	'Light',0,5,113,3
-	.dl	623
+	.dl	618
 	.db	11
 	.db	'_Sensor',0,5,126,16,20,12
 	.db	'specMin',0
-	.dl	359
+	.dl	354
 	.db	4,2,35,0,12
 	.db	'specMax',0
-	.dl	359
+	.dl	354
 	.db	4,2,35,4,12
 	.db	'sensorValue',0
-	.dl	141
+	.dl	136
 	.db	2,2,35,8,12
 	.db	'fresh',0
-	.dl	157
+	.dl	152
 	.db	1,2,35,10,12
 	.db	'ioErr_powerInit',0
-	.dl	141
+	.dl	136
 	.db	2,2,35,12,12
 	.db	'ioErr_powerSet',0
-	.dl	141
+	.dl	136
 	.db	2,2,35,14,12
 	.db	'ioErr_signalInit',0
-	.dl	141
+	.dl	136
 	.db	2,2,35,16,12
 	.db	'ioErr_signalGet',0
-	.dl	141
+	.dl	136
 	.db	2,2,35,18,0,10
 	.db	'Sensor',0,5,143,1,3
-	.dl	938
+	.dl	933
 	.db	13
 	.db	'Sensor_TPS0',0,5,152,1,15,5
-	.dl	938
+	.dl	933
 	.db	1,1,13
 	.db	'Sensor_TPS1',0,5,153,1,15,5
-	.dl	938
+	.dl	933
 	.db	1,1,13
 	.db	'Sensor_BPS0',0,5,156,1,15,5
-	.dl	938
+	.dl	933
 	.db	1,1,13
 	.db	'Sensor_WSS_FL',0,5,160,1,15,5
-	.dl	938
+	.dl	933
 	.db	1,1,13
 	.db	'Sensor_WSS_FR',0,5,161,1,15,5
-	.dl	938
+	.dl	933
 	.db	1,1,13
 	.db	'Sensor_WSS_RL',0,5,162,1,15,5
-	.dl	938
+	.dl	933
 	.db	1,1,13
 	.db	'Sensor_WSS_RR',0,5,163,1,15,5
-	.dl	938
+	.dl	933
 	.db	1,1,13
 	.db	'Sensor_RTDButton',0,5,176,1,15,5
-	.dl	938
+	.dl	933
 	.db	1,1,13
 	.db	'Sensor_EcoButton',0,5,177,1,15,5
-	.dl	938
+	.dl	933
 	.db	1,1,13
 	.db	'Sensor_TCSSwitchUp',0,5,178,1,15,5
-	.dl	938
+	.dl	933
 	.db	1,1,13
 	.db	'Sensor_TCSSwitchDown',0,5,179,1,15,5
-	.dl	938
+	.dl	933
 	.db	1,1,13
 	.db	'Sensor_TCSKnob',0,5,180,1,15,5
-	.dl	938
+	.dl	933
 	.db	1,1,13
 	.db	'Sensor_HVILTerminationSense',0,5,186,1,15,5
-	.dl	938
+	.dl	933
 	.db	1,1,13
 	.db	'Sensor_LVBattery',0,5,190,1,15,5
-	.dl	938
+	.dl	933
 	.db	1,1,14
-	.dl	157
+	.dl	152
 	.db	15,0,13
 	.db	'_lc_ub_user_stack',0,6,1,1,2
-	.dl	1532
+	.dl	1527
 	.db	1,1,0
 	; End of section
 
@@ -779,28 +779,28 @@ _254:
 	.debug		.debug_pubnames
 	.dl	95
 	.dw	2
-	.dl	_44,1569,185
+	.dl	_44,1564,180
 	.db	'IO_PWD_FreqGet',0
-	.dl	275
+	.dl	270
 	.db	'IO_ADC_Get',0
-	.dl	391
+	.dl	386
 	.db	'IO_PWM_SetDuty',0
-	.dl	493
+	.dl	488
 	.db	'IO_DI_Get',0
-	.dl	558
+	.dl	553
 	.db	'IO_DO_Set',0
 	.dl	0
 	; End of section
 
 	.debug		.debug_info, cluster 'sensors_updateSensors'
 _47:
-	.dl	354
+	.dl	349
 	.dw	3
 	.dl	_48
 	.db	4,1
 	.db	'sensors.c',0
 	.db	'TASKING VX-toolset for C166: C compiler',0
-	.db	'C:\\Users\\helix\\Desktop\\SRE\\SRE SDK 2017-18\\VCU\\Environment\\dev\\Example_\\',0,12,1
+	.db	'C:\\Users\\helix\\Desktop\\SRE\\SRE SDK 2017-18\\VCU\\Environment\\dev\\BPS\\',0,12,1
 	.dl	_50,_49
 	.db	2
 	.dl	_43
@@ -965,20 +965,20 @@ _50:
 	.debug		.debug_pubnames
 	.dl	40
 	.dw	2
-	.dl	_47,358,150
+	.dl	_47,353,145
 	.db	'sensors_updateSensors',0
 	.dl	0
 	; End of section
 
 	.debug		.debug_info, cluster 'Light_set'
 _52:
-	.dl	278
+	.dl	273
 	.dw	3
 	.dl	_53
 	.db	4,1
 	.db	'sensors.c',0
 	.db	'TASKING VX-toolset for C166: C compiler',0
-	.db	'C:\\Users\\helix\\Desktop\\SRE\\SRE SDK 2017-18\\VCU\\Environment\\dev\\Example_\\',0,12,1
+	.db	'C:\\Users\\helix\\Desktop\\SRE\\SRE SDK 2017-18\\VCU\\Environment\\dev\\BPS\\',0,12,1
 	.dl	_55,_54
 	.db	2
 	.dl	_43
@@ -1079,7 +1079,7 @@ _55:
 	.debug		.debug_pubnames
 	.dl	28
 	.dw	2
-	.dl	_52,282,150
+	.dl	_52,277,145
 	.db	'Light_set',0
 	.dl	0
 	; End of section
