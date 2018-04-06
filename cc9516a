@@ -1,0 +1,23 @@
+-o
+build/main.elf
+-d../../../Environment/bsp/lsl/TTC50/application.lsl
+-DXC2287_96F
+-D__CPU__=xc2287
+-D__CPU_XC2287__
+-obuild/main.hex:IHEX
+-obuild/main.s19:SREC
+-OtZXycL
+--error-limit=42
+--map-file=build/main.mapxml:XML
+--map-file
+-mcrfiklSmNuQ
+../../../Environment/bsp/bin/bsp_cstart_ttc50.obj
+build/brakePressureSensor.obj
+build/mathFunctions.obj
+build/my_test.obj
+build/sensors.obj
+../../../Environment/lib/xc2000_ttc50.lib
+-lch
+-lfph
+-lrth
+-Lc:\Program" "Files" "(x86)\TASKING\C166-VX" "v4.0r1\lib\2

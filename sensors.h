@@ -191,6 +191,7 @@ extern Sensor Sensor_LVBattery; // = { 0xA };  //Note: There will be no init for
 //----------------------------------------------------------------------------
 // Sensor Functions
 //----------------------------------------------------------------------------
+void sensors_initializeSensors(void);
 void sensors_updateSensors(void);
 
 
