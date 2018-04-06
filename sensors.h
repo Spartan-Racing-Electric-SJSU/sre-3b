@@ -133,7 +133,7 @@ typedef struct _Sensor {
     //ubyte2 calibNormal;  //zero value or normal position
 
     //ubyte2 calibratedValue;
-    ubyte4 sensorValue;
+    ubyte2 sensorValue;
     bool fresh;
     //bool isCalibrated;
 	IO_ErrorType ioErr_powerInit;
@@ -179,6 +179,8 @@ extern Sensor Sensor_TCSSwitchUp;
 extern Sensor Sensor_TCSSwitchDown;
 extern Sensor Sensor_TCSKnob;
 //TEMP BENCH SWITCHES
+extern Sensor Sensor_BenchTPS0;
+extern Sensor Sensor_BenchTPS1;
 extern Sensor Sensor_TEMP_BrakingSwitch;
 
 extern Sensor Sensor_HVILTerminationSense;
@@ -191,6 +193,7 @@ extern Sensor Sensor_LVBattery; // = { 0xA };  //Note: There will be no init for
 //----------------------------------------------------------------------------
 // Sensor Functions
 //----------------------------------------------------------------------------
+void sensors_initializeSensors(void);
 void sensors_updateSensors(void);
 
 

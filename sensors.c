@@ -64,14 +64,18 @@ void sensors_updateSensors(void)
     //Torque Encoders ---------------------------------------------------
     //Sensor_BenchTPS0.ioErr_signalGet = IO_ADC_Get(IO_ADC_5V_00, &Sensor_BenchTPS0.sensorValue, &Sensor_BenchTPS0.fresh);
     //Sensor_BenchTPS1.ioErr_signalGet = IO_ADC_Get(IO_ADC_5V_01, &Sensor_BenchTPS1.sensorValue, &Sensor_BenchTPS1.fresh);
-    Sensor_TPS0.ioErr_signalGet = IO_ADC_Get(IO_ADC_5V_00, &Sensor_TPS0.sensorValue, &Sensor_TPS0.fresh);
-    Sensor_TPS1.ioErr_signalGet = IO_ADC_Get(IO_ADC_5V_01, &Sensor_TPS1.sensorValue, &Sensor_TPS1.fresh);
+    ubyte2 sensorValueTPS0 = (ubyte2)Sensor_TPS0.sensorValue;
+    ubyte2 sensorValueTPS1 = (ubyte2)Sensor_TPS1.sensorValue;
+    
+    Sensor_TPS0.ioErr_signalGet = IO_ADC_Get(IO_ADC_5V_00, &sensorValueTPS0, &Sensor_TPS0.fresh);
+    Sensor_TPS1.ioErr_signalGet = IO_ADC_Get(IO_ADC_5V_01, &sensorValueTPS1, &Sensor_TPS1.fresh);
     //Sensor_TPS0.ioErr_signalGet = IO_PWD_PulseGet(IO_PWM_00, &Sensor_TPS0.sensorValue);
 	//Sensor_TPS1.ioErr_signalGet = IO_PWD_PulseGet(IO_PWM_01, &Sensor_TPS1.sensorValue);
 
 	
 	//Brake Position Sensor ---------------------------------------------------
-	Sensor_BPS0.ioErr_signalGet = IO_ADC_Get(IO_ADC_5V_02, &Sensor_BPS0.sensorValue, &Sensor_BPS0.fresh);
+    ubyte2 sensorValueBPS0 = (ubyte2)Sensor_BPS0.sensorValue;
+	Sensor_BPS0.ioErr_signalGet = IO_ADC_Get(IO_ADC_5V_02, &sensorValueBPS0, &Sensor_BPS0.fresh);
 
 	//TCS Knob
 	Sensor_TCSKnob.ioErr_signalGet = IO_ADC_Get(IO_ADC_5V_04, &Sensor_TCSKnob.sensorValue, &Sensor_TCSKnob.fresh);
@@ -93,7 +97,9 @@ void sensors_updateSensors(void)
 	Sensor_WSS_RR.ioErr_signalGet = IO_PWD_FreqGet(IO_PWD_09, &Sensor_WSS_RR.sensorValue);
 
     //Switches / Digital ---------------------------------------------------
-	Sensor_RTDButton.ioErr_signalGet = IO_DI_Get(IO_DI_00, &Sensor_RTDButton.sensorValue);
+    ubyte2 sensorValueRTDButton = (ubyte2)Sensor_RTDButton.sensorValue;
+    
+	Sensor_RTDButton.ioErr_signalGet = IO_DI_Get(IO_DI_00, &sensorValueRTDButton);
 	Sensor_EcoButton.ioErr_signalGet = IO_DI_Get(IO_DI_01, &Sensor_EcoButton.sensorValue);
 	Sensor_TCSSwitchUp.ioErr_signalGet = IO_DI_Get(IO_DI_02, &Sensor_TCSSwitchUp.sensorValue);
 	Sensor_TCSSwitchDown.ioErr_signalGet = IO_DI_Get(IO_DI_03, &Sensor_TCSSwitchDown.sensorValue);
