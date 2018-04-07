@@ -1,5 +1,5 @@
 	; TASKING VX-toolset for C166: C compiler v4.0r1 Build 741 SN 07744515
-	; Options: -f cc12408a -c99 -Mh --fp-model=FT -Cxc2287 --core=xc16x -DTASKING_VIPER -D__USIC_MEM_TYPE=__PAGE_080_MEM_TYPE -D__MULTICAN_MEM_TYPE=__PAGE_080_MEM_TYPE -DTTC50 -DRTS_TTC_FLASH_DATE_YEAR=2018 -DRTS_TTC_FLASH_DATE_MONTH=4 -DRTS_TTC_FLASH_DATE_DAY=6 -DRTS_TTC_FLASH_DATE_HOUR=0 -DRTS_TTC_FLASH_DATE_MINUTE=39 -I..\..\..\Environment\inc -I..\..\..\Environment\inc_int -I..\..\..\Environment\bsp -I. --tradeoff=0 --no-tasking-sfr -ga --language=+cmp14,+div32,-gcc,-strings -O3 --source --mac -o build\brakePressureSensor.src
+	; Options: -f cc1016a -c99 -Mh --fp-model=FT -Cxc2287 --core=xc16x -DTASKING_VIPER -D__USIC_MEM_TYPE=__PAGE_080_MEM_TYPE -D__MULTICAN_MEM_TYPE=__PAGE_080_MEM_TYPE -DTTC50 -DRTS_TTC_FLASH_DATE_YEAR=2018 -DRTS_TTC_FLASH_DATE_MONTH=4 -DRTS_TTC_FLASH_DATE_DAY=5 -DRTS_TTC_FLASH_DATE_HOUR=18 -DRTS_TTC_FLASH_DATE_MINUTE=54 -I..\..\..\Environment\inc -I..\..\..\Environment\inc_int -I..\..\..\Environment\bsp -I. --tradeoff=0 --no-tasking-sfr -ga --language=+cmp14,+div32,-gcc,-strings -O3 --source --mac -o build\brakePressureSensor.src
 	; Module start
 	.source	'brakePressureSensor.c'
 code_BrakePressureSensor_new	.section	code, cluster 'BrakePressureSensor_new', new
@@ -31,7 +31,7 @@ _BrakePressureSensor_new	.proc	far
 ; brakePressureSensor.c	    20      BrakePressureSensor* me = (BrakePressureSensor*)malloc(sizeof(struct _BrakePressureSensor));
 	movw	r2,#0x20
 	call	_malloc
-_1228:
+_1357:
 
 ; brakePressureSensor.c	    21      //me->bench = benchMode;
 ; brakePressureSensor.c	    22  
@@ -41,19 +41,19 @@ _1228:
 	movw	r12,r3
 	addw	r11,#0x2
 	addcw	r12,#0x0
-_1229:
+_1358:
 	movw	r13,#@sof(_Sensor_BPS0)
-_1230:
+_1359:
 	exts	r12,#0x1
 	movw	[r11],r13
 	addw	r11,#0x2
 	addcw	r12,#0x0
-_1231:
+_1360:
 	movw	r14,#@seg(_Sensor_BPS0)
-_1232:
+_1361:
 	exts	r12,#0x1
 	movw	[r11],r14
-_1233:
+_1362:
 
 ; brakePressureSensor.c	    25      //me->tps1 = (benchMode == TRUE) ? &Sensor_BenchTPS1 : &Sensor_TPS1;
 ; brakePressureSensor.c	    26  	
@@ -63,12 +63,12 @@ _1233:
 	movw	r12,r3
 	addw	r11,#0xa
 	addcw	r12,#0x0
-_1234:
+_1363:
 	movb	rh4,#0x0
-_1235:
+_1364:
 	exts	r12,#0x1
 	movb	[r11],rh4
-_1236:
+_1365:
 
 ; brakePressureSensor.c	    29  	//me->bps1_reverse = TRUE;
 ; brakePressureSensor.c	    30  
@@ -77,9 +77,9 @@ _1236:
 	movw	r12,r3
 	addw	r11,#0x1a
 	addcw	r12,#0x0
-_1237:
+_1366:
 	movw	r13,#0x0
-_1238:
+_1367:
 	exts	r12,#0x1
 	movw	[r11],r13
 	addw	r11,#0x2
@@ -153,7 +153,7 @@ _192:
 _193:
 	exts	r12,#0x1
 	movw	[r11],r13
-_1239:
+_1368:
 	movw	r11,r2
 	movw	r12,r3
 	addw	r11,#0x12
@@ -168,30 +168,30 @@ _200:
 	movw	r12,r3
 	addw	r11,#0x19
 	addcw	r12,#0x0
-_1240:
+_1369:
 	addw	r13,#0x6
 	addcw	r14,#0x0
-_1241:
+_1370:
 	exts	r12,#0x1
 	movb	[r11],rh4
-_1242:
+_1371:
 	movw	r4,#0x226
-_1243:
+_1372:
 	exts	r14,#0x1
 	movw	[r13],r4
-_1244:
+_1373:
 
 ; brakePressureSensor.c	    95  	me->bps0_calibMax = 1250;
 	movw	r13,r2
 	movw	r14,r3
 	addw	r13,#0x8
 	addcw	r14,#0x0
-_1245:
+_1374:
 	movw	r4,#0x4e2
-_1246:
+_1375:
 	exts	r14,#0x1
 	movw	[r13],r4
-_1247:
+_1376:
 
 ; brakePressureSensor.c	    96  
 ; brakePressureSensor.c	    97      //me->bps1_rawCalibMin = me->bps1->specMax;
@@ -202,7 +202,7 @@ _1247:
 ; brakePressureSensor.c	   102  //	me->bps1_calibMax = me->bps1->sensorValue;
 ; brakePressureSensor.c	   103      me->calibrated = TRUE;
 	movb	rh4,#0x1
-_1248:
+_1377:
 	exts	r12,#0x1
 	movb	[r11],rh4
 _201:
@@ -216,147 +216,159 @@ code_BrakePressureSensor_update	.section	code, cluster 'BrakePressureSensor_upda
 ; Function _BrakePressureSensor_update
 _45:
 _BrakePressureSensor_update	.proc	far
-	movw	[-r15],r0
-_226:
-	movw	[-r15],r1
-_237:
-	movw	[-r15],r6
-_248:
-	movw	[-r15],r7
-_259:
-	movw	[-r15],r8
-_270:
-	movw	[-r15],r9
-_281:
-	movw	[-r15],r10
-_292:
 	subw	r15,#0x2
-_303:
+_226:
 	movw	r13,r2
-_1253:
+_1382:
 	movw	r14,r2
-_1254:
+_1383:
+	CoSTORE	[r15-],MSW
+_237:
+	CoSTORE	[r15-],MAL
+_248:
+	CoSTORE	[r15],MAH
+	movw	[-r15],r0
+_259:
+	movw	[-r15],r1
+_270:
+	movw	[-r15],r6
+_281:
+	movw	[-r15],r7
+_292:
+	movw	[-r15],r8
+_303:
+	movw	[-r15],r9
+_314:
+	movw	[-r15],r10
+_325:
+	subw	r15,#0x2
+_336:
+	movw	r5,r3
+_1384:
+	movw	r9,r3
+_1385:
 	movb	[r15],rl4
-_606:
+_735:
 	movw	r4,r3
-_604:
+_733:
 	addw	r13,#0x2
 	addcw	r4,#0x0
-_1255:
-	movw	r5,r3
-_1256:
+_1386:
+	addw	r14,#0xc
+	addcw	r5,#0x0
+_1387:
 	exts	r4,#0x1
 	movw	r8,[r13]
 	addw	r13,#0x2
 	addcw	r4,#0x0
-_1257:
-	movw	r9,r3
-_1258:
+_1388:
+	movw	r11,r2
+_1389:
 	exts	r4,#0x1
 	movw	r13,[r13]
-_1259:
+_1390:
 	addw	r8,#0x8
 	addcw	r13,#0x0
-_1260:
-	addw	r14,#0xc
-	addcw	r5,#0x0
-_1261:
+_1391:
+	movw	r12,r3
+_736:
 	exts	r13,#0x1
-	movw	r13,[r8]
-_1262:
+	movw	r4,[r8]
+	addw	r8,#0x2
+	addcw	r13,#0x0
+_1392:
+	movw	r7,r3
+_1393:
+	exts	r13,#0x1
+	CoLOAD	r4,[r8]
+_1394:
 	movw	r8,r2
 	addw	r8,#0x1a
 	addcw	r9,#0x0
-_1263:
+_1395:
 	movw	r4,r8
-_1264:
+_1396:
 	exts	r5,#0x1
-	movw	[r14],r13
-_1265:
+	CoSTORE	[r14],MAL
+_1397:
 	movw	r13,#0x0
-_1266:
+_1398:
 	movw	r10,r9
 	exts	r10,#0x1
 	movw	[r4],r13
 	addw	r4,#0x2
 	addcw	r10,#0x0
-_1267:
-	movw	r11,r2
-_1268:
 	exts	r10,#0x1
 	movw	[r4],r13
-_1269:
-	movw	r12,r3
-_607:
+_1399:
 	movw	r10,r2
-	movw	r7,r3
-_1270:
+_1400:
 	addw	r2,#0x12
-_605:
+_734:
 	addcw	r3,#0x0
-_1271:
+_1401:
 	addw	r10,#0xe
 	addcw	r7,#0x0
-_1272:
+_1402:
 	exts	r3,#0x1
 	movb	rh4,[r2]
-_1273:
+_1403:
 	cmpb	rh4,#0x1
 	jmp-	cc_eq,_3
-_1274:
+_1404:
 	movw	r13,r11
 	movw	r4,r12
 	addw	r13,#0x19
 	addcw	r4,#0x0
 	exts	r4,#0x1
 	movb	rh4,[r13]
-_1275:
+_1405:
 	jmp-	cc_ne,_4
 _3:
 	movw	r11,#0x0
-_608:
+_737:
 	exts	r7,#0x1
 	movw	[r10],r11
 	addw	r10,#0x2
 	addcw	r7,#0x0
 	exts	r7,#0x1
 	movw	[r10],r11
-_1276:
+_1406:
 	jmp	_5
 _4:
 	subw	r15,#0x2
-_314:
+_347:
 	movb	rh4,#0x1
 	movb	[r15],rh4
-_1277:
+_1407:
 	exts	r5,#0x1
 	movw	r2,[r14]
-_1278:
+_1408:
 	movw	r4,r11
 	movw	r5,r12
 	addw	r4,#0x6
 	addcw	r5,#0x0
-_1279:
+_1409:
 	addw	r11,#0x8
-_609:
+_738:
 	addcw	r12,#0x0
-_1280:
+_1410:
 	call	__us2spf
 	movw	r14,r2
-_1281:
+_1411:
 	exts	r5,#0x1
 	movw	r2,[r4]
-_1282:
+_1412:
 	movw	r13,r3
-_1283:
+_1413:
 	call	__us2spf
 	movw	r4,r2
-_1284:
+_1414:
 	exts	r12,#0x1
 	movw	r2,[r11]
-_1285:
+_1415:
 	movw	r5,r3
-_1286:
+_1416:
 	call	__us2spf
 	movw	r11,r2
 	movw	r12,r3
@@ -364,29 +376,29 @@ _1286:
 	movw	r3,r13
 	call	_getPercent
 	addw	r15,#0x2
-_325:
+_358:
 	movw	r11,r10
 	movw	r12,r7
 	exts	r12,#0x1
 	movw	[r11],r2
 	addw	r11,#0x2
 	addcw	r12,#0x0
-_1287:
+_1417:
 	movw	r13,r8
-_1288:
+_1418:
 	exts	r12,#0x1
 	movw	[r11],r3
-_1289:
+_1419:
 	exts	r7,#0x1
 	movw	r11,[r10]
 	addw	r10,#0x2
 	addcw	r7,#0x0
-_1290:
+_1420:
 	movw	r14,r9
-_1291:
+_1421:
 	exts	r7,#0x1
 	movw	r12,[r10]
-_1292:
+_1422:
 	exts	r14,#0x1
 	movw	[r13],r11
 	addw	r13,#0x2
@@ -399,110 +411,110 @@ _5:
 	movw	r9,[r8]
 	addw	r8,#0x2
 	addcw	r11,#0x0
-_1293:
+_1423:
 	movw	r2,r9
-_1294:
+_1424:
 	exts	r11,#0x1
 	movw	r8,[r8]
-_1295:
+_1425:
 	movw	r3,r8
 	movw	r4,#0x0
 	movw	r5,#0x0
 	call	__less_than_or_equal_spf
 	movb	rl2,rl2
-_1296:
+_1426:
 	jmp+	cc_eq,_6
-_1297:
+_1427:
 	movb	rl2,#0x4
 	movw	r4,#0x0
 	movw	r5,#0x0
-_1298:
+_1428:
 	jmp	_7
 _6:
 	movb	rh4,[r15]
-_610:
+_739:
 	jmp+	cc_ne,_8
-_1299:
+_1429:
 	movw	r5,#0x3f80
 	movb	rl2,#0x4
 	movw	r4,#0x0
-_611:
+_740:
 	jmp	_9
 _8:
 	movw	r2,r9
 	movw	r3,r8
 	movw	r4,#0x0
-_612:
+_741:
 	movw	r5,#0x0
 	call	__larger_than_spf
 	movb	rl2,rl2
-_1300:
+_1430:
 	jmp	cc_eq,_10
-_1301:
+_1431:
 	movw	r2,r9
 	movw	r3,r8
 	call	__spf2dpf
-_1302:
+_1432:
 	movw	r11,#0x147b
 	movw	r12,#0x47ae
 	movw	r13,#0x7ae1
 	movw	r14,#0x3f94
-_1303:
+_1433:
 	call	__less_than_dpf
 	movb	rl2,rl2
 	jmp+	cc_eq,_11
-_1304:
+_1434:
 	movw	r4,#0xcccd
 	movw	r5,#0x3e4c
 	movb	rl2,#0x4
-_1305:
+_1435:
 	jmp	_12
 _11:
 _10:
 	movw	r2,r9
 	movw	r3,r8
 	call	__spf2dpf
-_1306:
+_1436:
 	movw	r10,r2
-_1307:
+_1437:
 	movw	r11,#0x147b
 	movw	r12,#0x47ae
 	movw	r13,#0x7ae1
 	movw	r14,#0x3f94
-_1308:
+_1438:
 	call	__larger_than_or_equal_dpf
 	movb	rl2,rl2
-_1309:
+_1439:
 	jmp	cc_eq,_13
-_1310:
+_1440:
 	movw	r11,#0x3333
 	movw	r14,#0x3fd3
-_1311:
+_1441:
 	movw	r2,r10
 	movw	r12,r11
 	movw	r13,r11
 	call	__less_than_dpf
 	movb	rl2,rl2
 	jmp+	cc_eq,_14
-_1312:
+_1442:
 	movw	r4,#0x999a
 	movw	r5,#0x3e99
 	movb	rl2,#0x4
-_1313:
+_1443:
 	jmp	_15
 _14:
 _13:
 	movw	r11,#0x3333
 	movw	r14,#0x3fd3
-_1314:
+_1444:
 	movw	r2,r10
 	movw	r12,r11
 	movw	r13,r11
 	call	__larger_than_or_equal_dpf
 	movb	rl2,rl2
-_1315:
+_1445:
 	jmp+	cc_eq,_16
-_1316:
+_1446:
 	movb	rl2,#0x4
 	movw	r4,r9
 	movw	r5,r8
@@ -513,21 +525,33 @@ _15:
 	call	_Light_set
 _16:
 	addw	r15,#0x2
-_336:
-	movw	r10,[r15+]
-_347:
-	movw	r9,[r15+]
-_358:
-	movw	r8,[r15+]
 _369:
-	movw	r7,[r15+]
+	movw	r10,[r15+]
 _380:
-	movw	r6,[r15+]
+	movw	r9,[r15+]
 _391:
-	movw	r1,[r15+]
+	movw	r8,[r15+]
 _402:
-	movw	r0,[r15+]
+	movw	r7,[r15+]
 _413:
+	movw	r6,[r15+]
+_424:
+	movw	r1,[r15+]
+_435:
+	movw	r0,[r15+]
+_446:
+	movw	MAH,[r15]
+_700:
+	addw	r15,#0x2
+_457:
+	movw	MAL,[r15]
+_711:
+	addw	r15,#0x2
+_468:
+	movw	MSW,[r15]
+_722:
+	addw	r15,#0x2
+_479:
 	ret
 _153:
 	; End of function
@@ -542,26 +566,26 @@ _BrakePressureSensor_resetCalibration	.proc	far
 	movw	r12,r3
 	addw	r11,#0x6
 	addcw	r12,#0x0
-_1327:
+_1457:
 	movw	r13,#0x226
-_1328:
+_1458:
 	exts	r12,#0x1
 	movw	[r11],r13
-_1329:
+_1459:
 	movw	r11,r2
 	movw	r12,r3
 	addw	r11,#0x8
 	addcw	r12,#0x0
-_1330:
+_1460:
 	movw	r13,#0x4e2
-_1331:
+_1461:
 	exts	r12,#0x1
 	movw	[r11],r13
-_1332:
+_1462:
 	addw	r2,#0x19
-_613:
+_742:
 	addcw	r3,#0x0
-_1333:
+_1463:
 
 ; brakePressureSensor.c	   104  }
 	movb	rh4,#0x1
@@ -615,14 +639,14 @@ code_BrakePressureSensor_startCalibration	.section	code, cluster 'BrakePressureS
 _93:
 _BrakePressureSensor_startCalibration	.proc	far
 	movw	[-r15],r6
-_614:
+_743:
 	movw	[-r15],r8
-_625:
+_754:
 	movw	[-r15],r9
-_636:
+_765:
 	movw	r8,r2
 	movw	r9,r3
-_742:
+_871:
 
 ; brakePressureSensor.c	   117  {
 ; brakePressureSensor.c	   118      if (me->runCalibration == FALSE) //Ignore the button if calibration is already running
@@ -633,23 +657,23 @@ _742:
 ; brakePressureSensor.c	   123          IO_RTC_StartTime(&(me->timestamp_calibrationStart));
 	movw	r13,r2
 	movw	r14,r3
-_1346:
+_1476:
 	addw	r2,#0x12
-_740:
+_869:
 	addcw	r3,#0x0
-_1347:
+_1477:
 	movb	rh6,rl4
-_744:
+_873:
 	addw	r13,#0x14
 	addcw	r14,#0x0
-_1348:
+_1478:
 	exts	r3,#0x1
 	movb	rh4,[r2]
-_1349:
+_1479:
 	jmp-	cc_ne,_17
-_1350:
+_1480:
 	movb	rh4,#0x1
-_1351:
+_1481:
 	exts	r3,#0x1
 	movb	[r2],rh4
 _214:
@@ -657,22 +681,22 @@ _214:
 	movw	r3,r9
 	addw	r2,#0x19
 	addcw	r3,#0x0
-_1352:
+_1482:
 	movw	r11,r8
 	movw	r12,r9
 	addw	r11,#0x6
 	addcw	r12,#0x0
-_1353:
+_1483:
 	movb	rl4,#0x0
-_741:
+_870:
 	exts	r3,#0x1
 	movb	[r2],rl4
-_1354:
+_1484:
 	movw	r5,#0x226
-_1355:
+_1485:
 	exts	r12,#0x1
 	movw	[r11],r5
-_1356:
+_1486:
 	movw	r11,r8
 	movw	r12,r9
 	addw	r11,#0x8
@@ -681,26 +705,26 @@ _215:
 
 ; brakePressureSensor.c	   124          me->calibrationRunTime = secondsToRun;
 	addw	r8,#0x18
-_743:
+_872:
 	addcw	r9,#0x0
 _218:
 	movw	r5,#0x4e2
-_1357:
+_1487:
 	exts	r12,#0x1
 	movw	[r11],r5
-_1358:
+_1488:
 _219:
 	exts	r3,#0x2
 	movb	[r2],rh4
 	movb	[r2],rl4
-_1359:
+_1489:
 	movw	r2,r13
 	movw	r3,r14
 	call	_IO_RTC_StartTime
-_1360:
+_1490:
 	exts	r9,#0x1
 	movb	[r8],rh6
-_1361:
+_1491:
 	jmp	_18
 _17:
 
@@ -716,11 +740,11 @@ _18:
 ; brakePressureSensor.c	   129      }
 ; brakePressureSensor.c	   130  }
 	movw	r9,[r15+]
-_647:
+_776:
 	movw	r8,[r15+]
-_658:
+_787:
 	movw	r6,[r15+]
-_669:
+_798:
 	ret
 _178:
 	; End of function
@@ -746,45 +770,45 @@ code_BrakePressureSensor_calibrationCycle	.section	code, cluster 'BrakePressureS
 _105:
 _BrakePressureSensor_calibrationCycle	.proc	far
 	subw	r15,#0x2
-_745:
+_874:
 	CoSTORE	[r15-],MSW
-_756:
+_885:
 	CoSTORE	[r15-],MAL
-_767:
+_896:
 	CoSTORE	[r15],MAH
 	movw	[-r15],r0
-_778:
+_907:
 	movw	[-r15],r1
-_789:
+_918:
 	movw	[-r15],r6
-_800:
+_929:
 	movw	[-r15],r7
-_811:
+_940:
 	movw	[-r15],r8
-_822:
+_951:
 	movw	[-r15],r9
-_833:
+_962:
 	movw	[-r15],r10
-_844:
+_973:
 	subw	r15,#0x4
-_855:
+_984:
 	movw	r8,r2
 	movw	r0,r3
-_1212:
+_1341:
 
 ; brakePressureSensor.c	   144  {
 ; brakePressureSensor.c	   145      if (me->runCalibration == TRUE)
 	addw	r2,#0x12
-_1213:
+_1342:
 	addcw	r3,#0x0
 	movw	[r15+#0x2],r2
 	movw	[r15],r3
 	exts	r3,#0x1
 	movb	rh4,[r2]
-_1210:
+_1339:
 	cmpb	rh4,#0x1
 	jmp+	cc_ne,_19
-_1366:
+_1496:
 
 ; brakePressureSensor.c	   146      {
 ; brakePressureSensor.c	   147          if (IO_RTC_GetTimeUS(me->timestamp_calibrationStart) < (ubyte4)(me->calibrationRunTime) * 1000 * 1000)
@@ -792,49 +816,49 @@ _1366:
 	movw	r12,r0
 	addw	r11,#0x14
 	addcw	r12,#0x0
-_1367:
+_1497:
 
 ; brakePressureSensor.c	   148          {
 ; brakePressureSensor.c	   149  			//The calibration itself
 ; brakePressureSensor.c	   150  			if (me->bps0->sensorValue < me->bps0_calibMin) { me->bps0_calibMin = (ubyte2) me->bps0->sensorValue; }
 	movw	r10,r8
-_1368:
+_1498:
 	exts	r12,#0x1
 	movw	r2,[r11]
-_1211:
+_1340:
 	addw	r11,#0x2
 	addcw	r12,#0x0
-_1369:
+_1499:
 	movw	r9,r0
-_1370:
+_1500:
 	exts	r12,#0x1
 	movw	r3,[r11]
 	call	_IO_RTC_GetTimeUS
-_1371:
+_1501:
 	movw	r11,r8
 	movw	r12,r0
 	addw	r11,#0x18
 	addcw	r12,#0x0
-_1372:
+_1502:
 	addw	r10,#0x6
 	addcw	r9,#0x0
-_1373:
+_1503:
 	exts	r12,#0x1
 	movb	rh4,[r11]
-_1374:
+_1504:
 	movbz	r11,rh4
-_1375:
+_1505:
 	movw	r12,#0x4240
 	movw	r13,#0xf
-_1376:
+_1506:
 	CoMULu	r11,r13
 	CoSHL	#0x10
 	CoMACu	r11,r12
-_1377:
+_1507:
 	cmpw	r2,MAL
 	subcw	r3,MAH
 	jmp	cc_uge,_20
-_1378:
+_1508:
 	movw	r14,r8
 	movw	r4,r0
 	addw	r14,#0x2
@@ -845,23 +869,27 @@ _1378:
 	movw	r13,[r11]
 	addw	r11,#0x2
 	addcw	r12,#0x0
-_1379:
-	movw	r2,r10
-_1380:
 	exts	r12,#0x1
 	movw	r11,[r11]
-_1381:
+_1509:
 	addw	r13,#0x8
 	addcw	r11,#0x0
 	exts	r11,#0x1
+	movw	r12,[r13]
+	addw	r13,#0x2
+	addcw	r11,#0x0
+	exts	r11,#0x1
 	movw	r11,[r13]
-_1382:
+_1510:
 	exts	r9,#0x1
-	cmpw	r11,[r2]
+	movw	r13,[r10]
+_1511:
+	cmpw	r12,r13
+	subcw	r11,#0x0
 	jmp-	cc_uge,_21
-_1383:
+_1512:
 	exts	r9,#0x1
-	movw	[r10],r11
+	movw	[r10],r12
 _21:
 
 ; brakePressureSensor.c	   151  			if (me->bps0->sensorValue > me->bps0_calibMax) { me->bps0_calibMax = (ubyte2) me->bps0->sensorValue; }
@@ -869,28 +897,32 @@ _21:
 	movw	r11,[r14]
 	addw	r14,#0x2
 	addcw	r4,#0x0
-_1384:
+_1513:
 	addw	r8,#0x8
 	addcw	r0,#0x0
-_1385:
+_1514:
 	exts	r4,#0x1
 	movw	r12,[r14]
-_1386:
+_1515:
 	addw	r11,#0x8
 	addcw	r12,#0x0
-_1387:
-	movw	r2,r8
-_1388:
+	exts	r12,#0x1
+	movw	r13,[r11]
+	addw	r11,#0x2
+	addcw	r12,#0x0
 	exts	r12,#0x1
 	movw	r11,[r11]
-_1389:
+_1516:
 	exts	r0,#0x1
-	cmpw	r11,[r2]
+	movw	r12,[r8]
+_1517:
+	cmpw	r13,r12
+	subcw	r11,#0x0
 	jmp-	cc_ule,_22
-_1390:
+_1518:
 	exts	r0,#0x1
-	movw	[r8],r11
-_1391:
+	movw	[r8],r13
+_1519:
 	jmp	_23
 _20:
 
@@ -911,12 +943,12 @@ _20:
 	addcw	r12,#0x0
 	exts	r12,#0x1
 	movb	rh7,[r11]
-_1392:
+_1520:
 	jmp	cc_eq,_24
-_1393:
+_1521:
 	movw	r4,#0x3333
 	movw	r5,#0x3f73
-_1394:
+_1522:
 	jmp	_25
 _24:
 	movw	r4,#0x8f5c
@@ -925,20 +957,20 @@ _25:
 	exts	r9,#0x1
 	movw	r2,[r10]
 	call	__us2spf
-_1395:
+_1523:
 	call	__mul_spf
 	call	__spf2us
 	exts	r9,#0x1
 	movw	[r10],r2
-_1396:
+_1524:
 
 ; brakePressureSensor.c	   163              me->bps0_calibMax *= me->bps0_reverse ? pedalTopPlay : pedalBottomPlay;
 	cmpb	rh7,#0x0
 	jmp	cc_eq,_26
-_1397:
+_1525:
 	movw	r4,#0x8f5c
 	movw	r5,#0x3f82
-_1398:
+_1526:
 	jmp	_27
 _26:
 	movw	r4,#0x3333
@@ -948,7 +980,7 @@ _27:
 	movw	r12,r0
 	addw	r11,#0x8
 	addcw	r12,#0x0
-_1399:
+_1527:
 
 ; brakePressureSensor.c	   164              //me->bps1_calibMin *= me->bps1_reverse ? pedalBottomPlay : pedalTopPlay;
 ; brakePressureSensor.c	   165              //me->bps1_calibMax *= me->bps1_reverse ? pedalTopPlay : pedalBottomPlay;
@@ -957,29 +989,29 @@ _1399:
 ; brakePressureSensor.c	   168  			me->calibrated = TRUE;
 	addw	r8,#0x19
 	addcw	r0,#0x0
-_1400:
+_1528:
 	exts	r12,#0x1
 	movw	r2,[r11]
 	call	__us2spf
-_1401:
+_1529:
 	call	__mul_spf
 	call	__spf2us
 	exts	r12,#0x1
 	movw	[r11],r2
-_1402:
+_1530:
 	movw	r11,[r15+#0x2]
-_1403:
+_1531:
 	movb	rh4,#0x0
-_1404:
+_1532:
 	movw	r12,[r15]
 	exts	r12,#0x1
 	movb	[r11],rh4
-_1405:
+_1533:
 	movb	rh4,#0x1
-_1406:
+_1534:
 	exts	r0,#0x1
 	movb	[r8],rh4
-_1407:
+_1535:
 
 ; brakePressureSensor.c	   169  			Light_set(Light_dashTCS, 0);
 	movb	rl2,#0x3
@@ -1011,33 +1043,33 @@ _19:
 ; brakePressureSensor.c	   188  
 ; brakePressureSensor.c	   189  }
 	addw	r15,#0x4
-_866:
+_995:
 	movw	r10,[r15+]
-_877:
+_1006:
 	movw	r9,[r15+]
-_888:
+_1017:
 	movw	r8,[r15+]
-_899:
+_1028:
 	movw	r7,[r15+]
-_910:
+_1039:
 	movw	r6,[r15+]
-_921:
+_1050:
 	movw	r1,[r15+]
-_932:
+_1061:
 	movw	r0,[r15+]
-_943:
+_1072:
 	movw	MAH,[r15]
-_1177:
+_1306:
 	addw	r15,#0x2
-_954:
+_1083:
 	movw	MAL,[r15]
-_1188:
+_1317:
 	addw	r15,#0x2
-_965:
+_1094:
 	movw	MSW,[r15]
-_1199:
+_1328:
 	addw	r15,#0x2
-_976:
+_1105:
 	ret
 _183:
 	; End of function
@@ -1060,15 +1092,15 @@ _BrakePressureSensor_getIndividualSensorPercent	.proc	far
 ; brakePressureSensor.c	   197  
 ; brakePressureSensor.c	   198  	switch (sensorNumber)
 	movbz	r13,rl4
-_1216:
+_1345:
 	cmpw	r13,#0x1
 	jmp	cc_ugt,_28
 	shl	r13,#0x1
-_1215:
+_1344:
 	exts	#@seg(_$1$swt),#0x1
 	movw	r13,[r13+#@sof(_$1$swt)]
 	jmpi	[r13]
-_1214:
+_1343:
 	; End of section
 
 shuge__1_swt	.section	shuge, romdata, new
@@ -1088,19 +1120,19 @@ _29:
 	addcw	r3,#0x0
 	exts	r3,#0x1
 	movw	r13,[r2]
-_1217:
+_1346:
 	addw	r2,#0x2
 	addcw	r3,#0x0
 	exts	r3,#0x1
 	movw	r14,[r2]
-_1321:
+_1451:
 	exts	r12,#0x1
 	movw	[r11],r13
 	addw	r11,#0x2
 	addcw	r12,#0x0
 	exts	r12,#0x1
 	movw	[r11],r14
-_1322:
+_1452:
 
 ; brakePressureSensor.c	   202  		//bps = me->bps0;
 ; brakePressureSensor.c	   203  		//calMin = me->bps0_calibMin;
@@ -1118,7 +1150,7 @@ _1322:
 	ret
 _30:
 	movw	r13,#0x0
-_1218:
+_1347:
 	exts	r12,#0x1
 	movw	[r11],r13
 	addw	r11,#0x2
@@ -1154,7 +1186,7 @@ _BrakePressureSensor_getPedalTravel	.proc	far
 ; brakePressureSensor.c	   228  {
 ; brakePressureSensor.c	   229  	*pedalPercent = me->percent;
 	addw	r2,#0x1a
-_1219:
+_1348:
 	addcw	r3,#0x0
 	exts	r3,#0x1
 	movw	r13,[r2]
@@ -1162,14 +1194,14 @@ _1219:
 	addcw	r3,#0x0
 	exts	r3,#0x1
 	movw	r14,[r2]
-_1412:
+_1540:
 	exts	r12,#0x1
 	movw	[r11],r13
 	addw	r11,#0x2
 	addcw	r12,#0x0
 	exts	r12,#0x1
 	movw	[r11],r14
-_1413:
+_1541:
 
 ; brakePressureSensor.c	   230  
 ; brakePressureSensor.c	   231      //What about other error states?
@@ -1206,7 +1238,7 @@ _188:
 	.calls	'_BrakePressureSensor_calibrationCycle','_IO_RTC_GetTimeUS'
 	.calls	'_BrakePressureSensor_calibrationCycle','_Light_set'
 	.calls	'_BrakePressureSensor_new','',4,0
-	.calls	'_BrakePressureSensor_update','',4,18
+	.calls	'_BrakePressureSensor_update','',4,24
 	.calls	'_BrakePressureSensor_resetCalibration','',4,0
 	.calls	'_BrakePressureSensor_saveCalibrationToEEPROM','',4,0
 	.calls	'_BrakePressureSensor_loadCalibrationFromEEPROM','',4,0
@@ -1230,7 +1262,7 @@ _188:
 	.extern	__spf2us : far
 	.debug		.debug_info
 _141:
-	.dl	1531
+	.dl	1536
 	.dw	3
 	.dl	_142
 	.db	4
@@ -1238,116 +1270,116 @@ _140:
 	.db	1
 	.db	'brakePressureSensor.c',0
 	.db	'TASKING VX-toolset for C166: C compiler',0
-	.db	'C:\\Users\\helix\\Desktop\\SRE\\SRE SDK 2017-18\\VCU\\Environment\\dev\\BPS\\',0,12,1
+	.db	'C:\\Users\\helix\\Desktop\\SRE\\SRE SDK 2017-18\\VCU\\Environment\\dev\\Example_\\',0,12,1
 	.dl	_143
 _203:
 	.db	2
 	.db	'unsigned char',0,1,8,2
 	.db	'unsigned long int',0,4,7,2
 	.db	'unsigned int',0,2,7,3
-	.db	'_Sensor',0,3,126,16,20,4
+	.db	'_Sensor',0,3,126,16,22,4
 	.db	'specMin',0
-	.dl	165
+	.dl	170
 	.db	4,2,35,0,4
 	.db	'specMax',0
-	.dl	165
+	.dl	170
 	.db	4,2,35,4,4
 	.db	'sensorValue',0
-	.dl	186
-	.db	2,2,35,8,4
+	.dl	170
+	.db	4,2,35,8,4
 	.db	'fresh',0
-	.dl	148
-	.db	1,2,35,10,4
+	.dl	153
+	.db	1,2,35,12,4
 	.db	'ioErr_powerInit',0
-	.dl	186
-	.db	2,2,35,12,4
-	.db	'ioErr_powerSet',0
-	.dl	186
+	.dl	191
 	.db	2,2,35,14,4
-	.db	'ioErr_signalInit',0
-	.dl	186
+	.db	'ioErr_powerSet',0
+	.dl	191
 	.db	2,2,35,16,4
+	.db	'ioErr_signalInit',0
+	.dl	191
+	.db	2,2,35,18,4
 	.db	'ioErr_signalGet',0
-	.dl	186
-	.db	2,2,35,18,0,5,5
-	.dl	202
+	.dl	191
+	.db	2,2,35,20,0,5,5
+	.dl	207
 	.db	2
 	.db	'float',0,4,4,3
 	.db	'_BrakePressureSensor',0,2,10,16,32,4
 	.db	'bench',0
-	.dl	148
+	.dl	153
 	.db	1,2,35,0,4
 	.db	'bps0',0
-	.dl	386
+	.dl	391
 	.db	4,2,35,2,4
 	.db	'bps0_calibMin',0
-	.dl	186
+	.dl	191
 	.db	2,2,35,6,4
 	.db	'bps0_calibMax',0
-	.dl	186
+	.dl	191
 	.db	2,2,35,8,4
 	.db	'bps0_reverse',0
-	.dl	148
+	.dl	153
 	.db	1,2,35,10,4
 	.db	'bps0_value',0
-	.dl	186
+	.dl	191
 	.db	2,2,35,12,4
 	.db	'bps0_percent',0
-	.dl	392
+	.dl	397
 	.db	4,2,35,14,4
 	.db	'runCalibration',0
-	.dl	148
+	.dl	153
 	.db	1,2,35,18,4
 	.db	'timestamp_calibrationStart',0
-	.dl	165
+	.dl	170
 	.db	4,2,35,20,4
 	.db	'calibrationRunTime',0
-	.dl	148
+	.dl	153
 	.db	1,2,35,24,4
 	.db	'calibrated',0
-	.dl	148
+	.dl	153
 	.db	1,2,35,25,4
 	.db	'percent',0
-	.dl	392
+	.dl	397
 	.db	4,2,35,26,4
 	.db	'implausibility',0
-	.dl	148
+	.dl	153
 	.db	1,2,35,30,0
 _189:
 	.db	5,5
-	.dl	401
+	.dl	406
 _191:
 	.db	6
 	.db	'BrakePressureSensor_resetCalibration',0,1,1,87,6,6,1,1
 _194:
 	.db	7
 	.db	'me',0,1,87,64,2
-	.dl	716
+	.dl	721
 _196:
 	.db	8,0,9
 	.db	'void',0,5,5
-	.dl	781
+	.dl	786
 	.db	10
 	.db	'malloc',0,4,78,33,6
-	.dl	787
+	.dl	792
 	.db	1,1,1,1,11,4,78,44,2
-	.dl	186
+	.dl	191
 	.db	0,5,5
-	.dl	165
+	.dl	170
 	.db	12
-	.dl	823
+	.dl	828
 	.db	10
 	.db	'IO_RTC_StartTime',0,5,118,15,6
-	.dl	186
+	.dl	191
 	.db	1,1,1,1,7
 	.db	'timestamp',0,5,118,49,2
-	.dl	829
+	.dl	834
 	.db	0,10
 	.db	'IO_RTC_GetTimeUS',0,5,143,1,9,6
-	.dl	165
+	.dl	170
 	.db	1,1,1,1,7
 	.db	'timestamp',0,5,143,1,35,2
-	.dl	165
+	.dl	170
 	.db	0,13,3,103,9,1,14
 	.db	'Light_dashEco',0,0,14
 	.db	'Light_dashError',0,1,14
@@ -1357,82 +1389,82 @@ _196:
 	.db	'Cooling_waterPump',0,5,14
 	.db	'Cooling_motorFans',0,6,14
 	.db	'Cooling_batteryFans',0,7,0,15
-	.db	'Light_set',0,3,206,1,6,6,1,1,1,1,7
-	.db	'light',0,3,206,1,22,2
-	.dl	936
+	.db	'Light_set',0,3,204,1,6,6,1,1,1,1,7
+	.db	'light',0,3,204,1,22,2
+	.dl	941
 	.db	7
-	.db	'percent',0,3,206,1,36,2
-	.dl	392
+	.db	'percent',0,3,204,1,36,2
+	.dl	397
 	.db	0
 _207:
 	.db	5,5
-	.dl	392
+	.dl	397
 _221:
 	.db	5,5
-	.dl	148
+	.dl	153
 	.db	10
 	.db	'getPercent',0,6,15,8,6
-	.dl	392
+	.dl	397
 	.db	1,1,1,1,7
 	.db	'value',0,6,15,26,2
-	.dl	392
+	.dl	397
 	.db	7
 	.db	'start',0,6,15,40,2
-	.dl	392
+	.dl	397
 	.db	7
 	.db	'end',0,6,15,54,2
-	.dl	392
+	.dl	397
 	.db	7
 	.db	'zeroToOneOnly',0,6,15,64,2
-	.dl	148
+	.dl	153
 	.db	0,2
 	.db	'unsigned short int',0,2,7,16
 	.db	'__wchar_t',0,1,1,1
-	.dl	1242
+	.dl	1247
 	.db	16
 	.db	'__size_t',0,1,1,1
-	.dl	186
+	.dl	191
 	.db	5,5
-	.dl	781
+	.dl	786
 	.db	16
 	.db	'__prof_adm',0,1,1,1
-	.dl	1299
+	.dl	1304
 	.db	16
 	.db	'__codeptr',0,1,1,1
-	.dl	165
+	.dl	170
 	.db	16
 	.db	'size_t',0,4,29,25
-	.dl	186
+	.dl	191
 	.db	16
 	.db	'ubyte1',0,7,21,29
-	.dl	148
+	.dl	153
 	.db	16
 	.db	'ubyte2',0,7,22,29
-	.dl	186
+	.dl	191
 	.db	16
 	.db	'ubyte4',0,7,23,29
-	.dl	165
+	.dl	170
 	.db	16
 	.db	'float4',0,7,29,29
-	.dl	392
+	.dl	397
 	.db	16
 	.db	'bool',0,7,31,29
-	.dl	148
+	.dl	153
 	.db	16
 	.db	'IO_ErrorType',0,8,150,1,17
-	.dl	186
+	.dl	191
 	.db	16
 	.db	'Light',0,3,113,3
-	.dl	936
+	.dl	941
 	.db	16
 	.db	'Sensor',0,3,143,1,3
-	.dl	202
+	.dl	207
 	.db	17
 	.db	'Sensor_BPS0',0,3,156,1,15,5
-	.dl	202
+	.dl	207
 	.db	1,1,16
 	.db	'BrakePressureSensor',0,2,37,3
-	.dl	401
+	.dl	406
 	.db	0
 	; End of section
 
@@ -1449,11 +1481,11 @@ _142:
 
 	.debug		.debug_line
 _143:
-	.dl	_1221-_1220
-_1220:
+	.dl	_1350-_1349
+_1349:
 	.dw	3
-	.dl	_1223-_1222
-_1222:
+	.dl	_1352-_1351
+_1351:
 	.db	2,1,-4,9,10,0,1,1,1,1,0,0,0,1
 	.db	'c:\\Program Files (x86)\\TASKING\\C166-VX v4.0r1\\include\\',0
 	.db	'..\\..\\..\\Environment\\inc',0,0
@@ -1465,35 +1497,35 @@ _1222:
 	.db	'mathFunctions.h',0,0,0,0
 	.db	'ptypes_xe167.h',0,2,0,0
 	.db	'IO_Constants.h',0,2,0,0,0
-_1223:
-_1221:
+_1352:
+_1350:
 	; End of section
 
 	.debug		.debug_pubnames
 	.dl	96
 	.dw	2
-	.dl	_141,1535,793
+	.dl	_141,1540,798
 	.db	'malloc',0
-	.dl	834
+	.dl	839
 	.db	'IO_RTC_StartTime',0
-	.dl	884
+	.dl	889
 	.db	'IO_RTC_GetTimeUS',0
-	.dl	1084
+	.dl	1089
 	.db	'Light_set',0
-	.dl	1151
+	.dl	1156
 	.db	'getPercent',0
 	.dl	0
 	; End of section
 
 	.debug		.debug_info, cluster 'BrakePressureSensor_new'
 _144:
-	.dl	320
+	.dl	325
 	.dw	3
 	.dl	_145
 	.db	4,1
 	.db	'brakePressureSensor.c',0
 	.db	'TASKING VX-toolset for C166: C compiler',0
-	.db	'C:\\Users\\helix\\Desktop\\SRE\\SRE SDK 2017-18\\VCU\\Environment\\dev\\BPS\\',0,12,1
+	.db	'C:\\Users\\helix\\Desktop\\SRE\\SRE SDK 2017-18\\VCU\\Environment\\dev\\Example_\\',0,12,1
 	.dl	_147,_146
 	.db	2
 	.dl	_140
@@ -1533,74 +1565,74 @@ _145:
 
 	.debug		.debug_line, cluster 'BrakePressureSensor_new'
 _146:
-	.dl	_1225-_1224
-_1224:
+	.dl	_1354-_1353
+_1353:
 	.dw	3
-	.dl	_1227-_1226
-_1226:
+	.dl	_1356-_1355
+_1355:
 	.db	2,1,-4,9,10,0,1,1,1,1,0,0,0,1,0
 	.db	'brakePressureSensor.c',0,0,0,0,0
-_1227:
+_1356:
 	.db	5,60,7,0,5,2
 	.dl	_33
 	.db	3,19,1,5,7,9
-	.dw	_1228-_33
+	.dw	_1357-_33
 	.db	3,4,1,5,17,9
-	.dw	_1229-_1228
+	.dw	_1358-_1357
 	.db	1,5,14,9
-	.dw	_1230-_1229
+	.dw	_1359-_1358
 	.db	1,5,17,9
-	.dw	_1231-_1230
+	.dw	_1360-_1359
 	.db	1,5,14,9
-	.dw	_1232-_1231
+	.dw	_1361-_1360
 	.db	1,5,4,9
-	.dw	_1233-_1232
+	.dw	_1362-_1361
 	.db	3,4,1,5,21,9
-	.dw	_1234-_1233
+	.dw	_1363-_1362
 	.db	1,5,19,9
-	.dw	_1235-_1234
+	.dw	_1364-_1363
 	.db	1,5,7,9
-	.dw	_1236-_1235
+	.dw	_1365-_1364
 	.db	3,3,1,5,19,9
-	.dw	_1237-_1236
+	.dw	_1366-_1365
 	.db	1,5,17,9
-	.dw	_1238-_1237
+	.dw	_1367-_1366
 	.db	1,5,4,9
-	.dw	_192-_1238
+	.dw	_192-_1367
 	.db	3,63,1,5,17,9
 	.dw	_193-_192
 	.db	3,65,1,5,7,9
-	.dw	_1239-_193
+	.dw	_1368-_193
 	.db	3,1,1,5,4,9
-	.dw	_198-_1239
+	.dw	_198-_1368
 	.db	3,62,1,5,24,9
 	.dw	_199-_198
 	.db	3,66,1,5,7,9
 	.dw	_200-_199
 	.db	3,57,1,5,4,9
-	.dw	_1240-_200
+	.dw	_1369-_200
 	.db	3,5,1,5,20,9
-	.dw	_1241-_1240
+	.dw	_1370-_1369
 	.db	3,123,1,5,22,9
-	.dw	_1242-_1241
+	.dw	_1371-_1370
 	.db	3,5,1,5,20,9
-	.dw	_1243-_1242
+	.dw	_1372-_1371
 	.db	1,5,4,9
-	.dw	_1244-_1243
+	.dw	_1373-_1372
 	.db	3,1,1,5,22,9
-	.dw	_1245-_1244
+	.dw	_1374-_1373
 	.db	1,5,20,9
-	.dw	_1246-_1245
+	.dw	_1375-_1374
 	.db	1,5,22,9
-	.dw	_1247-_1246
+	.dw	_1376-_1375
 	.db	3,8,1,5,20,9
-	.dw	_1248-_1247
+	.dw	_1377-_1376
 	.db	1,5,1,9
-	.dw	_201-_1248
+	.dw	_201-_1377
 	.db	3,191,127,1,7,9
 	.dw	_148-_201
 	.db	0,1,1
-_1225:
+_1354:
 	; End of section
 
 	.debug		.debug_ranges, cluster 'BrakePressureSensor_new'
@@ -1613,20 +1645,20 @@ _197:
 	.debug		.debug_pubnames
 	.dl	42
 	.dw	2
-	.dl	_144,324,157
+	.dl	_144,329,162
 	.db	'BrakePressureSensor_new',0
 	.dl	0
 	; End of section
 
 	.debug		.debug_info, cluster 'BrakePressureSensor_update'
 _149:
-	.dl	259
+	.dl	264
 	.dw	3
 	.dl	_150
 	.db	4,1
 	.db	'brakePressureSensor.c',0
 	.db	'TASKING VX-toolset for C166: C compiler',0
-	.db	'C:\\Users\\helix\\Desktop\\SRE\\SRE SDK 2017-18\\VCU\\Environment\\dev\\BPS\\',0,12,1
+	.db	'C:\\Users\\helix\\Desktop\\SRE\\SRE SDK 2017-18\\VCU\\Environment\\dev\\Example_\\',0,12,1
 	.dl	_152,_151
 	.db	2
 	.dl	_140
@@ -1653,176 +1685,180 @@ _150:
 
 	.debug		.debug_line, cluster 'BrakePressureSensor_update'
 _151:
-	.dl	_1250-_1249
-_1249:
+	.dl	_1379-_1378
+_1378:
 	.dw	3
-	.dl	_1252-_1251
-_1251:
+	.dl	_1381-_1380
+_1380:
 	.db	2,1,-4,9,10,0,1,1,1,1,0,0,0,1,0
 	.db	'brakePressureSensor.c',0,0,0,0,0
-_1252:
+_1381:
 	.db	5,6,7,0,5,2
 	.dl	_45
 	.db	3,40,1,5,30,9
-	.dw	_303-_45
+	.dw	_226-_45
 	.db	3,2,1,5,4,9
-	.dw	_1253-_303
+	.dw	_1382-_226
 	.db	1,5,6,9
-	.dw	_1254-_1253
-	.db	3,126,1,5,30,9
-	.dw	_606-_1254
+	.dw	_1383-_1382
+	.db	3,126,1,5,4,9
+	.dw	_336-_1383
+	.db	3,2,1,9
+	.dw	_1384-_336
+	.db	3,3,1,5,6,9
+	.dw	_1385-_1384
+	.db	3,123,1,5,30,9
+	.dw	_735-_1385
 	.db	3,2,1,5,4,9
-	.dw	_1255-_606
+	.dw	_1386-_735
 	.db	1,5,30,9
-	.dw	_1256-_1255
-	.db	1,5,4,9
-	.dw	_1257-_1256
-	.db	3,3,1,5,30,9
-	.dw	_1258-_1257
-	.db	3,125,1,5,36,9
-	.dw	_1259-_1258
-	.db	1,5,4,9
-	.dw	_1260-_1259
-	.db	1,5,36,9
-	.dw	_1261-_1260
-	.db	1,5,4,9
-	.dw	_1262-_1261
-	.db	3,3,1,5,14,9
-	.dw	_1263-_1262
-	.db	1,5,17,9
-	.dw	_1264-_1263
-	.db	3,125,1,5,16,9
-	.dw	_1265-_1264
-	.db	3,3,1,5,14,9
-	.dw	_1266-_1265
+	.dw	_1387-_1386
 	.db	1,5,6,9
-	.dw	_1267-_1266
-	.db	3,123,1,5,14,9
-	.dw	_1268-_1267
-	.db	3,5,1,5,6,9
-	.dw	_1269-_1268
-	.db	3,123,1,5,5,9
-	.dw	_607-_1269
-	.db	3,12,1,5,8,9
-	.dw	_1270-_607
+	.dw	_1388-_1387
+	.db	3,126,1,5,30,9
+	.dw	_1389-_1388
+	.db	3,2,1,5,36,9
+	.dw	_1390-_1389
+	.db	1,5,6,9
+	.dw	_1391-_1390
+	.db	3,126,1,5,36,9
+	.dw	_736-_1391
+	.db	3,2,1,5,5,9
+	.dw	_1392-_736
+	.db	3,10,1,5,36,9
+	.dw	_1393-_1392
+	.db	3,118,1,5,4,9
+	.dw	_1394-_1393
+	.db	3,3,1,5,14,9
+	.dw	_1395-_1394
+	.db	1,5,17,9
+	.dw	_1396-_1395
+	.db	3,125,1,5,16,9
+	.dw	_1397-_1396
+	.db	3,3,1,5,14,9
+	.dw	_1398-_1397
+	.db	1,5,5,9
+	.dw	_1399-_1398
+	.db	3,7,1,5,8,9
+	.dw	_1400-_1399
 	.db	3,126,1,5,5,9
-	.dw	_1271-_1270
+	.dw	_1401-_1400
 	.db	3,2,1,5,8,9
-	.dw	_1272-_1271
+	.dw	_1402-_1401
 	.db	3,126,1,5,6,9
-	.dw	_1273-_1272
+	.dw	_1403-_1402
 	.db	1,5,38,9
-	.dw	_1274-_1273
+	.dw	_1404-_1403
 	.db	1,5,51,9
-	.dw	_1275-_1274
+	.dw	_1405-_1404
 	.db	1,5,22,7,9
-	.dw	_3-_1275
+	.dw	_3-_1405
 	.db	3,2,1,5,20,9
-	.dw	_608-_3
+	.dw	_737-_3
 	.db	1,5,23,9
-	.dw	_1276-_608
+	.dw	_1406-_737
 	.db	1,5,87,9
-	.dw	_4-_1276
+	.dw	_4-_1406
 	.db	3,5,1,5,35,9
-	.dw	_1277-_4
+	.dw	_1407-_4
 	.db	1,5,51,9
-	.dw	_1278-_1277
+	.dw	_1408-_1407
 	.db	1,5,70,9
-	.dw	_1279-_1278
+	.dw	_1409-_1408
 	.db	1,5,35,9
-	.dw	_1280-_1279
+	.dw	_1410-_1409
 	.db	1,5,51,9
-	.dw	_1281-_1280
+	.dw	_1411-_1410
 	.db	1,5,35,9
-	.dw	_1282-_1281
+	.dw	_1412-_1411
 	.db	1,5,51,9
-	.dw	_1283-_1282
+	.dw	_1413-_1412
 	.db	1,5,70,9
-	.dw	_1284-_1283
+	.dw	_1414-_1413
 	.db	1,5,51,9
-	.dw	_1285-_1284
+	.dw	_1415-_1414
 	.db	1,5,70,9
-	.dw	_1286-_1285
+	.dw	_1416-_1415
 	.db	1,5,20,9
-	.dw	_325-_1286
+	.dw	_358-_1416
 	.db	1,5,15,9
-	.dw	_1287-_325
+	.dw	_1417-_358
 	.db	3,1,1,5,20,9
-	.dw	_1288-_1287
+	.dw	_1418-_1417
 	.db	3,127,1,5,19,9
-	.dw	_1289-_1288
+	.dw	_1419-_1418
 	.db	3,1,1,5,15,9
-	.dw	_1290-_1289
+	.dw	_1420-_1419
 	.db	1,5,19,9
-	.dw	_1291-_1290
+	.dw	_1421-_1420
 	.db	1,5,15,9
-	.dw	_1292-_1291
+	.dw	_1422-_1421
 	.db	1,5,8,9
-	.dw	_5-_1292
+	.dw	_5-_1422
 	.db	3,3,1,5,18,9
-	.dw	_1293-_5
+	.dw	_1423-_5
 	.db	1,5,8,9
-	.dw	_1294-_1293
+	.dw	_1424-_1423
 	.db	1,5,18,9
-	.dw	_1295-_1294
+	.dw	_1425-_1424
 	.db	1,5,2,9
-	.dw	_1296-_1295
+	.dw	_1426-_1425
 	.db	1,5,26,7,9
-	.dw	_1297-_1296
+	.dw	_1427-_1426
 	.db	3,2,1,5,28,9
-	.dw	_1298-_1297
+	.dw	_1428-_1427
 	.db	1,5,7,9
-	.dw	_6-_1298
+	.dw	_6-_1428
 	.db	3,2,1,5,26,9
-	.dw	_1299-_6
+	.dw	_1429-_6
 	.db	3,2,1,5,28,9
-	.dw	_611-_1299
+	.dw	_740-_1429
 	.db	1,5,19,9
-	.dw	_8-_611
+	.dw	_8-_740
 	.db	3,4,1,5,7,9
-	.dw	_1300-_8
+	.dw	_1430-_8
 	.db	1,5,28,7,9
-	.dw	_1301-_1300
+	.dw	_1431-_1430
 	.db	1,5,40,9
-	.dw	_1302-_1301
+	.dw	_1432-_1431
 	.db	1,5,38,9
-	.dw	_1303-_1302
+	.dw	_1433-_1432
 	.db	1,5,27,9
-	.dw	_1304-_1303
+	.dw	_1434-_1433
 	.db	3,2,1,5,31,9
-	.dw	_1305-_1304
+	.dw	_1435-_1434
 	.db	1,5,28,9
-	.dw	_10-_1305
+	.dw	_10-_1435
 	.db	3,126,1,5,43,9
-	.dw	_1306-_10
+	.dw	_1436-_10
 	.db	1,5,27,9
-	.dw	_1307-_1306
+	.dw	_1437-_1436
 	.db	3,4,1,5,24,9
-	.dw	_1308-_1307
+	.dw	_1438-_1437
 	.db	1,5,12,9
-	.dw	_1309-_1308
+	.dw	_1439-_1438
 	.db	1,5,48,7,9
-	.dw	_1310-_1309
+	.dw	_1440-_1439
 	.db	1,5,46,9
-	.dw	_1311-_1310
+	.dw	_1441-_1440
 	.db	1,5,27,9
-	.dw	_1312-_1311
+	.dw	_1442-_1441
 	.db	3,2,1,5,31,9
-	.dw	_1313-_1312
+	.dw	_1443-_1442
 	.db	1,5,27,9
-	.dw	_13-_1313
+	.dw	_13-_1443
 	.db	3,2,1,5,24,9
-	.dw	_1314-_13
+	.dw	_1444-_13
 	.db	1,5,8,9
-	.dw	_1315-_1314
+	.dw	_1445-_1444
 	.db	1,5,29,7,9
-	.dw	_1316-_1315
+	.dw	_1446-_1445
 	.db	3,2,1,5,1,9
-	.dw	_16-_1316
+	.dw	_16-_1446
 	.db	3,3,1,9
 	.dw	_153-_16
 	.db	0,1,1
-_1250:
+_1379:
 	; End of section
 
 	.debug		.debug_ranges, cluster 'BrakePressureSensor_update'
@@ -1833,20 +1869,20 @@ _152:
 	.debug		.debug_pubnames
 	.dl	45
 	.dw	2
-	.dl	_149,263,157
+	.dl	_149,268,162
 	.db	'BrakePressureSensor_update',0
 	.dl	0
 	; End of section
 
 	.debug		.debug_info, cluster 'BrakePressureSensor_getIndividualSensorPercent'
 _154:
-	.dl	311
+	.dl	316
 	.dw	3
 	.dl	_155
 	.db	4,1
 	.db	'brakePressureSensor.c',0
 	.db	'TASKING VX-toolset for C166: C compiler',0
-	.db	'C:\\Users\\helix\\Desktop\\SRE\\SRE SDK 2017-18\\VCU\\Environment\\dev\\BPS\\',0,12,1
+	.db	'C:\\Users\\helix\\Desktop\\SRE\\SRE SDK 2017-18\\VCU\\Environment\\dev\\Example_\\',0,12,1
 	.dl	_157,_156
 	.db	2
 	.dl	_140
@@ -1876,32 +1912,32 @@ _155:
 
 	.debug		.debug_line, cluster 'BrakePressureSensor_getIndividualSensorPercent'
 _156:
-	.dl	_1318-_1317
-_1317:
+	.dl	_1448-_1447
+_1447:
 	.dw	3
-	.dl	_1320-_1319
-_1319:
+	.dl	_1450-_1449
+_1449:
 	.db	2,1,-4,9,10,0,1,1,1,1,0,0,0,1,0
 	.db	'brakePressureSensor.c',0,0,0,0,0
-_1320:
+_1450:
 	.db	5,2,7,0,5,2
 	.dl	_117
 	.db	3,197,1,1,5,16,9
 	.dw	_29-_117
 	.db	3,3,1,5,12,9
-	.dw	_1321-_29
+	.dw	_1451-_29
 	.db	1,5,1,9
-	.dw	_1322-_1321
+	.dw	_1452-_1451
 	.db	3,13,1,5,14,7,9
-	.dw	_30-_1322
+	.dw	_30-_1452
 	.db	3,121,1,5,12,9
-	.dw	_1218-_30
+	.dw	_1347-_30
 	.db	1,5,1,9
-	.dw	_28-_1218
+	.dw	_28-_1347
 	.db	3,7,1,7,9
 	.dw	_158-_28
 	.db	0,1,1
-_1318:
+_1448:
 	; End of section
 
 	.debug		.debug_ranges, cluster 'BrakePressureSensor_getIndividualSensorPercent'
@@ -1912,20 +1948,20 @@ _157:
 	.debug		.debug_pubnames
 	.dl	65
 	.dw	2
-	.dl	_154,315,157
+	.dl	_154,320,162
 	.db	'BrakePressureSensor_getIndividualSensorPercent',0
 	.dl	0
 	; End of section
 
 	.debug		.debug_info, cluster 'BrakePressureSensor_resetCalibration'
 _159:
-	.dl	204
+	.dl	209
 	.dw	3
 	.dl	_160
 	.db	4,1
 	.db	'brakePressureSensor.c',0
 	.db	'TASKING VX-toolset for C166: C compiler',0
-	.db	'C:\\Users\\helix\\Desktop\\SRE\\SRE SDK 2017-18\\VCU\\Environment\\dev\\BPS\\',0,12,1
+	.db	'C:\\Users\\helix\\Desktop\\SRE\\SRE SDK 2017-18\\VCU\\Environment\\dev\\Example_\\',0,12,1
 	.dl	_162,_161
 	.db	2
 	.dl	_140
@@ -1948,34 +1984,34 @@ _160:
 
 	.debug		.debug_line, cluster 'BrakePressureSensor_resetCalibration'
 _161:
-	.dl	_1324-_1323
-_1323:
+	.dl	_1454-_1453
+_1453:
 	.dw	3
-	.dl	_1326-_1325
-_1325:
+	.dl	_1456-_1455
+_1455:
 	.db	2,1,-4,9,10,0,1,1,1,1,0,0,0,1,0
 	.db	'brakePressureSensor.c',0,0,0,0,0
-_1326:
+_1456:
 	.db	5,4,7,0,5,2
 	.dl	_57
 	.db	3,221,0,1,5,22,9
-	.dw	_1327-_57
+	.dw	_1457-_57
 	.db	1,5,20,9
-	.dw	_1328-_1327
+	.dw	_1458-_1457
 	.db	1,5,4,9
-	.dw	_1329-_1328
+	.dw	_1459-_1458
 	.db	3,1,1,5,22,9
-	.dw	_1330-_1329
+	.dw	_1460-_1459
 	.db	1,5,20,9
-	.dw	_1331-_1330
+	.dw	_1461-_1460
 	.db	1,5,7,9
-	.dw	_1332-_1331
+	.dw	_1462-_1461
 	.db	3,122,1,5,1,9
-	.dw	_1333-_1332
+	.dw	_1463-_1462
 	.db	3,15,1,9
-	.dw	_163-_1333
+	.dw	_163-_1463
 	.db	0,1,1
-_1324:
+_1454:
 	; End of section
 
 	.debug		.debug_ranges, cluster 'BrakePressureSensor_resetCalibration'
@@ -1985,13 +2021,13 @@ _162:
 
 	.debug		.debug_info, cluster 'BrakePressureSensor_saveCalibrationToEEPROM'
 _164:
-	.dl	257
+	.dl	262
 	.dw	3
 	.dl	_165
 	.db	4,1
 	.db	'brakePressureSensor.c',0
 	.db	'TASKING VX-toolset for C166: C compiler',0
-	.db	'C:\\Users\\helix\\Desktop\\SRE\\SRE SDK 2017-18\\VCU\\Environment\\dev\\BPS\\',0,12,1
+	.db	'C:\\Users\\helix\\Desktop\\SRE\\SRE SDK 2017-18\\VCU\\Environment\\dev\\Example_\\',0,12,1
 	.dl	_167,_166
 	.db	2
 	.dl	_140
@@ -2015,20 +2051,20 @@ _165:
 
 	.debug		.debug_line, cluster 'BrakePressureSensor_saveCalibrationToEEPROM'
 _166:
-	.dl	_1335-_1334
-_1334:
+	.dl	_1465-_1464
+_1464:
 	.dw	3
-	.dl	_1337-_1336
-_1336:
+	.dl	_1467-_1466
+_1466:
 	.db	2,1,-4,9,10,0,1,1,1,1,0,0,0,1,0
 	.db	'brakePressureSensor.c',0,0,0,0,0
-_1337:
+_1467:
 	.db	5,1,7,0,5,2
 	.dl	_69
 	.db	3,236,0,1,7,9
 	.dw	_168-_69
 	.db	0,1,1
-_1335:
+_1465:
 	; End of section
 
 	.debug		.debug_ranges, cluster 'BrakePressureSensor_saveCalibrationToEEPROM'
@@ -2039,20 +2075,20 @@ _167:
 	.debug		.debug_pubnames
 	.dl	62
 	.dw	2
-	.dl	_164,261,157
+	.dl	_164,266,162
 	.db	'BrakePressureSensor_saveCalibrationToEEPROM',0
 	.dl	0
 	; End of section
 
 	.debug		.debug_info, cluster 'BrakePressureSensor_loadCalibrationFromEEPROM'
 _169:
-	.dl	259
+	.dl	264
 	.dw	3
 	.dl	_170
 	.db	4,1
 	.db	'brakePressureSensor.c',0
 	.db	'TASKING VX-toolset for C166: C compiler',0
-	.db	'C:\\Users\\helix\\Desktop\\SRE\\SRE SDK 2017-18\\VCU\\Environment\\dev\\BPS\\',0,12,1
+	.db	'C:\\Users\\helix\\Desktop\\SRE\\SRE SDK 2017-18\\VCU\\Environment\\dev\\Example_\\',0,12,1
 	.dl	_172,_171
 	.db	2
 	.dl	_140
@@ -2076,20 +2112,20 @@ _170:
 
 	.debug		.debug_line, cluster 'BrakePressureSensor_loadCalibrationFromEEPROM'
 _171:
-	.dl	_1339-_1338
-_1338:
+	.dl	_1469-_1468
+_1468:
 	.dw	3
-	.dl	_1341-_1340
-_1340:
+	.dl	_1471-_1470
+_1470:
 	.db	2,1,-4,9,10,0,1,1,1,1,0,0,0,1,0
 	.db	'brakePressureSensor.c',0,0,0,0,0
-_1341:
+_1471:
 	.db	5,1,7,0,5,2
 	.dl	_81
 	.db	3,241,0,1,7,9
 	.dw	_173-_81
 	.db	0,1,1
-_1339:
+_1469:
 	; End of section
 
 	.debug		.debug_ranges, cluster 'BrakePressureSensor_loadCalibrationFromEEPROM'
@@ -2100,20 +2136,20 @@ _172:
 	.debug		.debug_pubnames
 	.dl	64
 	.dw	2
-	.dl	_169,263,157
+	.dl	_169,268,162
 	.db	'BrakePressureSensor_loadCalibrationFromEEPROM',0
 	.dl	0
 	; End of section
 
 	.debug		.debug_info, cluster 'BrakePressureSensor_startCalibration'
 _174:
-	.dl	332
+	.dl	337
 	.dw	3
 	.dl	_175
 	.db	4,1
 	.db	'brakePressureSensor.c',0
 	.db	'TASKING VX-toolset for C166: C compiler',0
-	.db	'C:\\Users\\helix\\Desktop\\SRE\\SRE SDK 2017-18\\VCU\\Environment\\dev\\BPS\\',0,12,1
+	.db	'C:\\Users\\helix\\Desktop\\SRE\\SRE SDK 2017-18\\VCU\\Environment\\dev\\Example_\\',0,12,1
 	.dl	_177,_176
 	.db	2
 	.dl	_140
@@ -2150,70 +2186,70 @@ _175:
 
 	.debug		.debug_line, cluster 'BrakePressureSensor_startCalibration'
 _176:
-	.dl	_1343-_1342
-_1342:
+	.dl	_1473-_1472
+_1472:
 	.dw	3
-	.dl	_1345-_1344
-_1344:
+	.dl	_1475-_1474
+_1474:
 	.db	2,1,-4,9,10,0,1,1,1,1,0,0,0,1,0
 	.db	'brakePressureSensor.c',0,0,0,0,0
-_1345:
+_1475:
 	.db	5,6,7,0,5,2
 	.dl	_93
 	.db	3,243,0,1,5,30,9
-	.dw	_742-_93
+	.dw	_871-_93
 	.db	3,7,1,5,11,9
-	.dw	_1346-_742
+	.dw	_1476-_871
 	.db	3,123,1,5,6,9
-	.dw	_1347-_1346
+	.dw	_1477-_1476
 	.db	3,126,1,5,30,9
-	.dw	_744-_1347
+	.dw	_873-_1477
 	.db	3,7,1,5,11,9
-	.dw	_1348-_744
+	.dw	_1478-_873
 	.db	3,123,1,5,5,9
-	.dw	_1349-_1348
+	.dw	_1479-_1478
 	.db	1,5,30,7,9
-	.dw	_1350-_1349
+	.dw	_1480-_1479
 	.db	3,2,1,5,28,9
-	.dw	_1351-_1350
+	.dw	_1481-_1480
 	.db	1,5,7,9
-	.dw	_214-_1351
+	.dw	_214-_1481
 	.db	3,97,1,5,4,9
-	.dw	_1352-_214
+	.dw	_1482-_214
 	.db	3,5,1,5,22,9
-	.dw	_1353-_1352
+	.dw	_1483-_1482
 	.db	3,123,1,5,20,9
-	.dw	_741-_1353
+	.dw	_870-_1483
 	.db	1,5,22,9
-	.dw	_1354-_741
+	.dw	_1484-_870
 	.db	3,5,1,5,20,9
-	.dw	_1355-_1354
+	.dw	_1485-_1484
 	.db	1,5,4,9
-	.dw	_1356-_1355
+	.dw	_1486-_1485
 	.db	3,1,1,5,11,9
-	.dw	_215-_1356
+	.dw	_215-_1486
 	.db	3,29,1,5,22,9
 	.dw	_218-_215
 	.db	3,99,1,5,20,9
-	.dw	_1357-_218
+	.dw	_1487-_218
 	.db	1,9
-	.dw	_1358-_1357
+	.dw	_1488-_1487
 	.db	3,8,1,5,24,9
-	.dw	_219-_1358
+	.dw	_219-_1488
 	.db	3,19,1,5,30,9
-	.dw	_1359-_219
+	.dw	_1489-_219
 	.db	3,1,1,5,32,9
-	.dw	_1360-_1359
+	.dw	_1490-_1489
 	.db	3,1,1,5,34,9
-	.dw	_1361-_1360
+	.dw	_1491-_1490
 	.db	3,124,1,5,30,9
-	.dw	_17-_1361
+	.dw	_17-_1491
 	.db	3,8,1,5,1,9
 	.dw	_18-_17
 	.db	3,2,1,9
 	.dw	_178-_18
 	.db	0,1,1
-_1343:
+_1473:
 	; End of section
 
 	.debug		.debug_ranges, cluster 'BrakePressureSensor_startCalibration'
@@ -2226,20 +2262,20 @@ _217:
 	.debug		.debug_pubnames
 	.dl	55
 	.dw	2
-	.dl	_174,336,157
+	.dl	_174,341,162
 	.db	'BrakePressureSensor_startCalibration',0
 	.dl	0
 	; End of section
 
 	.debug		.debug_info, cluster 'BrakePressureSensor_calibrationCycle'
 _179:
-	.dl	287
+	.dl	292
 	.dw	3
 	.dl	_180
 	.db	4,1
 	.db	'brakePressureSensor.c',0
 	.db	'TASKING VX-toolset for C166: C compiler',0
-	.db	'C:\\Users\\helix\\Desktop\\SRE\\SRE SDK 2017-18\\VCU\\Environment\\dev\\BPS\\',0,12,1
+	.db	'C:\\Users\\helix\\Desktop\\SRE\\SRE SDK 2017-18\\VCU\\Environment\\dev\\Example_\\',0,12,1
 	.dl	_182,_181
 	.db	2
 	.dl	_140
@@ -2268,122 +2304,118 @@ _180:
 
 	.debug		.debug_line, cluster 'BrakePressureSensor_calibrationCycle'
 _181:
-	.dl	_1363-_1362
-_1362:
+	.dl	_1493-_1492
+_1492:
 	.dw	3
-	.dl	_1365-_1364
-_1364:
+	.dl	_1495-_1494
+_1494:
 	.db	2,1,-4,9,10,0,1,1,1,1,0,0,0,1,0
 	.db	'brakePressureSensor.c',0,0,0,0,0
-_1365:
+_1495:
 	.db	5,6,7,0,5,2
 	.dl	_105
 	.db	3,142,1,1,5,11,9
-	.dw	_1212-_105
+	.dw	_1341-_105
 	.db	3,2,1,5,5,9
-	.dw	_1210-_1212
+	.dw	_1339-_1341
 	.db	1,5,32,9
-	.dw	_1366-_1210
+	.dw	_1496-_1339
 	.db	3,2,1,5,34,9
-	.dw	_1367-_1366
+	.dw	_1497-_1496
 	.db	3,3,1,5,32,9
-	.dw	_1368-_1367
+	.dw	_1498-_1497
 	.db	3,125,1,5,34,9
-	.dw	_1369-_1368
+	.dw	_1499-_1498
 	.db	3,3,1,5,32,9
-	.dw	_1370-_1369
+	.dw	_1500-_1499
 	.db	3,125,1,5,75,9
-	.dw	_1371-_1370
+	.dw	_1501-_1500
 	.db	1,5,34,9
-	.dw	_1372-_1371
+	.dw	_1502-_1501
 	.db	3,3,1,5,75,9
-	.dw	_1373-_1372
+	.dw	_1503-_1502
 	.db	3,125,1,5,64,9
-	.dw	_1374-_1373
+	.dw	_1504-_1503
 	.db	1,5,104,9
-	.dw	_1375-_1374
+	.dw	_1505-_1504
 	.db	1,5,97,9
-	.dw	_1376-_1375
+	.dw	_1506-_1505
 	.db	1,5,9,9
-	.dw	_1377-_1376
+	.dw	_1507-_1506
 	.db	1,5,10,9
-	.dw	_1378-_1377
-	.db	3,3,1,5,34,9
-	.dw	_1379-_1378
-	.db	1,5,10,9
-	.dw	_1380-_1379
-	.db	1,5,16,9
-	.dw	_1381-_1380
-	.db	1,5,4,9
-	.dw	_1382-_1381
-	.db	1,5,71,9
-	.dw	_1383-_1382
-	.db	1,5,10,9
-	.dw	_21-_1383
-	.db	3,1,1,5,34,9
-	.dw	_1384-_21
-	.db	1,5,10,9
-	.dw	_1385-_1384
-	.db	1,5,16,9
-	.dw	_1386-_1385
+	.dw	_1508-_1507
+	.db	3,3,1,5,16,9
+	.dw	_1509-_1508
 	.db	1,5,34,9
-	.dw	_1387-_1386
-	.db	1,5,16,9
-	.dw	_1388-_1387
+	.dw	_1510-_1509
 	.db	1,5,4,9
-	.dw	_1389-_1388
+	.dw	_1511-_1510
 	.db	1,5,71,9
-	.dw	_1390-_1389
+	.dw	_1512-_1511
+	.db	1,5,10,9
+	.dw	_21-_1512
+	.db	3,1,1,5,34,9
+	.dw	_1513-_21
+	.db	1,5,10,9
+	.dw	_1514-_1513
+	.db	1,5,16,9
+	.dw	_1515-_1514
+	.db	1,5,34,9
+	.dw	_1516-_1515
 	.db	1,5,4,9
-	.dw	_1391-_1390
+	.dw	_1517-_1516
+	.db	1,5,71,9
+	.dw	_1518-_1517
+	.db	1,5,4,9
+	.dw	_1519-_1518
 	.db	1,5,36,9
-	.dw	_20-_1391
+	.dw	_20-_1519
 	.db	3,11,1,5,34,9
-	.dw	_1392-_20
+	.dw	_1520-_20
 	.db	1,5,51,7,9
-	.dw	_1393-_1392
+	.dw	_1521-_1520
 	.db	1,5,69,9
-	.dw	_1394-_1393
+	.dw	_1522-_1521
 	.db	1,5,51,9
-	.dw	_24-_1394
+	.dw	_24-_1522
 	.db	1,5,15,9
 	.dw	_25-_24
 	.db	1,5,31,9
-	.dw	_1395-_25
+	.dw	_1523-_25
 	.db	1,5,34,9
-	.dw	_1396-_1395
+	.dw	_1524-_1523
 	.db	3,1,1,5,51,9
-	.dw	_1397-_1396
+	.dw	_1525-_1524
 	.db	1,5,66,9
-	.dw	_1398-_1397
+	.dw	_1526-_1525
 	.db	1,5,51,9
-	.dw	_26-_1398
+	.dw	_26-_1526
 	.db	1,5,15,9
 	.dw	_27-_26
 	.db	1,5,6,9
-	.dw	_1399-_27
+	.dw	_1527-_27
 	.db	3,5,1,5,15,9
-	.dw	_1400-_1399
+	.dw	_1528-_1527
 	.db	3,123,1,5,31,9
-	.dw	_1401-_1400
+	.dw	_1529-_1528
 	.db	1,5,23,9
-	.dw	_1402-_1401
+	.dw	_1530-_1529
 	.db	3,4,1,5,25,9
-	.dw	_1403-_1402
+	.dw	_1531-_1530
 	.db	1,5,23,9
-	.dw	_1404-_1403
+	.dw	_1532-_1531
 	.db	1,5,21,9
-	.dw	_1405-_1404
+	.dw	_1533-_1532
 	.db	3,1,1,5,19,9
-	.dw	_1406-_1405
+	.dw	_1534-_1533
 	.db	1,5,29,9
-	.dw	_1407-_1406
+	.dw	_1535-_1534
 	.db	3,1,1,5,1,9
-	.dw	_19-_1407
+	.dw	_19-_1535
 	.db	3,20,1,9
 	.dw	_183-_19
 	.db	0,1,1
-_1363:
+_1493:
 	; End of section
 
 	.debug		.debug_ranges, cluster 'BrakePressureSensor_calibrationCycle'
@@ -2394,20 +2426,20 @@ _182:
 	.debug		.debug_pubnames
 	.dl	55
 	.dw	2
-	.dl	_179,291,157
+	.dl	_179,296,162
 	.db	'BrakePressureSensor_calibrationCycle',0
 	.dl	0
 	; End of section
 
 	.debug		.debug_info, cluster 'BrakePressureSensor_getPedalTravel'
 _184:
-	.dl	302
+	.dl	307
 	.dw	3
 	.dl	_185
 	.db	4,1
 	.db	'brakePressureSensor.c',0
 	.db	'TASKING VX-toolset for C166: C compiler',0
-	.db	'C:\\Users\\helix\\Desktop\\SRE\\SRE SDK 2017-18\\VCU\\Environment\\dev\\BPS\\',0,12,1
+	.db	'C:\\Users\\helix\\Desktop\\SRE\\SRE SDK 2017-18\\VCU\\Environment\\dev\\Example_\\',0,12,1
 	.dl	_187,_186
 	.db	2
 	.dl	_140
@@ -2437,24 +2469,24 @@ _185:
 
 	.debug		.debug_line, cluster 'BrakePressureSensor_getPedalTravel'
 _186:
-	.dl	_1409-_1408
-_1408:
+	.dl	_1537-_1536
+_1536:
 	.dw	3
-	.dl	_1411-_1410
-_1410:
+	.dl	_1539-_1538
+_1538:
 	.db	2,1,-4,9,10,0,1,1,1,1,0,0,0,1,0
 	.db	'brakePressureSensor.c',0,0,0,0,0
-_1411:
+_1539:
 	.db	5,20,7,0,5,2
 	.dl	_129
 	.db	3,228,1,1,5,16,9
-	.dw	_1412-_129
+	.dw	_1540-_129
 	.db	1,5,1,9
-	.dw	_1413-_1412
+	.dw	_1541-_1540
 	.db	3,14,1,7,9
-	.dw	_188-_1413
+	.dw	_188-_1541
 	.db	0,1,1
-_1409:
+_1537:
 	; End of section
 
 	.debug		.debug_ranges, cluster 'BrakePressureSensor_getPedalTravel'
@@ -2465,14 +2497,14 @@ _187:
 	.debug		.debug_pubnames
 	.dl	53
 	.dw	2
-	.dl	_184,306,157
+	.dl	_184,311,162
 	.db	'BrakePressureSensor_getPedalTravel',0
 	.dl	0
 	; End of section
 
 	.debug		.debug_loc, cluster 'BrakePressureSensor_calibrationCycle'
 _104:
-	.dl	-1,_105,0,_745-_105
+	.dl	-1,_105,0,_874-_105
 	.dw	58
 	.db	127,0,18,10
 	.dw	16383
@@ -2500,633 +2532,633 @@ _108:
 	.db	146,180,2,0
 _109:
 	.db	22,19,62,36,33
-	.dl	_745-_105,_756-_105
+	.dl	_874-_105,_885-_105
 	.dw	60
 	.db	127,0,18,10
 	.dw	16383
 	.db	26,22,62,37,18,48,46,40
-	.dw	_746-_750
-_750:
+	.dw	_875-_879
+_879:
 	.db	146,177,2,0,47
-	.dw	_749-_751
-_751:
-_746:
-	.db	18,49,46,40
-	.dw	_747-_752
-_752:
-	.db	146,178,2,0,47
-	.dw	_749-_753
-_753:
-_747:
-	.db	18,50,46,40
-	.dw	_748-_754
-_754:
-	.db	146,179,2,0,47
-	.dw	_749-_755
-_755:
-_748:
-	.db	146,180,2,0
-_749:
-	.db	22,19,62,36,33,50,34
-	.dl	_756-_105,_767-_105
-	.dw	60
-	.db	127,0,18,10
-	.dw	16383
-	.db	26,22,62,37,18,48,46,40
-	.dw	_757-_761
-_761:
-	.db	146,177,2,0,47
-	.dw	_760-_762
-_762:
-_757:
-	.db	18,49,46,40
-	.dw	_758-_763
-_763:
-	.db	146,178,2,0,47
-	.dw	_760-_764
-_764:
-_758:
-	.db	18,50,46,40
-	.dw	_759-_765
-_765:
-	.db	146,179,2,0,47
-	.dw	_760-_766
-_766:
-_759:
-	.db	146,180,2,0
-_760:
-	.db	22,19,62,36,33,52,34
-	.dl	_767-_105,_778-_105
-	.dw	60
-	.db	127,0,18,10
-	.dw	16383
-	.db	26,22,62,37,18,48,46,40
-	.dw	_768-_772
-_772:
-	.db	146,177,2,0,47
-	.dw	_771-_773
-_773:
-_768:
-	.db	18,49,46,40
-	.dw	_769-_774
-_774:
-	.db	146,178,2,0,47
-	.dw	_771-_775
-_775:
-_769:
-	.db	18,50,46,40
-	.dw	_770-_776
-_776:
-	.db	146,179,2,0,47
-	.dw	_771-_777
-_777:
-_770:
-	.db	146,180,2,0
-_771:
-	.db	22,19,62,36,33,54,34
-	.dl	_778-_105,_789-_105
-	.dw	60
-	.db	127,0,18,10
-	.dw	16383
-	.db	26,22,62,37,18,48,46,40
-	.dw	_779-_783
-_783:
-	.db	146,177,2,0,47
-	.dw	_782-_784
-_784:
-_779:
-	.db	18,49,46,40
-	.dw	_780-_785
-_785:
-	.db	146,178,2,0,47
-	.dw	_782-_786
-_786:
-_780:
-	.db	18,50,46,40
-	.dw	_781-_787
-_787:
-	.db	146,179,2,0,47
-	.dw	_782-_788
-_788:
-_781:
-	.db	146,180,2,0
-_782:
-	.db	22,19,62,36,33,56,34
-	.dl	_789-_105,_800-_105
-	.dw	60
-	.db	127,0,18,10
-	.dw	16383
-	.db	26,22,62,37,18,48,46,40
-	.dw	_790-_794
-_794:
-	.db	146,177,2,0,47
-	.dw	_793-_795
-_795:
-_790:
-	.db	18,49,46,40
-	.dw	_791-_796
-_796:
-	.db	146,178,2,0,47
-	.dw	_793-_797
-_797:
-_791:
-	.db	18,50,46,40
-	.dw	_792-_798
-_798:
-	.db	146,179,2,0,47
-	.dw	_793-_799
-_799:
-_792:
-	.db	146,180,2,0
-_793:
-	.db	22,19,62,36,33,58,34
-	.dl	_800-_105,_811-_105
-	.dw	60
-	.db	127,0,18,10
-	.dw	16383
-	.db	26,22,62,37,18,48,46,40
-	.dw	_801-_805
-_805:
-	.db	146,177,2,0,47
-	.dw	_804-_806
-_806:
-_801:
-	.db	18,49,46,40
-	.dw	_802-_807
-_807:
-	.db	146,178,2,0,47
-	.dw	_804-_808
-_808:
-_802:
-	.db	18,50,46,40
-	.dw	_803-_809
-_809:
-	.db	146,179,2,0,47
-	.dw	_804-_810
-_810:
-_803:
-	.db	146,180,2,0
-_804:
-	.db	22,19,62,36,33,60,34
-	.dl	_811-_105,_822-_105
-	.dw	60
-	.db	127,0,18,10
-	.dw	16383
-	.db	26,22,62,37,18,48,46,40
-	.dw	_812-_816
-_816:
-	.db	146,177,2,0,47
-	.dw	_815-_817
-_817:
-_812:
-	.db	18,49,46,40
-	.dw	_813-_818
-_818:
-	.db	146,178,2,0,47
-	.dw	_815-_819
-_819:
-_813:
-	.db	18,50,46,40
-	.dw	_814-_820
-_820:
-	.db	146,179,2,0,47
-	.dw	_815-_821
-_821:
-_814:
-	.db	146,180,2,0
-_815:
-	.db	22,19,62,36,33,62,34
-	.dl	_822-_105,_833-_105
-	.dw	60
-	.db	127,0,18,10
-	.dw	16383
-	.db	26,22,62,37,18,48,46,40
-	.dw	_823-_827
-_827:
-	.db	146,177,2,0,47
-	.dw	_826-_828
-_828:
-_823:
-	.db	18,49,46,40
-	.dw	_824-_829
-_829:
-	.db	146,178,2,0,47
-	.dw	_826-_830
-_830:
-_824:
-	.db	18,50,46,40
-	.dw	_825-_831
-_831:
-	.db	146,179,2,0,47
-	.dw	_826-_832
-_832:
-_825:
-	.db	146,180,2,0
-_826:
-	.db	22,19,62,36,33,64,34
-	.dl	_833-_105,_844-_105
-	.dw	60
-	.db	127,0,18,10
-	.dw	16383
-	.db	26,22,62,37,18,48,46,40
-	.dw	_834-_838
-_838:
-	.db	146,177,2,0,47
-	.dw	_837-_839
-_839:
-_834:
-	.db	18,49,46,40
-	.dw	_835-_840
-_840:
-	.db	146,178,2,0,47
-	.dw	_837-_841
-_841:
-_835:
-	.db	18,50,46,40
-	.dw	_836-_842
-_842:
-	.db	146,179,2,0,47
-	.dw	_837-_843
-_843:
-_836:
-	.db	146,180,2,0
-_837:
-	.db	22,19,62,36,33,66,34
-	.dl	_844-_105,_855-_105
-	.dw	60
-	.db	127,0,18,10
-	.dw	16383
-	.db	26,22,62,37,18,48,46,40
-	.dw	_845-_849
-_849:
-	.db	146,177,2,0,47
-	.dw	_848-_850
-_850:
-_845:
-	.db	18,49,46,40
-	.dw	_846-_851
-_851:
-	.db	146,178,2,0,47
-	.dw	_848-_852
-_852:
-_846:
-	.db	18,50,46,40
-	.dw	_847-_853
-_853:
-	.db	146,179,2,0,47
-	.dw	_848-_854
-_854:
-_847:
-	.db	146,180,2,0
-_848:
-	.db	22,19,62,36,33,68,34
-	.dl	_855-_105,_866-_105
-	.dw	60
-	.db	127,0,18,10
-	.dw	16383
-	.db	26,22,62,37,18,48,46,40
-	.dw	_856-_860
-_860:
-	.db	146,177,2,0,47
-	.dw	_859-_861
-_861:
-_856:
-	.db	18,49,46,40
-	.dw	_857-_862
-_862:
-	.db	146,178,2,0,47
-	.dw	_859-_863
-_863:
-_857:
-	.db	18,50,46,40
-	.dw	_858-_864
-_864:
-	.db	146,179,2,0,47
-	.dw	_859-_865
-_865:
-_858:
-	.db	146,180,2,0
-_859:
-	.db	22,19,62,36,33,72,34
-	.dl	_866-_105,_877-_105
-	.dw	60
-	.db	127,0,18,10
-	.dw	16383
-	.db	26,22,62,37,18,48,46,40
-	.dw	_867-_871
-_871:
-	.db	146,177,2,0,47
-	.dw	_870-_872
-_872:
-_867:
-	.db	18,49,46,40
-	.dw	_868-_873
-_873:
-	.db	146,178,2,0,47
-	.dw	_870-_874
-_874:
-_868:
-	.db	18,50,46,40
-	.dw	_869-_875
+	.dw	_878-_880
+_880:
 _875:
-	.db	146,179,2,0,47
-	.dw	_870-_876
-_876:
-_869:
-	.db	146,180,2,0
-_870:
-	.db	22,19,62,36,33,68,34
-	.dl	_877-_105,_888-_105
-	.dw	60
-	.db	127,0,18,10
-	.dw	16383
-	.db	26,22,62,37,18,48,46,40
+	.db	18,49,46,40
+	.dw	_876-_881
+_881:
+	.db	146,178,2,0,47
 	.dw	_878-_882
 _882:
-	.db	146,177,2,0,47
-	.dw	_881-_883
-_883:
-_878:
-	.db	18,49,46,40
-	.dw	_879-_884
-_884:
-	.db	146,178,2,0,47
-	.dw	_881-_885
-_885:
-_879:
+_876:
 	.db	18,50,46,40
-	.dw	_880-_886
-_886:
+	.dw	_877-_883
+_883:
 	.db	146,179,2,0,47
-	.dw	_881-_887
-_887:
-_880:
+	.dw	_878-_884
+_884:
+_877:
 	.db	146,180,2,0
-_881:
-	.db	22,19,62,36,33,66,34
-	.dl	_888-_105,_899-_105
+_878:
+	.db	22,19,62,36,33,50,34
+	.dl	_885-_105,_896-_105
 	.dw	60
 	.db	127,0,18,10
 	.dw	16383
 	.db	26,22,62,37,18,48,46,40
+	.dw	_886-_890
+_890:
+	.db	146,177,2,0,47
+	.dw	_889-_891
+_891:
+_886:
+	.db	18,49,46,40
+	.dw	_887-_892
+_892:
+	.db	146,178,2,0,47
 	.dw	_889-_893
 _893:
-	.db	146,177,2,0,47
-	.dw	_892-_894
-_894:
-_889:
-	.db	18,49,46,40
-	.dw	_890-_895
-_895:
-	.db	146,178,2,0,47
-	.dw	_892-_896
-_896:
-_890:
+_887:
 	.db	18,50,46,40
-	.dw	_891-_897
-_897:
+	.dw	_888-_894
+_894:
 	.db	146,179,2,0,47
-	.dw	_892-_898
-_898:
-_891:
+	.dw	_889-_895
+_895:
+_888:
 	.db	146,180,2,0
-_892:
-	.db	22,19,62,36,33,64,34
-	.dl	_899-_105,_910-_105
+_889:
+	.db	22,19,62,36,33,52,34
+	.dl	_896-_105,_907-_105
 	.dw	60
 	.db	127,0,18,10
 	.dw	16383
 	.db	26,22,62,37,18,48,46,40
+	.dw	_897-_901
+_901:
+	.db	146,177,2,0,47
+	.dw	_900-_902
+_902:
+_897:
+	.db	18,49,46,40
+	.dw	_898-_903
+_903:
+	.db	146,178,2,0,47
 	.dw	_900-_904
 _904:
-	.db	146,177,2,0,47
-	.dw	_903-_905
-_905:
-_900:
-	.db	18,49,46,40
-	.dw	_901-_906
-_906:
-	.db	146,178,2,0,47
-	.dw	_903-_907
-_907:
-_901:
+_898:
 	.db	18,50,46,40
-	.dw	_902-_908
-_908:
+	.dw	_899-_905
+_905:
 	.db	146,179,2,0,47
-	.dw	_903-_909
-_909:
-_902:
+	.dw	_900-_906
+_906:
+_899:
 	.db	146,180,2,0
-_903:
-	.db	22,19,62,36,33,62,34
-	.dl	_910-_105,_921-_105
+_900:
+	.db	22,19,62,36,33,54,34
+	.dl	_907-_105,_918-_105
 	.dw	60
 	.db	127,0,18,10
 	.dw	16383
 	.db	26,22,62,37,18,48,46,40
+	.dw	_908-_912
+_912:
+	.db	146,177,2,0,47
+	.dw	_911-_913
+_913:
+_908:
+	.db	18,49,46,40
+	.dw	_909-_914
+_914:
+	.db	146,178,2,0,47
 	.dw	_911-_915
 _915:
-	.db	146,177,2,0,47
-	.dw	_914-_916
-_916:
-_911:
-	.db	18,49,46,40
-	.dw	_912-_917
-_917:
-	.db	146,178,2,0,47
-	.dw	_914-_918
-_918:
-_912:
+_909:
 	.db	18,50,46,40
-	.dw	_913-_919
-_919:
+	.dw	_910-_916
+_916:
 	.db	146,179,2,0,47
-	.dw	_914-_920
-_920:
-_913:
+	.dw	_911-_917
+_917:
+_910:
 	.db	146,180,2,0
-_914:
-	.db	22,19,62,36,33,60,34
-	.dl	_921-_105,_932-_105
+_911:
+	.db	22,19,62,36,33,56,34
+	.dl	_918-_105,_929-_105
 	.dw	60
 	.db	127,0,18,10
 	.dw	16383
 	.db	26,22,62,37,18,48,46,40
+	.dw	_919-_923
+_923:
+	.db	146,177,2,0,47
+	.dw	_922-_924
+_924:
+_919:
+	.db	18,49,46,40
+	.dw	_920-_925
+_925:
+	.db	146,178,2,0,47
 	.dw	_922-_926
 _926:
-	.db	146,177,2,0,47
-	.dw	_925-_927
-_927:
-_922:
-	.db	18,49,46,40
-	.dw	_923-_928
-_928:
-	.db	146,178,2,0,47
-	.dw	_925-_929
-_929:
-_923:
+_920:
 	.db	18,50,46,40
-	.dw	_924-_930
-_930:
+	.dw	_921-_927
+_927:
 	.db	146,179,2,0,47
-	.dw	_925-_931
-_931:
-_924:
+	.dw	_922-_928
+_928:
+_921:
 	.db	146,180,2,0
-_925:
+_922:
 	.db	22,19,62,36,33,58,34
-	.dl	_932-_105,_943-_105
+	.dl	_929-_105,_940-_105
 	.dw	60
 	.db	127,0,18,10
 	.dw	16383
 	.db	26,22,62,37,18,48,46,40
+	.dw	_930-_934
+_934:
+	.db	146,177,2,0,47
+	.dw	_933-_935
+_935:
+_930:
+	.db	18,49,46,40
+	.dw	_931-_936
+_936:
+	.db	146,178,2,0,47
 	.dw	_933-_937
 _937:
-	.db	146,177,2,0,47
-	.dw	_936-_938
-_938:
-_933:
-	.db	18,49,46,40
-	.dw	_934-_939
-_939:
-	.db	146,178,2,0,47
-	.dw	_936-_940
-_940:
-_934:
+_931:
 	.db	18,50,46,40
-	.dw	_935-_941
-_941:
+	.dw	_932-_938
+_938:
 	.db	146,179,2,0,47
-	.dw	_936-_942
-_942:
-_935:
+	.dw	_933-_939
+_939:
+_932:
 	.db	146,180,2,0
-_936:
-	.db	22,19,62,36,33,56,34
-	.dl	_943-_105,_954-_105
+_933:
+	.db	22,19,62,36,33,60,34
+	.dl	_940-_105,_951-_105
 	.dw	60
 	.db	127,0,18,10
 	.dw	16383
 	.db	26,22,62,37,18,48,46,40
+	.dw	_941-_945
+_945:
+	.db	146,177,2,0,47
+	.dw	_944-_946
+_946:
+_941:
+	.db	18,49,46,40
+	.dw	_942-_947
+_947:
+	.db	146,178,2,0,47
 	.dw	_944-_948
 _948:
-	.db	146,177,2,0,47
-	.dw	_947-_949
-_949:
-_944:
-	.db	18,49,46,40
-	.dw	_945-_950
-_950:
-	.db	146,178,2,0,47
-	.dw	_947-_951
-_951:
-_945:
+_942:
 	.db	18,50,46,40
-	.dw	_946-_952
-_952:
+	.dw	_943-_949
+_949:
 	.db	146,179,2,0,47
-	.dw	_947-_953
-_953:
-_946:
+	.dw	_944-_950
+_950:
+_943:
 	.db	146,180,2,0
-_947:
-	.db	22,19,62,36,33,54,34
-	.dl	_954-_105,_965-_105
+_944:
+	.db	22,19,62,36,33,62,34
+	.dl	_951-_105,_962-_105
 	.dw	60
 	.db	127,0,18,10
 	.dw	16383
 	.db	26,22,62,37,18,48,46,40
+	.dw	_952-_956
+_956:
+	.db	146,177,2,0,47
+	.dw	_955-_957
+_957:
+_952:
+	.db	18,49,46,40
+	.dw	_953-_958
+_958:
+	.db	146,178,2,0,47
 	.dw	_955-_959
 _959:
-	.db	146,177,2,0,47
-	.dw	_958-_960
-_960:
-_955:
-	.db	18,49,46,40
-	.dw	_956-_961
-_961:
-	.db	146,178,2,0,47
-	.dw	_958-_962
-_962:
-_956:
+_953:
 	.db	18,50,46,40
-	.dw	_957-_963
-_963:
+	.dw	_954-_960
+_960:
 	.db	146,179,2,0,47
-	.dw	_958-_964
-_964:
-_957:
+	.dw	_955-_961
+_961:
+_954:
 	.db	146,180,2,0
-_958:
-	.db	22,19,62,36,33,52,34
-	.dl	_965-_105,_976-_105
+_955:
+	.db	22,19,62,36,33,64,34
+	.dl	_962-_105,_973-_105
 	.dw	60
 	.db	127,0,18,10
 	.dw	16383
 	.db	26,22,62,37,18,48,46,40
+	.dw	_963-_967
+_967:
+	.db	146,177,2,0,47
+	.dw	_966-_968
+_968:
+_963:
+	.db	18,49,46,40
+	.dw	_964-_969
+_969:
+	.db	146,178,2,0,47
 	.dw	_966-_970
 _970:
-	.db	146,177,2,0,47
-	.dw	_969-_971
-_971:
-_966:
-	.db	18,49,46,40
-	.dw	_967-_972
-_972:
-	.db	146,178,2,0,47
-	.dw	_969-_973
-_973:
-_967:
+_964:
 	.db	18,50,46,40
-	.dw	_968-_974
-_974:
+	.dw	_965-_971
+_971:
 	.db	146,179,2,0,47
-	.dw	_969-_975
-_975:
-_968:
+	.dw	_966-_972
+_972:
+_965:
 	.db	146,180,2,0
-_969:
+_966:
+	.db	22,19,62,36,33,66,34
+	.dl	_973-_105,_984-_105
+	.dw	60
+	.db	127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_974-_978
+_978:
+	.db	146,177,2,0,47
+	.dw	_977-_979
+_979:
+_974:
+	.db	18,49,46,40
+	.dw	_975-_980
+_980:
+	.db	146,178,2,0,47
+	.dw	_977-_981
+_981:
+_975:
+	.db	18,50,46,40
+	.dw	_976-_982
+_982:
+	.db	146,179,2,0,47
+	.dw	_977-_983
+_983:
+_976:
+	.db	146,180,2,0
+_977:
+	.db	22,19,62,36,33,68,34
+	.dl	_984-_105,_995-_105
+	.dw	60
+	.db	127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_985-_989
+_989:
+	.db	146,177,2,0,47
+	.dw	_988-_990
+_990:
+_985:
+	.db	18,49,46,40
+	.dw	_986-_991
+_991:
+	.db	146,178,2,0,47
+	.dw	_988-_992
+_992:
+_986:
+	.db	18,50,46,40
+	.dw	_987-_993
+_993:
+	.db	146,179,2,0,47
+	.dw	_988-_994
+_994:
+_987:
+	.db	146,180,2,0
+_988:
+	.db	22,19,62,36,33,72,34
+	.dl	_995-_105,_1006-_105
+	.dw	60
+	.db	127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_996-_1000
+_1000:
+	.db	146,177,2,0,47
+	.dw	_999-_1001
+_1001:
+_996:
+	.db	18,49,46,40
+	.dw	_997-_1002
+_1002:
+	.db	146,178,2,0,47
+	.dw	_999-_1003
+_1003:
+_997:
+	.db	18,50,46,40
+	.dw	_998-_1004
+_1004:
+	.db	146,179,2,0,47
+	.dw	_999-_1005
+_1005:
+_998:
+	.db	146,180,2,0
+_999:
+	.db	22,19,62,36,33,68,34
+	.dl	_1006-_105,_1017-_105
+	.dw	60
+	.db	127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_1007-_1011
+_1011:
+	.db	146,177,2,0,47
+	.dw	_1010-_1012
+_1012:
+_1007:
+	.db	18,49,46,40
+	.dw	_1008-_1013
+_1013:
+	.db	146,178,2,0,47
+	.dw	_1010-_1014
+_1014:
+_1008:
+	.db	18,50,46,40
+	.dw	_1009-_1015
+_1015:
+	.db	146,179,2,0,47
+	.dw	_1010-_1016
+_1016:
+_1009:
+	.db	146,180,2,0
+_1010:
+	.db	22,19,62,36,33,66,34
+	.dl	_1017-_105,_1028-_105
+	.dw	60
+	.db	127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_1018-_1022
+_1022:
+	.db	146,177,2,0,47
+	.dw	_1021-_1023
+_1023:
+_1018:
+	.db	18,49,46,40
+	.dw	_1019-_1024
+_1024:
+	.db	146,178,2,0,47
+	.dw	_1021-_1025
+_1025:
+_1019:
+	.db	18,50,46,40
+	.dw	_1020-_1026
+_1026:
+	.db	146,179,2,0,47
+	.dw	_1021-_1027
+_1027:
+_1020:
+	.db	146,180,2,0
+_1021:
+	.db	22,19,62,36,33,64,34
+	.dl	_1028-_105,_1039-_105
+	.dw	60
+	.db	127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_1029-_1033
+_1033:
+	.db	146,177,2,0,47
+	.dw	_1032-_1034
+_1034:
+_1029:
+	.db	18,49,46,40
+	.dw	_1030-_1035
+_1035:
+	.db	146,178,2,0,47
+	.dw	_1032-_1036
+_1036:
+_1030:
+	.db	18,50,46,40
+	.dw	_1031-_1037
+_1037:
+	.db	146,179,2,0,47
+	.dw	_1032-_1038
+_1038:
+_1031:
+	.db	146,180,2,0
+_1032:
+	.db	22,19,62,36,33,62,34
+	.dl	_1039-_105,_1050-_105
+	.dw	60
+	.db	127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_1040-_1044
+_1044:
+	.db	146,177,2,0,47
+	.dw	_1043-_1045
+_1045:
+_1040:
+	.db	18,49,46,40
+	.dw	_1041-_1046
+_1046:
+	.db	146,178,2,0,47
+	.dw	_1043-_1047
+_1047:
+_1041:
+	.db	18,50,46,40
+	.dw	_1042-_1048
+_1048:
+	.db	146,179,2,0,47
+	.dw	_1043-_1049
+_1049:
+_1042:
+	.db	146,180,2,0
+_1043:
+	.db	22,19,62,36,33,60,34
+	.dl	_1050-_105,_1061-_105
+	.dw	60
+	.db	127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_1051-_1055
+_1055:
+	.db	146,177,2,0,47
+	.dw	_1054-_1056
+_1056:
+_1051:
+	.db	18,49,46,40
+	.dw	_1052-_1057
+_1057:
+	.db	146,178,2,0,47
+	.dw	_1054-_1058
+_1058:
+_1052:
+	.db	18,50,46,40
+	.dw	_1053-_1059
+_1059:
+	.db	146,179,2,0,47
+	.dw	_1054-_1060
+_1060:
+_1053:
+	.db	146,180,2,0
+_1054:
+	.db	22,19,62,36,33,58,34
+	.dl	_1061-_105,_1072-_105
+	.dw	60
+	.db	127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_1062-_1066
+_1066:
+	.db	146,177,2,0,47
+	.dw	_1065-_1067
+_1067:
+_1062:
+	.db	18,49,46,40
+	.dw	_1063-_1068
+_1068:
+	.db	146,178,2,0,47
+	.dw	_1065-_1069
+_1069:
+_1063:
+	.db	18,50,46,40
+	.dw	_1064-_1070
+_1070:
+	.db	146,179,2,0,47
+	.dw	_1065-_1071
+_1071:
+_1064:
+	.db	146,180,2,0
+_1065:
+	.db	22,19,62,36,33,56,34
+	.dl	_1072-_105,_1083-_105
+	.dw	60
+	.db	127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_1073-_1077
+_1077:
+	.db	146,177,2,0,47
+	.dw	_1076-_1078
+_1078:
+_1073:
+	.db	18,49,46,40
+	.dw	_1074-_1079
+_1079:
+	.db	146,178,2,0,47
+	.dw	_1076-_1080
+_1080:
+_1074:
+	.db	18,50,46,40
+	.dw	_1075-_1081
+_1081:
+	.db	146,179,2,0,47
+	.dw	_1076-_1082
+_1082:
+_1075:
+	.db	146,180,2,0
+_1076:
+	.db	22,19,62,36,33,54,34
+	.dl	_1083-_105,_1094-_105
+	.dw	60
+	.db	127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_1084-_1088
+_1088:
+	.db	146,177,2,0,47
+	.dw	_1087-_1089
+_1089:
+_1084:
+	.db	18,49,46,40
+	.dw	_1085-_1090
+_1090:
+	.db	146,178,2,0,47
+	.dw	_1087-_1091
+_1091:
+_1085:
+	.db	18,50,46,40
+	.dw	_1086-_1092
+_1092:
+	.db	146,179,2,0,47
+	.dw	_1087-_1093
+_1093:
+_1086:
+	.db	146,180,2,0
+_1087:
+	.db	22,19,62,36,33,52,34
+	.dl	_1094-_105,_1105-_105
+	.dw	60
+	.db	127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_1095-_1099
+_1099:
+	.db	146,177,2,0,47
+	.dw	_1098-_1100
+_1100:
+_1095:
+	.db	18,49,46,40
+	.dw	_1096-_1101
+_1101:
+	.db	146,178,2,0,47
+	.dw	_1098-_1102
+_1102:
+_1096:
+	.db	18,50,46,40
+	.dw	_1097-_1103
+_1103:
+	.db	146,179,2,0,47
+	.dw	_1098-_1104
+_1104:
+_1097:
+	.db	146,180,2,0
+_1098:
 	.db	22,19,62,36,33,50,34
-	.dl	_976-_105,_183-_105
+	.dl	_1105-_105,_183-_105
 	.dw	58
 	.db	127,0,18,10
 	.dw	16383
 	.db	26,22,62,37,18,48,46,40
-	.dw	_977-_981
-_981:
+	.dw	_1106-_1110
+_1110:
 	.db	146,177,2,0,47
-	.dw	_980-_982
-_982:
-_977:
+	.dw	_1109-_1111
+_1111:
+_1106:
 	.db	18,49,46,40
-	.dw	_978-_983
-_983:
+	.dw	_1107-_1112
+_1112:
 	.db	146,178,2,0,47
-	.dw	_980-_984
-_984:
-_978:
+	.dw	_1109-_1113
+_1113:
+_1107:
 	.db	18,50,46,40
-	.dw	_979-_985
-_985:
+	.dw	_1108-_1114
+_1114:
 	.db	146,179,2,0,47
-	.dw	_980-_986
-_986:
-_979:
+	.dw	_1109-_1115
+_1115:
+_1108:
 	.db	146,180,2,0
-_980:
+_1109:
 	.db	22,19,62,36,33
 	.dl	0,0
 _222:
-	.dl	-1,_105,0,_1210-_105
+	.dl	-1,_105,0,_1339-_105
 	.dw	6
 	.db	84,147,2,85,147,2
 	.dl	0,0
 _220:
-	.dl	-1,_105,0,_1211-_105
+	.dl	-1,_105,0,_1340-_105
 	.dw	6
 	.db	82,147,2,83,147,2
-	.dl	_1212-_105,_1213-_105
+	.dl	_1341-_105,_1342-_105
 	.dw	6
 	.db	88,147,2,80,147,2
 	.dl	0,0
@@ -3164,7 +3196,7 @@ _121:
 	.db	22,19,62,36,33
 	.dl	0,0
 _205:
-	.dl	-1,_117,0,_1214-_117
+	.dl	-1,_117,0,_1343-_117
 	.dw	6
 	.db	82,147,2,83,147,2
 	.dl	_29-_117,_158-_117
@@ -3172,7 +3204,7 @@ _205:
 	.db	82,147,2,83,147,2
 	.dl	0,0
 _208:
-	.dl	-1,_117,0,_1214-_117
+	.dl	-1,_117,0,_1343-_117
 	.dw	6
 	.db	91,147,2,92,147,2
 	.dl	_29-_117,_158-_117
@@ -3180,16 +3212,16 @@ _208:
 	.db	91,147,2,92,147,2
 	.dl	0,0
 _206:
-	.dl	-1,_117,0,_1215-_117
+	.dl	-1,_117,0,_1344-_117
 	.dw	4
 	.db	84,157,8,0
-	.dl	_1216-_117,_1214-_117
+	.dl	_1345-_117,_1343-_117
 	.dw	1
 	.db	93
-	.dl	_29-_117,_1217-_117
+	.dl	_29-_117,_1346-_117
 	.dw	1
 	.db	93
-	.dl	_30-_117,_1218-_117
+	.dl	_30-_117,_1347-_117
 	.dw	1
 	.db	93
 	.dl	0,0
@@ -3232,7 +3264,7 @@ _224:
 	.db	84,147,2,85,147,2
 	.dl	0,0
 _223:
-	.dl	-1,_129,0,_1219-_129
+	.dl	-1,_129,0,_1348-_129
 	.dw	6
 	.db	82,147,2,83,147,2
 	.dl	0,0
@@ -3350,7 +3382,7 @@ _61:
 	.db	22,19,62,36,33
 	.dl	0,0
 _209:
-	.dl	-1,_57,0,_613-_57
+	.dl	-1,_57,0,_742-_57
 	.dw	6
 	.db	82,147,2,83,147,2
 	.dl	0,0
@@ -3396,7 +3428,7 @@ _210:
 
 	.debug		.debug_loc, cluster 'BrakePressureSensor_startCalibration'
 _92:
-	.dl	-1,_93,0,_614-_93
+	.dl	-1,_93,0,_743-_93
 	.dw	58
 	.db	127,0,18,10
 	.dw	16383
@@ -3424,182 +3456,182 @@ _96:
 	.db	146,180,2,0
 _97:
 	.db	22,19,62,36,33
-	.dl	_614-_93,_625-_93
+	.dl	_743-_93,_754-_93
 	.dw	60
 	.db	127,0,18,10
 	.dw	16383
 	.db	26,22,62,37,18,48,46,40
-	.dw	_615-_619
-_619:
+	.dw	_744-_748
+_748:
 	.db	146,177,2,0,47
-	.dw	_618-_620
-_620:
-_615:
+	.dw	_747-_749
+_749:
+_744:
 	.db	18,49,46,40
-	.dw	_616-_621
-_621:
+	.dw	_745-_750
+_750:
 	.db	146,178,2,0,47
-	.dw	_618-_622
-_622:
-_616:
+	.dw	_747-_751
+_751:
+_745:
 	.db	18,50,46,40
-	.dw	_617-_623
-_623:
+	.dw	_746-_752
+_752:
 	.db	146,179,2,0,47
-	.dw	_618-_624
-_624:
-_617:
+	.dw	_747-_753
+_753:
+_746:
 	.db	146,180,2,0
-_618:
+_747:
 	.db	22,19,62,36,33,50,34
-	.dl	_625-_93,_636-_93
+	.dl	_754-_93,_765-_93
 	.dw	60
 	.db	127,0,18,10
 	.dw	16383
 	.db	26,22,62,37,18,48,46,40
-	.dw	_626-_630
-_630:
+	.dw	_755-_759
+_759:
 	.db	146,177,2,0,47
-	.dw	_629-_631
-_631:
-_626:
+	.dw	_758-_760
+_760:
+_755:
 	.db	18,49,46,40
-	.dw	_627-_632
-_632:
+	.dw	_756-_761
+_761:
 	.db	146,178,2,0,47
-	.dw	_629-_633
-_633:
-_627:
+	.dw	_758-_762
+_762:
+_756:
 	.db	18,50,46,40
-	.dw	_628-_634
-_634:
+	.dw	_757-_763
+_763:
 	.db	146,179,2,0,47
-	.dw	_629-_635
-_635:
-_628:
+	.dw	_758-_764
+_764:
+_757:
 	.db	146,180,2,0
-_629:
+_758:
 	.db	22,19,62,36,33,52,34
-	.dl	_636-_93,_647-_93
+	.dl	_765-_93,_776-_93
 	.dw	60
 	.db	127,0,18,10
 	.dw	16383
 	.db	26,22,62,37,18,48,46,40
-	.dw	_637-_641
-_641:
+	.dw	_766-_770
+_770:
 	.db	146,177,2,0,47
-	.dw	_640-_642
-_642:
-_637:
+	.dw	_769-_771
+_771:
+_766:
 	.db	18,49,46,40
-	.dw	_638-_643
-_643:
+	.dw	_767-_772
+_772:
 	.db	146,178,2,0,47
-	.dw	_640-_644
-_644:
-_638:
+	.dw	_769-_773
+_773:
+_767:
 	.db	18,50,46,40
-	.dw	_639-_645
-_645:
+	.dw	_768-_774
+_774:
 	.db	146,179,2,0,47
-	.dw	_640-_646
-_646:
-_639:
+	.dw	_769-_775
+_775:
+_768:
 	.db	146,180,2,0
-_640:
+_769:
 	.db	22,19,62,36,33,54,34
-	.dl	_647-_93,_658-_93
+	.dl	_776-_93,_787-_93
 	.dw	60
 	.db	127,0,18,10
 	.dw	16383
 	.db	26,22,62,37,18,48,46,40
-	.dw	_648-_652
-_652:
+	.dw	_777-_781
+_781:
 	.db	146,177,2,0,47
-	.dw	_651-_653
-_653:
-_648:
+	.dw	_780-_782
+_782:
+_777:
 	.db	18,49,46,40
-	.dw	_649-_654
-_654:
+	.dw	_778-_783
+_783:
 	.db	146,178,2,0,47
-	.dw	_651-_655
-_655:
-_649:
+	.dw	_780-_784
+_784:
+_778:
 	.db	18,50,46,40
-	.dw	_650-_656
-_656:
+	.dw	_779-_785
+_785:
 	.db	146,179,2,0,47
-	.dw	_651-_657
-_657:
-_650:
+	.dw	_780-_786
+_786:
+_779:
 	.db	146,180,2,0
-_651:
+_780:
 	.db	22,19,62,36,33,52,34
-	.dl	_658-_93,_669-_93
+	.dl	_787-_93,_798-_93
 	.dw	60
 	.db	127,0,18,10
 	.dw	16383
 	.db	26,22,62,37,18,48,46,40
-	.dw	_659-_663
-_663:
+	.dw	_788-_792
+_792:
 	.db	146,177,2,0,47
-	.dw	_662-_664
-_664:
-_659:
+	.dw	_791-_793
+_793:
+_788:
 	.db	18,49,46,40
-	.dw	_660-_665
-_665:
+	.dw	_789-_794
+_794:
 	.db	146,178,2,0,47
-	.dw	_662-_666
-_666:
-_660:
+	.dw	_791-_795
+_795:
+_789:
 	.db	18,50,46,40
-	.dw	_661-_667
-_667:
+	.dw	_790-_796
+_796:
 	.db	146,179,2,0,47
-	.dw	_662-_668
-_668:
-_661:
+	.dw	_791-_797
+_797:
+_790:
 	.db	146,180,2,0
-_662:
+_791:
 	.db	22,19,62,36,33,50,34
-	.dl	_669-_93,_178-_93
+	.dl	_798-_93,_178-_93
 	.dw	58
 	.db	127,0,18,10
 	.dw	16383
 	.db	26,22,62,37,18,48,46,40
-	.dw	_670-_674
-_674:
+	.dw	_799-_803
+_803:
 	.db	146,177,2,0,47
-	.dw	_673-_675
-_675:
-_670:
+	.dw	_802-_804
+_804:
+_799:
 	.db	18,49,46,40
-	.dw	_671-_676
-_676:
+	.dw	_800-_805
+_805:
 	.db	146,178,2,0,47
-	.dw	_673-_677
-_677:
-_671:
+	.dw	_802-_806
+_806:
+_800:
 	.db	18,50,46,40
-	.dw	_672-_678
-_678:
+	.dw	_801-_807
+_807:
 	.db	146,179,2,0,47
-	.dw	_673-_679
-_679:
-_672:
+	.dw	_802-_808
+_808:
+_801:
 	.db	146,180,2,0
-_673:
+_802:
 	.db	22,19,62,36,33
 	.dl	0,0
 _216:
 	.dl	0,0
 _212:
-	.dl	-1,_93,0,_740-_93
+	.dl	-1,_93,0,_869-_93
 	.dw	6
 	.db	82,147,2,83,147,2
-	.dl	_742-_93,_743-_93
+	.dl	_871-_93,_872-_93
 	.dw	6
 	.db	88,147,2,89,147,2
 	.dl	_17-_93,_18-_93
@@ -3607,10 +3639,10 @@ _212:
 	.db	88,147,2,89,147,2
 	.dl	0,0
 _213:
-	.dl	-1,_93,0,_741-_93
+	.dl	-1,_93,0,_870-_93
 	.dw	4
 	.db	84,157,8,0
-	.dl	_744-_93,_669-_93
+	.dl	_873-_93,_798-_93
 	.dw	4
 	.db	86,157,8,8
 	.dl	_17-_93,_18-_93
@@ -3928,7 +3960,7 @@ _335:
 _328:
 	.db	146,180,2,0
 _329:
-	.db	22,19,62,36,33,64,34
+	.db	22,19,62,36,33,68,34
 	.dl	_336-_45,_347-_45
 	.dw	60
 	.db	127,0,18,10
@@ -3956,7 +3988,7 @@ _346:
 _339:
 	.db	146,180,2,0
 _340:
-	.db	22,19,62,36,33,62,34
+	.db	22,19,62,36,33,70,34
 	.dl	_347-_45,_358-_45
 	.dw	60
 	.db	127,0,18,10
@@ -3984,7 +4016,7 @@ _357:
 _350:
 	.db	146,180,2,0
 _351:
-	.db	22,19,62,36,33,60,34
+	.db	22,19,62,36,33,72,34
 	.dl	_358-_45,_369-_45
 	.dw	60
 	.db	127,0,18,10
@@ -4012,7 +4044,7 @@ _368:
 _361:
 	.db	146,180,2,0
 _362:
-	.db	22,19,62,36,33,58,34
+	.db	22,19,62,36,33,70,34
 	.dl	_369-_45,_380-_45
 	.dw	60
 	.db	127,0,18,10
@@ -4040,7 +4072,7 @@ _379:
 _372:
 	.db	146,180,2,0
 _373:
-	.db	22,19,62,36,33,56,34
+	.db	22,19,62,36,33,68,34
 	.dl	_380-_45,_391-_45
 	.dw	60
 	.db	127,0,18,10
@@ -4068,7 +4100,7 @@ _390:
 _383:
 	.db	146,180,2,0
 _384:
-	.db	22,19,62,36,33,54,34
+	.db	22,19,62,36,33,66,34
 	.dl	_391-_45,_402-_45
 	.dw	60
 	.db	127,0,18,10
@@ -4096,7 +4128,7 @@ _401:
 _394:
 	.db	146,180,2,0
 _395:
-	.db	22,19,62,36,33,52,34
+	.db	22,19,62,36,33,64,34
 	.dl	_402-_45,_413-_45
 	.dw	60
 	.db	127,0,18,10
@@ -4124,9 +4156,9 @@ _412:
 _405:
 	.db	146,180,2,0
 _406:
-	.db	22,19,62,36,33,50,34
-	.dl	_413-_45,_153-_45
-	.dw	58
+	.db	22,19,62,36,33,62,34
+	.dl	_413-_45,_424-_45
+	.dw	60
 	.db	127,0,18,10
 	.dw	16383
 	.db	26,22,62,37,18,48,46,40
@@ -4152,64 +4184,232 @@ _423:
 _416:
 	.db	146,180,2,0
 _417:
+	.db	22,19,62,36,33,60,34
+	.dl	_424-_45,_435-_45
+	.dw	60
+	.db	127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_425-_429
+_429:
+	.db	146,177,2,0,47
+	.dw	_428-_430
+_430:
+_425:
+	.db	18,49,46,40
+	.dw	_426-_431
+_431:
+	.db	146,178,2,0,47
+	.dw	_428-_432
+_432:
+_426:
+	.db	18,50,46,40
+	.dw	_427-_433
+_433:
+	.db	146,179,2,0,47
+	.dw	_428-_434
+_434:
+_427:
+	.db	146,180,2,0
+_428:
+	.db	22,19,62,36,33,58,34
+	.dl	_435-_45,_446-_45
+	.dw	60
+	.db	127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_436-_440
+_440:
+	.db	146,177,2,0,47
+	.dw	_439-_441
+_441:
+_436:
+	.db	18,49,46,40
+	.dw	_437-_442
+_442:
+	.db	146,178,2,0,47
+	.dw	_439-_443
+_443:
+_437:
+	.db	18,50,46,40
+	.dw	_438-_444
+_444:
+	.db	146,179,2,0,47
+	.dw	_439-_445
+_445:
+_438:
+	.db	146,180,2,0
+_439:
+	.db	22,19,62,36,33,56,34
+	.dl	_446-_45,_457-_45
+	.dw	60
+	.db	127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_447-_451
+_451:
+	.db	146,177,2,0,47
+	.dw	_450-_452
+_452:
+_447:
+	.db	18,49,46,40
+	.dw	_448-_453
+_453:
+	.db	146,178,2,0,47
+	.dw	_450-_454
+_454:
+_448:
+	.db	18,50,46,40
+	.dw	_449-_455
+_455:
+	.db	146,179,2,0,47
+	.dw	_450-_456
+_456:
+_449:
+	.db	146,180,2,0
+_450:
+	.db	22,19,62,36,33,54,34
+	.dl	_457-_45,_468-_45
+	.dw	60
+	.db	127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_458-_462
+_462:
+	.db	146,177,2,0,47
+	.dw	_461-_463
+_463:
+_458:
+	.db	18,49,46,40
+	.dw	_459-_464
+_464:
+	.db	146,178,2,0,47
+	.dw	_461-_465
+_465:
+_459:
+	.db	18,50,46,40
+	.dw	_460-_466
+_466:
+	.db	146,179,2,0,47
+	.dw	_461-_467
+_467:
+_460:
+	.db	146,180,2,0
+_461:
+	.db	22,19,62,36,33,52,34
+	.dl	_468-_45,_479-_45
+	.dw	60
+	.db	127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_469-_473
+_473:
+	.db	146,177,2,0,47
+	.dw	_472-_474
+_474:
+_469:
+	.db	18,49,46,40
+	.dw	_470-_475
+_475:
+	.db	146,178,2,0,47
+	.dw	_472-_476
+_476:
+_470:
+	.db	18,50,46,40
+	.dw	_471-_477
+_477:
+	.db	146,179,2,0,47
+	.dw	_472-_478
+_478:
+_471:
+	.db	146,180,2,0
+_472:
+	.db	22,19,62,36,33,50,34
+	.dl	_479-_45,_153-_45
+	.dw	58
+	.db	127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_480-_484
+_484:
+	.db	146,177,2,0,47
+	.dw	_483-_485
+_485:
+_480:
+	.db	18,49,46,40
+	.dw	_481-_486
+_486:
+	.db	146,178,2,0,47
+	.dw	_483-_487
+_487:
+_481:
+	.db	18,50,46,40
+	.dw	_482-_488
+_488:
+	.db	146,179,2,0,47
+	.dw	_483-_489
+_489:
+_482:
+	.db	146,180,2,0
+_483:
 	.db	22,19,62,36,33
 	.dl	0,0
 _204:
-	.dl	-1,_45,0,_604-_45
+	.dl	-1,_45,0,_733-_45
 	.dw	4
 	.db	84,157,8,0
-	.dl	_606-_45,_153-_45
+	.dl	_735-_45,_153-_45
 	.dw	2
-	.db	145,112
-	.dl	_610-_45,_611-_45
+	.db	145,106
+	.dl	_739-_45,_740-_45
 	.dw	4
 	.db	84,157,8,8
-	.dl	_8-_45,_612-_45
+	.dl	_8-_45,_741-_45
 	.dw	4
 	.db	84,157,8,8
 	.dl	0,0
 _202:
-	.dl	-1,_45,0,_605-_45
+	.dl	-1,_45,0,_734-_45
 	.dw	6
 	.db	82,147,2,83,147,2
-	.dl	_607-_45,_608-_45
+	.dl	_736-_45,_737-_45
 	.dw	6
 	.db	91,147,2,92,147,2
-	.dl	_4-_45,_609-_45
+	.dl	_4-_45,_738-_45
 	.dw	6
 	.db	91,147,2,92,147,2
 	.dl	0,0
 	; End of section
 
 	.debug		.debug_frame
-_1414:
+_1542:
 	.dl	184
 	.dl	-1
 	.db	3,0,2,2,173,2,15,60,127,0,18,10
 	.dw	16383
 	.db	26,22,62,37,18,48,46,40
-	.dw	_1415-_1419
-_1419:
+	.dw	_1543-_1547
+_1547:
 	.db	146,177,2,0,47
-	.dw	_1418-_1420
-_1420:
-_1415:
+	.dw	_1546-_1548
+_1548:
+_1543:
 	.db	18,49,46,40
-	.dw	_1416-_1421
-_1421:
+	.dw	_1544-_1549
+_1549:
 	.db	146,178,2,0,47
-	.dw	_1418-_1422
-_1422:
-_1416:
+	.dw	_1546-_1550
+_1550:
+_1544:
 	.db	18,50,46,40
-	.dw	_1417-_1423
-_1423:
+	.dw	_1545-_1551
+_1551:
 	.db	146,179,2,0,47
-	.dw	_1418-_1424
-_1424:
-_1417:
+	.dw	_1546-_1552
+_1552:
+_1545:
 	.db	146,180,2,0
-_1418:
+_1546:
 	.db	22,19,62,36,33,48,34,16,173,2,12,19,146,176,2,0,64,36,146,161,2,0,33,8,15,22,161,2,5,19,146,161,2,4,8
 	.db	162,2,8,166,2,8,177,2,8,178,2,8,179,2,8,180,2,8,0,8,1,8,6,8,7,8,8,8,9,8,10,8,167,2,8,168,2,8,169,2,8,170
 	.db	2,8,171,2,8,172,2,16,174,2,12,19,146,176,2,0,64,36,146,161,2,0,33,16,175,2,12,19,146,176,2,0,64,36,146
@@ -4218,524 +4418,527 @@ _1418:
 
 	.debug		.debug_frame, cluster 'BrakePressureSensor_new'
 	.dl	12
-	.dl	_1414,_33,_148-_33
+	.dl	_1542,_33,_148-_33
 	; End of section
 
 	.debug		.debug_frame, cluster 'BrakePressureSensor_update'
-	.dl	1352
-	.dl	_1414,_45,_153-_45
+	.dl	1812
+	.dl	_1542,_45,_153-_45
 	.db	4
 	.dl	(_226-_45)/2
 	.db	15,60,127,0,18,10
 	.dw	16383
 	.db	26,22,62,37,18,48,46,40
-	.dw	_424-_428
-_428:
+	.dw	_490-_494
+_494:
 	.db	146,177,2,0,47
-	.dw	_427-_429
-_429:
-_424:
+	.dw	_493-_495
+_495:
+_490:
 	.db	18,49,46,40
-	.dw	_425-_430
-_430:
+	.dw	_491-_496
+_496:
 	.db	146,178,2,0,47
-	.dw	_427-_431
-_431:
-_425:
+	.dw	_493-_497
+_497:
+_491:
 	.db	18,50,46,40
-	.dw	_426-_432
-_432:
+	.dw	_492-_498
+_498:
 	.db	146,179,2,0,47
-	.dw	_427-_433
-_433:
-_426:
+	.dw	_493-_499
+_499:
+_492:
 	.db	146,180,2,0
-_427:
-	.db	22,19,62,36,33,50,34,22,15,3,19,127,2,17,0,127,4
+_493:
+	.db	22,19,62,36,33,50,34,22,15,3,19,127,2,4
 	.dl	(_237-_226)/2
 	.db	15,60,127,0,18,10
 	.dw	16383
 	.db	26,22,62,37,18,48,46,40
-	.dw	_434-_438
-_438:
+	.dw	_500-_504
+_504:
 	.db	146,177,2,0,47
-	.dw	_437-_439
-_439:
-_434:
+	.dw	_503-_505
+_505:
+_500:
 	.db	18,49,46,40
-	.dw	_435-_440
-_440:
+	.dw	_501-_506
+_506:
 	.db	146,178,2,0,47
-	.dw	_437-_441
-_441:
-_435:
+	.dw	_503-_507
+_507:
+_501:
 	.db	18,50,46,40
-	.dw	_436-_442
-_442:
+	.dw	_502-_508
+_508:
 	.db	146,179,2,0,47
-	.dw	_437-_443
-_443:
-_436:
+	.dw	_503-_509
+_509:
+_502:
 	.db	146,180,2,0
-_437:
-	.db	22,19,62,36,33,52,34,22,15,3,19,127,4,17,1,126,4
+_503:
+	.db	22,19,62,36,33,52,34,22,15,3,19,127,4,4
 	.dl	(_248-_237)/2
 	.db	15,60,127,0,18,10
 	.dw	16383
 	.db	26,22,62,37,18,48,46,40
-	.dw	_444-_448
-_448:
+	.dw	_510-_514
+_514:
 	.db	146,177,2,0,47
-	.dw	_447-_449
-_449:
-_444:
+	.dw	_513-_515
+_515:
+_510:
 	.db	18,49,46,40
-	.dw	_445-_450
-_450:
+	.dw	_511-_516
+_516:
 	.db	146,178,2,0,47
-	.dw	_447-_451
-_451:
-_445:
+	.dw	_513-_517
+_517:
+_511:
 	.db	18,50,46,40
-	.dw	_446-_452
-_452:
+	.dw	_512-_518
+_518:
 	.db	146,179,2,0,47
-	.dw	_447-_453
-_453:
-_446:
+	.dw	_513-_519
+_519:
+_512:
 	.db	146,180,2,0
-_447:
-	.db	22,19,62,36,33,54,34,22,15,3,19,127,6,17,6,125,4
+_513:
+	.db	22,19,62,36,33,54,34,22,15,3,19,127,6,4
 	.dl	(_259-_248)/2
 	.db	15,60,127,0,18,10
 	.dw	16383
 	.db	26,22,62,37,18,48,46,40
-	.dw	_454-_458
-_458:
+	.dw	_520-_524
+_524:
 	.db	146,177,2,0,47
-	.dw	_457-_459
-_459:
-_454:
+	.dw	_523-_525
+_525:
+_520:
 	.db	18,49,46,40
-	.dw	_455-_460
-_460:
+	.dw	_521-_526
+_526:
 	.db	146,178,2,0,47
-	.dw	_457-_461
-_461:
-_455:
+	.dw	_523-_527
+_527:
+_521:
 	.db	18,50,46,40
-	.dw	_456-_462
-_462:
+	.dw	_522-_528
+_528:
 	.db	146,179,2,0,47
-	.dw	_457-_463
-_463:
-_456:
+	.dw	_523-_529
+_529:
+_522:
 	.db	146,180,2,0
-_457:
-	.db	22,19,62,36,33,56,34,22,15,3,19,127,8,17,7,124,4
+_523:
+	.db	22,19,62,36,33,56,34,22,15,3,19,127,8,17,0,124,4
 	.dl	(_270-_259)/2
 	.db	15,60,127,0,18,10
 	.dw	16383
 	.db	26,22,62,37,18,48,46,40
-	.dw	_464-_468
-_468:
+	.dw	_530-_534
+_534:
 	.db	146,177,2,0,47
-	.dw	_467-_469
-_469:
-_464:
+	.dw	_533-_535
+_535:
+_530:
 	.db	18,49,46,40
-	.dw	_465-_470
-_470:
+	.dw	_531-_536
+_536:
 	.db	146,178,2,0,47
-	.dw	_467-_471
-_471:
-_465:
+	.dw	_533-_537
+_537:
+_531:
 	.db	18,50,46,40
-	.dw	_466-_472
-_472:
+	.dw	_532-_538
+_538:
 	.db	146,179,2,0,47
-	.dw	_467-_473
-_473:
-_466:
+	.dw	_533-_539
+_539:
+_532:
 	.db	146,180,2,0
-_467:
-	.db	22,19,62,36,33,58,34,22,15,3,19,127,10,17,8,123,4
+_533:
+	.db	22,19,62,36,33,58,34,22,15,3,19,127,10,17,1,123,4
 	.dl	(_281-_270)/2
 	.db	15,60,127,0,18,10
 	.dw	16383
 	.db	26,22,62,37,18,48,46,40
-	.dw	_474-_478
-_478:
+	.dw	_540-_544
+_544:
 	.db	146,177,2,0,47
-	.dw	_477-_479
-_479:
-_474:
+	.dw	_543-_545
+_545:
+_540:
 	.db	18,49,46,40
-	.dw	_475-_480
-_480:
+	.dw	_541-_546
+_546:
 	.db	146,178,2,0,47
-	.dw	_477-_481
-_481:
-_475:
+	.dw	_543-_547
+_547:
+_541:
 	.db	18,50,46,40
-	.dw	_476-_482
-_482:
+	.dw	_542-_548
+_548:
 	.db	146,179,2,0,47
-	.dw	_477-_483
-_483:
-_476:
+	.dw	_543-_549
+_549:
+_542:
 	.db	146,180,2,0
-_477:
-	.db	22,19,62,36,33,60,34,22,15,3,19,127,12,17,9,122,4
+_543:
+	.db	22,19,62,36,33,60,34,22,15,3,19,127,12,17,6,122,4
 	.dl	(_292-_281)/2
 	.db	15,60,127,0,18,10
 	.dw	16383
 	.db	26,22,62,37,18,48,46,40
-	.dw	_484-_488
-_488:
+	.dw	_550-_554
+_554:
 	.db	146,177,2,0,47
-	.dw	_487-_489
-_489:
-_484:
+	.dw	_553-_555
+_555:
+_550:
 	.db	18,49,46,40
-	.dw	_485-_490
-_490:
+	.dw	_551-_556
+_556:
 	.db	146,178,2,0,47
-	.dw	_487-_491
-_491:
-_485:
+	.dw	_553-_557
+_557:
+_551:
 	.db	18,50,46,40
-	.dw	_486-_492
-_492:
+	.dw	_552-_558
+_558:
 	.db	146,179,2,0,47
-	.dw	_487-_493
-_493:
-_486:
+	.dw	_553-_559
+_559:
+_552:
 	.db	146,180,2,0
-_487:
-	.db	22,19,62,36,33,62,34,22,15,3,19,127,14,17,10,121,4
+_553:
+	.db	22,19,62,36,33,62,34,22,15,3,19,127,14,17,7,121,4
 	.dl	(_303-_292)/2
 	.db	15,60,127,0,18,10
 	.dw	16383
 	.db	26,22,62,37,18,48,46,40
-	.dw	_494-_498
-_498:
+	.dw	_560-_564
+_564:
 	.db	146,177,2,0,47
-	.dw	_497-_499
-_499:
-_494:
+	.dw	_563-_565
+_565:
+_560:
 	.db	18,49,46,40
-	.dw	_495-_500
-_500:
+	.dw	_561-_566
+_566:
 	.db	146,178,2,0,47
-	.dw	_497-_501
-_501:
-_495:
+	.dw	_563-_567
+_567:
+_561:
 	.db	18,50,46,40
-	.dw	_496-_502
-_502:
+	.dw	_562-_568
+_568:
 	.db	146,179,2,0,47
-	.dw	_497-_503
-_503:
-_496:
+	.dw	_563-_569
+_569:
+_562:
 	.db	146,180,2,0
-_497:
-	.db	22,19,62,36,33,64,34,22,15,3,19,127,16,4
+_563:
+	.db	22,19,62,36,33,64,34,22,15,3,19,127,16,17,8,120,4
 	.dl	(_314-_303)/2
 	.db	15,60,127,0,18,10
 	.dw	16383
 	.db	26,22,62,37,18,48,46,40
-	.dw	_504-_508
-_508:
+	.dw	_570-_574
+_574:
 	.db	146,177,2,0,47
-	.dw	_507-_509
-_509:
-_504:
+	.dw	_573-_575
+_575:
+_570:
 	.db	18,49,46,40
-	.dw	_505-_510
-_510:
+	.dw	_571-_576
+_576:
 	.db	146,178,2,0,47
-	.dw	_507-_511
-_511:
-_505:
+	.dw	_573-_577
+_577:
+_571:
 	.db	18,50,46,40
-	.dw	_506-_512
-_512:
+	.dw	_572-_578
+_578:
 	.db	146,179,2,0,47
-	.dw	_507-_513
-_513:
-_506:
+	.dw	_573-_579
+_579:
+_572:
 	.db	146,180,2,0
-_507:
-	.db	22,19,62,36,33,66,34,22,15,3,19,127,18,4
+_573:
+	.db	22,19,62,36,33,66,34,22,15,3,19,127,18,17,9,119,4
 	.dl	(_325-_314)/2
 	.db	15,60,127,0,18,10
 	.dw	16383
 	.db	26,22,62,37,18,48,46,40
-	.dw	_514-_518
-_518:
+	.dw	_580-_584
+_584:
 	.db	146,177,2,0,47
-	.dw	_517-_519
-_519:
-_514:
+	.dw	_583-_585
+_585:
+_580:
 	.db	18,49,46,40
-	.dw	_515-_520
-_520:
+	.dw	_581-_586
+_586:
 	.db	146,178,2,0,47
-	.dw	_517-_521
-_521:
-_515:
+	.dw	_583-_587
+_587:
+_581:
 	.db	18,50,46,40
-	.dw	_516-_522
-_522:
+	.dw	_582-_588
+_588:
 	.db	146,179,2,0,47
-	.dw	_517-_523
-_523:
-_516:
+	.dw	_583-_589
+_589:
+_582:
 	.db	146,180,2,0
-_517:
-	.db	22,19,62,36,33,64,34,22,15,3,19,127,16,4
+_583:
+	.db	22,19,62,36,33,68,34,22,15,3,19,127,20,17,10,118,4
 	.dl	(_336-_325)/2
 	.db	15,60,127,0,18,10
 	.dw	16383
 	.db	26,22,62,37,18,48,46,40
-	.dw	_524-_528
-_528:
+	.dw	_590-_594
+_594:
 	.db	146,177,2,0,47
-	.dw	_527-_529
-_529:
-_524:
+	.dw	_593-_595
+_595:
+_590:
 	.db	18,49,46,40
-	.dw	_525-_530
-_530:
+	.dw	_591-_596
+_596:
 	.db	146,178,2,0,47
-	.dw	_527-_531
-_531:
-_525:
+	.dw	_593-_597
+_597:
+_591:
 	.db	18,50,46,40
-	.dw	_526-_532
-_532:
+	.dw	_592-_598
+_598:
 	.db	146,179,2,0,47
-	.dw	_527-_533
-_533:
-_526:
+	.dw	_593-_599
+_599:
+_592:
 	.db	146,180,2,0
-_527:
-	.db	22,19,62,36,33,62,34,22,15,3,19,127,14,4
+_593:
+	.db	22,19,62,36,33,70,34,22,15,3,19,127,22,4
 	.dl	(_347-_336)/2
 	.db	15,60,127,0,18,10
 	.dw	16383
 	.db	26,22,62,37,18,48,46,40
-	.dw	_534-_538
-_538:
+	.dw	_600-_604
+_604:
 	.db	146,177,2,0,47
-	.dw	_537-_539
-_539:
-_534:
+	.dw	_603-_605
+_605:
+_600:
 	.db	18,49,46,40
-	.dw	_535-_540
-_540:
+	.dw	_601-_606
+_606:
 	.db	146,178,2,0,47
-	.dw	_537-_541
-_541:
-_535:
+	.dw	_603-_607
+_607:
+_601:
 	.db	18,50,46,40
-	.dw	_536-_542
-_542:
+	.dw	_602-_608
+_608:
 	.db	146,179,2,0,47
-	.dw	_537-_543
-_543:
-_536:
+	.dw	_603-_609
+_609:
+_602:
 	.db	146,180,2,0
-_537:
-	.db	22,19,62,36,33,60,34,22,15,3,19,127,12,202,4
+_603:
+	.db	22,19,62,36,33,72,34,22,15,3,19,127,24,4
 	.dl	(_358-_347)/2
 	.db	15,60,127,0,18,10
 	.dw	16383
 	.db	26,22,62,37,18,48,46,40
-	.dw	_544-_548
-_548:
+	.dw	_610-_614
+_614:
 	.db	146,177,2,0,47
-	.dw	_547-_549
-_549:
-_544:
+	.dw	_613-_615
+_615:
+_610:
 	.db	18,49,46,40
-	.dw	_545-_550
-_550:
+	.dw	_611-_616
+_616:
 	.db	146,178,2,0,47
-	.dw	_547-_551
-_551:
-_545:
+	.dw	_613-_617
+_617:
+_611:
 	.db	18,50,46,40
-	.dw	_546-_552
-_552:
+	.dw	_612-_618
+_618:
 	.db	146,179,2,0,47
-	.dw	_547-_553
-_553:
-_546:
+	.dw	_613-_619
+_619:
+_612:
 	.db	146,180,2,0
-_547:
-	.db	22,19,62,36,33,58,34,22,15,3,19,127,10,201,4
+_613:
+	.db	22,19,62,36,33,70,34,22,15,3,19,127,22,4
 	.dl	(_369-_358)/2
 	.db	15,60,127,0,18,10
 	.dw	16383
 	.db	26,22,62,37,18,48,46,40
-	.dw	_554-_558
-_558:
+	.dw	_620-_624
+_624:
 	.db	146,177,2,0,47
-	.dw	_557-_559
-_559:
-_554:
+	.dw	_623-_625
+_625:
+_620:
 	.db	18,49,46,40
-	.dw	_555-_560
-_560:
+	.dw	_621-_626
+_626:
 	.db	146,178,2,0,47
-	.dw	_557-_561
-_561:
-_555:
+	.dw	_623-_627
+_627:
+_621:
 	.db	18,50,46,40
-	.dw	_556-_562
-_562:
+	.dw	_622-_628
+_628:
 	.db	146,179,2,0,47
-	.dw	_557-_563
-_563:
-_556:
+	.dw	_623-_629
+_629:
+_622:
 	.db	146,180,2,0
-_557:
-	.db	22,19,62,36,33,56,34,22,15,3,19,127,8,200,4
+_623:
+	.db	22,19,62,36,33,68,34,22,15,3,19,127,20,4
 	.dl	(_380-_369)/2
 	.db	15,60,127,0,18,10
 	.dw	16383
 	.db	26,22,62,37,18,48,46,40
-	.dw	_564-_568
-_568:
+	.dw	_630-_634
+_634:
 	.db	146,177,2,0,47
-	.dw	_567-_569
-_569:
-_564:
+	.dw	_633-_635
+_635:
+_630:
 	.db	18,49,46,40
-	.dw	_565-_570
-_570:
+	.dw	_631-_636
+_636:
 	.db	146,178,2,0,47
-	.dw	_567-_571
-_571:
-_565:
+	.dw	_633-_637
+_637:
+_631:
 	.db	18,50,46,40
-	.dw	_566-_572
-_572:
+	.dw	_632-_638
+_638:
 	.db	146,179,2,0,47
-	.dw	_567-_573
-_573:
-_566:
+	.dw	_633-_639
+_639:
+_632:
 	.db	146,180,2,0
-_567:
-	.db	22,19,62,36,33,54,34,22,15,3,19,127,6,199,4
+_633:
+	.db	22,19,62,36,33,66,34,22,15,3,19,127,18,202,4
 	.dl	(_391-_380)/2
 	.db	15,60,127,0,18,10
 	.dw	16383
 	.db	26,22,62,37,18,48,46,40
-	.dw	_574-_578
-_578:
+	.dw	_640-_644
+_644:
 	.db	146,177,2,0,47
-	.dw	_577-_579
-_579:
-_574:
+	.dw	_643-_645
+_645:
+_640:
 	.db	18,49,46,40
-	.dw	_575-_580
-_580:
+	.dw	_641-_646
+_646:
 	.db	146,178,2,0,47
-	.dw	_577-_581
-_581:
-_575:
+	.dw	_643-_647
+_647:
+_641:
 	.db	18,50,46,40
-	.dw	_576-_582
-_582:
+	.dw	_642-_648
+_648:
 	.db	146,179,2,0,47
-	.dw	_577-_583
-_583:
-_576:
+	.dw	_643-_649
+_649:
+_642:
 	.db	146,180,2,0
-_577:
-	.db	22,19,62,36,33,52,34,22,15,3,19,127,4,198,4
+_643:
+	.db	22,19,62,36,33,64,34,22,15,3,19,127,16,201,4
 	.dl	(_402-_391)/2
 	.db	15,60,127,0,18,10
 	.dw	16383
 	.db	26,22,62,37,18,48,46,40
-	.dw	_584-_588
-_588:
+	.dw	_650-_654
+_654:
 	.db	146,177,2,0,47
-	.dw	_587-_589
-_589:
-_584:
+	.dw	_653-_655
+_655:
+_650:
 	.db	18,49,46,40
-	.dw	_585-_590
-_590:
+	.dw	_651-_656
+_656:
 	.db	146,178,2,0,47
-	.dw	_587-_591
-_591:
-_585:
+	.dw	_653-_657
+_657:
+_651:
 	.db	18,50,46,40
-	.dw	_586-_592
-_592:
+	.dw	_652-_658
+_658:
 	.db	146,179,2,0,47
-	.dw	_587-_593
-_593:
-_586:
+	.dw	_653-_659
+_659:
+_652:
 	.db	146,180,2,0
-_587:
-	.db	22,19,62,36,33,50,34,22,15,3,19,127,2,193,4
+_653:
+	.db	22,19,62,36,33,62,34,22,15,3,19,127,14,200,4
 	.dl	(_413-_402)/2
 	.db	15,60,127,0,18,10
 	.dw	16383
 	.db	26,22,62,37,18,48,46,40
-	.dw	_594-_598
-_598:
+	.dw	_660-_664
+_664:
 	.db	146,177,2,0,47
-	.dw	_597-_599
-_599:
-_594:
+	.dw	_663-_665
+_665:
+_660:
 	.db	18,49,46,40
-	.dw	_595-_600
-_600:
+	.dw	_661-_666
+_666:
 	.db	146,178,2,0,47
-	.dw	_597-_601
-_601:
-_595:
+	.dw	_663-_667
+_667:
+_661:
 	.db	18,50,46,40
-	.dw	_596-_602
-_602:
+	.dw	_662-_668
+_668:
 	.db	146,179,2,0,47
-	.dw	_597-_603
-_603:
-_596:
+	.dw	_663-_669
+_669:
+_662:
 	.db	146,180,2,0
-_597:
-	.db	22,19,62,36,33,48,34,8,15,192,0,0
-	; End of section
-
-	.debug		.debug_frame, cluster 'BrakePressureSensor_resetCalibration'
-	.dl	20
-	.dl	_1414,_57,_163-_57
-	.db	8,160,2,8,5,8,14,0
-	; End of section
-
-	.debug		.debug_frame, cluster 'BrakePressureSensor_saveCalibrationToEEPROM'
-	.dl	32
-	.dl	_1414,_69,_168-_69
-	.db	8,160,2,8,2,8,3,8,4,8,5,8,11,8,12,8,13,8,14,0
-	; End of section
-
-	.debug		.debug_frame, cluster 'BrakePressureSensor_loadCalibrationFromEEPROM'
-	.dl	32
-	.dl	_1414,_81,_173-_81
-	.db	8,160,2,8,2,8,3,8,4,8,5,8,11,8,12,8,13,8,14,0
-	; End of section
-
-	.debug		.debug_frame, cluster 'BrakePressureSensor_startCalibration'
-	.dl	460
-	.dl	_1414,_93,_178-_93
-	.db	4
-	.dl	(_614-_93)/2
+_663:
+	.db	22,19,62,36,33,60,34,22,15,3,19,127,12,199,4
+	.dl	(_424-_413)/2
+	.db	15,60,127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_670-_674
+_674:
+	.db	146,177,2,0,47
+	.dw	_673-_675
+_675:
+_670:
+	.db	18,49,46,40
+	.dw	_671-_676
+_676:
+	.db	146,178,2,0,47
+	.dw	_673-_677
+_677:
+_671:
+	.db	18,50,46,40
+	.dw	_672-_678
+_678:
+	.db	146,179,2,0,47
+	.dw	_673-_679
+_679:
+_672:
+	.db	146,180,2,0
+_673:
+	.db	22,19,62,36,33,58,34,22,15,3,19,127,10,198,4
+	.dl	(_435-_424)/2
 	.db	15,60,127,0,18,10
 	.dw	16383
 	.db	26,22,62,37,18,48,46,40
@@ -4761,8 +4964,8 @@ _689:
 _682:
 	.db	146,180,2,0
 _683:
-	.db	22,19,62,36,33,50,34,22,15,3,19,127,2,17,6,127,4
-	.dl	(_625-_614)/2
+	.db	22,19,62,36,33,56,34,22,15,3,19,127,8,193,4
+	.dl	(_446-_435)/2
 	.db	15,60,127,0,18,10
 	.dw	16383
 	.db	26,22,62,37,18,48,46,40
@@ -4788,732 +4991,897 @@ _699:
 _692:
 	.db	146,180,2,0
 _693:
-	.db	22,19,62,36,33,52,34,22,15,3,19,127,4,17,8,126,4
-	.dl	(_636-_625)/2
+	.db	22,19,62,36,33,54,34,22,15,3,19,127,6,192,4
+	.dl	(_700-_446)/2
+	.db	6,163,2,4
+	.dl	(_457-_700)/2
 	.db	15,60,127,0,18,10
 	.dw	16383
 	.db	26,22,62,37,18,48,46,40
-	.dw	_700-_704
-_704:
-	.db	146,177,2,0,47
-	.dw	_703-_705
+	.dw	_701-_705
 _705:
-_700:
-	.db	18,49,46,40
-	.dw	_701-_706
+	.db	146,177,2,0,47
+	.dw	_704-_706
 _706:
-	.db	146,178,2,0,47
-	.dw	_703-_707
-_707:
 _701:
-	.db	18,50,46,40
-	.dw	_702-_708
+	.db	18,49,46,40
+	.dw	_702-_707
+_707:
+	.db	146,178,2,0,47
+	.dw	_704-_708
 _708:
-	.db	146,179,2,0,47
+_702:
+	.db	18,50,46,40
 	.dw	_703-_709
 _709:
-_702:
-	.db	146,180,2,0
-_703:
-	.db	22,19,62,36,33,54,34,22,15,3,19,127,6,17,9,125,4
-	.dl	(_647-_636)/2
-	.db	15,60,127,0,18,10
-	.dw	16383
-	.db	26,22,62,37,18,48,46,40
-	.dw	_710-_714
-_714:
-	.db	146,177,2,0,47
-	.dw	_713-_715
-_715:
-_710:
-	.db	18,49,46,40
-	.dw	_711-_716
-_716:
-	.db	146,178,2,0,47
-	.dw	_713-_717
-_717:
-_711:
-	.db	18,50,46,40
-	.dw	_712-_718
-_718:
 	.db	146,179,2,0,47
-	.dw	_713-_719
-_719:
-_712:
+	.dw	_704-_710
+_710:
+_703:
 	.db	146,180,2,0
-_713:
-	.db	22,19,62,36,33,52,34,22,15,3,19,127,4,201,4
-	.dl	(_658-_647)/2
+_704:
+	.db	22,19,62,36,33,52,34,22,15,3,19,127,4,4
+	.dl	(_711-_457)/2
+	.db	6,164,2,4
+	.dl	(_468-_711)/2
 	.db	15,60,127,0,18,10
 	.dw	16383
 	.db	26,22,62,37,18,48,46,40
-	.dw	_720-_724
-_724:
+	.dw	_712-_716
+_716:
 	.db	146,177,2,0,47
-	.dw	_723-_725
-_725:
-_720:
+	.dw	_715-_717
+_717:
+_712:
 	.db	18,49,46,40
-	.dw	_721-_726
-_726:
+	.dw	_713-_718
+_718:
 	.db	146,178,2,0,47
+	.dw	_715-_719
+_719:
+_713:
+	.db	18,50,46,40
+	.dw	_714-_720
+_720:
+	.db	146,179,2,0,47
+	.dw	_715-_721
+_721:
+_714:
+	.db	146,180,2,0
+_715:
+	.db	22,19,62,36,33,50,34,22,15,3,19,127,2,4
+	.dl	(_722-_468)/2
+	.db	6,165,2,4
+	.dl	(_479-_722)/2
+	.db	15,60,127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
 	.dw	_723-_727
 _727:
-_721:
-	.db	18,50,46,40
-	.dw	_722-_728
+	.db	146,177,2,0,47
+	.dw	_726-_728
 _728:
-	.db	146,179,2,0,47
-	.dw	_723-_729
-_729:
-_722:
-	.db	146,180,2,0
 _723:
-	.db	22,19,62,36,33,50,34,22,15,3,19,127,2,200,4
-	.dl	(_669-_658)/2
+	.db	18,49,46,40
+	.dw	_724-_729
+_729:
+	.db	146,178,2,0,47
+	.dw	_726-_730
+_730:
+_724:
+	.db	18,50,46,40
+	.dw	_725-_731
+_731:
+	.db	146,179,2,0,47
+	.dw	_726-_732
+_732:
+_725:
+	.db	146,180,2,0
+_726:
+	.db	22,19,62,36,33,48,34,8,15
+	; End of section
+
+	.debug		.debug_frame, cluster 'BrakePressureSensor_resetCalibration'
+	.dl	20
+	.dl	_1542,_57,_163-_57
+	.db	8,160,2,8,5,8,14,0
+	; End of section
+
+	.debug		.debug_frame, cluster 'BrakePressureSensor_saveCalibrationToEEPROM'
+	.dl	32
+	.dl	_1542,_69,_168-_69
+	.db	8,160,2,8,2,8,3,8,4,8,5,8,11,8,12,8,13,8,14,0
+	; End of section
+
+	.debug		.debug_frame, cluster 'BrakePressureSensor_loadCalibrationFromEEPROM'
+	.dl	32
+	.dl	_1542,_81,_173-_81
+	.db	8,160,2,8,2,8,3,8,4,8,5,8,11,8,12,8,13,8,14,0
+	; End of section
+
+	.debug		.debug_frame, cluster 'BrakePressureSensor_startCalibration'
+	.dl	460
+	.dl	_1542,_93,_178-_93
+	.db	4
+	.dl	(_743-_93)/2
 	.db	15,60,127,0,18,10
 	.dw	16383
 	.db	26,22,62,37,18,48,46,40
-	.dw	_730-_734
-_734:
+	.dw	_809-_813
+_813:
 	.db	146,177,2,0,47
-	.dw	_733-_735
-_735:
-_730:
+	.dw	_812-_814
+_814:
+_809:
 	.db	18,49,46,40
-	.dw	_731-_736
-_736:
+	.dw	_810-_815
+_815:
 	.db	146,178,2,0,47
-	.dw	_733-_737
-_737:
-_731:
+	.dw	_812-_816
+_816:
+_810:
 	.db	18,50,46,40
-	.dw	_732-_738
-_738:
+	.dw	_811-_817
+_817:
 	.db	146,179,2,0,47
-	.dw	_733-_739
-_739:
-_732:
+	.dw	_812-_818
+_818:
+_811:
 	.db	146,180,2,0
-_733:
+_812:
+	.db	22,19,62,36,33,50,34,22,15,3,19,127,2,17,6,127,4
+	.dl	(_754-_743)/2
+	.db	15,60,127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_819-_823
+_823:
+	.db	146,177,2,0,47
+	.dw	_822-_824
+_824:
+_819:
+	.db	18,49,46,40
+	.dw	_820-_825
+_825:
+	.db	146,178,2,0,47
+	.dw	_822-_826
+_826:
+_820:
+	.db	18,50,46,40
+	.dw	_821-_827
+_827:
+	.db	146,179,2,0,47
+	.dw	_822-_828
+_828:
+_821:
+	.db	146,180,2,0
+_822:
+	.db	22,19,62,36,33,52,34,22,15,3,19,127,4,17,8,126,4
+	.dl	(_765-_754)/2
+	.db	15,60,127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_829-_833
+_833:
+	.db	146,177,2,0,47
+	.dw	_832-_834
+_834:
+_829:
+	.db	18,49,46,40
+	.dw	_830-_835
+_835:
+	.db	146,178,2,0,47
+	.dw	_832-_836
+_836:
+_830:
+	.db	18,50,46,40
+	.dw	_831-_837
+_837:
+	.db	146,179,2,0,47
+	.dw	_832-_838
+_838:
+_831:
+	.db	146,180,2,0
+_832:
+	.db	22,19,62,36,33,54,34,22,15,3,19,127,6,17,9,125,4
+	.dl	(_776-_765)/2
+	.db	15,60,127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_839-_843
+_843:
+	.db	146,177,2,0,47
+	.dw	_842-_844
+_844:
+_839:
+	.db	18,49,46,40
+	.dw	_840-_845
+_845:
+	.db	146,178,2,0,47
+	.dw	_842-_846
+_846:
+_840:
+	.db	18,50,46,40
+	.dw	_841-_847
+_847:
+	.db	146,179,2,0,47
+	.dw	_842-_848
+_848:
+_841:
+	.db	146,180,2,0
+_842:
+	.db	22,19,62,36,33,52,34,22,15,3,19,127,4,201,4
+	.dl	(_787-_776)/2
+	.db	15,60,127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_849-_853
+_853:
+	.db	146,177,2,0,47
+	.dw	_852-_854
+_854:
+_849:
+	.db	18,49,46,40
+	.dw	_850-_855
+_855:
+	.db	146,178,2,0,47
+	.dw	_852-_856
+_856:
+_850:
+	.db	18,50,46,40
+	.dw	_851-_857
+_857:
+	.db	146,179,2,0,47
+	.dw	_852-_858
+_858:
+_851:
+	.db	146,180,2,0
+_852:
+	.db	22,19,62,36,33,50,34,22,15,3,19,127,2,200,4
+	.dl	(_798-_787)/2
+	.db	15,60,127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_859-_863
+_863:
+	.db	146,177,2,0,47
+	.dw	_862-_864
+_864:
+_859:
+	.db	18,49,46,40
+	.dw	_860-_865
+_865:
+	.db	146,178,2,0,47
+	.dw	_862-_866
+_866:
+_860:
+	.db	18,50,46,40
+	.dw	_861-_867
+_867:
+	.db	146,179,2,0,47
+	.dw	_862-_868
+_868:
+_861:
+	.db	146,180,2,0
+_862:
 	.db	22,19,62,36,33,48,34,8,15,198,0,0
 	; End of section
 
 	.debug		.debug_frame, cluster 'BrakePressureSensor_calibrationCycle'
 	.dl	1668
-	.dl	_1414,_105,_183-_105
+	.dl	_1542,_105,_183-_105
 	.db	4
-	.dl	(_745-_105)/2
+	.dl	(_874-_105)/2
 	.db	15,60,127,0,18,10
 	.dw	16383
 	.db	26,22,62,37,18,48,46,40
-	.dw	_987-_991
-_991:
+	.dw	_1116-_1120
+_1120:
 	.db	146,177,2,0,47
-	.dw	_990-_992
-_992:
-_987:
-	.db	18,49,46,40
-	.dw	_988-_993
-_993:
-	.db	146,178,2,0,47
-	.dw	_990-_994
-_994:
-_988:
-	.db	18,50,46,40
-	.dw	_989-_995
-_995:
-	.db	146,179,2,0,47
-	.dw	_990-_996
-_996:
-_989:
-	.db	146,180,2,0
-_990:
-	.db	22,19,62,36,33,50,34,22,15,3,19,127,2,4
-	.dl	(_756-_745)/2
-	.db	15,60,127,0,18,10
-	.dw	16383
-	.db	26,22,62,37,18,48,46,40
-	.dw	_997-_1001
-_1001:
-	.db	146,177,2,0,47
-	.dw	_1000-_1002
-_1002:
-_997:
-	.db	18,49,46,40
-	.dw	_998-_1003
-_1003:
-	.db	146,178,2,0,47
-	.dw	_1000-_1004
-_1004:
-_998:
-	.db	18,50,46,40
-	.dw	_999-_1005
-_1005:
-	.db	146,179,2,0,47
-	.dw	_1000-_1006
-_1006:
-_999:
-	.db	146,180,2,0
-_1000:
-	.db	22,19,62,36,33,52,34,22,15,3,19,127,4,4
-	.dl	(_767-_756)/2
-	.db	15,60,127,0,18,10
-	.dw	16383
-	.db	26,22,62,37,18,48,46,40
-	.dw	_1007-_1011
-_1011:
-	.db	146,177,2,0,47
-	.dw	_1010-_1012
-_1012:
-_1007:
-	.db	18,49,46,40
-	.dw	_1008-_1013
-_1013:
-	.db	146,178,2,0,47
-	.dw	_1010-_1014
-_1014:
-_1008:
-	.db	18,50,46,40
-	.dw	_1009-_1015
-_1015:
-	.db	146,179,2,0,47
-	.dw	_1010-_1016
-_1016:
-_1009:
-	.db	146,180,2,0
-_1010:
-	.db	22,19,62,36,33,54,34,22,15,3,19,127,6,4
-	.dl	(_778-_767)/2
-	.db	15,60,127,0,18,10
-	.dw	16383
-	.db	26,22,62,37,18,48,46,40
-	.dw	_1017-_1021
-_1021:
-	.db	146,177,2,0,47
-	.dw	_1020-_1022
-_1022:
-_1017:
-	.db	18,49,46,40
-	.dw	_1018-_1023
-_1023:
-	.db	146,178,2,0,47
-	.dw	_1020-_1024
-_1024:
-_1018:
-	.db	18,50,46,40
-	.dw	_1019-_1025
-_1025:
-	.db	146,179,2,0,47
-	.dw	_1020-_1026
-_1026:
-_1019:
-	.db	146,180,2,0
-_1020:
-	.db	22,19,62,36,33,56,34,22,15,3,19,127,8,17,0,124,4
-	.dl	(_789-_778)/2
-	.db	15,60,127,0,18,10
-	.dw	16383
-	.db	26,22,62,37,18,48,46,40
-	.dw	_1027-_1031
-_1031:
-	.db	146,177,2,0,47
-	.dw	_1030-_1032
-_1032:
-_1027:
-	.db	18,49,46,40
-	.dw	_1028-_1033
-_1033:
-	.db	146,178,2,0,47
-	.dw	_1030-_1034
-_1034:
-_1028:
-	.db	18,50,46,40
-	.dw	_1029-_1035
-_1035:
-	.db	146,179,2,0,47
-	.dw	_1030-_1036
-_1036:
-_1029:
-	.db	146,180,2,0
-_1030:
-	.db	22,19,62,36,33,58,34,22,15,3,19,127,10,17,1,123,4
-	.dl	(_800-_789)/2
-	.db	15,60,127,0,18,10
-	.dw	16383
-	.db	26,22,62,37,18,48,46,40
-	.dw	_1037-_1041
-_1041:
-	.db	146,177,2,0,47
-	.dw	_1040-_1042
-_1042:
-_1037:
-	.db	18,49,46,40
-	.dw	_1038-_1043
-_1043:
-	.db	146,178,2,0,47
-	.dw	_1040-_1044
-_1044:
-_1038:
-	.db	18,50,46,40
-	.dw	_1039-_1045
-_1045:
-	.db	146,179,2,0,47
-	.dw	_1040-_1046
-_1046:
-_1039:
-	.db	146,180,2,0
-_1040:
-	.db	22,19,62,36,33,60,34,22,15,3,19,127,12,17,6,122,4
-	.dl	(_811-_800)/2
-	.db	15,60,127,0,18,10
-	.dw	16383
-	.db	26,22,62,37,18,48,46,40
-	.dw	_1047-_1051
-_1051:
-	.db	146,177,2,0,47
-	.dw	_1050-_1052
-_1052:
-_1047:
-	.db	18,49,46,40
-	.dw	_1048-_1053
-_1053:
-	.db	146,178,2,0,47
-	.dw	_1050-_1054
-_1054:
-_1048:
-	.db	18,50,46,40
-	.dw	_1049-_1055
-_1055:
-	.db	146,179,2,0,47
-	.dw	_1050-_1056
-_1056:
-_1049:
-	.db	146,180,2,0
-_1050:
-	.db	22,19,62,36,33,62,34,22,15,3,19,127,14,17,7,121,4
-	.dl	(_822-_811)/2
-	.db	15,60,127,0,18,10
-	.dw	16383
-	.db	26,22,62,37,18,48,46,40
-	.dw	_1057-_1061
-_1061:
-	.db	146,177,2,0,47
-	.dw	_1060-_1062
-_1062:
-_1057:
-	.db	18,49,46,40
-	.dw	_1058-_1063
-_1063:
-	.db	146,178,2,0,47
-	.dw	_1060-_1064
-_1064:
-_1058:
-	.db	18,50,46,40
-	.dw	_1059-_1065
-_1065:
-	.db	146,179,2,0,47
-	.dw	_1060-_1066
-_1066:
-_1059:
-	.db	146,180,2,0
-_1060:
-	.db	22,19,62,36,33,64,34,22,15,3,19,127,16,17,8,120,4
-	.dl	(_833-_822)/2
-	.db	15,60,127,0,18,10
-	.dw	16383
-	.db	26,22,62,37,18,48,46,40
-	.dw	_1067-_1071
-_1071:
-	.db	146,177,2,0,47
-	.dw	_1070-_1072
-_1072:
-_1067:
-	.db	18,49,46,40
-	.dw	_1068-_1073
-_1073:
-	.db	146,178,2,0,47
-	.dw	_1070-_1074
-_1074:
-_1068:
-	.db	18,50,46,40
-	.dw	_1069-_1075
-_1075:
-	.db	146,179,2,0,47
-	.dw	_1070-_1076
-_1076:
-_1069:
-	.db	146,180,2,0
-_1070:
-	.db	22,19,62,36,33,66,34,22,15,3,19,127,18,17,9,119,4
-	.dl	(_844-_833)/2
-	.db	15,60,127,0,18,10
-	.dw	16383
-	.db	26,22,62,37,18,48,46,40
-	.dw	_1077-_1081
-_1081:
-	.db	146,177,2,0,47
-	.dw	_1080-_1082
-_1082:
-_1077:
-	.db	18,49,46,40
-	.dw	_1078-_1083
-_1083:
-	.db	146,178,2,0,47
-	.dw	_1080-_1084
-_1084:
-_1078:
-	.db	18,50,46,40
-	.dw	_1079-_1085
-_1085:
-	.db	146,179,2,0,47
-	.dw	_1080-_1086
-_1086:
-_1079:
-	.db	146,180,2,0
-_1080:
-	.db	22,19,62,36,33,68,34,22,15,3,19,127,20,17,10,118,4
-	.dl	(_855-_844)/2
-	.db	15,60,127,0,18,10
-	.dw	16383
-	.db	26,22,62,37,18,48,46,40
-	.dw	_1087-_1091
-_1091:
-	.db	146,177,2,0,47
-	.dw	_1090-_1092
-_1092:
-_1087:
-	.db	18,49,46,40
-	.dw	_1088-_1093
-_1093:
-	.db	146,178,2,0,47
-	.dw	_1090-_1094
-_1094:
-_1088:
-	.db	18,50,46,40
-	.dw	_1089-_1095
-_1095:
-	.db	146,179,2,0,47
-	.dw	_1090-_1096
-_1096:
-_1089:
-	.db	146,180,2,0
-_1090:
-	.db	22,19,62,36,33,72,34,22,15,3,19,127,24,4
-	.dl	(_866-_855)/2
-	.db	15,60,127,0,18,10
-	.dw	16383
-	.db	26,22,62,37,18,48,46,40
-	.dw	_1097-_1101
-_1101:
-	.db	146,177,2,0,47
-	.dw	_1100-_1102
-_1102:
-_1097:
-	.db	18,49,46,40
-	.dw	_1098-_1103
-_1103:
-	.db	146,178,2,0,47
-	.dw	_1100-_1104
-_1104:
-_1098:
-	.db	18,50,46,40
-	.dw	_1099-_1105
-_1105:
-	.db	146,179,2,0,47
-	.dw	_1100-_1106
-_1106:
-_1099:
-	.db	146,180,2,0
-_1100:
-	.db	22,19,62,36,33,68,34,22,15,3,19,127,20,4
-	.dl	(_877-_866)/2
-	.db	15,60,127,0,18,10
-	.dw	16383
-	.db	26,22,62,37,18,48,46,40
-	.dw	_1107-_1111
-_1111:
-	.db	146,177,2,0,47
-	.dw	_1110-_1112
-_1112:
-_1107:
-	.db	18,49,46,40
-	.dw	_1108-_1113
-_1113:
-	.db	146,178,2,0,47
-	.dw	_1110-_1114
-_1114:
-_1108:
-	.db	18,50,46,40
-	.dw	_1109-_1115
-_1115:
-	.db	146,179,2,0,47
-	.dw	_1110-_1116
-_1116:
-_1109:
-	.db	146,180,2,0
-_1110:
-	.db	22,19,62,36,33,66,34,22,15,3,19,127,18,202,4
-	.dl	(_888-_877)/2
-	.db	15,60,127,0,18,10
-	.dw	16383
-	.db	26,22,62,37,18,48,46,40
-	.dw	_1117-_1121
+	.dw	_1119-_1121
 _1121:
-	.db	146,177,2,0,47
-	.dw	_1120-_1122
-_1122:
-_1117:
+_1116:
 	.db	18,49,46,40
-	.dw	_1118-_1123
-_1123:
+	.dw	_1117-_1122
+_1122:
 	.db	146,178,2,0,47
-	.dw	_1120-_1124
-_1124:
-_1118:
+	.dw	_1119-_1123
+_1123:
+_1117:
 	.db	18,50,46,40
+	.dw	_1118-_1124
+_1124:
+	.db	146,179,2,0,47
 	.dw	_1119-_1125
 _1125:
-	.db	146,179,2,0,47
-	.dw	_1120-_1126
-_1126:
-_1119:
+_1118:
 	.db	146,180,2,0
-_1120:
-	.db	22,19,62,36,33,64,34,22,15,3,19,127,16,201,4
-	.dl	(_899-_888)/2
+_1119:
+	.db	22,19,62,36,33,50,34,22,15,3,19,127,2,4
+	.dl	(_885-_874)/2
 	.db	15,60,127,0,18,10
 	.dw	16383
 	.db	26,22,62,37,18,48,46,40
-	.dw	_1127-_1131
-_1131:
+	.dw	_1126-_1130
+_1130:
 	.db	146,177,2,0,47
-	.dw	_1130-_1132
-_1132:
-_1127:
+	.dw	_1129-_1131
+_1131:
+_1126:
 	.db	18,49,46,40
-	.dw	_1128-_1133
-_1133:
+	.dw	_1127-_1132
+_1132:
 	.db	146,178,2,0,47
-	.dw	_1130-_1134
-_1134:
-_1128:
+	.dw	_1129-_1133
+_1133:
+_1127:
 	.db	18,50,46,40
+	.dw	_1128-_1134
+_1134:
+	.db	146,179,2,0,47
 	.dw	_1129-_1135
 _1135:
-	.db	146,179,2,0,47
-	.dw	_1130-_1136
-_1136:
-_1129:
+_1128:
 	.db	146,180,2,0
-_1130:
-	.db	22,19,62,36,33,62,34,22,15,3,19,127,14,200,4
-	.dl	(_910-_899)/2
+_1129:
+	.db	22,19,62,36,33,52,34,22,15,3,19,127,4,4
+	.dl	(_896-_885)/2
 	.db	15,60,127,0,18,10
 	.dw	16383
 	.db	26,22,62,37,18,48,46,40
-	.dw	_1137-_1141
-_1141:
+	.dw	_1136-_1140
+_1140:
 	.db	146,177,2,0,47
-	.dw	_1140-_1142
-_1142:
-_1137:
+	.dw	_1139-_1141
+_1141:
+_1136:
 	.db	18,49,46,40
-	.dw	_1138-_1143
-_1143:
+	.dw	_1137-_1142
+_1142:
 	.db	146,178,2,0,47
-	.dw	_1140-_1144
-_1144:
-_1138:
+	.dw	_1139-_1143
+_1143:
+_1137:
 	.db	18,50,46,40
+	.dw	_1138-_1144
+_1144:
+	.db	146,179,2,0,47
 	.dw	_1139-_1145
 _1145:
-	.db	146,179,2,0,47
-	.dw	_1140-_1146
-_1146:
-_1139:
+_1138:
 	.db	146,180,2,0
-_1140:
-	.db	22,19,62,36,33,60,34,22,15,3,19,127,12,199,4
-	.dl	(_921-_910)/2
+_1139:
+	.db	22,19,62,36,33,54,34,22,15,3,19,127,6,4
+	.dl	(_907-_896)/2
 	.db	15,60,127,0,18,10
 	.dw	16383
 	.db	26,22,62,37,18,48,46,40
-	.dw	_1147-_1151
-_1151:
+	.dw	_1146-_1150
+_1150:
 	.db	146,177,2,0,47
-	.dw	_1150-_1152
-_1152:
-_1147:
+	.dw	_1149-_1151
+_1151:
+_1146:
 	.db	18,49,46,40
-	.dw	_1148-_1153
-_1153:
+	.dw	_1147-_1152
+_1152:
 	.db	146,178,2,0,47
-	.dw	_1150-_1154
-_1154:
-_1148:
+	.dw	_1149-_1153
+_1153:
+_1147:
 	.db	18,50,46,40
+	.dw	_1148-_1154
+_1154:
+	.db	146,179,2,0,47
 	.dw	_1149-_1155
 _1155:
-	.db	146,179,2,0,47
-	.dw	_1150-_1156
-_1156:
-_1149:
+_1148:
 	.db	146,180,2,0
-_1150:
-	.db	22,19,62,36,33,58,34,22,15,3,19,127,10,198,4
-	.dl	(_932-_921)/2
+_1149:
+	.db	22,19,62,36,33,56,34,22,15,3,19,127,8,17,0,124,4
+	.dl	(_918-_907)/2
 	.db	15,60,127,0,18,10
 	.dw	16383
 	.db	26,22,62,37,18,48,46,40
-	.dw	_1157-_1161
-_1161:
+	.dw	_1156-_1160
+_1160:
 	.db	146,177,2,0,47
-	.dw	_1160-_1162
-_1162:
-_1157:
+	.dw	_1159-_1161
+_1161:
+_1156:
 	.db	18,49,46,40
-	.dw	_1158-_1163
-_1163:
+	.dw	_1157-_1162
+_1162:
 	.db	146,178,2,0,47
-	.dw	_1160-_1164
-_1164:
-_1158:
+	.dw	_1159-_1163
+_1163:
+_1157:
 	.db	18,50,46,40
+	.dw	_1158-_1164
+_1164:
+	.db	146,179,2,0,47
 	.dw	_1159-_1165
 _1165:
-	.db	146,179,2,0,47
-	.dw	_1160-_1166
-_1166:
-_1159:
+_1158:
 	.db	146,180,2,0
-_1160:
-	.db	22,19,62,36,33,56,34,22,15,3,19,127,8,193,4
-	.dl	(_943-_932)/2
+_1159:
+	.db	22,19,62,36,33,58,34,22,15,3,19,127,10,17,1,123,4
+	.dl	(_929-_918)/2
 	.db	15,60,127,0,18,10
 	.dw	16383
 	.db	26,22,62,37,18,48,46,40
-	.dw	_1167-_1171
-_1171:
+	.dw	_1166-_1170
+_1170:
 	.db	146,177,2,0,47
-	.dw	_1170-_1172
-_1172:
-_1167:
+	.dw	_1169-_1171
+_1171:
+_1166:
 	.db	18,49,46,40
-	.dw	_1168-_1173
-_1173:
+	.dw	_1167-_1172
+_1172:
 	.db	146,178,2,0,47
-	.dw	_1170-_1174
-_1174:
-_1168:
+	.dw	_1169-_1173
+_1173:
+_1167:
 	.db	18,50,46,40
+	.dw	_1168-_1174
+_1174:
+	.db	146,179,2,0,47
 	.dw	_1169-_1175
 _1175:
-	.db	146,179,2,0,47
-	.dw	_1170-_1176
-_1176:
+_1168:
+	.db	146,180,2,0
 _1169:
-	.db	146,180,2,0
-_1170:
-	.db	22,19,62,36,33,54,34,22,15,3,19,127,6,192,4
-	.dl	(_1177-_943)/2
-	.db	6,163,2,4
-	.dl	(_954-_1177)/2
+	.db	22,19,62,36,33,60,34,22,15,3,19,127,12,17,6,122,4
+	.dl	(_940-_929)/2
 	.db	15,60,127,0,18,10
 	.dw	16383
 	.db	26,22,62,37,18,48,46,40
-	.dw	_1178-_1182
-_1182:
-	.db	146,177,2,0,47
-	.dw	_1181-_1183
-_1183:
-_1178:
-	.db	18,49,46,40
-	.dw	_1179-_1184
-_1184:
-	.db	146,178,2,0,47
-	.dw	_1181-_1185
-_1185:
-_1179:
-	.db	18,50,46,40
-	.dw	_1180-_1186
-_1186:
-	.db	146,179,2,0,47
-	.dw	_1181-_1187
-_1187:
+	.dw	_1176-_1180
 _1180:
-	.db	146,180,2,0
+	.db	146,177,2,0,47
+	.dw	_1179-_1181
 _1181:
-	.db	22,19,62,36,33,52,34,22,15,3,19,127,4,4
-	.dl	(_1188-_954)/2
-	.db	6,164,2,4
-	.dl	(_965-_1188)/2
+_1176:
+	.db	18,49,46,40
+	.dw	_1177-_1182
+_1182:
+	.db	146,178,2,0,47
+	.dw	_1179-_1183
+_1183:
+_1177:
+	.db	18,50,46,40
+	.dw	_1178-_1184
+_1184:
+	.db	146,179,2,0,47
+	.dw	_1179-_1185
+_1185:
+_1178:
+	.db	146,180,2,0
+_1179:
+	.db	22,19,62,36,33,62,34,22,15,3,19,127,14,17,7,121,4
+	.dl	(_951-_940)/2
 	.db	15,60,127,0,18,10
 	.dw	16383
 	.db	26,22,62,37,18,48,46,40
+	.dw	_1186-_1190
+_1190:
+	.db	146,177,2,0,47
+	.dw	_1189-_1191
+_1191:
+_1186:
+	.db	18,49,46,40
+	.dw	_1187-_1192
+_1192:
+	.db	146,178,2,0,47
 	.dw	_1189-_1193
 _1193:
-	.db	146,177,2,0,47
-	.dw	_1192-_1194
-_1194:
-_1189:
-	.db	18,49,46,40
-	.dw	_1190-_1195
-_1195:
-	.db	146,178,2,0,47
-	.dw	_1192-_1196
-_1196:
-_1190:
+_1187:
 	.db	18,50,46,40
-	.dw	_1191-_1197
-_1197:
+	.dw	_1188-_1194
+_1194:
 	.db	146,179,2,0,47
-	.dw	_1192-_1198
-_1198:
-_1191:
+	.dw	_1189-_1195
+_1195:
+_1188:
 	.db	146,180,2,0
-_1192:
-	.db	22,19,62,36,33,50,34,22,15,3,19,127,2,4
-	.dl	(_1199-_965)/2
-	.db	6,165,2,4
-	.dl	(_976-_1199)/2
+_1189:
+	.db	22,19,62,36,33,64,34,22,15,3,19,127,16,17,8,120,4
+	.dl	(_962-_951)/2
 	.db	15,60,127,0,18,10
 	.dw	16383
 	.db	26,22,62,37,18,48,46,40
-	.dw	_1200-_1204
-_1204:
-	.db	146,177,2,0,47
-	.dw	_1203-_1205
-_1205:
+	.dw	_1196-_1200
 _1200:
-	.db	18,49,46,40
-	.dw	_1201-_1206
-_1206:
-	.db	146,178,2,0,47
-	.dw	_1203-_1207
-_1207:
+	.db	146,177,2,0,47
+	.dw	_1199-_1201
 _1201:
-	.db	18,50,46,40
-	.dw	_1202-_1208
-_1208:
-	.db	146,179,2,0,47
-	.dw	_1203-_1209
-_1209:
+_1196:
+	.db	18,49,46,40
+	.dw	_1197-_1202
 _1202:
-	.db	146,180,2,0
+	.db	146,178,2,0,47
+	.dw	_1199-_1203
 _1203:
+_1197:
+	.db	18,50,46,40
+	.dw	_1198-_1204
+_1204:
+	.db	146,179,2,0,47
+	.dw	_1199-_1205
+_1205:
+_1198:
+	.db	146,180,2,0
+_1199:
+	.db	22,19,62,36,33,66,34,22,15,3,19,127,18,17,9,119,4
+	.dl	(_973-_962)/2
+	.db	15,60,127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_1206-_1210
+_1210:
+	.db	146,177,2,0,47
+	.dw	_1209-_1211
+_1211:
+_1206:
+	.db	18,49,46,40
+	.dw	_1207-_1212
+_1212:
+	.db	146,178,2,0,47
+	.dw	_1209-_1213
+_1213:
+_1207:
+	.db	18,50,46,40
+	.dw	_1208-_1214
+_1214:
+	.db	146,179,2,0,47
+	.dw	_1209-_1215
+_1215:
+_1208:
+	.db	146,180,2,0
+_1209:
+	.db	22,19,62,36,33,68,34,22,15,3,19,127,20,17,10,118,4
+	.dl	(_984-_973)/2
+	.db	15,60,127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_1216-_1220
+_1220:
+	.db	146,177,2,0,47
+	.dw	_1219-_1221
+_1221:
+_1216:
+	.db	18,49,46,40
+	.dw	_1217-_1222
+_1222:
+	.db	146,178,2,0,47
+	.dw	_1219-_1223
+_1223:
+_1217:
+	.db	18,50,46,40
+	.dw	_1218-_1224
+_1224:
+	.db	146,179,2,0,47
+	.dw	_1219-_1225
+_1225:
+_1218:
+	.db	146,180,2,0
+_1219:
+	.db	22,19,62,36,33,72,34,22,15,3,19,127,24,4
+	.dl	(_995-_984)/2
+	.db	15,60,127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_1226-_1230
+_1230:
+	.db	146,177,2,0,47
+	.dw	_1229-_1231
+_1231:
+_1226:
+	.db	18,49,46,40
+	.dw	_1227-_1232
+_1232:
+	.db	146,178,2,0,47
+	.dw	_1229-_1233
+_1233:
+_1227:
+	.db	18,50,46,40
+	.dw	_1228-_1234
+_1234:
+	.db	146,179,2,0,47
+	.dw	_1229-_1235
+_1235:
+_1228:
+	.db	146,180,2,0
+_1229:
+	.db	22,19,62,36,33,68,34,22,15,3,19,127,20,4
+	.dl	(_1006-_995)/2
+	.db	15,60,127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_1236-_1240
+_1240:
+	.db	146,177,2,0,47
+	.dw	_1239-_1241
+_1241:
+_1236:
+	.db	18,49,46,40
+	.dw	_1237-_1242
+_1242:
+	.db	146,178,2,0,47
+	.dw	_1239-_1243
+_1243:
+_1237:
+	.db	18,50,46,40
+	.dw	_1238-_1244
+_1244:
+	.db	146,179,2,0,47
+	.dw	_1239-_1245
+_1245:
+_1238:
+	.db	146,180,2,0
+_1239:
+	.db	22,19,62,36,33,66,34,22,15,3,19,127,18,202,4
+	.dl	(_1017-_1006)/2
+	.db	15,60,127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_1246-_1250
+_1250:
+	.db	146,177,2,0,47
+	.dw	_1249-_1251
+_1251:
+_1246:
+	.db	18,49,46,40
+	.dw	_1247-_1252
+_1252:
+	.db	146,178,2,0,47
+	.dw	_1249-_1253
+_1253:
+_1247:
+	.db	18,50,46,40
+	.dw	_1248-_1254
+_1254:
+	.db	146,179,2,0,47
+	.dw	_1249-_1255
+_1255:
+_1248:
+	.db	146,180,2,0
+_1249:
+	.db	22,19,62,36,33,64,34,22,15,3,19,127,16,201,4
+	.dl	(_1028-_1017)/2
+	.db	15,60,127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_1256-_1260
+_1260:
+	.db	146,177,2,0,47
+	.dw	_1259-_1261
+_1261:
+_1256:
+	.db	18,49,46,40
+	.dw	_1257-_1262
+_1262:
+	.db	146,178,2,0,47
+	.dw	_1259-_1263
+_1263:
+_1257:
+	.db	18,50,46,40
+	.dw	_1258-_1264
+_1264:
+	.db	146,179,2,0,47
+	.dw	_1259-_1265
+_1265:
+_1258:
+	.db	146,180,2,0
+_1259:
+	.db	22,19,62,36,33,62,34,22,15,3,19,127,14,200,4
+	.dl	(_1039-_1028)/2
+	.db	15,60,127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_1266-_1270
+_1270:
+	.db	146,177,2,0,47
+	.dw	_1269-_1271
+_1271:
+_1266:
+	.db	18,49,46,40
+	.dw	_1267-_1272
+_1272:
+	.db	146,178,2,0,47
+	.dw	_1269-_1273
+_1273:
+_1267:
+	.db	18,50,46,40
+	.dw	_1268-_1274
+_1274:
+	.db	146,179,2,0,47
+	.dw	_1269-_1275
+_1275:
+_1268:
+	.db	146,180,2,0
+_1269:
+	.db	22,19,62,36,33,60,34,22,15,3,19,127,12,199,4
+	.dl	(_1050-_1039)/2
+	.db	15,60,127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_1276-_1280
+_1280:
+	.db	146,177,2,0,47
+	.dw	_1279-_1281
+_1281:
+_1276:
+	.db	18,49,46,40
+	.dw	_1277-_1282
+_1282:
+	.db	146,178,2,0,47
+	.dw	_1279-_1283
+_1283:
+_1277:
+	.db	18,50,46,40
+	.dw	_1278-_1284
+_1284:
+	.db	146,179,2,0,47
+	.dw	_1279-_1285
+_1285:
+_1278:
+	.db	146,180,2,0
+_1279:
+	.db	22,19,62,36,33,58,34,22,15,3,19,127,10,198,4
+	.dl	(_1061-_1050)/2
+	.db	15,60,127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_1286-_1290
+_1290:
+	.db	146,177,2,0,47
+	.dw	_1289-_1291
+_1291:
+_1286:
+	.db	18,49,46,40
+	.dw	_1287-_1292
+_1292:
+	.db	146,178,2,0,47
+	.dw	_1289-_1293
+_1293:
+_1287:
+	.db	18,50,46,40
+	.dw	_1288-_1294
+_1294:
+	.db	146,179,2,0,47
+	.dw	_1289-_1295
+_1295:
+_1288:
+	.db	146,180,2,0
+_1289:
+	.db	22,19,62,36,33,56,34,22,15,3,19,127,8,193,4
+	.dl	(_1072-_1061)/2
+	.db	15,60,127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_1296-_1300
+_1300:
+	.db	146,177,2,0,47
+	.dw	_1299-_1301
+_1301:
+_1296:
+	.db	18,49,46,40
+	.dw	_1297-_1302
+_1302:
+	.db	146,178,2,0,47
+	.dw	_1299-_1303
+_1303:
+_1297:
+	.db	18,50,46,40
+	.dw	_1298-_1304
+_1304:
+	.db	146,179,2,0,47
+	.dw	_1299-_1305
+_1305:
+_1298:
+	.db	146,180,2,0
+_1299:
+	.db	22,19,62,36,33,54,34,22,15,3,19,127,6,192,4
+	.dl	(_1306-_1072)/2
+	.db	6,163,2,4
+	.dl	(_1083-_1306)/2
+	.db	15,60,127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_1307-_1311
+_1311:
+	.db	146,177,2,0,47
+	.dw	_1310-_1312
+_1312:
+_1307:
+	.db	18,49,46,40
+	.dw	_1308-_1313
+_1313:
+	.db	146,178,2,0,47
+	.dw	_1310-_1314
+_1314:
+_1308:
+	.db	18,50,46,40
+	.dw	_1309-_1315
+_1315:
+	.db	146,179,2,0,47
+	.dw	_1310-_1316
+_1316:
+_1309:
+	.db	146,180,2,0
+_1310:
+	.db	22,19,62,36,33,52,34,22,15,3,19,127,4,4
+	.dl	(_1317-_1083)/2
+	.db	6,164,2,4
+	.dl	(_1094-_1317)/2
+	.db	15,60,127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_1318-_1322
+_1322:
+	.db	146,177,2,0,47
+	.dw	_1321-_1323
+_1323:
+_1318:
+	.db	18,49,46,40
+	.dw	_1319-_1324
+_1324:
+	.db	146,178,2,0,47
+	.dw	_1321-_1325
+_1325:
+_1319:
+	.db	18,50,46,40
+	.dw	_1320-_1326
+_1326:
+	.db	146,179,2,0,47
+	.dw	_1321-_1327
+_1327:
+_1320:
+	.db	146,180,2,0
+_1321:
+	.db	22,19,62,36,33,50,34,22,15,3,19,127,2,4
+	.dl	(_1328-_1094)/2
+	.db	6,165,2,4
+	.dl	(_1105-_1328)/2
+	.db	15,60,127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_1329-_1333
+_1333:
+	.db	146,177,2,0,47
+	.dw	_1332-_1334
+_1334:
+_1329:
+	.db	18,49,46,40
+	.dw	_1330-_1335
+_1335:
+	.db	146,178,2,0,47
+	.dw	_1332-_1336
+_1336:
+_1330:
+	.db	18,50,46,40
+	.dw	_1331-_1337
+_1337:
+	.db	146,179,2,0,47
+	.dw	_1332-_1338
+_1338:
+_1331:
+	.db	146,180,2,0
+_1332:
 	.db	22,19,62,36,33,48,34,8,15,0,0
 	; End of section
 
 	.debug		.debug_frame, cluster 'BrakePressureSensor_getIndividualSensorPercent'
 	.dl	20
-	.dl	_1414,_117,_158-_117
+	.dl	_1542,_117,_158-_117
 	.db	8,160,2,8,5,0,0,0
 	; End of section
 
 	.debug		.debug_frame, cluster 'BrakePressureSensor_getPedalTravel'
 	.dl	20
-	.dl	_1414,_129,_188-_129
+	.dl	_1542,_129,_188-_129
 	.db	8,160,2,8,4,8,5,0
 	; End of section
 
