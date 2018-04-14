@@ -63,15 +63,19 @@ void BrakePressureSensor_update(BrakePressureSensor* me, bool bench)
 	{
 		Light_set(Light_brake, 0);
 	}
-	else if (bench == FALSE)
-	{
-		Light_set(Light_brake, 1);
-	}
+	// else if (bench == FALSE)
+	// {
+	// 	Light_set(Light_brake, 1);
+	// }
 	else
 	{
-		if (me->percent > 0 && me->percent < .02)
+		if (me->percent > 0 && me->percent <= .013)
 		{
-			Light_set(Light_brake, .20);
+			Light_set(Light_brake, 0);
+		}
+		else if (me->percent > 0.13 && me->percent < .02)
+		{
+			Light_set(Light_brake, .20); // greater than 0.131 so true
 		}
 		else if (me->percent >= .02 && me->percent < .30)
 		{

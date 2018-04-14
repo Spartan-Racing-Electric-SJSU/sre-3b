@@ -1,17 +1,17 @@
 # space <name> <id> <mau size>
+space	spe:xc16x:huge	7	8
+space	spe:xc16x:bit	1	1
 space	spe:xc16x:near	4	8
 space	spe:xc16x:bita	2	8
+space	spe:xc16x:code	8	8
 space	spe:xc16x:far	5	8
 space	spe:xc16x:shuge	6	8
-space	spe:xc16x:code	8	8
-space	spe:xc16x:bit	1	1
 space	spe:xc16x:iram	3	8
-space	spe:xc16x:huge	7	8
 # chip <name> <id> <mau size> <size> <type>
-chip	spe:PSRAM	0	8	65536	ram
-chip	spe:DSRAM	3	8	16384	ram
-chip	spe:DPRAM	2	8	2048	ram
 chip	spe:Flash	1	8	786432	rom
+chip	spe:PSRAM	0	8	65536	ram
+chip	spe:DPRAM	2	8	2048	ram
+chip	spe:DSRAM	3	8	16384	ram
 # map <space id> <start in space> <size in space> <chip id> <start on chip>
 map	7	14680064	65536	0	0
 map	6	14680064	65536	0	0

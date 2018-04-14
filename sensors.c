@@ -20,6 +20,7 @@
 
 #include "sensors.h"
 #include "mathFunctions.h"
+#include "initializations.h"
 
 extern Sensor Sensor_TPS0;
 extern Sensor Sensor_TPS1;
@@ -75,7 +76,7 @@ void sensors_updateSensors(void)
 	
 	//Brake Position Sensor ---------------------------------------------------
     ubyte2 sensorValueBPS0 = (ubyte2)Sensor_BPS0.sensorValue;
-	Sensor_BPS0.ioErr_signalGet = IO_ADC_Get(IO_ADC_5V_02, &sensorValueBPS0, &Sensor_BPS0.fresh);
+	Sensor_BPS0.ioErr_signalGet = IO_ADC_Get(IO_DO_05, &sensorValueBPS0, &Sensor_BPS0.fresh);
 
 	//TCS Knob
 	Sensor_TCSKnob.ioErr_signalGet = IO_ADC_Get(IO_ADC_5V_04, &Sensor_TCSKnob.sensorValue, &Sensor_TCSKnob.fresh);
@@ -121,7 +122,8 @@ void Light_set(Light light, float4 percent)
     {
     //PWM devices
 	case Light_brake:
-		IO_PWM_SetDuty(IO_PWM_02, duty, NULL);  //Pin 116
+		// IO_PWM_SetDuty(IO_PWM_02, duty, NULL);  //Pin 117
+        IO_DO_Set( IO_DO_08, power); // Pin 120 as DO
 		break;
 
     case Cooling_waterPump:

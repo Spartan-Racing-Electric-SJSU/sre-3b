@@ -1,0 +1,3608 @@
+	; TASKING VX-toolset for C166: C compiler v4.0r1 Build 741 SN 07744515
+	; Options: -f cc7100a -c99 -Mh --fp-model=FT -Cxc2287 --core=xc16x -DTASKING_VIPER -D__USIC_MEM_TYPE=__PAGE_080_MEM_TYPE -D__MULTICAN_MEM_TYPE=__PAGE_080_MEM_TYPE -DTTC50 -DRTS_TTC_FLASH_DATE_YEAR=2018 -DRTS_TTC_FLASH_DATE_MONTH=4 -DRTS_TTC_FLASH_DATE_DAY=8 -DRTS_TTC_FLASH_DATE_HOUR=16 -DRTS_TTC_FLASH_DATE_MINUTE=18 -I..\..\..\Environment\inc -I..\..\..\Environment\inc_int -I..\..\..\Environment\bsp -I. --tradeoff=0 --no-tasking-sfr -ga --language=+cmp14,+div32,-gcc,-strings -O3 --source --mac -o build\initializations.src
+	; Module start
+	.source	'initializations.c'
+code_vcu_initializeADC	.section	code, cluster 'vcu_initializeADC', new
+	.global	_vcu_initializeADC
+
+; initializations.c	     1  //VCU initializations
+; initializations.c	     2  //Object (sensors, controllers, etc) instantiations
+; initializations.c	     3  //ONLY THIS FILE should have "true" version of object variables
+; initializations.c	     4  //Everything else should have "extern" declarations of variables
+; initializations.c	     5  
+; initializations.c	     6  #include "IO_Driver.h"  //Includes datatypes, constants, etc - probably should be included in every c file
+; initializations.c	     7  #include "IO_ADC.h"
+; initializations.c	     8  #include "IO_PWM.h"
+; initializations.c	     9  #include "IO_CAN.h"
+; initializations.c	    10  #include "IO_DIO.h"
+; initializations.c	    11  
+; initializations.c	    12  #include "sensors.h"
+; initializations.c	    13  #include "initializations.h"
+; initializations.c	    14  //#include "can.h"
+; initializations.c	    15  
+; initializations.c	    16  /*****************************************************************************
+; initializations.c	    17  * ADC
+; initializations.c	    18  ****************************************************************************/
+; initializations.c	    19  //Turns on the VCU's ADC channels and power supplies.
+; initializations.c	    20  void vcu_initializeADC(bool benchMode)
+; Function _vcu_initializeADC
+_9:
+_vcu_initializeADC	.proc	far
+	movw	[-r15],r0
+_93:
+	movw	[-r15],r1
+_104:
+	movw	[-r15],r6
+_115:
+	movw	[-r15],r7
+_126:
+	movw	[-r15],r8
+_137:
+	movw	[-r15],r9
+_148:
+	movw	[-r15],r10
+_159:
+	movb	rh6,rl2
+_388:
+
+; initializations.c	    21  {
+; initializations.c	    22  	//----------------------------------------------------------------------------
+; initializations.c	    23  	//Power supplies/outputs
+; initializations.c	    24  	//----------------------------------------------------------------------------
+; initializations.c	    25  	//Analog sensor supplies
+; initializations.c	    26      Sensor_TPS0.ioErr_powerSet = Sensor_BPS0.ioErr_powerSet = IO_POWER_Set(IO_ADC_SENSOR_SUPPLY_0, IO_POWER_ON);
+	movb	rl2,#0x24
+_387:
+	movb	rh2,#0x1
+	call	_IO_POWER_Set
+_609:
+	extp	#@pag(_Sensor_BPS0+0xe),#0x1
+	movw	@pof(_Sensor_BPS0+0xe),r2
+_610:
+	extp	#@pag(_Sensor_TPS0+0xe),#0x1
+	movw	@pof(_Sensor_TPS0+0xe),r2
+_611:
+
+; initializations.c	    27  	Sensor_TPS1.ioErr_powerSet = IO_POWER_Set(IO_ADC_SENSOR_SUPPLY_1, IO_POWER_ON);
+	movb	rl2,#0x25
+_612:
+	movb	rh2,#0x1
+	call	_IO_POWER_Set
+_613:
+	extp	#@pag(_Sensor_TPS1+0xe),#0x1
+	movw	@pof(_Sensor_TPS1+0xe),r2
+_614:
+
+; initializations.c	    28  
+; initializations.c	    29      //Variable power supply (used by BPS)
+; initializations.c	    30      //IO_POWER_Set(IO_SENSOR_SUPPLY_VAR, IO_POWER_14_5_V);    //IO_POWER_Set(IO_PIN_269, IO_POWER_8_5_V);
+; initializations.c	    31  
+; initializations.c	    32      //Digital/power outputs ---------------------------------------------------
+; initializations.c	    33      //Relay power outputs
+; initializations.c	    34      IO_DO_Init(IO_DO_00); IO_DO_Set(IO_DO_00, FALSE); //mcm0 Relay
+	movb	rl2,#0x18
+	call	_IO_DO_Init
+_615:
+	movb	rl2,#0x18
+_616:
+	movb	rh2,#0x0
+	call	_IO_DO_Set
+_617:
+
+; initializations.c	    35      IO_DO_Init(IO_DO_01); IO_DO_Set(IO_DO_01, TRUE); //HVIL shutdown relay
+	movb	rl2,#0x19
+	call	_IO_DO_Init
+_618:
+	movb	rl2,#0x19
+_619:
+	movb	rh2,#0x1
+	call	_IO_DO_Set
+_620:
+
+; initializations.c	    36      IO_DO_Init(IO_DO_02); IO_DO_Set(IO_DO_02, FALSE); //Water pump relay - always on per RMS HW manual pg 7 - NOT USED
+	movb	rl2,#0x1a
+	call	_IO_DO_Init
+_621:
+	movb	rl2,#0x1a
+_622:
+	movb	rh2,#0x0
+	call	_IO_DO_Set
+_623:
+
+; initializations.c	    37      IO_DO_Init(IO_DO_03); IO_DO_Set(IO_DO_03, FALSE); //Fan relay - motor fan and radiator fan are on same circuit
+	movb	rl2,#0x1b
+	call	_IO_DO_Init
+_624:
+	movb	rl2,#0x1b
+_625:
+	movb	rh2,#0x0
+	call	_IO_DO_Set
+_626:
+
+; initializations.c	    38      IO_DO_Init(IO_DO_04); IO_DO_Set(IO_DO_04, FALSE); //Battery fan relay
+	movb	rl2,#0x1c
+	call	_IO_DO_Init
+_627:
+	movb	rl2,#0x1c
+_628:
+	movb	rh2,#0x0
+	call	_IO_DO_Set
+_629:
+
+; initializations.c	    39      IO_DO_Init(IO_DO_05); IO_DO_Set(IO_DO_05, benchMode); //power output for switches - only used on bench
+	movb	rl2,#0x1d
+	call	_IO_DO_Init
+_630:
+	movb	rl2,#0x1d
+_631:
+	movb	rh2,rh6
+_389:
+	call	_IO_DO_Set
+_390:
+
+; initializations.c	    40  
+; initializations.c	    41      //Lowside outputs (connects to ground when on)
+; initializations.c	    42      IO_DO_Init(IO_ADC_CUR_00); IO_DO_Set(IO_ADC_CUR_00, FALSE); //TCS
+	movb	rl2,#0x2e
+	call	_IO_DO_Init
+_632:
+	movb	rl2,#0x2e
+_633:
+	movb	rh2,#0x0
+	call	_IO_DO_Set
+_634:
+
+; initializations.c	    43      IO_DO_Init(IO_ADC_CUR_01); IO_DO_Set(IO_ADC_CUR_01, FALSE); //Eco
+	movb	rl2,#0x2f
+	call	_IO_DO_Init
+_635:
+	movb	rl2,#0x2f
+_636:
+	movb	rh2,#0x0
+	call	_IO_DO_Set
+_637:
+
+; initializations.c	    44      IO_DO_Init(IO_ADC_CUR_02); IO_DO_Set(IO_ADC_CUR_02, FALSE); //Err
+	movb	rl2,#0x30
+	call	_IO_DO_Init
+_638:
+	movb	rl2,#0x30
+_639:
+	movb	rh2,#0x0
+	call	_IO_DO_Set
+_640:
+
+; initializations.c	    45      IO_DO_Init(IO_ADC_CUR_03); IO_DO_Set(IO_ADC_CUR_03, FALSE); //RTD
+	movb	rl2,#0x31
+	call	_IO_DO_Init
+_641:
+	movb	rl2,#0x31
+_642:
+	movb	rh2,#0x0
+	call	_IO_DO_Set
+_643:
+
+; initializations.c	    46  
+; initializations.c	    47  
+; initializations.c	    48      //Wheel Speed Sensor supplies
+; initializations.c	    49      Sensor_WSS_FL.ioErr_powerInit = Sensor_WSS_FR.ioErr_powerInit = IO_DO_Init(IO_DO_06); //Front x2
+	movb	rl2,#0x1e
+	call	_IO_DO_Init
+_644:
+	extp	#@pag(_Sensor_WSS_FR+0xc),#0x1
+	movw	@pof(_Sensor_WSS_FR+0xc),r2
+_645:
+	extp	#@pag(_Sensor_WSS_FL+0xc),#0x1
+	movw	@pof(_Sensor_WSS_FL+0xc),r2
+_646:
+
+; initializations.c	    50  	Sensor_WSS_RL.ioErr_powerInit = Sensor_WSS_RR.ioErr_powerInit = IO_DO_Init(IO_DO_07); //Rear  x2
+	movb	rl2,#0x1f
+	call	_IO_DO_Init
+_647:
+	extp	#@pag(_Sensor_WSS_RR+0xc),#0x1
+	movw	@pof(_Sensor_WSS_RR+0xc),r2
+_648:
+	extp	#@pag(_Sensor_WSS_RL+0xc),#0x1
+	movw	@pof(_Sensor_WSS_RL+0xc),r2
+_649:
+
+; initializations.c	    51  
+; initializations.c	    52      //Digital PWM outputs ---------------------------------------------------
+; initializations.c	    53  	IO_PWM_Init(IO_PWM_02, 500, TRUE, FALSE, 0, FALSE, NULL); IO_PWM_SetDuty(IO_PWM_02, 0, NULL);  //Brake Light
+	movw	r3,#0x1f4
+_650:
+	movb	rl2,#0x2
+	movb	rh2,#0x1
+	movb	rl4,#0x0
+	movb	rh4,#0x0
+	movb	rl5,#0x0
+	movw	r11,#0x0
+	movw	r12,#0x0
+	call	_IO_PWM_Init
+_651:
+	movb	rl2,#0x2
+	movw	r3,#0x0
+	movw	r4,#0x0
+	movw	r5,#0x0
+	call	_IO_PWM_SetDuty
+_652:
+
+; initializations.c	    54  	IO_PWM_Init(IO_PWM_03, 500, TRUE, FALSE, 0, FALSE, NULL); IO_PWM_SetDuty(IO_PWM_03, benchMode == TRUE ? 0xFFFF : 0, NULL);  //Bench LED 12V source
+	movw	r3,#0x1f4
+_653:
+	movb	rl2,#0x3
+	movb	rh2,#0x1
+	movb	rl4,#0x0
+	movb	rh4,#0x0
+	movb	rl5,#0x0
+	movw	r11,#0x0
+	movw	r12,#0x0
+	call	_IO_PWM_Init
+_654:
+	movb	rl2,#0x3
+_655:
+	movw	r3,#0x0
+	cmpb	rh6,#0x1
+	jmp	cc_eq,_2
+	movw	r3,#0x1
+_2:
+	subw	r3,#0x1
+_656:
+	movw	r4,#0x0
+	movw	r5,#0x0
+	call	_IO_PWM_SetDuty
+_657:
+
+; initializations.c	    55  	IO_PWM_Init(IO_PWM_05, 100, TRUE, FALSE, 0, FALSE, NULL); IO_PWM_SetDuty(IO_PWM_05, .90 * 0xFFFF, NULL);  //Water pump signal 
+	movw	r3,#0x64
+_658:
+	movb	rl2,#0x5
+	movb	rh2,#0x1
+	movb	rl4,#0x0
+	movb	rh4,#0x0
+	movb	rl5,#0x0
+	movw	r11,#0x0
+	movw	r12,#0x0
+	call	_IO_PWM_Init
+_659:
+	movw	r3,#0xe665
+_660:
+	movb	rl2,#0x5
+	movw	r4,#0x0
+	movw	r5,#0x0
+	call	_IO_PWM_SetDuty
+_661:
+
+; initializations.c	    56      IO_PWM_Init(IO_PWM_07, 750, TRUE, FALSE, 0, FALSE, NULL); IO_PWM_SetDuty(IO_PWM_07, 0, NULL);  //RTD Sound
+	movw	r3,#0x2ee
+_662:
+	movb	rl2,#0x7
+	movb	rh2,#0x1
+	movb	rl4,#0x0
+	movb	rh4,#0x0
+	movb	rl5,#0x0
+	movw	r11,#0x0
+	movw	r12,#0x0
+	call	_IO_PWM_Init
+_663:
+	movb	rl2,#0x7
+	movw	r3,#0x0
+	movw	r4,#0x0
+	movw	r5,#0x0
+	call	_IO_PWM_SetDuty
+_86:
+	movw	r9,#@sof(_Sensor_TPS0+0x10)
+	movw	r10,#@seg(_Sensor_TPS0+0x10)
+	movw	r7,#@sof(_Sensor_TPS1+0x10)
+	movw	r0,#@seg(_Sensor_TPS1+0x10)
+	movw	r1,#@sof(_Sensor_BPS0+0x10)
+	movw	r8,#@seg(_Sensor_BPS0+0x10)
+_664:
+
+; initializations.c	    57  
+; initializations.c	    58      //----------------------------------------------------------------------------
+; initializations.c	    59  	//ADC channels
+; initializations.c	    60  	//----------------------------------------------------------------------------
+; initializations.c	    61  	//TPS+BPS
+; initializations.c	    62      extern Sensor Sensor_BenchTPS0;  //wtf where are these even defined?
+; initializations.c	    63      extern Sensor Sensor_BenchTPS1;
+; initializations.c	    64  
+; initializations.c	    65      //IO_ADC_ChannelInit(IO_ADC_5V_00, IO_ADC_RATIOMETRIC, 0, 0, IO_ADC_SENSOR_SUPPLY_0, NULL);
+; initializations.c	    66      //IO_ADC_ChannelInit(IO_ADC_5V_01, IO_ADC_RATIOMETRIC, 0, 0, IO_ADC_SENSOR_SUPPLY_1, NULL);
+; initializations.c	    67  
+; initializations.c	    68      //TPS/BPS
+; initializations.c	    69  	//Sensor_BPS0.ioErr_init = IO_ADC_ChannelInit(IO_ADC_5V_02, IO_ADC_RATIOMETRIC, 0, 0, IO_ADC_SENSOR_SUPPLY_0, NULL);
+; initializations.c	    70      if (benchMode == TRUE)
+	cmpb	rh6,#0x1
+	jmp	cc_ne,_3
+_665:
+
+; initializations.c	    71      {
+; initializations.c	    72          Sensor_TPS0.ioErr_signalInit = IO_ADC_ChannelInit(IO_ADC_5V_00, IO_ADC_RESISTIVE, 0, 0, 0, NULL);
+	movb	rl2,#0x8
+	movb	rh2,#0x0
+	movb	rl3,#0x0
+	movb	rh3,#0x0
+	movb	rl4,#0x0
+	movw	r11,#0x0
+	movw	r12,#0x0
+	call	_IO_ADC_ChannelInit
+_666:
+	exts	r10,#0x1
+	movw	[r9],r2
+_667:
+
+; initializations.c	    73          Sensor_TPS1.ioErr_signalInit = IO_ADC_ChannelInit(IO_ADC_5V_01, IO_ADC_RESISTIVE, 0, 0, 0, NULL);
+	movb	rl2,#0x9
+	movb	rh2,#0x0
+	movb	rl3,#0x0
+	movb	rh3,#0x0
+	movb	rl4,#0x0
+	movw	r11,#0x0
+	movw	r12,#0x0
+	call	_IO_ADC_ChannelInit
+_668:
+	exts	r0,#0x1
+	movw	[r7],r2
+_669:
+
+; initializations.c	    74          Sensor_BPS0.ioErr_signalInit = IO_ADC_ChannelInit(IO_ADC_5V_02, IO_ADC_RESISTIVE, 0, 0, 0, NULL);
+	movb	rl2,#0xa
+	movb	rh2,#0x0
+	movb	rl3,#0x0
+	movb	rh3,#0x0
+	movb	rl4,#0x0
+_670:
+	jmp	_4
+_3:
+
+; initializations.c	    75      }
+; initializations.c	    76      else //Not bench mode
+; initializations.c	    77      {
+; initializations.c	    78          //In the future, production TPS will be digital instead of analog (see PWD section, below)
+; initializations.c	    79          //Sensor_TPS0.ioErr_signalInit = IO_PWD_PulseInit(IO_PWM_00, IO_PWD_HIGH_TIME);
+; initializations.c	    80          //Sensor_TPS1.ioErr_signalInit = IO_PWD_PulseInit(IO_PWM_01, IO_PWD_HIGH_TIME);
+; initializations.c	    81          Sensor_TPS0.ioErr_signalInit = IO_ADC_ChannelInit(IO_ADC_5V_00, IO_ADC_RATIOMETRIC, 0, 0, IO_ADC_SENSOR_SUPPLY_0, NULL);
+	movb	rl4,#0x24
+_671:
+	movb	rl2,#0x8
+	movb	rh2,#0x1
+	movb	rl3,#0x0
+	movb	rh3,#0x0
+	movw	r11,#0x0
+	movw	r12,#0x0
+	call	_IO_ADC_ChannelInit
+_672:
+	exts	r10,#0x1
+	movw	[r9],r2
+_673:
+
+; initializations.c	    82          Sensor_TPS1.ioErr_signalInit = IO_ADC_ChannelInit(IO_ADC_5V_01, IO_ADC_RATIOMETRIC, 0, 0, IO_ADC_SENSOR_SUPPLY_1, NULL);
+	movb	rl4,#0x25
+_674:
+	movb	rl2,#0x9
+	movb	rh2,#0x1
+	movb	rl3,#0x0
+	movb	rh3,#0x0
+	movw	r11,#0x0
+	movw	r12,#0x0
+	call	_IO_ADC_ChannelInit
+_675:
+	exts	r0,#0x1
+	movw	[r7],r2
+_676:
+
+; initializations.c	    83          Sensor_BPS0.ioErr_signalInit = IO_ADC_ChannelInit(IO_ADC_5V_02, IO_ADC_RATIOMETRIC, 0, 0, IO_ADC_SENSOR_SUPPLY_0, NULL);
+	movb	rl4,#0x24
+_677:
+	movb	rl2,#0xa
+	movb	rh2,#0x1
+	movb	rl3,#0x0
+	movb	rh3,#0x0
+_4:
+	movw	r11,#0x0
+	movw	r12,#0x0
+	call	_IO_ADC_ChannelInit
+_678:
+	exts	r8,#0x1
+	movw	[r1],r2
+_679:
+
+; initializations.c	    84      }
+; initializations.c	    85  
+; initializations.c	    86      //Unused
+; initializations.c	    87      //IO_ADC_ChannelInit(IO_ADC_5V_03, IO_ADC_RATIOMETRIC, 0, 0, IO_ADC_SENSOR_SUPPLY_0, NULL);
+; initializations.c	    88  
+; initializations.c	    89      //TCS Pot
+; initializations.c	    90      IO_ADC_ChannelInit(IO_ADC_5V_04, IO_ADC_RESISTIVE, 0, 0, 0, NULL);
+	movb	rl2,#0xc
+	movb	rh2,#0x0
+	movb	rl3,#0x0
+	movb	rh3,#0x0
+	movb	rl4,#0x0
+	movw	r11,#0x0
+	movw	r12,#0x0
+	call	_IO_ADC_ChannelInit
+_680:
+
+; initializations.c	    91  
+; initializations.c	    92  	//Unused
+; initializations.c	    93  	//IO_ADC_ChannelInit(IO_ADC_5V_05, IO_ADC_RESISTIVE, 0, 0, 0, NULL);
+; initializations.c	    94      //IO_ADC_ChannelInit(IO_ADC_5V_06, IO_ADC_RESISTIVE, 0, 0, 0, NULL);
+; initializations.c	    95      //IO_ADC_ChannelInit(IO_ADC_5V_07, IO_ADC_RESISTIVE, 0, 0, 0, NULL);
+; initializations.c	    96  
+; initializations.c	    97  	//----------------------------------------------------------------------------
+; initializations.c	    98  	//PWD channels
+; initializations.c	    99  	//----------------------------------------------------------------------------
+; initializations.c	   100  	//TPS
+; initializations.c	   101      //MOVED TO TPS/BPS BLOCK ABOVE
+; initializations.c	   102  	
+; initializations.c	   103  	//Wheel Speed Sensors (Pulse Width Detection)
+; initializations.c	   104      Sensor_WSS_FL.ioErr_signalInit = IO_PWD_FreqInit(IO_PWD_10, IO_PWD_FALLING_VAR);  //Is there a reason to look for rising vs falling edge?
+	movb	rl2,#0x22
+_681:
+	movb	rh2,#0x3
+	call	_IO_PWD_FreqInit
+_682:
+	extp	#@pag(_Sensor_WSS_FL+0x10),#0x1
+	movw	@pof(_Sensor_WSS_FL+0x10),r2
+_683:
+
+; initializations.c	   105      Sensor_WSS_FR.ioErr_signalInit = IO_PWD_FreqInit(IO_PWD_08, IO_PWD_FALLING_VAR);  //Is there a reason to look for rising vs falling edge?
+	movb	rl2,#0x20
+_684:
+	movb	rh2,#0x3
+	call	_IO_PWD_FreqInit
+_685:
+	extp	#@pag(_Sensor_WSS_FR+0x10),#0x1
+	movw	@pof(_Sensor_WSS_FR+0x10),r2
+_686:
+
+; initializations.c	   106      Sensor_WSS_RL.ioErr_signalInit = IO_PWD_FreqInit(IO_PWD_11, IO_PWD_FALLING_VAR);  //Is there a reason to look for rising vs falling edge?
+	movb	rl2,#0x23
+_687:
+	movb	rh2,#0x3
+	call	_IO_PWD_FreqInit
+_688:
+	extp	#@pag(_Sensor_WSS_RL+0x10),#0x1
+	movw	@pof(_Sensor_WSS_RL+0x10),r2
+_689:
+
+; initializations.c	   107      Sensor_WSS_RR.ioErr_signalInit = IO_PWD_FreqInit(IO_PWD_09, IO_PWD_FALLING_VAR);  //Is there a reason to look for rising vs falling edge?
+	movb	rl2,#0x21
+_690:
+	movb	rh2,#0x3
+	call	_IO_PWD_FreqInit
+_691:
+	extp	#@pag(_Sensor_WSS_RR+0x10),#0x1
+	movw	@pof(_Sensor_WSS_RR+0x10),r2
+_692:
+
+; initializations.c	   108  	
+; initializations.c	   109      //----------------------------------------------------------------------------
+; initializations.c	   110  	//Switches
+; initializations.c	   111  	//----------------------------------------------------------------------------
+; initializations.c	   112  	Sensor_RTDButton.ioErr_signalInit = IO_DI_Init(IO_DI_00, IO_DI_PD_10K); //RTD Button
+	movb	rl2,#0x26
+_693:
+	movb	rh2,#0x0
+	call	_IO_DI_Init
+_694:
+	extp	#@pag(_Sensor_RTDButton+0x10),#0x1
+	movw	@pof(_Sensor_RTDButton+0x10),r2
+_695:
+
+; initializations.c	   113      Sensor_EcoButton.ioErr_signalInit = IO_DI_Init(IO_DI_01, IO_DI_PD_10K); //Eco Button
+	movb	rl2,#0x27
+_696:
+	movb	rh2,#0x0
+	call	_IO_DI_Init
+_697:
+	extp	#@pag(_Sensor_EcoButton+0x10),#0x1
+	movw	@pof(_Sensor_EcoButton+0x10),r2
+_698:
+
+; initializations.c	   114      Sensor_TCSSwitchUp.ioErr_signalInit = IO_DI_Init(IO_DI_02, IO_DI_PD_10K); //TCS Switch A
+	movb	rl2,#0x28
+_699:
+	movb	rh2,#0x0
+	call	_IO_DI_Init
+_700:
+	extp	#@pag(_Sensor_TCSSwitchUp+0x10),#0x1
+	movw	@pof(_Sensor_TCSSwitchUp+0x10),r2
+_701:
+
+; initializations.c	   115  	Sensor_TCSSwitchDown.ioErr_signalInit = IO_DI_Init(IO_DI_03, IO_DI_PD_10K); //TCS Switch B
+	movb	rl2,#0x29
+_702:
+	movb	rh2,#0x0
+	call	_IO_DI_Init
+_703:
+	extp	#@pag(_Sensor_TCSSwitchDown+0x10),#0x1
+	movw	@pof(_Sensor_TCSSwitchDown+0x10),r2
+_704:
+
+; initializations.c	   116      Sensor_HVILTerminationSense.ioErr_signalInit = IO_DI_Init(IO_DI_07, IO_DI_PD_10K); //HVIL Term sense, high = HV present
+	movb	rl2,#0x2d
+_705:
+	movb	rh2,#0x0
+	call	_IO_DI_Init
+_706:
+	extp	#@pag(_Sensor_HVILTerminationSense+0x10),#0x1
+	movw	@pof(_Sensor_HVILTerminationSense+0x10),r2
+_707:
+
+; initializations.c	   117  
+; initializations.c	   118      //
+; initializations.c	   119  
+; initializations.c	   120  }
+	movw	r10,[r15+]
+_170:
+	movw	r9,[r15+]
+_181:
+	movw	r8,[r15+]
+_192:
+	movw	r7,[r15+]
+_203:
+	movw	r6,[r15+]
+_214:
+	movw	r1,[r15+]
+_225:
+	movw	r0,[r15+]
+_236:
+	ret
+_40:
+	; End of function
+	; End of section
+
+code_vcu_ADCWasteLoop	.section	code, cluster 'vcu_ADCWasteLoop', new
+	.global	_vcu_ADCWasteLoop
+
+; initializations.c	   121  
+; initializations.c	   122  //----------------------------------------------------------------------------
+; initializations.c	   123  // Waste CPU cycles until we have valid data
+; initializations.c	   124  //----------------------------------------------------------------------------
+; initializations.c	   125  void vcu_ADCWasteLoop(void)
+; Function _vcu_ADCWasteLoop
+_21:
+_vcu_ADCWasteLoop	.proc	far
+	movw	[-r15],r6
+_391:
+	movw	[-r15],r8
+_402:
+	movw	[-r15],r9
+_413:
+	movw	[-r15],r10
+_424:
+	subw	r15,#0x8
+_435:
+
+; initializations.c	   126  {
+; initializations.c	   127      bool tempFresh = FALSE;
+	movb	rh4,#0x0
+_712:
+
+; initializations.c	   128      ubyte2 tempData;
+; initializations.c	   129      ubyte4 timestamp_sensorpoll = 0;
+	movw	r11,#0x0
+_713:
+	movb	[r15+#0x6],rh4
+_714:
+	movw	[r15],r11
+	movw	[r15+#0x2],r11
+_715:
+
+; initializations.c	   130      IO_RTC_StartTime(&timestamp_sensorpoll);
+	movw	r2,r15
+	andw	r2,#0x3fff
+	orw	r2,#@sof(__lc_ub_user_stack+0xffff) & 0xc000
+	movw	r3,#@seg(__lc_ub_user_stack+0xffff)
+	call	_IO_RTC_StartTime
+_716:
+
+; initializations.c	   131      while (IO_RTC_GetTimeUS(timestamp_sensorpoll) < 1000000)
+	movw	r3,[r15+#0x2]
+	movw	r2,[r15]
+	call	_IO_RTC_GetTimeUS
+_717:
+	cmpw	r2,#0x4240
+	subcw	r3,#0xf
+	jmp+	cc_uge,_5
+_718:
+
+; initializations.c	   132      {
+; initializations.c	   133          IO_Driver_TaskBegin();
+; initializations.c	   134  
+; initializations.c	   135          IO_PWM_SetDuty(IO_PWM_07, 0, NULL);  //Pin 103
+; initializations.c	   136  
+; initializations.c	   137          IO_DO_Set(IO_DO_00, FALSE); //False = low
+; initializations.c	   138          //IO_DO_Set(IO_DO_01, FALSE); //HVIL shutdown relay
+; initializations.c	   139          //IO_DO_Set(IO_DO_06, FALSE); //Front WSS x2
+; initializations.c	   140          //IO_DO_Set(IO_DO_07, FALSE); //Rear  WSS x2
+; initializations.c	   141  
+; initializations.c	   142          //IO_DI (digital inputs) supposed to take 2 cycles before they return valid data
+; initializations.c	   143          IO_DI_Get(IO_DI_04, &tempData);
+	movw	r8,#0x4
+	addw	r8,r15
+	andw	r8,#0x3fff
+	orw	r8,#@sof(__lc_ub_user_stack+0xffff) & 0xc000
+	movw	r9,#@seg(__lc_ub_user_stack+0xffff)
+_719:
+
+; initializations.c	   144          IO_DI_Get(IO_DI_05, &tempData);
+; initializations.c	   145          IO_ADC_Get(IO_ADC_5V_00, &tempData, &tempFresh);
+	movw	r10,#0x6
+	addw	r10,r15
+	andw	r10,#0x3fff
+	orw	r10,#@sof(__lc_ub_user_stack+0xffff) & 0xc000
+_720:
+	movw	r6,#0x4
+	addw	r6,r15
+	andw	r6,#0x3fff
+	orw	r6,#@sof(__lc_ub_user_stack+0xffff) & 0xc000
+_6:
+	call	_IO_Driver_TaskBegin
+_721:
+	movb	rl2,#0x7
+	movw	r3,#0x0
+	movw	r4,#0x0
+	movw	r5,#0x0
+	call	_IO_PWM_SetDuty
+_722:
+	movb	rl2,#0x18
+_723:
+	movb	rh2,#0x0
+	call	_IO_DO_Set
+_724:
+	movb	rl2,#0x2a
+_725:
+	movw	r4,r8
+	movw	r5,r9
+	call	_IO_DI_Get
+_726:
+	movb	rl2,#0x2b
+_727:
+	movw	r4,r8
+	movw	r5,r9
+	call	_IO_DI_Get
+_728:
+	movb	rl2,#0x8
+	movw	r4,r6
+	movw	r5,r9
+	movw	r11,r10
+	movw	r12,r9
+	call	_IO_ADC_Get
+_729:
+
+; initializations.c	   146          IO_ADC_Get(IO_ADC_5V_01, &tempData, &tempFresh);
+	movb	rl2,#0x9
+	movw	r4,r6
+	movw	r5,r9
+	movw	r11,r10
+	movw	r12,r9
+	call	_IO_ADC_Get
+_730:
+
+; initializations.c	   147  
+; initializations.c	   148          IO_Driver_TaskEnd();
+	call	_IO_Driver_TaskEnd
+
+; initializations.c	   149          //TODO: Find out if EACH pin needs 2 cycles or just the entire DIO unit
+; initializations.c	   150          while (IO_RTC_GetTimeUS(timestamp_sensorpoll) < 12500);   // wait until 1/8/10s (125ms) have passed
+_7:
+	movw	r3,[r15+#0x2]
+	movw	r2,[r15]
+	call	_IO_RTC_GetTimeUS
+_731:
+	cmpw	r2,#0x30d4
+	subcw	r3,#0x0
+	jmp+	cc_ult,_7
+_732:
+	movw	r3,[r15+#0x2]
+	movw	r2,[r15]
+	call	_IO_RTC_GetTimeUS
+_733:
+	cmpw	r2,#0x4240
+	subcw	r3,#0xf
+	jmp+	cc_ult,_6
+_5:
+
+; initializations.c	   151      }
+; initializations.c	   152  }
+	addw	r15,#0x8
+_446:
+	movw	r10,[r15+]
+_457:
+	movw	r9,[r15+]
+_468:
+	movw	r8,[r15+]
+_479:
+	movw	r6,[r15+]
+_490:
+	ret
+_45:
+	; End of function
+	; End of section
+
+huge_Sensor_TPS0	.section	huge, clear, cluster 'Sensor_TPS0', new
+	.global	_Sensor_TPS0
+
+; initializations.c	   153  
+; initializations.c	   154  /*****************************************************************************
+; initializations.c	   155  * Sensors
+; initializations.c	   156  ****************************************************************************/
+; initializations.c	   157  Sensor Sensor_TPS0;  // = { 0, 0.5, 4.5 };
+_Sensor_TPS0	.label	word
+	.ds	20
+	; End of section
+
+huge_Sensor_TPS1	.section	huge, clear, cluster 'Sensor_TPS1', new
+	.global	_Sensor_TPS1
+
+; initializations.c	   158  Sensor Sensor_TPS1;  // = { 0, 4.5, 0.5 };
+_Sensor_TPS1	.label	word
+	.ds	20
+	; End of section
+
+huge_Sensor_BPS0	.section	huge, clear, cluster 'Sensor_BPS0', new
+	.global	_Sensor_BPS0
+
+; initializations.c	   159  Sensor Sensor_BPS0;  // = { 1, 0.5, 4.5 };  //Brake system pressure (or front only in the future)
+_Sensor_BPS0	.label	word
+	.ds	20
+	; End of section
+
+huge_Sensor_WSS_FL	.section	huge, clear, cluster 'Sensor_WSS_FL', new
+	.global	_Sensor_WSS_FL
+
+; initializations.c	   160  //Sensor Sensor_BPS1;  // = { 2, 0.5, 4.5 }; //Rear brake system pressure (separate address in case used for something else)
+; initializations.c	   161  Sensor Sensor_WSS_FL;  // = { 2 };
+_Sensor_WSS_FL	.label	word
+	.ds	20
+	; End of section
+
+huge_Sensor_WSS_FR	.section	huge, clear, cluster 'Sensor_WSS_FR', new
+	.global	_Sensor_WSS_FR
+
+; initializations.c	   162  Sensor Sensor_WSS_FR;  // = { 2 };
+_Sensor_WSS_FR	.label	word
+	.ds	20
+	; End of section
+
+huge_Sensor_WSS_RL	.section	huge, clear, cluster 'Sensor_WSS_RL', new
+	.global	_Sensor_WSS_RL
+
+; initializations.c	   163  Sensor Sensor_WSS_RL;  // = { 2 };
+_Sensor_WSS_RL	.label	word
+	.ds	20
+	; End of section
+
+huge_Sensor_WSS_RR	.section	huge, clear, cluster 'Sensor_WSS_RR', new
+	.global	_Sensor_WSS_RR
+
+; initializations.c	   164  Sensor Sensor_WSS_RR;  // = { 2 };
+_Sensor_WSS_RR	.label	word
+	.ds	20
+	; End of section
+
+huge_Sensor_WPS_FL	.section	huge, clear, cluster 'Sensor_WPS_FL', new
+	.global	_Sensor_WPS_FL
+
+; initializations.c	   165  Sensor Sensor_WPS_FL;  // = { 3 };
+_Sensor_WPS_FL	.label	word
+	.ds	20
+	; End of section
+
+huge_Sensor_WPS_FR	.section	huge, clear, cluster 'Sensor_WPS_FR', new
+	.global	_Sensor_WPS_FR
+
+; initializations.c	   166  Sensor Sensor_WPS_FR;  // = { 3 };
+_Sensor_WPS_FR	.label	word
+	.ds	20
+	; End of section
+
+huge_Sensor_WPS_RL	.section	huge, clear, cluster 'Sensor_WPS_RL', new
+	.global	_Sensor_WPS_RL
+
+; initializations.c	   167  Sensor Sensor_WPS_RL;  // = { 3 };
+_Sensor_WPS_RL	.label	word
+	.ds	20
+	; End of section
+
+huge_Sensor_WPS_RR	.section	huge, clear, cluster 'Sensor_WPS_RR', new
+	.global	_Sensor_WPS_RR
+
+; initializations.c	   168  Sensor Sensor_WPS_RR;  // = { 3 };
+_Sensor_WPS_RR	.label	word
+	.ds	20
+	; End of section
+
+huge_Sensor_SAS	.section	huge, clear, cluster 'Sensor_SAS', new
+	.global	_Sensor_SAS
+
+; initializations.c	   169  Sensor Sensor_SAS;  // = { 4 };
+_Sensor_SAS	.label	word
+	.ds	20
+	; End of section
+
+huge_Sensor_LVBattery	.section	huge, clear, cluster 'Sensor_LVBattery', new
+	.global	_Sensor_LVBattery
+
+; initializations.c	   170  Sensor Sensor_LVBattery;
+_Sensor_LVBattery	.label	word
+	.ds	20
+	; End of section
+
+huge_Sensor_TCSKnob	.section	huge, clear, cluster 'Sensor_TCSKnob', new
+	.global	_Sensor_TCSKnob
+
+; initializations.c	   171  
+; initializations.c	   172  Sensor Sensor_TCSKnob;
+_Sensor_TCSKnob	.label	word
+	.ds	20
+	; End of section
+
+huge_Sensor_RTDButton	.section	huge, clear, cluster 'Sensor_RTDButton', new
+	.global	_Sensor_RTDButton
+
+; initializations.c	   173  
+; initializations.c	   174  Sensor Sensor_RTDButton;
+_Sensor_RTDButton	.label	word
+	.ds	20
+	; End of section
+
+huge_Sensor_EcoButton	.section	huge, clear, cluster 'Sensor_EcoButton', new
+	.global	_Sensor_EcoButton
+
+; initializations.c	   175  Sensor Sensor_EcoButton;
+_Sensor_EcoButton	.label	word
+	.ds	20
+	; End of section
+
+huge_Sensor_TCSSwitchUp	.section	huge, clear, cluster 'Sensor_TCSSwitchUp', new
+	.global	_Sensor_TCSSwitchUp
+
+; initializations.c	   176  Sensor Sensor_TCSSwitchUp;
+_Sensor_TCSSwitchUp	.label	word
+	.ds	20
+	; End of section
+
+huge_Sensor_TCSSwitchDown	.section	huge, clear, cluster 'Sensor_TCSSwitchDown', new
+	.global	_Sensor_TCSSwitchDown
+
+; initializations.c	   177  Sensor Sensor_TCSSwitchDown;
+_Sensor_TCSSwitchDown	.label	word
+	.ds	20
+	; End of section
+
+huge_Sensor_HVILTerminationSense	.section	huge, clear, cluster 'Sensor_HVILTerminationSense', new
+	.global	_Sensor_HVILTerminationSense
+
+; initializations.c	   178  Sensor Sensor_HVILTerminationSense;
+_Sensor_HVILTerminationSense	.label	word
+	.ds	20
+	; End of section
+
+	.calls	'_vcu_initializeADC','_IO_POWER_Set'
+	.calls	'_vcu_initializeADC','_IO_DO_Init'
+	.calls	'_vcu_initializeADC','_IO_DO_Set'
+	.calls	'_vcu_initializeADC','_IO_PWM_Init'
+	.calls	'_vcu_initializeADC','_IO_PWM_SetDuty'
+	.calls	'_vcu_initializeADC','_IO_ADC_ChannelInit'
+	.calls	'_vcu_initializeADC','_IO_PWD_FreqInit'
+	.calls	'_vcu_initializeADC','_IO_DI_Init'
+	.calls	'_vcu_ADCWasteLoop','_IO_RTC_StartTime'
+	.calls	'_vcu_ADCWasteLoop','_IO_RTC_GetTimeUS'
+	.calls	'_vcu_ADCWasteLoop','_IO_Driver_TaskBegin'
+	.calls	'_vcu_ADCWasteLoop','_IO_PWM_SetDuty'
+	.calls	'_vcu_ADCWasteLoop','_IO_DO_Set'
+	.calls	'_vcu_ADCWasteLoop','_IO_DI_Get'
+	.calls	'_vcu_ADCWasteLoop','_IO_ADC_Get'
+	.calls	'_vcu_ADCWasteLoop','_IO_Driver_TaskEnd'
+	.calls	'_vcu_initializeADC','',4,14
+	.calls	'_vcu_ADCWasteLoop','',4,16
+	.extern	_IO_POWER_Set : far
+	.extern	_IO_Driver_TaskBegin : far
+	.extern	_IO_Driver_TaskEnd : far
+	.extern	_IO_PWD_FreqInit : far
+	.extern	_IO_ADC_ChannelInit : far
+	.extern	_IO_ADC_Get : far
+	.extern	_IO_RTC_StartTime : far
+	.extern	_IO_RTC_GetTimeUS : far
+	.extern	_IO_PWM_Init : far
+	.extern	_IO_PWM_SetDuty : far
+	.extern	_IO_DI_Init : far
+	.extern	_IO_DO_Init : far
+	.extern	_IO_DI_Get : far
+	.extern	_IO_DO_Set : far
+	.extern	__lc_ub_user_stack : nearbyte
+	.debug		.debug_info
+_33:
+	.dl	2019
+	.dw	3
+	.dl	_34
+	.db	4
+_32:
+	.db	1
+	.db	'initializations.c',0
+	.db	'TASKING VX-toolset for C166: C compiler',0
+	.db	'C:\\Users\\Timothy_Le\\Documents\\SRE\\SRE_SDK_2018\\VCU\\Environment\\dev\\BrakePressureSensor\\',0
+	.db	12,1
+	.dl	_35
+_88:
+	.db	2
+	.db	'unsigned int',0,2,7
+_84:
+	.db	2
+	.db	'unsigned char',0,1,8,3
+	.db	'IO_POWER_Set',0,1,184,1,15,6
+	.dl	164
+	.db	1,1,1,1,4
+	.db	'pin',0,1,184,1,35,2
+	.dl	180
+	.db	4
+	.db	'mode',0,1,184,1,47,2
+	.dl	180
+	.db	0,5
+	.db	'IO_Driver_TaskBegin',0,2,192,3,15,6
+	.dl	164
+	.db	1,1,1,1,5
+	.db	'IO_Driver_TaskEnd',0,2,207,3,15,6
+	.dl	164
+	.db	1,1,1,1,3
+	.db	'IO_PWD_FreqInit',0,3,186,4,14,6
+	.dl	164
+	.db	1,1,1,1,4
+	.db	'timer_channel',0,3,186,4,38,2
+	.dl	180
+	.db	4
+	.db	'freq_mode',0,3,187,4,38,2
+	.dl	180
+	.db	0,6
+	.db	'_io_adc_safety_conf',0,4,161,1,16,4,7
+	.db	'adc_val_upper',0
+	.dl	180
+	.db	1,2,35,0,7
+	.db	'adc_val_lower',0
+	.dl	180
+	.db	1,2,35,1,7
+	.db	'redundant_channel',0
+	.dl	180
+	.db	1,2,35,2,0,8
+	.dl	395
+	.db	9,5
+	.dl	495
+	.db	8
+	.dl	500
+	.db	3
+	.db	'IO_ADC_ChannelInit',0,4,156,2,14,6
+	.dl	164
+	.db	1,1,1,1,4
+	.db	'adc_channel',0,4,156,2,41,2
+	.dl	180
+	.db	4
+	.db	'type',0,4,157,2,41,2
+	.dl	180
+	.db	4
+	.db	'range',0,4,158,2,41,2
+	.dl	180
+	.db	4
+	.db	'pupd',0,4,159,2,41,2
+	.dl	180
+	.db	4
+	.db	'sensor_supply',0,4,160,2,41,2
+	.dl	180
+	.db	4
+	.db	'safety_conf',0,4,161,2,67,2
+	.dl	506
+	.db	0,9,5
+	.dl	164
+	.db	8
+	.dl	659
+	.db	9,5
+	.dl	180
+	.db	8
+	.dl	670
+	.db	3
+	.db	'IO_ADC_Get',0,4,131,3,14,6
+	.dl	164
+	.db	1,1,1,1,4
+	.db	'adc_channel',0,4,131,3,33,2
+	.dl	180
+	.db	4
+	.db	'adc_value',0,4,132,3,41,2
+	.dl	665
+	.db	4
+	.db	'fresh',0,4,133,3,39,2
+	.dl	676
+	.db	0
+_90:
+	.db	2
+	.db	'unsigned long int',0,4,7,9,5
+	.dl	765
+	.db	8
+	.dl	786
+	.db	3
+	.db	'IO_RTC_StartTime',0,5,118,15,6
+	.dl	164
+	.db	1,1,1,1,4
+	.db	'timestamp',0,5,118,49,2
+	.dl	792
+	.db	0,3
+	.db	'IO_RTC_GetTimeUS',0,5,143,1,9,6
+	.dl	765
+	.db	1,1,1,1,4
+	.db	'timestamp',0,5,143,1,35,2
+	.dl	765
+	.db	0,6
+	.db	'_io_pwm_safety_conf',0,6,111,16,2,7
+	.db	'resistance',0
+	.dl	180
+	.db	1,2,35,0,0,8
+	.dl	899
+	.db	9,5
+	.dl	945
+	.db	8
+	.dl	950
+	.db	3
+	.db	'IO_PWM_Init',0,6,203,1,14,6
+	.dl	164
+	.db	1,1,1,1,4
+	.db	'pwm_channel',0,6,203,1,34,2
+	.dl	180
+	.db	4
+	.db	'frequency',0,6,204,1,34,2
+	.dl	164
+	.db	4
+	.db	'polarity',0,6,205,1,32,2
+	.dl	180
+	.db	4
+	.db	'cur_measurement',0,6,206,1,32,2
+	.dl	180
+	.db	4
+	.db	'cur_channel',0,6,207,1,34,2
+	.dl	180
+	.db	4
+	.db	'diag_margin',0,6,208,1,32,2
+	.dl	180
+	.db	4
+	.db	'safety_conf',0,6,209,1,60,2
+	.dl	956
+	.db	0,8
+	.dl	786
+	.db	3
+	.db	'IO_PWM_SetDuty',0,6,235,2,14,6
+	.dl	164
+	.db	1,1,1,1,4
+	.db	'pwm_channel',0,6,235,2,37,2
+	.dl	180
+	.db	4
+	.db	'duty_cycle',0,6,236,2,37,2
+	.dl	164
+	.db	4
+	.db	'duty_cycle_fb',0,6,237,2,45,2
+	.dl	1141
+	.db	0,3
+	.db	'IO_DI_Init',0,7,119,14,6
+	.dl	164
+	.db	1,1,1,1,4
+	.db	'di_channel',0,7,119,33,2
+	.dl	180
+	.db	4
+	.db	'mode',0,7,120,33,2
+	.dl	180
+	.db	0,3
+	.db	'IO_DO_Init',0,7,155,1,14,6
+	.dl	164
+	.db	1,1,1,1,4
+	.db	'do_channel',0,7,155,1,33,2
+	.dl	180
+	.db	0,8
+	.dl	670
+	.db	3
+	.db	'IO_DI_Get',0,7,220,1,14,6
+	.dl	164
+	.db	1,1,1,1,4
+	.db	'di_channel',0,7,220,1,32,2
+	.dl	180
+	.db	4
+	.db	'di_value',0,7,221,1,38,2
+	.dl	1349
+	.db	0,3
+	.db	'IO_DO_Set',0,7,141,2,14,6
+	.dl	164
+	.db	1,1,1,1,4
+	.db	'do_channel',0,7,141,2,32,2
+	.dl	180
+	.db	4
+	.db	'do_value',0,7,142,2,30,2
+	.dl	180
+	.db	0,10
+	.db	'void',0,9,5
+	.dl	1484
+	.db	11
+	.db	'__prof_adm',0,8,1,1
+	.dl	1490
+	.db	11
+	.db	'__codeptr',0,8,1,1
+	.dl	765
+	.db	11
+	.db	'ubyte1',0,9,21,29
+	.dl	180
+	.db	11
+	.db	'ubyte2',0,9,22,29
+	.dl	164
+	.db	11
+	.db	'ubyte4',0,9,23,29
+	.dl	765
+	.db	11
+	.db	'bool',0,9,31,29
+	.dl	180
+	.db	11
+	.db	'IO_ErrorType',0,10,150,1,17
+	.dl	164
+	.db	11
+	.db	'IO_ADC_SAFETY_CONF',0,4,171,1,3
+	.dl	395
+	.db	11
+	.db	'IO_PWM_SAFETY_CONF',0,6,114,3
+	.dl	899
+_92:
+	.db	6
+	.db	'_Sensor',0,11,126,16,20,7
+	.db	'specMin',0
+	.dl	765
+	.db	4,2,35,0,7
+	.db	'specMax',0
+	.dl	765
+	.db	4,2,35,4,7
+	.db	'sensorValue',0
+	.dl	164
+	.db	2,2,35,8,7
+	.db	'fresh',0
+	.dl	180
+	.db	1,2,35,10,7
+	.db	'ioErr_powerInit',0
+	.dl	164
+	.db	2,2,35,12,7
+	.db	'ioErr_powerSet',0
+	.dl	164
+	.db	2,2,35,14,7
+	.db	'ioErr_signalInit',0
+	.dl	164
+	.db	2,2,35,16,7
+	.db	'ioErr_signalGet',0
+	.dl	164
+	.db	2,2,35,18,0,11
+	.db	'Sensor',0,11,143,1,3
+	.dl	1668
+	.db	6
+	.db	'_bl_t_date',0,12,90,16,4,7
+	.db	'date',0
+	.dl	765
+	.db	4,2,35,0,0,11
+	.db	'BL_T_DATE',0,12,93,2
+	.dl	1868
+	.db	6
+	.db	'_bl_t_can_id',0,12,102,16,8,7
+	.db	'extended',0
+	.dl	765
+	.db	4,2,35,0,7
+	.db	'ID',0
+	.dl	765
+	.db	4,2,35,4,0,11
+	.db	'BL_T_CAN_ID',0,12,106,2
+	.dl	1917
+	.db	12
+	.dl	180
+	.db	13,0,14
+	.db	'_lc_ub_user_stack',0,8,1,1,2
+	.dl	1986
+	.db	1,1,0
+	; End of section
+
+	.debug		.debug_abbrev
+_34:
+	.db	1,17,1,3,8,37,8,27,8,19,15,128,70,12,16,6,0,0,2,36,0,3,8,11,15,62,15,0,0,3,46,1,3,8,58,15,59,15,57,15
+	.db	51,15,73,19,54,15,39,12,63,12,60,12,0,0,4,5,0,3,8,58,15,59,15,57,15,51,15,73,19,0,0,5,46,0,3,8,58,15,59
+	.db	15,57,15,51,15,73,19,54,15,39,12,63,12,60,12,0,0,6,19,1,3,8,58,15,59,15,57,15,11,15,0,0,7,13,0,3,8,73
+	.db	19,11,15,56,9,0,0,8,38,0,73,19,0,0,9,15,0,51,15,73,19,0,0,10,59,0,3,8,0,0,11,22,0,3,8,58,15,59,15,57,15
+	.db	73,19,0,0,12,1,1,73,19,0,0,13,33,0,0,0,14,52,0,3,8,58,15,59,15,57,15,51,15,73,19,63,12,60,12,0,0,0
+	; End of section
+
+	.debug		.debug_line
+_35:
+	.dl	_602-_601
+_601:
+	.dw	3
+	.dl	_604-_603
+_603:
+	.db	2,1,-4,9,10,0,1,1,1,1,0,0,0,1
+	.db	'..\\..\\..\\Environment\\inc',0,0
+	.db	'IO_POWER.h',0,1,0,0
+	.db	'IO_Driver.h',0,1,0,0
+	.db	'IO_PWD.h',0,1,0,0
+	.db	'IO_ADC.h',0,1,0,0
+	.db	'IO_RTC.h',0,1,0,0
+	.db	'IO_PWM.h',0,1,0,0
+	.db	'IO_DIO.h',0,1,0,0
+	.db	'initializations.c',0,0,0,0
+	.db	'ptypes_xe167.h',0,1,0,0
+	.db	'IO_Constants.h',0,1,0,0
+	.db	'sensors.h',0,0,0,0
+	.db	'APDB.h',0,1,0,0,0
+_604:
+_602:
+	; End of section
+
+	.debug		.debug_pubnames
+	.dl	270
+	.dw	2
+	.dl	_33,2023,197
+	.db	'IO_POWER_Set',0
+	.dl	254
+	.db	'IO_Driver_TaskBegin',0
+	.dl	288
+	.db	'IO_Driver_TaskEnd',0
+	.dl	320
+	.db	'IO_PWD_FreqInit',0
+	.dl	511
+	.db	'IO_ADC_ChannelInit',0
+	.dl	681
+	.db	'IO_ADC_Get',0
+	.dl	797
+	.db	'IO_RTC_StartTime',0
+	.dl	847
+	.db	'IO_RTC_GetTimeUS',0
+	.dl	961
+	.db	'IO_PWM_Init',0
+	.dl	1146
+	.db	'IO_PWM_SetDuty',0
+	.dl	1243
+	.db	'IO_DI_Init',0
+	.dl	1302
+	.db	'IO_DO_Init',0
+	.dl	1354
+	.db	'IO_DI_Get',0
+	.dl	1419
+	.db	'IO_DO_Set',0
+	.dl	0
+	; End of section
+
+	.debug		.debug_info, cluster 'vcu_initializeADC'
+_36:
+	.dl	264
+	.dw	3
+	.dl	_37
+	.db	4,1
+	.db	'initializations.c',0
+	.db	'TASKING VX-toolset for C166: C compiler',0
+	.db	'C:\\Users\\Timothy_Le\\Documents\\SRE\\SRE_SDK_2018\\VCU\\Environment\\dev\\BrakePressureSensor\\',0
+	.db	12,1
+	.dl	_39,_38
+	.db	2
+	.dl	_32
+	.db	3
+	.db	'vcu_initializeADC',0,1,20,6,6,1,1,1
+	.dl	_9,_40,_8
+	.db	12,19,146,176,2,0,64,36,146,161,2,0,33,4
+	.db	'benchMode',0,1,20,29,2
+	.dl	_84,_85
+	.db	5
+	.dl	_9,_40
+	.db	6
+	.dl	_86,_40
+	.db	0,0,0
+	; End of section
+
+	.debug		.debug_abbrev, cluster 'vcu_initializeADC'
+_37:
+	.db	1,17,1,3,8,37,8,27,8,19,15,128,70,12,85,6,16,6,0,0,2,61,0,24,16,0,0,3,46,1,3,8,58,15,59,15,57,15,51,15
+	.db	54,15,39,12,63,12,17,1,18,1,64,6,42,9,0,0,4,5,0,3,8,58,15,59,15,57,15,51,15,73,16,2,6,0,0,5,11,1,17,1
+	.db	18,1,0,0,6,11,0,17,1,18,1,0,0,0
+	; End of section
+
+	.debug		.debug_line, cluster 'vcu_initializeADC'
+_38:
+	.dl	_606-_605
+_605:
+	.dw	3
+	.dl	_608-_607
+_607:
+	.db	2,1,-4,9,10,0,1,1,1,1,0,0,0,1,0
+	.db	'initializations.c',0,0,0,0,0
+_608:
+	.db	5,6,7,0,5,2
+	.dl	_9
+	.db	3,19,1,5,76,9
+	.dw	_388-_9
+	.db	3,6,1,5,100,9
+	.dw	_387-_388
+	.db	1,5,61,9
+	.dw	_609-_387
+	.db	1,5,32,9
+	.dw	_610-_609
+	.db	1,5,44,9
+	.dw	_611-_610
+	.db	3,1,1,5,68,9
+	.dw	_612-_611
+	.db	1,5,29,9
+	.dw	_613-_612
+	.db	1,5,16,9
+	.dw	_614-_613
+	.db	3,7,1,5,37,9
+	.dw	_615-_614
+	.db	1,5,47,9
+	.dw	_616-_615
+	.db	1,5,16,9
+	.dw	_617-_616
+	.db	3,1,1,5,37,9
+	.dw	_618-_617
+	.db	1,5,47,9
+	.dw	_619-_618
+	.db	1,5,16,9
+	.dw	_620-_619
+	.db	3,1,1,5,37,9
+	.dw	_621-_620
+	.db	1,5,47,9
+	.dw	_622-_621
+	.db	1,5,16,9
+	.dw	_623-_622
+	.db	3,1,1,5,37,9
+	.dw	_624-_623
+	.db	1,5,47,9
+	.dw	_625-_624
+	.db	1,5,16,9
+	.dw	_626-_625
+	.db	3,1,1,5,37,9
+	.dw	_627-_626
+	.db	1,5,47,9
+	.dw	_628-_627
+	.db	1,5,16,9
+	.dw	_629-_628
+	.db	3,1,1,5,37,9
+	.dw	_630-_629
+	.db	1,5,47,9
+	.dw	_631-_630
+	.db	1,5,16,9
+	.dw	_390-_631
+	.db	3,3,1,5,42,9
+	.dw	_632-_390
+	.db	1,5,57,9
+	.dw	_633-_632
+	.db	1,5,16,9
+	.dw	_634-_633
+	.db	3,1,1,5,42,9
+	.dw	_635-_634
+	.db	1,5,57,9
+	.dw	_636-_635
+	.db	1,5,16,9
+	.dw	_637-_636
+	.db	3,1,1,5,42,9
+	.dw	_638-_637
+	.db	1,5,57,9
+	.dw	_639-_638
+	.db	1,5,16,9
+	.dw	_640-_639
+	.db	3,1,1,5,42,9
+	.dw	_641-_640
+	.db	1,5,57,9
+	.dw	_642-_641
+	.db	1,5,80,9
+	.dw	_643-_642
+	.db	3,4,1,5,67,9
+	.dw	_644-_643
+	.db	1,5,35,9
+	.dw	_645-_644
+	.db	1,5,77,9
+	.dw	_646-_645
+	.db	3,1,1,5,64,9
+	.dw	_647-_646
+	.db	1,5,32,9
+	.dw	_648-_647
+	.db	1,5,25,9
+	.dw	_649-_648
+	.db	3,3,1,5,53,9
+	.dw	_650-_649
+	.db	1,5,89,9
+	.dw	_651-_650
+	.db	1,5,25,9
+	.dw	_652-_651
+	.db	3,1,1,5,53,9
+	.dw	_653-_652
+	.db	1,5,75,9
+	.dw	_654-_653
+	.db	1,5,96,9
+	.dw	_655-_654
+	.db	1,5,118,9
+	.dw	_656-_655
+	.db	1,5,25,9
+	.dw	_657-_656
+	.db	3,1,1,5,53,9
+	.dw	_658-_657
+	.db	1,5,90,9
+	.dw	_659-_658
+	.db	1,5,100,9
+	.dw	_660-_659
+	.db	1,5,28,9
+	.dw	_661-_660
+	.db	3,1,1,5,56,9
+	.dw	_662-_661
+	.db	1,5,92,9
+	.dw	_663-_662
+	.db	1,5,61,9
+	.dw	_86-_663
+	.db	3,98,1,5,5,9
+	.dw	_664-_86
+	.db	3,44,1,5,100,9
+	.dw	_665-_664
+	.db	3,2,1,5,38,9
+	.dw	_666-_665
+	.db	1,5,100,9
+	.dw	_667-_666
+	.db	3,1,1,5,38,9
+	.dw	_668-_667
+	.db	1,5,100,9
+	.dw	_669-_668
+	.db	3,1,1,5,105,9
+	.dw	_670-_669
+	.db	3,126,1,5,99,9
+	.dw	_3-_670
+	.db	3,9,1,5,123,9
+	.dw	_671-_3
+	.db	1,5,38,9
+	.dw	_672-_671
+	.db	1,5,99,9
+	.dw	_673-_672
+	.db	3,1,1,5,123,9
+	.dw	_674-_673
+	.db	1,5,38,9
+	.dw	_675-_674
+	.db	1,5,99,9
+	.dw	_676-_675
+	.db	3,1,1,5,123,9
+	.dw	_677-_676
+	.db	1,5,38,9
+	.dw	_678-_677
+	.db	1,5,65,9
+	.dw	_679-_678
+	.db	3,7,1,5,54,9
+	.dw	_680-_679
+	.db	3,14,1,5,65,9
+	.dw	_681-_680
+	.db	1,5,36,9
+	.dw	_682-_681
+	.db	1,5,54,9
+	.dw	_683-_682
+	.db	3,1,1,5,65,9
+	.dw	_684-_683
+	.db	1,5,36,9
+	.dw	_685-_684
+	.db	1,5,54,9
+	.dw	_686-_685
+	.db	3,1,1,5,65,9
+	.dw	_687-_686
+	.db	1,5,36,9
+	.dw	_688-_687
+	.db	1,5,54,9
+	.dw	_689-_688
+	.db	3,1,1,5,65,9
+	.dw	_690-_689
+	.db	1,5,36,9
+	.dw	_691-_690
+	.db	1,5,49,9
+	.dw	_692-_691
+	.db	3,5,1,5,59,9
+	.dw	_693-_692
+	.db	1,5,36,9
+	.dw	_694-_693
+	.db	1,5,52,9
+	.dw	_695-_694
+	.db	3,1,1,5,62,9
+	.dw	_696-_695
+	.db	1,5,39,9
+	.dw	_697-_696
+	.db	1,5,54,9
+	.dw	_698-_697
+	.db	3,1,1,5,64,9
+	.dw	_699-_698
+	.db	1,5,41,9
+	.dw	_700-_699
+	.db	1,5,53,9
+	.dw	_701-_700
+	.db	3,1,1,5,63,9
+	.dw	_702-_701
+	.db	1,5,40,9
+	.dw	_703-_702
+	.db	1,5,63,9
+	.dw	_704-_703
+	.db	3,1,1,5,73,9
+	.dw	_705-_704
+	.db	1,5,50,9
+	.dw	_706-_705
+	.db	1,5,1,9
+	.dw	_707-_706
+	.db	3,4,1,9
+	.dw	_40-_707
+	.db	0,1,1
+_606:
+	; End of section
+
+	.debug		.debug_ranges, cluster 'vcu_initializeADC'
+_39:
+	.dl	-1,_9,0,_40-_9,0,0
+	; End of section
+
+	.debug		.debug_pubnames
+	.dl	36
+	.dw	2
+	.dl	_36,268,173
+	.db	'vcu_initializeADC',0
+	.dl	0
+	; End of section
+
+	.debug		.debug_info, cluster 'vcu_ADCWasteLoop'
+_41:
+	.dl	312
+	.dw	3
+	.dl	_42
+	.db	4,1
+	.db	'initializations.c',0
+	.db	'TASKING VX-toolset for C166: C compiler',0
+	.db	'C:\\Users\\Timothy_Le\\Documents\\SRE\\SRE_SDK_2018\\VCU\\Environment\\dev\\BrakePressureSensor\\',0
+	.db	12,1
+	.dl	_44,_43
+	.db	2
+	.dl	_32
+	.db	3
+	.db	'vcu_ADCWasteLoop',0,1,125,6,6,1,1,1
+	.dl	_21,_45,_20
+	.db	12,19,146,176,2,0,64,36,146,161,2,0,33,4
+	.dl	_21,_45
+	.db	5
+	.db	'tempFresh',0,1,127,10,2
+	.dl	_84,_87
+	.db	5
+	.db	'tempData',0,1,128,1,12,2
+	.dl	_88,_89
+	.db	5
+	.db	'timestamp_sensorpoll',0,1,129,1,12,2
+	.dl	_90,_91
+	.db	0,0,0
+	; End of section
+
+	.debug		.debug_abbrev, cluster 'vcu_ADCWasteLoop'
+_42:
+	.db	1,17,1,3,8,37,8,27,8,19,15,128,70,12,85,6,16,6,0,0,2,61,0,24,16,0,0,3,46,1,3,8,58,15,59,15,57,15,51,15
+	.db	54,15,39,12,63,12,17,1,18,1,64,6,42,9,0,0,4,11,1,17,1,18,1,0,0,5,52,0,3,8,58,15,59,15,57,15,51,15,73,16
+	.db	2,6,0,0,0
+	; End of section
+
+	.debug		.debug_line, cluster 'vcu_ADCWasteLoop'
+_43:
+	.dl	_709-_708
+_708:
+	.dw	3
+	.dl	_711-_710
+_710:
+	.db	2,1,-4,9,10,0,1,1,1,1,0,0,0,1,0
+	.db	'initializations.c',0,0,0,0,0
+_711:
+	.db	5,6,7,0,5,2
+	.dl	_21
+	.db	3,252,0,1,5,22,9
+	.dw	_435-_21
+	.db	3,2,1,5,35,9
+	.dw	_712-_435
+	.db	3,2,1,5,20,9
+	.dw	_713-_712
+	.db	3,126,1,5,33,9
+	.dw	_714-_713
+	.db	3,2,1,5,23,9
+	.dw	_715-_714
+	.db	3,1,1,5,29,9
+	.dw	_716-_715
+	.db	3,1,1,5,60,9
+	.dw	_717-_716
+	.db	1,5,30,9
+	.dw	_718-_717
+	.db	3,12,1,5,46,9
+	.dw	_719-_718
+	.db	3,2,1,5,35,9
+	.dw	_720-_719
+	.db	1,5,28,9
+	.dw	_6-_720
+	.db	3,116,1,5,38,9
+	.dw	_721-_6
+	.db	3,2,1,5,19,9
+	.dw	_722-_721
+	.db	3,2,1,5,29,9
+	.dw	_723-_722
+	.db	1,5,19,9
+	.dw	_724-_723
+	.db	3,6,1,5,30,9
+	.dw	_725-_724
+	.db	1,5,19,9
+	.dw	_726-_725
+	.db	3,1,1,5,30,9
+	.dw	_727-_726
+	.db	1,5,46,9
+	.dw	_728-_727
+	.db	3,1,1,9
+	.dw	_729-_728
+	.db	3,1,1,5,26,9
+	.dw	_730-_729
+	.db	3,2,1,5,33,9
+	.dw	_7-_730
+	.db	3,2,1,5,62,9
+	.dw	_731-_7
+	.db	1,5,29,9
+	.dw	_732-_731
+	.db	3,109,1,5,60,9
+	.dw	_733-_732
+	.db	1,5,1,9
+	.dw	_5-_733
+	.db	3,21,1,9
+	.dw	_45-_5
+	.db	0,1,1
+_709:
+	; End of section
+
+	.debug		.debug_ranges, cluster 'vcu_ADCWasteLoop'
+_44:
+	.dl	-1,_21,0,_45-_21,0,0
+	; End of section
+
+	.debug		.debug_pubnames
+	.dl	35
+	.dw	2
+	.dl	_41,316,173
+	.db	'vcu_ADCWasteLoop',0
+	.dl	0
+	; End of section
+
+	.debug		.debug_info, cluster 'Sensor_TPS0'
+_46:
+	.dl	191
+	.dw	3
+	.dl	_47
+	.db	4,1
+	.db	'initializations.c',0
+	.db	'TASKING VX-toolset for C166: C compiler',0
+	.db	'C:\\Users\\Timothy_Le\\Documents\\SRE\\SRE_SDK_2018\\VCU\\Environment\\dev\\BrakePressureSensor\\',0
+	.db	12,1,2
+	.dl	_32
+	.db	3
+	.db	'Sensor_TPS0',0,8,157,1,8,5
+	.dl	_92
+	.db	1,5,3
+	.dl	_Sensor_TPS0
+	.db	0
+	; End of section
+
+	.debug		.debug_abbrev, cluster 'Sensor_TPS0'
+_47:
+	.db	1,17,1,3,8,37,8,27,8,19,15,128,70,12,0,0,2,61,0,24,16,0,0,3,52,0,3,8,58,15,59,15,57,15,51,15,73,16,63
+	.db	12,2,9,0,0,0
+	; End of section
+
+	.debug		.debug_info, cluster 'Sensor_TPS1'
+_48:
+	.dl	191
+	.dw	3
+	.dl	_49
+	.db	4,1
+	.db	'initializations.c',0
+	.db	'TASKING VX-toolset for C166: C compiler',0
+	.db	'C:\\Users\\Timothy_Le\\Documents\\SRE\\SRE_SDK_2018\\VCU\\Environment\\dev\\BrakePressureSensor\\',0
+	.db	12,1,2
+	.dl	_32
+	.db	3
+	.db	'Sensor_TPS1',0,8,158,1,8,5
+	.dl	_92
+	.db	1,5,3
+	.dl	_Sensor_TPS1
+	.db	0
+	; End of section
+
+	.debug		.debug_abbrev, cluster 'Sensor_TPS1'
+_49:
+	.db	1,17,1,3,8,37,8,27,8,19,15,128,70,12,0,0,2,61,0,24,16,0,0,3,52,0,3,8,58,15,59,15,57,15,51,15,73,16,63
+	.db	12,2,9,0,0,0
+	; End of section
+
+	.debug		.debug_info, cluster 'Sensor_BPS0'
+_50:
+	.dl	191
+	.dw	3
+	.dl	_51
+	.db	4,1
+	.db	'initializations.c',0
+	.db	'TASKING VX-toolset for C166: C compiler',0
+	.db	'C:\\Users\\Timothy_Le\\Documents\\SRE\\SRE_SDK_2018\\VCU\\Environment\\dev\\BrakePressureSensor\\',0
+	.db	12,1,2
+	.dl	_32
+	.db	3
+	.db	'Sensor_BPS0',0,8,159,1,8,5
+	.dl	_92
+	.db	1,5,3
+	.dl	_Sensor_BPS0
+	.db	0
+	; End of section
+
+	.debug		.debug_abbrev, cluster 'Sensor_BPS0'
+_51:
+	.db	1,17,1,3,8,37,8,27,8,19,15,128,70,12,0,0,2,61,0,24,16,0,0,3,52,0,3,8,58,15,59,15,57,15,51,15,73,16,63
+	.db	12,2,9,0,0,0
+	; End of section
+
+	.debug		.debug_info, cluster 'Sensor_WSS_FL'
+_52:
+	.dl	193
+	.dw	3
+	.dl	_53
+	.db	4,1
+	.db	'initializations.c',0
+	.db	'TASKING VX-toolset for C166: C compiler',0
+	.db	'C:\\Users\\Timothy_Le\\Documents\\SRE\\SRE_SDK_2018\\VCU\\Environment\\dev\\BrakePressureSensor\\',0
+	.db	12,1,2
+	.dl	_32
+	.db	3
+	.db	'Sensor_WSS_FL',0,8,161,1,8,5
+	.dl	_92
+	.db	1,5,3
+	.dl	_Sensor_WSS_FL
+	.db	0
+	; End of section
+
+	.debug		.debug_abbrev, cluster 'Sensor_WSS_FL'
+_53:
+	.db	1,17,1,3,8,37,8,27,8,19,15,128,70,12,0,0,2,61,0,24,16,0,0,3,52,0,3,8,58,15,59,15,57,15,51,15,73,16,63
+	.db	12,2,9,0,0,0
+	; End of section
+
+	.debug		.debug_info, cluster 'Sensor_WSS_FR'
+_54:
+	.dl	193
+	.dw	3
+	.dl	_55
+	.db	4,1
+	.db	'initializations.c',0
+	.db	'TASKING VX-toolset for C166: C compiler',0
+	.db	'C:\\Users\\Timothy_Le\\Documents\\SRE\\SRE_SDK_2018\\VCU\\Environment\\dev\\BrakePressureSensor\\',0
+	.db	12,1,2
+	.dl	_32
+	.db	3
+	.db	'Sensor_WSS_FR',0,8,162,1,8,5
+	.dl	_92
+	.db	1,5,3
+	.dl	_Sensor_WSS_FR
+	.db	0
+	; End of section
+
+	.debug		.debug_abbrev, cluster 'Sensor_WSS_FR'
+_55:
+	.db	1,17,1,3,8,37,8,27,8,19,15,128,70,12,0,0,2,61,0,24,16,0,0,3,52,0,3,8,58,15,59,15,57,15,51,15,73,16,63
+	.db	12,2,9,0,0,0
+	; End of section
+
+	.debug		.debug_info, cluster 'Sensor_WSS_RL'
+_56:
+	.dl	193
+	.dw	3
+	.dl	_57
+	.db	4,1
+	.db	'initializations.c',0
+	.db	'TASKING VX-toolset for C166: C compiler',0
+	.db	'C:\\Users\\Timothy_Le\\Documents\\SRE\\SRE_SDK_2018\\VCU\\Environment\\dev\\BrakePressureSensor\\',0
+	.db	12,1,2
+	.dl	_32
+	.db	3
+	.db	'Sensor_WSS_RL',0,8,163,1,8,5
+	.dl	_92
+	.db	1,5,3
+	.dl	_Sensor_WSS_RL
+	.db	0
+	; End of section
+
+	.debug		.debug_abbrev, cluster 'Sensor_WSS_RL'
+_57:
+	.db	1,17,1,3,8,37,8,27,8,19,15,128,70,12,0,0,2,61,0,24,16,0,0,3,52,0,3,8,58,15,59,15,57,15,51,15,73,16,63
+	.db	12,2,9,0,0,0
+	; End of section
+
+	.debug		.debug_info, cluster 'Sensor_WSS_RR'
+_58:
+	.dl	193
+	.dw	3
+	.dl	_59
+	.db	4,1
+	.db	'initializations.c',0
+	.db	'TASKING VX-toolset for C166: C compiler',0
+	.db	'C:\\Users\\Timothy_Le\\Documents\\SRE\\SRE_SDK_2018\\VCU\\Environment\\dev\\BrakePressureSensor\\',0
+	.db	12,1,2
+	.dl	_32
+	.db	3
+	.db	'Sensor_WSS_RR',0,8,164,1,8,5
+	.dl	_92
+	.db	1,5,3
+	.dl	_Sensor_WSS_RR
+	.db	0
+	; End of section
+
+	.debug		.debug_abbrev, cluster 'Sensor_WSS_RR'
+_59:
+	.db	1,17,1,3,8,37,8,27,8,19,15,128,70,12,0,0,2,61,0,24,16,0,0,3,52,0,3,8,58,15,59,15,57,15,51,15,73,16,63
+	.db	12,2,9,0,0,0
+	; End of section
+
+	.debug		.debug_info, cluster 'Sensor_WPS_FL'
+_60:
+	.dl	193
+	.dw	3
+	.dl	_61
+	.db	4,1
+	.db	'initializations.c',0
+	.db	'TASKING VX-toolset for C166: C compiler',0
+	.db	'C:\\Users\\Timothy_Le\\Documents\\SRE\\SRE_SDK_2018\\VCU\\Environment\\dev\\BrakePressureSensor\\',0
+	.db	12,1,2
+	.dl	_32
+	.db	3
+	.db	'Sensor_WPS_FL',0,8,165,1,8,5
+	.dl	_92
+	.db	1,5,3
+	.dl	_Sensor_WPS_FL
+	.db	0
+	; End of section
+
+	.debug		.debug_abbrev, cluster 'Sensor_WPS_FL'
+_61:
+	.db	1,17,1,3,8,37,8,27,8,19,15,128,70,12,0,0,2,61,0,24,16,0,0,3,52,0,3,8,58,15,59,15,57,15,51,15,73,16,63
+	.db	12,2,9,0,0,0
+	; End of section
+
+	.debug		.debug_info, cluster 'Sensor_WPS_FR'
+_62:
+	.dl	193
+	.dw	3
+	.dl	_63
+	.db	4,1
+	.db	'initializations.c',0
+	.db	'TASKING VX-toolset for C166: C compiler',0
+	.db	'C:\\Users\\Timothy_Le\\Documents\\SRE\\SRE_SDK_2018\\VCU\\Environment\\dev\\BrakePressureSensor\\',0
+	.db	12,1,2
+	.dl	_32
+	.db	3
+	.db	'Sensor_WPS_FR',0,8,166,1,8,5
+	.dl	_92
+	.db	1,5,3
+	.dl	_Sensor_WPS_FR
+	.db	0
+	; End of section
+
+	.debug		.debug_abbrev, cluster 'Sensor_WPS_FR'
+_63:
+	.db	1,17,1,3,8,37,8,27,8,19,15,128,70,12,0,0,2,61,0,24,16,0,0,3,52,0,3,8,58,15,59,15,57,15,51,15,73,16,63
+	.db	12,2,9,0,0,0
+	; End of section
+
+	.debug		.debug_info, cluster 'Sensor_WPS_RL'
+_64:
+	.dl	193
+	.dw	3
+	.dl	_65
+	.db	4,1
+	.db	'initializations.c',0
+	.db	'TASKING VX-toolset for C166: C compiler',0
+	.db	'C:\\Users\\Timothy_Le\\Documents\\SRE\\SRE_SDK_2018\\VCU\\Environment\\dev\\BrakePressureSensor\\',0
+	.db	12,1,2
+	.dl	_32
+	.db	3
+	.db	'Sensor_WPS_RL',0,8,167,1,8,5
+	.dl	_92
+	.db	1,5,3
+	.dl	_Sensor_WPS_RL
+	.db	0
+	; End of section
+
+	.debug		.debug_abbrev, cluster 'Sensor_WPS_RL'
+_65:
+	.db	1,17,1,3,8,37,8,27,8,19,15,128,70,12,0,0,2,61,0,24,16,0,0,3,52,0,3,8,58,15,59,15,57,15,51,15,73,16,63
+	.db	12,2,9,0,0,0
+	; End of section
+
+	.debug		.debug_info, cluster 'Sensor_WPS_RR'
+_66:
+	.dl	193
+	.dw	3
+	.dl	_67
+	.db	4,1
+	.db	'initializations.c',0
+	.db	'TASKING VX-toolset for C166: C compiler',0
+	.db	'C:\\Users\\Timothy_Le\\Documents\\SRE\\SRE_SDK_2018\\VCU\\Environment\\dev\\BrakePressureSensor\\',0
+	.db	12,1,2
+	.dl	_32
+	.db	3
+	.db	'Sensor_WPS_RR',0,8,168,1,8,5
+	.dl	_92
+	.db	1,5,3
+	.dl	_Sensor_WPS_RR
+	.db	0
+	; End of section
+
+	.debug		.debug_abbrev, cluster 'Sensor_WPS_RR'
+_67:
+	.db	1,17,1,3,8,37,8,27,8,19,15,128,70,12,0,0,2,61,0,24,16,0,0,3,52,0,3,8,58,15,59,15,57,15,51,15,73,16,63
+	.db	12,2,9,0,0,0
+	; End of section
+
+	.debug		.debug_info, cluster 'Sensor_SAS'
+_68:
+	.dl	190
+	.dw	3
+	.dl	_69
+	.db	4,1
+	.db	'initializations.c',0
+	.db	'TASKING VX-toolset for C166: C compiler',0
+	.db	'C:\\Users\\Timothy_Le\\Documents\\SRE\\SRE_SDK_2018\\VCU\\Environment\\dev\\BrakePressureSensor\\',0
+	.db	12,1,2
+	.dl	_32
+	.db	3
+	.db	'Sensor_SAS',0,8,169,1,8,5
+	.dl	_92
+	.db	1,5,3
+	.dl	_Sensor_SAS
+	.db	0
+	; End of section
+
+	.debug		.debug_abbrev, cluster 'Sensor_SAS'
+_69:
+	.db	1,17,1,3,8,37,8,27,8,19,15,128,70,12,0,0,2,61,0,24,16,0,0,3,52,0,3,8,58,15,59,15,57,15,51,15,73,16,63
+	.db	12,2,9,0,0,0
+	; End of section
+
+	.debug		.debug_info, cluster 'Sensor_RTDButton'
+_70:
+	.dl	196
+	.dw	3
+	.dl	_71
+	.db	4,1
+	.db	'initializations.c',0
+	.db	'TASKING VX-toolset for C166: C compiler',0
+	.db	'C:\\Users\\Timothy_Le\\Documents\\SRE\\SRE_SDK_2018\\VCU\\Environment\\dev\\BrakePressureSensor\\',0
+	.db	12,1,2
+	.dl	_32
+	.db	3
+	.db	'Sensor_RTDButton',0,8,174,1,8,5
+	.dl	_92
+	.db	1,5,3
+	.dl	_Sensor_RTDButton
+	.db	0
+	; End of section
+
+	.debug		.debug_abbrev, cluster 'Sensor_RTDButton'
+_71:
+	.db	1,17,1,3,8,37,8,27,8,19,15,128,70,12,0,0,2,61,0,24,16,0,0,3,52,0,3,8,58,15,59,15,57,15,51,15,73,16,63
+	.db	12,2,9,0,0,0
+	; End of section
+
+	.debug		.debug_info, cluster 'Sensor_EcoButton'
+_72:
+	.dl	196
+	.dw	3
+	.dl	_73
+	.db	4,1
+	.db	'initializations.c',0
+	.db	'TASKING VX-toolset for C166: C compiler',0
+	.db	'C:\\Users\\Timothy_Le\\Documents\\SRE\\SRE_SDK_2018\\VCU\\Environment\\dev\\BrakePressureSensor\\',0
+	.db	12,1,2
+	.dl	_32
+	.db	3
+	.db	'Sensor_EcoButton',0,8,175,1,8,5
+	.dl	_92
+	.db	1,5,3
+	.dl	_Sensor_EcoButton
+	.db	0
+	; End of section
+
+	.debug		.debug_abbrev, cluster 'Sensor_EcoButton'
+_73:
+	.db	1,17,1,3,8,37,8,27,8,19,15,128,70,12,0,0,2,61,0,24,16,0,0,3,52,0,3,8,58,15,59,15,57,15,51,15,73,16,63
+	.db	12,2,9,0,0,0
+	; End of section
+
+	.debug		.debug_info, cluster 'Sensor_TCSSwitchUp'
+_74:
+	.dl	198
+	.dw	3
+	.dl	_75
+	.db	4,1
+	.db	'initializations.c',0
+	.db	'TASKING VX-toolset for C166: C compiler',0
+	.db	'C:\\Users\\Timothy_Le\\Documents\\SRE\\SRE_SDK_2018\\VCU\\Environment\\dev\\BrakePressureSensor\\',0
+	.db	12,1,2
+	.dl	_32
+	.db	3
+	.db	'Sensor_TCSSwitchUp',0,8,176,1,8,5
+	.dl	_92
+	.db	1,5,3
+	.dl	_Sensor_TCSSwitchUp
+	.db	0
+	; End of section
+
+	.debug		.debug_abbrev, cluster 'Sensor_TCSSwitchUp'
+_75:
+	.db	1,17,1,3,8,37,8,27,8,19,15,128,70,12,0,0,2,61,0,24,16,0,0,3,52,0,3,8,58,15,59,15,57,15,51,15,73,16,63
+	.db	12,2,9,0,0,0
+	; End of section
+
+	.debug		.debug_info, cluster 'Sensor_TCSSwitchDown'
+_76:
+	.dl	200
+	.dw	3
+	.dl	_77
+	.db	4,1
+	.db	'initializations.c',0
+	.db	'TASKING VX-toolset for C166: C compiler',0
+	.db	'C:\\Users\\Timothy_Le\\Documents\\SRE\\SRE_SDK_2018\\VCU\\Environment\\dev\\BrakePressureSensor\\',0
+	.db	12,1,2
+	.dl	_32
+	.db	3
+	.db	'Sensor_TCSSwitchDown',0,8,177,1,8,5
+	.dl	_92
+	.db	1,5,3
+	.dl	_Sensor_TCSSwitchDown
+	.db	0
+	; End of section
+
+	.debug		.debug_abbrev, cluster 'Sensor_TCSSwitchDown'
+_77:
+	.db	1,17,1,3,8,37,8,27,8,19,15,128,70,12,0,0,2,61,0,24,16,0,0,3,52,0,3,8,58,15,59,15,57,15,51,15,73,16,63
+	.db	12,2,9,0,0,0
+	; End of section
+
+	.debug		.debug_info, cluster 'Sensor_TCSKnob'
+_78:
+	.dl	194
+	.dw	3
+	.dl	_79
+	.db	4,1
+	.db	'initializations.c',0
+	.db	'TASKING VX-toolset for C166: C compiler',0
+	.db	'C:\\Users\\Timothy_Le\\Documents\\SRE\\SRE_SDK_2018\\VCU\\Environment\\dev\\BrakePressureSensor\\',0
+	.db	12,1,2
+	.dl	_32
+	.db	3
+	.db	'Sensor_TCSKnob',0,8,172,1,8,5
+	.dl	_92
+	.db	1,5,3
+	.dl	_Sensor_TCSKnob
+	.db	0
+	; End of section
+
+	.debug		.debug_abbrev, cluster 'Sensor_TCSKnob'
+_79:
+	.db	1,17,1,3,8,37,8,27,8,19,15,128,70,12,0,0,2,61,0,24,16,0,0,3,52,0,3,8,58,15,59,15,57,15,51,15,73,16,63
+	.db	12,2,9,0,0,0
+	; End of section
+
+	.debug		.debug_info, cluster 'Sensor_HVILTerminationSense'
+_80:
+	.dl	207
+	.dw	3
+	.dl	_81
+	.db	4,1
+	.db	'initializations.c',0
+	.db	'TASKING VX-toolset for C166: C compiler',0
+	.db	'C:\\Users\\Timothy_Le\\Documents\\SRE\\SRE_SDK_2018\\VCU\\Environment\\dev\\BrakePressureSensor\\',0
+	.db	12,1,2
+	.dl	_32
+	.db	3
+	.db	'Sensor_HVILTerminationSense',0,8,178,1,8,5
+	.dl	_92
+	.db	1,5,3
+	.dl	_Sensor_HVILTerminationSense
+	.db	0
+	; End of section
+
+	.debug		.debug_abbrev, cluster 'Sensor_HVILTerminationSense'
+_81:
+	.db	1,17,1,3,8,37,8,27,8,19,15,128,70,12,0,0,2,61,0,24,16,0,0,3,52,0,3,8,58,15,59,15,57,15,51,15,73,16,63
+	.db	12,2,9,0,0,0
+	; End of section
+
+	.debug		.debug_info, cluster 'Sensor_LVBattery'
+_82:
+	.dl	196
+	.dw	3
+	.dl	_83
+	.db	4,1
+	.db	'initializations.c',0
+	.db	'TASKING VX-toolset for C166: C compiler',0
+	.db	'C:\\Users\\Timothy_Le\\Documents\\SRE\\SRE_SDK_2018\\VCU\\Environment\\dev\\BrakePressureSensor\\',0
+	.db	12,1,2
+	.dl	_32
+	.db	3
+	.db	'Sensor_LVBattery',0,8,170,1,8,5
+	.dl	_92
+	.db	1,5,3
+	.dl	_Sensor_LVBattery
+	.db	0
+	; End of section
+
+	.debug		.debug_abbrev, cluster 'Sensor_LVBattery'
+_83:
+	.db	1,17,1,3,8,37,8,27,8,19,15,128,70,12,0,0,2,61,0,24,16,0,0,3,52,0,3,8,58,15,59,15,57,15,51,15,73,16,63
+	.db	12,2,9,0,0,0
+	; End of section
+
+	.debug		.debug_loc, cluster 'vcu_ADCWasteLoop'
+_89:
+	.dl	-1,_21,0,_45-_21
+	.dw	2
+	.db	145,116
+	.dl	0,0
+_87:
+	.dl	-1,_21,0,_45-_21
+	.dw	2
+	.db	145,118
+	.dl	0,0
+_91:
+	.dl	-1,_21,0,_45-_21
+	.dw	2
+	.db	145,112
+	.dl	0,0
+_20:
+	.dl	-1,_21,0,_391-_21
+	.dw	58
+	.db	127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_22-_26
+_26:
+	.db	146,177,2,0,47
+	.dw	_25-_27
+_27:
+_22:
+	.db	18,49,46,40
+	.dw	_23-_28
+_28:
+	.db	146,178,2,0,47
+	.dw	_25-_29
+_29:
+_23:
+	.db	18,50,46,40
+	.dw	_24-_30
+_30:
+	.db	146,179,2,0,47
+	.dw	_25-_31
+_31:
+_24:
+	.db	146,180,2,0
+_25:
+	.db	22,19,62,36,33
+	.dl	_391-_21,_402-_21
+	.dw	60
+	.db	127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_392-_396
+_396:
+	.db	146,177,2,0,47
+	.dw	_395-_397
+_397:
+_392:
+	.db	18,49,46,40
+	.dw	_393-_398
+_398:
+	.db	146,178,2,0,47
+	.dw	_395-_399
+_399:
+_393:
+	.db	18,50,46,40
+	.dw	_394-_400
+_400:
+	.db	146,179,2,0,47
+	.dw	_395-_401
+_401:
+_394:
+	.db	146,180,2,0
+_395:
+	.db	22,19,62,36,33,50,34
+	.dl	_402-_21,_413-_21
+	.dw	60
+	.db	127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_403-_407
+_407:
+	.db	146,177,2,0,47
+	.dw	_406-_408
+_408:
+_403:
+	.db	18,49,46,40
+	.dw	_404-_409
+_409:
+	.db	146,178,2,0,47
+	.dw	_406-_410
+_410:
+_404:
+	.db	18,50,46,40
+	.dw	_405-_411
+_411:
+	.db	146,179,2,0,47
+	.dw	_406-_412
+_412:
+_405:
+	.db	146,180,2,0
+_406:
+	.db	22,19,62,36,33,52,34
+	.dl	_413-_21,_424-_21
+	.dw	60
+	.db	127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_414-_418
+_418:
+	.db	146,177,2,0,47
+	.dw	_417-_419
+_419:
+_414:
+	.db	18,49,46,40
+	.dw	_415-_420
+_420:
+	.db	146,178,2,0,47
+	.dw	_417-_421
+_421:
+_415:
+	.db	18,50,46,40
+	.dw	_416-_422
+_422:
+	.db	146,179,2,0,47
+	.dw	_417-_423
+_423:
+_416:
+	.db	146,180,2,0
+_417:
+	.db	22,19,62,36,33,54,34
+	.dl	_424-_21,_435-_21
+	.dw	60
+	.db	127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_425-_429
+_429:
+	.db	146,177,2,0,47
+	.dw	_428-_430
+_430:
+_425:
+	.db	18,49,46,40
+	.dw	_426-_431
+_431:
+	.db	146,178,2,0,47
+	.dw	_428-_432
+_432:
+_426:
+	.db	18,50,46,40
+	.dw	_427-_433
+_433:
+	.db	146,179,2,0,47
+	.dw	_428-_434
+_434:
+_427:
+	.db	146,180,2,0
+_428:
+	.db	22,19,62,36,33,56,34
+	.dl	_435-_21,_446-_21
+	.dw	60
+	.db	127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_436-_440
+_440:
+	.db	146,177,2,0,47
+	.dw	_439-_441
+_441:
+_436:
+	.db	18,49,46,40
+	.dw	_437-_442
+_442:
+	.db	146,178,2,0,47
+	.dw	_439-_443
+_443:
+_437:
+	.db	18,50,46,40
+	.dw	_438-_444
+_444:
+	.db	146,179,2,0,47
+	.dw	_439-_445
+_445:
+_438:
+	.db	146,180,2,0
+_439:
+	.db	22,19,62,36,33,64,34
+	.dl	_446-_21,_457-_21
+	.dw	60
+	.db	127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_447-_451
+_451:
+	.db	146,177,2,0,47
+	.dw	_450-_452
+_452:
+_447:
+	.db	18,49,46,40
+	.dw	_448-_453
+_453:
+	.db	146,178,2,0,47
+	.dw	_450-_454
+_454:
+_448:
+	.db	18,50,46,40
+	.dw	_449-_455
+_455:
+	.db	146,179,2,0,47
+	.dw	_450-_456
+_456:
+_449:
+	.db	146,180,2,0
+_450:
+	.db	22,19,62,36,33,56,34
+	.dl	_457-_21,_468-_21
+	.dw	60
+	.db	127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_458-_462
+_462:
+	.db	146,177,2,0,47
+	.dw	_461-_463
+_463:
+_458:
+	.db	18,49,46,40
+	.dw	_459-_464
+_464:
+	.db	146,178,2,0,47
+	.dw	_461-_465
+_465:
+_459:
+	.db	18,50,46,40
+	.dw	_460-_466
+_466:
+	.db	146,179,2,0,47
+	.dw	_461-_467
+_467:
+_460:
+	.db	146,180,2,0
+_461:
+	.db	22,19,62,36,33,54,34
+	.dl	_468-_21,_479-_21
+	.dw	60
+	.db	127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_469-_473
+_473:
+	.db	146,177,2,0,47
+	.dw	_472-_474
+_474:
+_469:
+	.db	18,49,46,40
+	.dw	_470-_475
+_475:
+	.db	146,178,2,0,47
+	.dw	_472-_476
+_476:
+_470:
+	.db	18,50,46,40
+	.dw	_471-_477
+_477:
+	.db	146,179,2,0,47
+	.dw	_472-_478
+_478:
+_471:
+	.db	146,180,2,0
+_472:
+	.db	22,19,62,36,33,52,34
+	.dl	_479-_21,_490-_21
+	.dw	60
+	.db	127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_480-_484
+_484:
+	.db	146,177,2,0,47
+	.dw	_483-_485
+_485:
+_480:
+	.db	18,49,46,40
+	.dw	_481-_486
+_486:
+	.db	146,178,2,0,47
+	.dw	_483-_487
+_487:
+_481:
+	.db	18,50,46,40
+	.dw	_482-_488
+_488:
+	.db	146,179,2,0,47
+	.dw	_483-_489
+_489:
+_482:
+	.db	146,180,2,0
+_483:
+	.db	22,19,62,36,33,50,34
+	.dl	_490-_21,_45-_21
+	.dw	58
+	.db	127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_491-_495
+_495:
+	.db	146,177,2,0,47
+	.dw	_494-_496
+_496:
+_491:
+	.db	18,49,46,40
+	.dw	_492-_497
+_497:
+	.db	146,178,2,0,47
+	.dw	_494-_498
+_498:
+_492:
+	.db	18,50,46,40
+	.dw	_493-_499
+_499:
+	.db	146,179,2,0,47
+	.dw	_494-_500
+_500:
+_493:
+	.db	146,180,2,0
+_494:
+	.db	22,19,62,36,33
+	.dl	0,0
+	; End of section
+
+	.debug		.debug_loc, cluster 'vcu_initializeADC'
+_85:
+	.dl	-1,_9,0,_387-_9
+	.dw	4
+	.db	82,157,8,0
+	.dl	_388-_9,_214-_9
+	.dw	4
+	.db	86,157,8,8
+	.dl	_389-_9,_390-_9
+	.dw	4
+	.db	82,157,8,8
+	.dl	0,0
+_8:
+	.dl	-1,_9,0,_93-_9
+	.dw	58
+	.db	127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_10-_14
+_14:
+	.db	146,177,2,0,47
+	.dw	_13-_15
+_15:
+_10:
+	.db	18,49,46,40
+	.dw	_11-_16
+_16:
+	.db	146,178,2,0,47
+	.dw	_13-_17
+_17:
+_11:
+	.db	18,50,46,40
+	.dw	_12-_18
+_18:
+	.db	146,179,2,0,47
+	.dw	_13-_19
+_19:
+_12:
+	.db	146,180,2,0
+_13:
+	.db	22,19,62,36,33
+	.dl	_93-_9,_104-_9
+	.dw	60
+	.db	127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_94-_98
+_98:
+	.db	146,177,2,0,47
+	.dw	_97-_99
+_99:
+_94:
+	.db	18,49,46,40
+	.dw	_95-_100
+_100:
+	.db	146,178,2,0,47
+	.dw	_97-_101
+_101:
+_95:
+	.db	18,50,46,40
+	.dw	_96-_102
+_102:
+	.db	146,179,2,0,47
+	.dw	_97-_103
+_103:
+_96:
+	.db	146,180,2,0
+_97:
+	.db	22,19,62,36,33,50,34
+	.dl	_104-_9,_115-_9
+	.dw	60
+	.db	127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_105-_109
+_109:
+	.db	146,177,2,0,47
+	.dw	_108-_110
+_110:
+_105:
+	.db	18,49,46,40
+	.dw	_106-_111
+_111:
+	.db	146,178,2,0,47
+	.dw	_108-_112
+_112:
+_106:
+	.db	18,50,46,40
+	.dw	_107-_113
+_113:
+	.db	146,179,2,0,47
+	.dw	_108-_114
+_114:
+_107:
+	.db	146,180,2,0
+_108:
+	.db	22,19,62,36,33,52,34
+	.dl	_115-_9,_126-_9
+	.dw	60
+	.db	127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_116-_120
+_120:
+	.db	146,177,2,0,47
+	.dw	_119-_121
+_121:
+_116:
+	.db	18,49,46,40
+	.dw	_117-_122
+_122:
+	.db	146,178,2,0,47
+	.dw	_119-_123
+_123:
+_117:
+	.db	18,50,46,40
+	.dw	_118-_124
+_124:
+	.db	146,179,2,0,47
+	.dw	_119-_125
+_125:
+_118:
+	.db	146,180,2,0
+_119:
+	.db	22,19,62,36,33,54,34
+	.dl	_126-_9,_137-_9
+	.dw	60
+	.db	127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_127-_131
+_131:
+	.db	146,177,2,0,47
+	.dw	_130-_132
+_132:
+_127:
+	.db	18,49,46,40
+	.dw	_128-_133
+_133:
+	.db	146,178,2,0,47
+	.dw	_130-_134
+_134:
+_128:
+	.db	18,50,46,40
+	.dw	_129-_135
+_135:
+	.db	146,179,2,0,47
+	.dw	_130-_136
+_136:
+_129:
+	.db	146,180,2,0
+_130:
+	.db	22,19,62,36,33,56,34
+	.dl	_137-_9,_148-_9
+	.dw	60
+	.db	127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_138-_142
+_142:
+	.db	146,177,2,0,47
+	.dw	_141-_143
+_143:
+_138:
+	.db	18,49,46,40
+	.dw	_139-_144
+_144:
+	.db	146,178,2,0,47
+	.dw	_141-_145
+_145:
+_139:
+	.db	18,50,46,40
+	.dw	_140-_146
+_146:
+	.db	146,179,2,0,47
+	.dw	_141-_147
+_147:
+_140:
+	.db	146,180,2,0
+_141:
+	.db	22,19,62,36,33,58,34
+	.dl	_148-_9,_159-_9
+	.dw	60
+	.db	127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_149-_153
+_153:
+	.db	146,177,2,0,47
+	.dw	_152-_154
+_154:
+_149:
+	.db	18,49,46,40
+	.dw	_150-_155
+_155:
+	.db	146,178,2,0,47
+	.dw	_152-_156
+_156:
+_150:
+	.db	18,50,46,40
+	.dw	_151-_157
+_157:
+	.db	146,179,2,0,47
+	.dw	_152-_158
+_158:
+_151:
+	.db	146,180,2,0
+_152:
+	.db	22,19,62,36,33,60,34
+	.dl	_159-_9,_170-_9
+	.dw	60
+	.db	127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_160-_164
+_164:
+	.db	146,177,2,0,47
+	.dw	_163-_165
+_165:
+_160:
+	.db	18,49,46,40
+	.dw	_161-_166
+_166:
+	.db	146,178,2,0,47
+	.dw	_163-_167
+_167:
+_161:
+	.db	18,50,46,40
+	.dw	_162-_168
+_168:
+	.db	146,179,2,0,47
+	.dw	_163-_169
+_169:
+_162:
+	.db	146,180,2,0
+_163:
+	.db	22,19,62,36,33,62,34
+	.dl	_170-_9,_181-_9
+	.dw	60
+	.db	127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_171-_175
+_175:
+	.db	146,177,2,0,47
+	.dw	_174-_176
+_176:
+_171:
+	.db	18,49,46,40
+	.dw	_172-_177
+_177:
+	.db	146,178,2,0,47
+	.dw	_174-_178
+_178:
+_172:
+	.db	18,50,46,40
+	.dw	_173-_179
+_179:
+	.db	146,179,2,0,47
+	.dw	_174-_180
+_180:
+_173:
+	.db	146,180,2,0
+_174:
+	.db	22,19,62,36,33,60,34
+	.dl	_181-_9,_192-_9
+	.dw	60
+	.db	127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_182-_186
+_186:
+	.db	146,177,2,0,47
+	.dw	_185-_187
+_187:
+_182:
+	.db	18,49,46,40
+	.dw	_183-_188
+_188:
+	.db	146,178,2,0,47
+	.dw	_185-_189
+_189:
+_183:
+	.db	18,50,46,40
+	.dw	_184-_190
+_190:
+	.db	146,179,2,0,47
+	.dw	_185-_191
+_191:
+_184:
+	.db	146,180,2,0
+_185:
+	.db	22,19,62,36,33,58,34
+	.dl	_192-_9,_203-_9
+	.dw	60
+	.db	127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_193-_197
+_197:
+	.db	146,177,2,0,47
+	.dw	_196-_198
+_198:
+_193:
+	.db	18,49,46,40
+	.dw	_194-_199
+_199:
+	.db	146,178,2,0,47
+	.dw	_196-_200
+_200:
+_194:
+	.db	18,50,46,40
+	.dw	_195-_201
+_201:
+	.db	146,179,2,0,47
+	.dw	_196-_202
+_202:
+_195:
+	.db	146,180,2,0
+_196:
+	.db	22,19,62,36,33,56,34
+	.dl	_203-_9,_214-_9
+	.dw	60
+	.db	127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_204-_208
+_208:
+	.db	146,177,2,0,47
+	.dw	_207-_209
+_209:
+_204:
+	.db	18,49,46,40
+	.dw	_205-_210
+_210:
+	.db	146,178,2,0,47
+	.dw	_207-_211
+_211:
+_205:
+	.db	18,50,46,40
+	.dw	_206-_212
+_212:
+	.db	146,179,2,0,47
+	.dw	_207-_213
+_213:
+_206:
+	.db	146,180,2,0
+_207:
+	.db	22,19,62,36,33,54,34
+	.dl	_214-_9,_225-_9
+	.dw	60
+	.db	127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_215-_219
+_219:
+	.db	146,177,2,0,47
+	.dw	_218-_220
+_220:
+_215:
+	.db	18,49,46,40
+	.dw	_216-_221
+_221:
+	.db	146,178,2,0,47
+	.dw	_218-_222
+_222:
+_216:
+	.db	18,50,46,40
+	.dw	_217-_223
+_223:
+	.db	146,179,2,0,47
+	.dw	_218-_224
+_224:
+_217:
+	.db	146,180,2,0
+_218:
+	.db	22,19,62,36,33,52,34
+	.dl	_225-_9,_236-_9
+	.dw	60
+	.db	127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_226-_230
+_230:
+	.db	146,177,2,0,47
+	.dw	_229-_231
+_231:
+_226:
+	.db	18,49,46,40
+	.dw	_227-_232
+_232:
+	.db	146,178,2,0,47
+	.dw	_229-_233
+_233:
+_227:
+	.db	18,50,46,40
+	.dw	_228-_234
+_234:
+	.db	146,179,2,0,47
+	.dw	_229-_235
+_235:
+_228:
+	.db	146,180,2,0
+_229:
+	.db	22,19,62,36,33,50,34
+	.dl	_236-_9,_40-_9
+	.dw	58
+	.db	127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_237-_241
+_241:
+	.db	146,177,2,0,47
+	.dw	_240-_242
+_242:
+_237:
+	.db	18,49,46,40
+	.dw	_238-_243
+_243:
+	.db	146,178,2,0,47
+	.dw	_240-_244
+_244:
+_238:
+	.db	18,50,46,40
+	.dw	_239-_245
+_245:
+	.db	146,179,2,0,47
+	.dw	_240-_246
+_246:
+_239:
+	.db	146,180,2,0
+_240:
+	.db	22,19,62,36,33
+	.dl	0,0
+	; End of section
+
+	.debug		.debug_frame
+_734:
+	.dl	184
+	.dl	-1
+	.db	3,0,2,2,173,2,15,60,127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_735-_739
+_739:
+	.db	146,177,2,0,47
+	.dw	_738-_740
+_740:
+_735:
+	.db	18,49,46,40
+	.dw	_736-_741
+_741:
+	.db	146,178,2,0,47
+	.dw	_738-_742
+_742:
+_736:
+	.db	18,50,46,40
+	.dw	_737-_743
+_743:
+	.db	146,179,2,0,47
+	.dw	_738-_744
+_744:
+_737:
+	.db	146,180,2,0
+_738:
+	.db	22,19,62,36,33,48,34,16,173,2,12,19,146,176,2,0,64,36,146,161,2,0,33,8,15,22,161,2,5,19,146,161,2,4,8
+	.db	162,2,8,166,2,8,177,2,8,178,2,8,179,2,8,180,2,8,0,8,1,8,6,8,7,8,8,8,9,8,10,8,167,2,8,168,2,8,169,2,8,170
+	.db	2,8,171,2,8,172,2,16,174,2,12,19,146,176,2,0,64,36,146,161,2,0,33,16,175,2,12,19,146,176,2,0,64,36,146
+	.db	161,2,2,33,8,176,2
+	; End of section
+
+	.debug		.debug_frame, cluster 'vcu_initializeADC'
+	.dl	1060
+	.dl	_734,_9,_40-_9
+	.db	4
+	.dl	(_93-_9)/2
+	.db	15,60,127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_247-_251
+_251:
+	.db	146,177,2,0,47
+	.dw	_250-_252
+_252:
+_247:
+	.db	18,49,46,40
+	.dw	_248-_253
+_253:
+	.db	146,178,2,0,47
+	.dw	_250-_254
+_254:
+_248:
+	.db	18,50,46,40
+	.dw	_249-_255
+_255:
+	.db	146,179,2,0,47
+	.dw	_250-_256
+_256:
+_249:
+	.db	146,180,2,0
+_250:
+	.db	22,19,62,36,33,50,34,22,15,3,19,127,2,17,0,127,4
+	.dl	(_104-_93)/2
+	.db	15,60,127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_257-_261
+_261:
+	.db	146,177,2,0,47
+	.dw	_260-_262
+_262:
+_257:
+	.db	18,49,46,40
+	.dw	_258-_263
+_263:
+	.db	146,178,2,0,47
+	.dw	_260-_264
+_264:
+_258:
+	.db	18,50,46,40
+	.dw	_259-_265
+_265:
+	.db	146,179,2,0,47
+	.dw	_260-_266
+_266:
+_259:
+	.db	146,180,2,0
+_260:
+	.db	22,19,62,36,33,52,34,22,15,3,19,127,4,17,1,126,4
+	.dl	(_115-_104)/2
+	.db	15,60,127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_267-_271
+_271:
+	.db	146,177,2,0,47
+	.dw	_270-_272
+_272:
+_267:
+	.db	18,49,46,40
+	.dw	_268-_273
+_273:
+	.db	146,178,2,0,47
+	.dw	_270-_274
+_274:
+_268:
+	.db	18,50,46,40
+	.dw	_269-_275
+_275:
+	.db	146,179,2,0,47
+	.dw	_270-_276
+_276:
+_269:
+	.db	146,180,2,0
+_270:
+	.db	22,19,62,36,33,54,34,22,15,3,19,127,6,17,6,125,4
+	.dl	(_126-_115)/2
+	.db	15,60,127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_277-_281
+_281:
+	.db	146,177,2,0,47
+	.dw	_280-_282
+_282:
+_277:
+	.db	18,49,46,40
+	.dw	_278-_283
+_283:
+	.db	146,178,2,0,47
+	.dw	_280-_284
+_284:
+_278:
+	.db	18,50,46,40
+	.dw	_279-_285
+_285:
+	.db	146,179,2,0,47
+	.dw	_280-_286
+_286:
+_279:
+	.db	146,180,2,0
+_280:
+	.db	22,19,62,36,33,56,34,22,15,3,19,127,8,17,7,124,4
+	.dl	(_137-_126)/2
+	.db	15,60,127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_287-_291
+_291:
+	.db	146,177,2,0,47
+	.dw	_290-_292
+_292:
+_287:
+	.db	18,49,46,40
+	.dw	_288-_293
+_293:
+	.db	146,178,2,0,47
+	.dw	_290-_294
+_294:
+_288:
+	.db	18,50,46,40
+	.dw	_289-_295
+_295:
+	.db	146,179,2,0,47
+	.dw	_290-_296
+_296:
+_289:
+	.db	146,180,2,0
+_290:
+	.db	22,19,62,36,33,58,34,22,15,3,19,127,10,17,8,123,4
+	.dl	(_148-_137)/2
+	.db	15,60,127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_297-_301
+_301:
+	.db	146,177,2,0,47
+	.dw	_300-_302
+_302:
+_297:
+	.db	18,49,46,40
+	.dw	_298-_303
+_303:
+	.db	146,178,2,0,47
+	.dw	_300-_304
+_304:
+_298:
+	.db	18,50,46,40
+	.dw	_299-_305
+_305:
+	.db	146,179,2,0,47
+	.dw	_300-_306
+_306:
+_299:
+	.db	146,180,2,0
+_300:
+	.db	22,19,62,36,33,60,34,22,15,3,19,127,12,17,9,122,4
+	.dl	(_159-_148)/2
+	.db	15,60,127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_307-_311
+_311:
+	.db	146,177,2,0,47
+	.dw	_310-_312
+_312:
+_307:
+	.db	18,49,46,40
+	.dw	_308-_313
+_313:
+	.db	146,178,2,0,47
+	.dw	_310-_314
+_314:
+_308:
+	.db	18,50,46,40
+	.dw	_309-_315
+_315:
+	.db	146,179,2,0,47
+	.dw	_310-_316
+_316:
+_309:
+	.db	146,180,2,0
+_310:
+	.db	22,19,62,36,33,62,34,22,15,3,19,127,14,17,10,121,4
+	.dl	(_170-_159)/2
+	.db	15,60,127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_317-_321
+_321:
+	.db	146,177,2,0,47
+	.dw	_320-_322
+_322:
+_317:
+	.db	18,49,46,40
+	.dw	_318-_323
+_323:
+	.db	146,178,2,0,47
+	.dw	_320-_324
+_324:
+_318:
+	.db	18,50,46,40
+	.dw	_319-_325
+_325:
+	.db	146,179,2,0,47
+	.dw	_320-_326
+_326:
+_319:
+	.db	146,180,2,0
+_320:
+	.db	22,19,62,36,33,60,34,22,15,3,19,127,12,202,4
+	.dl	(_181-_170)/2
+	.db	15,60,127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_327-_331
+_331:
+	.db	146,177,2,0,47
+	.dw	_330-_332
+_332:
+_327:
+	.db	18,49,46,40
+	.dw	_328-_333
+_333:
+	.db	146,178,2,0,47
+	.dw	_330-_334
+_334:
+_328:
+	.db	18,50,46,40
+	.dw	_329-_335
+_335:
+	.db	146,179,2,0,47
+	.dw	_330-_336
+_336:
+_329:
+	.db	146,180,2,0
+_330:
+	.db	22,19,62,36,33,58,34,22,15,3,19,127,10,201,4
+	.dl	(_192-_181)/2
+	.db	15,60,127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_337-_341
+_341:
+	.db	146,177,2,0,47
+	.dw	_340-_342
+_342:
+_337:
+	.db	18,49,46,40
+	.dw	_338-_343
+_343:
+	.db	146,178,2,0,47
+	.dw	_340-_344
+_344:
+_338:
+	.db	18,50,46,40
+	.dw	_339-_345
+_345:
+	.db	146,179,2,0,47
+	.dw	_340-_346
+_346:
+_339:
+	.db	146,180,2,0
+_340:
+	.db	22,19,62,36,33,56,34,22,15,3,19,127,8,200,4
+	.dl	(_203-_192)/2
+	.db	15,60,127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_347-_351
+_351:
+	.db	146,177,2,0,47
+	.dw	_350-_352
+_352:
+_347:
+	.db	18,49,46,40
+	.dw	_348-_353
+_353:
+	.db	146,178,2,0,47
+	.dw	_350-_354
+_354:
+_348:
+	.db	18,50,46,40
+	.dw	_349-_355
+_355:
+	.db	146,179,2,0,47
+	.dw	_350-_356
+_356:
+_349:
+	.db	146,180,2,0
+_350:
+	.db	22,19,62,36,33,54,34,22,15,3,19,127,6,199,4
+	.dl	(_214-_203)/2
+	.db	15,60,127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_357-_361
+_361:
+	.db	146,177,2,0,47
+	.dw	_360-_362
+_362:
+_357:
+	.db	18,49,46,40
+	.dw	_358-_363
+_363:
+	.db	146,178,2,0,47
+	.dw	_360-_364
+_364:
+_358:
+	.db	18,50,46,40
+	.dw	_359-_365
+_365:
+	.db	146,179,2,0,47
+	.dw	_360-_366
+_366:
+_359:
+	.db	146,180,2,0
+_360:
+	.db	22,19,62,36,33,52,34,22,15,3,19,127,4,198,4
+	.dl	(_225-_214)/2
+	.db	15,60,127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_367-_371
+_371:
+	.db	146,177,2,0,47
+	.dw	_370-_372
+_372:
+_367:
+	.db	18,49,46,40
+	.dw	_368-_373
+_373:
+	.db	146,178,2,0,47
+	.dw	_370-_374
+_374:
+_368:
+	.db	18,50,46,40
+	.dw	_369-_375
+_375:
+	.db	146,179,2,0,47
+	.dw	_370-_376
+_376:
+_369:
+	.db	146,180,2,0
+_370:
+	.db	22,19,62,36,33,50,34,22,15,3,19,127,2,193,4
+	.dl	(_236-_225)/2
+	.db	15,60,127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_377-_381
+_381:
+	.db	146,177,2,0,47
+	.dw	_380-_382
+_382:
+_377:
+	.db	18,49,46,40
+	.dw	_378-_383
+_383:
+	.db	146,178,2,0,47
+	.dw	_380-_384
+_384:
+_378:
+	.db	18,50,46,40
+	.dw	_379-_385
+_385:
+	.db	146,179,2,0,47
+	.dw	_380-_386
+_386:
+_379:
+	.db	146,180,2,0
+_380:
+	.db	22,19,62,36,33,48,34,8,15,192,0,0
+	; End of section
+
+	.debug		.debug_frame, cluster 'vcu_ADCWasteLoop'
+	.dl	756
+	.dl	_734,_21,_45-_21
+	.db	4
+	.dl	(_391-_21)/2
+	.db	15,60,127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_501-_505
+_505:
+	.db	146,177,2,0,47
+	.dw	_504-_506
+_506:
+_501:
+	.db	18,49,46,40
+	.dw	_502-_507
+_507:
+	.db	146,178,2,0,47
+	.dw	_504-_508
+_508:
+_502:
+	.db	18,50,46,40
+	.dw	_503-_509
+_509:
+	.db	146,179,2,0,47
+	.dw	_504-_510
+_510:
+_503:
+	.db	146,180,2,0
+_504:
+	.db	22,19,62,36,33,50,34,22,15,3,19,127,2,17,6,127,4
+	.dl	(_402-_391)/2
+	.db	15,60,127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_511-_515
+_515:
+	.db	146,177,2,0,47
+	.dw	_514-_516
+_516:
+_511:
+	.db	18,49,46,40
+	.dw	_512-_517
+_517:
+	.db	146,178,2,0,47
+	.dw	_514-_518
+_518:
+_512:
+	.db	18,50,46,40
+	.dw	_513-_519
+_519:
+	.db	146,179,2,0,47
+	.dw	_514-_520
+_520:
+_513:
+	.db	146,180,2,0
+_514:
+	.db	22,19,62,36,33,52,34,22,15,3,19,127,4,17,8,126,4
+	.dl	(_413-_402)/2
+	.db	15,60,127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_521-_525
+_525:
+	.db	146,177,2,0,47
+	.dw	_524-_526
+_526:
+_521:
+	.db	18,49,46,40
+	.dw	_522-_527
+_527:
+	.db	146,178,2,0,47
+	.dw	_524-_528
+_528:
+_522:
+	.db	18,50,46,40
+	.dw	_523-_529
+_529:
+	.db	146,179,2,0,47
+	.dw	_524-_530
+_530:
+_523:
+	.db	146,180,2,0
+_524:
+	.db	22,19,62,36,33,54,34,22,15,3,19,127,6,17,9,125,4
+	.dl	(_424-_413)/2
+	.db	15,60,127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_531-_535
+_535:
+	.db	146,177,2,0,47
+	.dw	_534-_536
+_536:
+_531:
+	.db	18,49,46,40
+	.dw	_532-_537
+_537:
+	.db	146,178,2,0,47
+	.dw	_534-_538
+_538:
+_532:
+	.db	18,50,46,40
+	.dw	_533-_539
+_539:
+	.db	146,179,2,0,47
+	.dw	_534-_540
+_540:
+_533:
+	.db	146,180,2,0
+_534:
+	.db	22,19,62,36,33,56,34,22,15,3,19,127,8,17,10,124,4
+	.dl	(_435-_424)/2
+	.db	15,60,127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_541-_545
+_545:
+	.db	146,177,2,0,47
+	.dw	_544-_546
+_546:
+_541:
+	.db	18,49,46,40
+	.dw	_542-_547
+_547:
+	.db	146,178,2,0,47
+	.dw	_544-_548
+_548:
+_542:
+	.db	18,50,46,40
+	.dw	_543-_549
+_549:
+	.db	146,179,2,0,47
+	.dw	_544-_550
+_550:
+_543:
+	.db	146,180,2,0
+_544:
+	.db	22,19,62,36,33,64,34,22,15,3,19,127,16,4
+	.dl	(_446-_435)/2
+	.db	15,60,127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_551-_555
+_555:
+	.db	146,177,2,0,47
+	.dw	_554-_556
+_556:
+_551:
+	.db	18,49,46,40
+	.dw	_552-_557
+_557:
+	.db	146,178,2,0,47
+	.dw	_554-_558
+_558:
+_552:
+	.db	18,50,46,40
+	.dw	_553-_559
+_559:
+	.db	146,179,2,0,47
+	.dw	_554-_560
+_560:
+_553:
+	.db	146,180,2,0
+_554:
+	.db	22,19,62,36,33,56,34,22,15,3,19,127,8,4
+	.dl	(_457-_446)/2
+	.db	15,60,127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_561-_565
+_565:
+	.db	146,177,2,0,47
+	.dw	_564-_566
+_566:
+_561:
+	.db	18,49,46,40
+	.dw	_562-_567
+_567:
+	.db	146,178,2,0,47
+	.dw	_564-_568
+_568:
+_562:
+	.db	18,50,46,40
+	.dw	_563-_569
+_569:
+	.db	146,179,2,0,47
+	.dw	_564-_570
+_570:
+_563:
+	.db	146,180,2,0
+_564:
+	.db	22,19,62,36,33,54,34,22,15,3,19,127,6,202,4
+	.dl	(_468-_457)/2
+	.db	15,60,127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_571-_575
+_575:
+	.db	146,177,2,0,47
+	.dw	_574-_576
+_576:
+_571:
+	.db	18,49,46,40
+	.dw	_572-_577
+_577:
+	.db	146,178,2,0,47
+	.dw	_574-_578
+_578:
+_572:
+	.db	18,50,46,40
+	.dw	_573-_579
+_579:
+	.db	146,179,2,0,47
+	.dw	_574-_580
+_580:
+_573:
+	.db	146,180,2,0
+_574:
+	.db	22,19,62,36,33,52,34,22,15,3,19,127,4,201,4
+	.dl	(_479-_468)/2
+	.db	15,60,127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_581-_585
+_585:
+	.db	146,177,2,0,47
+	.dw	_584-_586
+_586:
+_581:
+	.db	18,49,46,40
+	.dw	_582-_587
+_587:
+	.db	146,178,2,0,47
+	.dw	_584-_588
+_588:
+_582:
+	.db	18,50,46,40
+	.dw	_583-_589
+_589:
+	.db	146,179,2,0,47
+	.dw	_584-_590
+_590:
+_583:
+	.db	146,180,2,0
+_584:
+	.db	22,19,62,36,33,50,34,22,15,3,19,127,2,200,4
+	.dl	(_490-_479)/2
+	.db	15,60,127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_591-_595
+_595:
+	.db	146,177,2,0,47
+	.dw	_594-_596
+_596:
+_591:
+	.db	18,49,46,40
+	.dw	_592-_597
+_597:
+	.db	146,178,2,0,47
+	.dw	_594-_598
+_598:
+_592:
+	.db	18,50,46,40
+	.dw	_593-_599
+_599:
+	.db	146,179,2,0,47
+	.dw	_594-_600
+_600:
+_593:
+	.db	146,180,2,0
+_594:
+	.db	22,19,62,36,33,48,34,8,15,198,0,0
+	; End of section
+
+
+; initializations.c	   179  
+; initializations.c	   180  //Switches
+; initializations.c	   181  //precharge failure
+; initializations.c	   182  
+; initializations.c	   183  //Other
+; initializations.c	   184  extern Sensor Sensor_LVBattery; // = { 0xA };  //Note: There will be no init for this "sensor"
+
+	; Module end
+	.end
