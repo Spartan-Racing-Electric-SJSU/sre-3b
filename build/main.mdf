@@ -1,9 +1,17 @@
 # space <name> <id> <mau size>
+<<<<<<< HEAD
 space	spe:xc16x:huge	7	8
 space	spe:xc16x:bit	1	1
 space	spe:xc16x:near	4	8
 space	spe:xc16x:bita	2	8
 space	spe:xc16x:code	8	8
+=======
+space	spe:xc16x:code	8	8
+space	spe:xc16x:bit	1	1
+space	spe:xc16x:bita	2	8
+space	spe:xc16x:huge	7	8
+space	spe:xc16x:near	4	8
+>>>>>>> 6ef510f80dd9bc757deec698135e7378c7d022db
 space	spe:xc16x:far	5	8
 space	spe:xc16x:shuge	6	8
 space	spe:xc16x:iram	3	8
