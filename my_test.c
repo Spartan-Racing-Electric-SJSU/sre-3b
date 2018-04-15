@@ -10,7 +10,6 @@
  *
  **************************************************************************/
 
-<<<<<<< HEAD
 // VCU
 #include "IO_Driver.h"
 #include "IO_RTC.h"
@@ -31,24 +30,11 @@
 #include "brakePressureSensor.h"
 #include "sensorCalculations.h"
 #include "mathFunctions.h"
-=======
 #include "IO_Driver.h"
 #include "IO_RTC.h"
 #include "APDB.h"
 #include "sensors.h"
 #include "brakePressureSensor.h"
-
-//From brakePressureSensor.h
-#include "mathFunctions.h"
-#include <stdlib.h>  
-#include <math.h>
-
-//From sensors.c
-#include "IO_ADC.h"
-#include "IO_PWD.h"
-#include "IO_PWM.h"
-#include "IO_DIO.h"
->>>>>>> 6ef510f80dd9bc757deec698135e7378c7d022db
 
 // TODO: Your libraries here
 
@@ -88,7 +74,6 @@ APDB appl_db =
 
 void main (void)
 {
-<<<<<<< HEAD
   IO_DO_Set( IO_DO_08, TRUE); // Pin 120 as DO
   // TODO: Local variables, static variables, or dynamic variables declared here
   bool bench;
@@ -149,23 +134,6 @@ void main (void)
         IO_UART_Task();  //The task function shall be called every SW cycle.
     }
   }
-=======
-    ubyte4 timestamp;
-    // TODO: Local variables, static variables, or dynamic variables declared here
-
-    IO_Driver_Init( NULL );
-
-    while(1)
-    {
-        IO_RTC_StartTime(&timestamp);
-
-        IO_Driver_TaskBegin();
-
-        // TODO: 
-
-        IO_Driver_TaskEnd();
-    }
->>>>>>> 6ef510f80dd9bc757deec698135e7378c7d022db
 }
 
 // TODO: Function definitions->header file works too 
