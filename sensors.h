@@ -134,10 +134,14 @@ typedef struct _Sensor {
 
     //ubyte2 calibratedValue;
 <<<<<<< HEAD
+<<<<<<< HEAD
     ubyte2 sensorValue;
 =======
     ubyte4 sensorValue;
 >>>>>>> 6ef510f80dd9bc757deec698135e7378c7d022db
+=======
+    ubyte4 sensorValue;
+>>>>>>> 88ace18b2ca8495d00261f11c5d0420104c62485
     bool fresh;
     //bool isCalibrated;
 	IO_ErrorType ioErr_powerInit;
@@ -184,10 +188,13 @@ extern Sensor Sensor_TCSSwitchDown;
 extern Sensor Sensor_TCSKnob;
 //TEMP BENCH SWITCHES
 <<<<<<< HEAD
+<<<<<<< HEAD
 extern Sensor Sensor_BenchTPS0;
 extern Sensor Sensor_BenchTPS1;
 =======
 >>>>>>> 6ef510f80dd9bc757deec698135e7378c7d022db
+=======
+>>>>>>> 88ace18b2ca8495d00261f11c5d0420104c62485
 extern Sensor Sensor_TEMP_BrakingSwitch;
 
 extern Sensor Sensor_HVILTerminationSense;
