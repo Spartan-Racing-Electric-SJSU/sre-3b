@@ -1,0 +1,3291 @@
+	; TASKING VX-toolset for C166: C compiler v4.0r1 Build 741 SN 07744515
+	; Options: -f cc11272a -c99 -Mh --fp-model=FT -Cxc2287 --core=xc16x -DTASKING_VIPER -D__USIC_MEM_TYPE=__PAGE_080_MEM_TYPE -D__MULTICAN_MEM_TYPE=__PAGE_080_MEM_TYPE -DTTC50 -DRTS_TTC_FLASH_DATE_YEAR=2018 -DRTS_TTC_FLASH_DATE_MONTH=2 -DRTS_TTC_FLASH_DATE_DAY=2 -DRTS_TTC_FLASH_DATE_HOUR=16 -DRTS_TTC_FLASH_DATE_MINUTE=21 -I..\..\..\Environment\inc -I..\..\..\Environment\inc_int -I..\..\..\Environment\bsp -I. --tradeoff=0 --no-tasking-sfr -ga --language=+cmp14,+div32,-gcc,-strings -O3 --source --mac -o build\cooling.src
+	; Module start
+	.source	'cooling.c'
+code_CoolingSystem_new	.section	code, cluster 'CoolingSystem_new', new
+	.global	_CoolingSystem_new
+
+; cooling.c	     1  #include <stdlib.h>
+; cooling.c	     2  #include "IO_Driver.h"
+; cooling.c	     3  //#include "IO_DIO.h"
+; cooling.c	     4  //#include "IO_PWM.h"
+; cooling.c	     5  
+; cooling.c	     6  #include "serial.h"
+; cooling.c	     7  #include "sensors.h"
+; cooling.c	     8  #include "cooling.h"
+; cooling.c	     9  #include "motorController.h"
+; cooling.c	    10  #include "mathFunctions.h"
+; cooling.c	    11  #include "bms.h"
+; cooling.c	    12  
+; cooling.c	    13  //All temperatures in C
+; cooling.c	    14  CoolingSystem* CoolingSystem_new(SerialManager* serialMan)
+; Function _CoolingSystem_new
+_22:
+_CoolingSystem_new	.proc	far
+
+; cooling.c	    15  {
+; cooling.c	    16      CoolingSystem* me = (CoolingSystem*)malloc(sizeof(struct _CoolingSystem));
+	movw	r2,#0x14
+_87:
+	call	_malloc
+_666:
+
+; cooling.c	    17      SerialManager* sm = serialMan;
+; cooling.c	    18  
+; cooling.c	    19      //Cooling systems:
+; cooling.c	    20      //Water pump (motor, controller) - PWM
+; cooling.c	    21      me->waterPumpMinPercent = 0.2;
+	movw	r11,r2
+	movw	r12,r3
+	addw	r11,#0x4
+	addcw	r12,#0x0
+_667:
+	movw	r14,#0xcccd
+_668:
+	exts	r12,#0x1
+	movw	[r11],r14
+	addw	r11,#0x2
+	addcw	r12,#0x0
+_669:
+	movw	r13,#0x3e4c
+_670:
+	exts	r12,#0x1
+	movw	[r11],r13
+_671:
+
+; cooling.c	    22      me->waterPumpLow = 25;  //Start ramping beyond min at this temp
+	movw	r11,r2
+	movw	r12,r3
+	addw	r11,#0x8
+	addcw	r12,#0x0
+_672:
+	movb	rh4,#0x19
+_673:
+	exts	r12,#0x1
+	movb	[r11],rh4
+_674:
+
+; cooling.c	    23      me->waterPumpHigh = 40;
+	movw	r11,r2
+	movw	r12,r3
+	addw	r11,#0x9
+	addcw	r12,#0x0
+_675:
+	movb	rh4,#0x28
+_676:
+	exts	r12,#0x1
+	movb	[r11],rh4
+_677:
+
+; cooling.c	    24      me->waterPumpPercent = .2;
+	movw	r11,r2
+	movw	r12,r3
+	addw	r11,#0xa
+	addcw	r12,#0x0
+_678:
+
+; cooling.c	    25  
+; cooling.c	    26      //PP fans (motor, radiator) - Relay
+; cooling.c	    27      //Motor fan + radiator on same circuit
+; cooling.c	    28      me->motorFanLow = 30;    //Turn off BELOW tuhis point
+	movb	rh4,#0x1e
+_679:
+	exts	r12,#0x1
+	movw	[r11],r14
+	addw	r11,#0x2
+	addcw	r12,#0x0
+_680:
+
+; cooling.c	    29      me->motorFanHigh = 32;    //Turn on at this temperature
+; cooling.c	    30      me->motorFanState = TRUE;        //float4 motorFanPercent;
+	movb	rl4,#0x1
+_681:
+	exts	r12,#0x1
+	movw	[r11],r13
+_682:
+	movw	r11,r2
+	movw	r12,r3
+	addw	r11,#0xe
+	addcw	r12,#0x0
+_683:
+	exts	r12,#0x1
+	movb	[r11],rh4
+_684:
+	movw	r11,r2
+	movw	r12,r3
+	addw	r11,#0xf
+	addcw	r12,#0x0
+_685:
+	movb	rh4,#0x20
+_686:
+	exts	r12,#0x1
+	movb	[r11],rh4
+_687:
+	movw	r11,r2
+	movw	r12,r3
+	addw	r11,#0x10
+	addcw	r12,#0x0
+_688:
+	exts	r12,#0x1
+	movb	[r11],rl4
+_689:
+
+; cooling.c	    31      
+; cooling.c	    32      //Radiator fan
+; cooling.c	    33      //sbyte1 radiatorFanLo = 30; //Turn off BELOW tuhis point
+; cooling.c	    34      //sbyte1 radiatorFanHigh = 32; //Turn on at this temperature
+; cooling.c	    35      //bool motorFanState;
+; cooling.c	    36  
+; cooling.c	    37      //Battery fans (batteries) - Relay
+; cooling.c	    38      me->batteryFanLow = 32;  //Turn off BELOW tuhis point
+	movw	r11,r2
+	movw	r12,r3
+	addw	r11,#0x11
+	addcw	r12,#0x0
+_690:
+	exts	r12,#0x1
+	movb	[r11],rh4
+_691:
+
+; cooling.c	    39      me->batteryFanHigh = 35;  //Turn on at this temperature
+	movw	r11,r2
+	movw	r12,r3
+	addw	r11,#0x12
+	addcw	r12,#0x0
+_692:
+	movb	rh4,#0x23
+_693:
+	exts	r12,#0x1
+	movb	[r11],rh4
+_694:
+
+; cooling.c	    40      me->batteryFanState = TRUE;      //float4 batteryFanPercent;
+	movw	r11,r2
+	movw	r12,r3
+	addw	r11,#0x13
+	addcw	r12,#0x0
+_695:
+	exts	r12,#0x1
+	movb	[r11],rl4
+_696:
+
+; cooling.c	    41      
+; cooling.c	    42      return me;
+; cooling.c	    43  }
+	ret
+_65:
+	; End of function
+	; End of section
+
+code_CoolingSystem_calculations	.section	code, cluster 'CoolingSystem_calculations', new
+	.global	_CoolingSystem_calculations
+
+; cooling.c	    44  
+; cooling.c	    45  //-------------------------------------------------------------------
+; cooling.c	    46  // Cooling system calculations - turns fans on/off, sends water pump PWM control signal
+; cooling.c	    47  //Rinehart water temperature operating range: -30C to +80C before derating
+; cooling.c	    48  //-------------------------------------------------------------------
+; cooling.c	    49  void CoolingSystem_calculations(CoolingSystem* me, sbyte2 motorControllerTemp, sbyte2 motorTemp, sbyte1 batteryTemp)
+; Function _CoolingSystem_calculations
+_34:
+_CoolingSystem_calculations	.proc	far
+	movw	[-r15],r0
+_88:
+	movw	[-r15],r1
+_99:
+	movw	[-r15],r6
+_110:
+	movw	[-r15],r7
+_121:
+	movw	[-r15],r8
+_132:
+	movw	[-r15],r9
+_143:
+	movw	[-r15],r10
+_154:
+	subw	r15,#0xc
+_165:
+
+; cooling.c	    50  {
+; cooling.c	    51      //Water pump ------------------
+; cooling.c	    52      //Water pump PWM protocol unknown
+; cooling.c	    53      if (motorControllerTemp >= me->waterPumpHigh || motorTemp >= me->waterPumpHigh)
+	movw	r8,r2
+	movw	r9,r3
+	addw	r8,#0x9
+	addcw	r9,#0x0
+_701:
+	movw	[r15+#0x4],r2
+	movw	[r15+#0x6],r3
+	movw	[r15+#0x8],r4
+_469:
+
+; cooling.c	    54      {
+; cooling.c	    55          me->waterPumpPercent = .9;
+	movw	r11,r2
+_702:
+	movw	[r15+#0xa],r5
+_470:
+	movw	r12,r3
+	addw	r11,#0xa
+	addcw	r12,#0x0
+	movw	[r15],r11
+	movw	[r15+#0x2],r12
+_703:
+	exts	r9,#0x1
+	movb	rh4,[r8]
+_467:
+	movbs	r11,rh4
+_704:
+	movw	r12,[r15+#0x8]
+_471:
+	cmpw	r12,r11
+	jmp-	cc_sge,_3
+_705:
+	movw	r12,[r15+#0xa]
+_468:
+	cmpw	r12,r11
+	jmp	cc_slt,_4
+_3:
+	movw	r13,[r15]
+_706:
+	movw	r11,#0x6666
+_707:
+	movw	r14,[r15+#0x2]
+	exts	r14,#0x1
+	movw	[r13],r11
+	addw	r13,#0x2
+	addcw	r14,#0x0
+_708:
+	movw	r12,#0x3f66
+_709:
+	exts	r14,#0x1
+	movw	[r13],r12
+_710:
+	jmp	_5
+_4:
+
+; cooling.c	    56      }
+; cooling.c	    57      else if (motorControllerTemp < me->waterPumpLow && motorTemp < me->waterPumpLow)
+	movw	r10,[r15+#0x4]
+	movw	r7,[r15+#0x6]
+	addw	r10,#0x8
+	addcw	r7,#0x0
+_711:
+	movw	r12,[r15+#0x8]
+_472:
+	exts	r7,#0x1
+	movb	rh4,[r10]
+	movbs	r11,rh4
+_712:
+	cmpw	r12,r11
+	jmp-	cc_sge,_6
+_713:
+	movw	r12,[r15+#0xa]
+_473:
+	cmpw	r12,r11
+	jmp-	cc_sge,_7
+_714:
+
+; cooling.c	    58      {
+; cooling.c	    59          me->waterPumpPercent = .2;
+	movw	r13,[r15]
+_715:
+	movw	r11,#0xcccd
+_716:
+	movw	r14,[r15+#0x2]
+	exts	r14,#0x1
+	movw	[r13],r11
+	addw	r13,#0x2
+	addcw	r14,#0x0
+_717:
+	movw	r12,#0x3e4c
+_474:
+	exts	r14,#0x1
+	movw	[r13],r12
+_718:
+	jmp	_8
+_7:
+_6:
+
+; cooling.c	    60      }
+; cooling.c	    61      else
+; cooling.c	    62      {
+; cooling.c	    63          me->waterPumpPercent = .2 + .7 * getPercent(max(motorControllerTemp, motorTemp), me->waterPumpLow, me->waterPumpHigh, TRUE);
+	movw	r2,[r15+#0x8]
+_466:
+	movw	r3,[r15+#0xa]
+_476:
+	call	_max
+_475:
+	subw	r15,#0x2
+_176:
+	movb	rh4,#0x1
+_719:
+	call	__us2spf
+_720:
+	movb	[r15],rh4
+_721:
+	movw	r13,r2
+_722:
+	exts	r7,#0x1
+	movb	rl2,[r10]
+_723:
+	movw	r14,r3
+_724:
+	call	__c2spf
+	movw	r4,r2
+_725:
+	exts	r9,#0x1
+	movb	rl2,[r8]
+_726:
+	movw	r5,r3
+_727:
+	call	__c2spf
+	movw	r11,r2
+	movw	r12,r3
+	movw	r2,r13
+	movw	r3,r14
+	call	_getPercent
+	addw	r15,#0x2
+_187:
+	movw	r11,#0x6666
+_728:
+	call	__spf2dpf
+_729:
+	movw	r14,#0x3fe6
+_730:
+	movw	r12,r11
+	movw	r13,r11
+	call	__mul_dpf
+_731:
+	movw	r12,#0x9999
+	movw	r11,#0x999a
+	movw	r14,#0x3fc9
+_732:
+	movw	r13,r12
+	call	__add_dpf
+_733:
+	movw	r11,[r15]
+_734:
+	call	__dpf2spf
+_735:
+	movw	r12,[r15+#0x2]
+	exts	r12,#0x1
+	movw	[r11],r2
+	addw	r11,#0x2
+	addcw	r12,#0x0
+	exts	r12,#0x1
+	movw	[r11],r3
+_8:
+_5:
+
+; cooling.c	    64      }
+; cooling.c	    65  
+; cooling.c	    66      //ubyte1* tempMsg[25];
+; cooling.c	    67      //sprintf(tempMsg, "Motor temp: %d\n", motorTemp);
+; cooling.c	    68      //SerialManager_send(me->sm, tempMsg);
+; cooling.c	    69  
+; cooling.c	    70      // START - RABEEL's CODE
+; cooling.c	    71      /*******************************
+; cooling.c	    72      sprintf(tempMsg, "MCM temp %d >= %d ? ", motorControllerTemp, me->motorFanHigh);
+; cooling.c	    73      SerialManager_send(me->sm, tempMsg);
+; cooling.c	    74      if ((motorControllerTemp >= me->motorFanHigh)) // || (motorTemp >= me->motorFanHigh))
+; cooling.c	    75      {
+; cooling.c	    76          SerialManager_send(me->sm, "Yes.\n");
+; cooling.c	    77          me->motorFanState = TRUE;
+; cooling.c	    78      }
+; cooling.c	    79      else
+; cooling.c	    80      {
+; cooling.c	    81          SerialManager_send(me->sm, "No.\n");
+; cooling.c	    82          me->motorFanState = FALSE;
+; cooling.c	    83      }
+; cooling.c	    84  
+; cooling.c	    85      sprintf(tempMsg, "Batt temp %d > %d ? ", batteryTemp, me->batteryFanHigh);
+; cooling.c	    86      SerialManager_send(me->sm, tempMsg);
+; cooling.c	    87      if ((batteryTemp >= me->batteryFanHigh))
+; cooling.c	    88      {
+; cooling.c	    89          SerialManager_send(me->sm, "Yes.\n");
+; cooling.c	    90          me->batteryFanState = TRUE;
+; cooling.c	    91      }
+; cooling.c	    92      else
+; cooling.c	    93      {
+; cooling.c	    94          SerialManager_send(me->sm, "No.\n");
+; cooling.c	    95          me->batteryFanState = FALSE; 
+; cooling.c	    96      }
+; cooling.c	    97  
+; cooling.c	    98      // END - RABEEL's CODE
+; cooling.c	    99      *******************************/
+; cooling.c	   100      
+; cooling.c	   101  
+; cooling.c	   102  
+; cooling.c	   103      //Motor fan / rad fan
+; cooling.c	   104      if(me->motorFanState == FALSE)
+	movw	r13,[r15+#0x4]
+	movw	r14,[r15+#0x6]
+	addw	r13,#0x10
+	addcw	r14,#0x0
+	exts	r14,#0x1
+	movb	rh4,[r13]
+_736:
+	jmp	cc_ne,_9
+_737:
+
+; cooling.c	   105      {
+; cooling.c	   106          if ((motorControllerTemp >= me->motorFanHigh) || (motorTemp >= me->motorFanHigh))
+	movw	r11,[r15+#0x4]
+	movw	r12,[r15+#0x6]
+	addw	r11,#0xf
+	addcw	r12,#0x0
+	exts	r12,#0x1
+	movb	rh4,[r11]
+	movbs	r11,rh4
+_738:
+	movw	r12,[r15+#0x8]
+_477:
+	cmpw	r12,r11
+	jmp-	cc_sge,_10
+_739:
+	movw	r12,[r15+#0xa]
+_478:
+	cmpw	r12,r11
+	jmp+	cc_slt,_11
+_10:
+
+; cooling.c	   107          {
+; cooling.c	   108              me->motorFanState = TRUE;
+	movb	rh4,#0x1
+_740:
+	exts	r14,#0x1
+	movb	[r13],rh4
+_741:
+
+; cooling.c	   109              SerialManager_send(me->sm, "Turning motor fans on.\n");
+	movw	r11,[r15+#0x4]
+	movw	r12,[r15+#0x6]
+	exts	r12,#0x1
+	movw	r2,[r11]
+	addw	r11,#0x2
+	addcw	r12,#0x0
+_742:
+	movw	r4,#@sof(_$1$str)
+	exts	r12,#0x1
+	movw	r3,[r11]
+	movw	r5,#@seg(_$1$str)
+_743:
+	jmp	_12
+_9:
+
+; cooling.c	   110          }
+; cooling.c	   111      }
+; cooling.c	   112      else  //motor fan is on
+; cooling.c	   113      {
+; cooling.c	   114          if ((motorControllerTemp < me->motorFanLow) && (motorTemp < me->motorFanLow))
+	movw	r11,[r15+#0x4]
+	movw	r12,[r15+#0x6]
+	addw	r11,#0xe
+	addcw	r12,#0x0
+	exts	r12,#0x1
+	movb	rh4,[r11]
+	movbs	r11,rh4
+_744:
+	movw	r12,[r15+#0x8]
+_479:
+	cmpw	r12,r11
+	jmp-	cc_sge,_13
+_745:
+	movw	r12,[r15+#0xa]
+_480:
+	cmpw	r12,r11
+	jmp+	cc_sge,_14
+_746:
+
+; cooling.c	   115              // Shouldn't this be an || instead of an &&
+; cooling.c	   116          {
+; cooling.c	   117              me->motorFanState = FALSE;
+	movb	rh4,#0x0
+_747:
+	exts	r14,#0x1
+	movb	[r13],rh4
+_748:
+
+; cooling.c	   118              SerialManager_send(me->sm, "Turning motor fans off.\n");
+	movw	r11,[r15+#0x4]
+	movw	r12,[r15+#0x6]
+_481:
+	exts	r12,#0x1
+	movw	r2,[r11]
+	addw	r11,#0x2
+	addcw	r12,#0x0
+_749:
+	movw	r4,#@sof(_$2$str)
+	exts	r12,#0x1
+	movw	r3,[r11]
+	movw	r5,#@seg(_$2$str)
+_12:
+	call	_SerialManager_send
+_14:
+_13:
+_11:
+
+; cooling.c	   119          }
+; cooling.c	   120      }
+; cooling.c	   121  
+; cooling.c	   122      //Battery fans
+; cooling.c	   123      if (me->batteryFanState == TRUE)
+	movw	r11,[r15+#0x4]
+	movw	r12,[r15+#0x6]
+	addw	r11,#0x13
+	addcw	r12,#0x0
+	exts	r12,#0x1
+	movb	rh4,[r11]
+_750:
+	cmpb	rh4,#0x1
+	jmp	cc_ne,_15
+_751:
+
+; cooling.c	   124      {
+; cooling.c	   125          if (batteryTemp < me->batteryFanLow)
+	movw	r2,[r15+#0x4]
+	movw	r13,[r15+#0x6]
+	addw	r2,#0x11
+	addcw	r13,#0x0
+_752:
+	movb	rh4,[r15+#0x1a]
+_482:
+	exts	r13,#0x1
+	cmpb	rh4,[r2]
+	jmp+	cc_sge,_16
+_753:
+
+; cooling.c	   126          {
+; cooling.c	   127              me->batteryFanState = FALSE;
+	movb	rh4,#0x0
+_483:
+	exts	r12,#0x1
+	movb	[r11],rh4
+_754:
+
+; cooling.c	   128              SerialManager_send(me->sm, "Turning battery fans off.\n");
+	movw	r11,[r15+#0x4]
+	movw	r12,[r15+#0x6]
+	exts	r12,#0x1
+	movw	r2,[r11]
+	addw	r11,#0x2
+	addcw	r12,#0x0
+_755:
+	movw	r4,#@sof(_$3$str)
+	movw	r5,#@seg(_$3$str)
+_756:
+	jmp	_17
+_15:
+
+; cooling.c	   129          }
+; cooling.c	   130      }
+; cooling.c	   131      else //fans are off
+; cooling.c	   132      {
+; cooling.c	   133          if (batteryTemp >= me->batteryFanHigh)
+	movw	r2,[r15+#0x4]
+	movw	r13,[r15+#0x6]
+	addw	r2,#0x12
+	addcw	r13,#0x0
+_757:
+	movb	rh4,[r15+#0x1a]
+_484:
+	exts	r13,#0x1
+	cmpb	rh4,[r2]
+	jmp+	cc_slt,_18
+_758:
+
+; cooling.c	   134          {
+; cooling.c	   135              me->batteryFanState = TRUE;
+	movb	rh4,#0x1
+_485:
+	exts	r12,#0x1
+	movb	[r11],rh4
+_759:
+
+; cooling.c	   136              SerialManager_send(me->sm, "Turning battery fans on.\n");
+	movw	r11,[r15+#0x4]
+	movw	r12,[r15+#0x6]
+_486:
+	exts	r12,#0x1
+	movw	r2,[r11]
+	addw	r11,#0x2
+	addcw	r12,#0x0
+_760:
+	movw	r4,#@sof(_$4$str)
+	movw	r5,#@seg(_$4$str)
+_17:
+	exts	r12,#0x1
+	movw	r3,[r11]
+	call	_SerialManager_send
+_18:
+_16:
+
+; cooling.c	   137          }
+; cooling.c	   138      }
+; cooling.c	   139  
+; cooling.c	   140  }
+	addw	r15,#0xc
+_198:
+	movw	r10,[r15+]
+_209:
+	movw	r9,[r15+]
+_220:
+	movw	r8,[r15+]
+_231:
+	movw	r7,[r15+]
+_242:
+	movw	r6,[r15+]
+_253:
+	movw	r1,[r15+]
+_264:
+	movw	r0,[r15+]
+_275:
+	ret
+_70:
+	; End of function
+	; End of section
+
+code_CoolingSystem_enactCooling	.section	code, cluster 'CoolingSystem_enactCooling', new
+	.global	_CoolingSystem_enactCooling
+
+; cooling.c	   141  
+; cooling.c	   142  
+; cooling.c	   143  //    // Turn on FANS
+; cooling.c	   144  //    //IO_DO_Init(IO_DO_06); 
+; cooling.c	   145  //    IO_DO_Set(IO_DO_06, TRUE); //pin 142 - sending 12V 
+; cooling.c	   146  //    IO_PWM_SetDuty(IO_PWM_05, 0, NULL);  //Water pump
+; cooling.c	   147  //}
+; cooling.c	   148  //else
+; cooling.c	   149  //{
+; cooling.c	   150  //    IO_DO_Set(IO_DO_06, FALSE);
+; cooling.c	   151  //}
+; cooling.c	   152  
+; cooling.c	   153  //-------------------------------------------------------------------
+; cooling.c	   154  // Cooling system control - turns fans on/off, sends water pump PWM control signal
+; cooling.c	   155  //Rinehart water temperature operating range: -30C to +80C before derating
+; cooling.c	   156  //-------------------------------------------------------------------
+; cooling.c	   157  void CoolingSystem_enactCooling(CoolingSystem* me)
+; Function _CoolingSystem_enactCooling
+_46:
+_CoolingSystem_enactCooling	.proc	far
+	movw	[-r15],r1
+_487:
+	movw	[-r15],r6
+_498:
+	movw	[-r15],r8
+_509:
+
+; cooling.c	   158  {
+; cooling.c	   159      //Send PWM control signal to water pump
+; cooling.c	   160      Light_set(Cooling_waterPump, me->waterPumpPercent);
+	movw	r11,r2
+_765:
+	movw	[-r15],r9
+_520:
+	movw	r9,r3
+_766:
+	addw	r11,#0xa
+	addcw	r3,#0x0
+_655:
+	movw	r8,r2
+_656:
+	exts	r3,#0x1
+	movw	r4,[r11]
+	addw	r11,#0x2
+	addcw	r3,#0x0
+	movb	rl2,#0x5
+	exts	r3,#0x1
+	movw	r5,[r11]
+	call	_Light_set
+_767:
+
+; cooling.c	   161      Light_set(Cooling_motorFans, me->motorFanState == TRUE ? 1 : 0);
+	movw	r11,r8
+	movw	r12,r9
+	addw	r11,#0x10
+	addcw	r12,#0x0
+_768:
+	movb	rh5,#0x6
+_769:
+	exts	r12,#0x1
+	movb	rh4,[r11]
+_770:
+	movw	r2,#0x0
+	cmpb	rh4,#0x1
+	jmp	cc_ne,_19
+	movw	r2,#0x1
+_19:
+
+; cooling.c	   162      Light_set(Cooling_batteryFans, me->batteryFanState == TRUE ? 1 : 0);
+	addw	r8,#0x13
+_657:
+	addcw	r9,#0x0
+_771:
+	call	__s2spf
+	movw	r4,r2
+	movb	rl2,rh5
+	movw	r5,r3
+	call	_Light_set
+_772:
+	movb	rh5,#0x7
+_773:
+	exts	r9,#0x1
+	movb	rh4,[r8]
+_774:
+	movw	r2,#0x0
+	cmpb	rh4,#0x1
+	jmp	cc_ne,_20
+	movw	r2,#0x1
+_20:
+	call	__s2spf
+	movw	r4,r2
+	movb	rl2,rh5
+	movw	r5,r3
+	call	_Light_set
+_775:
+
+; cooling.c	   163  
+; cooling.c	   163  }
+
+	movw	r9,[r15+]
+_531:
+
+
+	movw	r8,[r15+]
+_542:
+
+
+	movw	r6,[r15+]
+_553:
+
+
+	movw	r1,[r15+]
+_564:
+
+
+	ret
+_75:
+	; End of function
+	; End of section
+
+huge__1_str	.section	huge, byte, romdata, new
+_$1$str	.label	byte
+	.db	0x54
+	.db	0x75
+	.db	0x72
+	.db	0x6e
+	.db	0x69
+	.db	0x6e
+	.db	0x67
+	.db	0x20
+	.db	0x6d
+	.db	0x6f
+	.db	0x74
+	.db	0x6f
+	.db	0x72
+	.db	0x20
+	.db	0x66
+	.db	0x61
+	.db	0x6e
+	.db	0x73
+	.db	0x20
+	.db	0x6f
+	.db	0x6e
+	.db	0x2e
+	.db	0xa
+	.db	0x0
+	; End of section
+
+huge__2_str	.section	huge, byte, romdata, new
+_$2$str	.label	byte
+	.db	0x54
+	.db	0x75
+	.db	0x72
+	.db	0x6e
+	.db	0x69
+	.db	0x6e
+	.db	0x67
+	.db	0x20
+	.db	0x6d
+	.db	0x6f
+	.db	0x74
+	.db	0x6f
+	.db	0x72
+	.db	0x20
+	.db	0x66
+	.db	0x61
+	.db	0x6e
+	.db	0x73
+	.db	0x20
+	.db	0x6f
+	.db	0x66
+	.db	0x66
+	.db	0x2e
+	.db	0xa
+	.db	0x0
+	; End of section
+
+huge__3_str	.section	huge, byte, romdata, new
+_$3$str	.label	byte
+	.db	0x54
+	.db	0x75
+	.db	0x72
+	.db	0x6e
+	.db	0x69
+	.db	0x6e
+	.db	0x67
+	.db	0x20
+	.db	0x62
+	.db	0x61
+	.db	0x74
+	.db	0x74
+	.db	0x65
+	.db	0x72
+	.db	0x79
+	.db	0x20
+	.db	0x66
+	.db	0x61
+	.db	0x6e
+	.db	0x73
+	.db	0x20
+	.db	0x6f
+	.db	0x66
+	.db	0x66
+	.db	0x2e
+	.db	0xa
+	.db	0x0
+	; End of section
+
+huge__4_str	.section	huge, byte, romdata, new
+_$4$str	.label	byte
+	.db	0x54
+	.db	0x75
+	.db	0x72
+	.db	0x6e
+	.db	0x69
+	.db	0x6e
+	.db	0x67
+	.db	0x20
+	.db	0x62
+	.db	0x61
+	.db	0x74
+	.db	0x74
+	.db	0x65
+	.db	0x72
+	.db	0x79
+	.db	0x20
+	.db	0x66
+	.db	0x61
+	.db	0x6e
+	.db	0x73
+	.db	0x20
+	.db	0x6f
+	.db	0x6e
+	.db	0x2e
+	.db	0xa
+	.db	0x0
+	; End of section
+
+	.calls	'_CoolingSystem_calculations','__us2spf',4,0
+	.calls	'_CoolingSystem_calculations','__c2spf',4,0
+	.calls	'_CoolingSystem_calculations','__spf2dpf',8,2
+	.calls	'_CoolingSystem_calculations','__mul_dpf',8,4
+	.calls	'_CoolingSystem_calculations','__add_dpf',8,6
+	.calls	'_CoolingSystem_calculations','__dpf2spf',8,2
+	.calls	'_CoolingSystem_enactCooling','__s2spf',4,0
+	.calls	'_CoolingSystem_new','_malloc'
+	.calls	'_CoolingSystem_calculations','_max'
+	.calls	'_CoolingSystem_calculations','_getPercent'
+	.calls	'_CoolingSystem_calculations','_SerialManager_send'
+	.calls	'_CoolingSystem_enactCooling','_Light_set'
+	.calls	'_CoolingSystem_new','',4,0
+	.calls	'_CoolingSystem_calculations','',4,28
+	.calls	'_CoolingSystem_enactCooling','',4,8
+	.extern	_malloc : far
+	.extern	_SerialManager_send : far
+	.extern	_Light_set : far
+	.extern	_getPercent : far
+	.extern	_max : far
+	.extern	__us2spf : far
+	.extern	__c2spf : far
+	.extern	__spf2dpf : far
+	.extern	__mul_dpf : far
+	.extern	__add_dpf : far
+	.extern	__dpf2spf : far
+	.extern	__s2spf : far
+	.debug		.debug_info
+_58:
+	.dl	1480
+	.dw	3
+	.dl	_59
+	.db	4
+_57:
+	.db	1
+	.db	'cooling.c',0
+	.db	'TASKING VX-toolset for C166: C compiler',0
+	.db	'C:\\Users\\helix\\Desktop\\SRE\\SRE SDK 2017-18\\VCU\\Environment\\dev\\SRE-3\\',0,12,1
+	.dl	_60
+	.db	2
+	.db	'void',0,3,5
+	.dl	138
+	.db	4
+	.db	'unsigned int',0,2,7,5
+	.db	'malloc',0,1,78,33,6
+	.dl	144
+	.db	1,1,1,1,6,1,78,44,2
+	.dl	150
+	.db	0,7
+	.db	'_SerialManager',0,2,7,16,1
+_77:
+	.db	3,5
+	.dl	196
+	.db	4
+	.db	'unsigned char',0,1,8,8
+	.dl	222
+	.db	3,5
+	.dl	239
+	.db	5
+	.db	'SerialManager_send',0,2,18,14,6
+	.dl	150
+	.db	1,1,1,1,9
+	.db	'me',0,2,18,48,2
+	.dl	216
+	.db	9
+	.db	'data',0,2,18,66,2
+	.dl	244
+	.db	0,10,3,103,9,1,11
+	.db	'Light_dashEco',0,0,11
+	.db	'Light_dashError',0,1,11
+	.db	'Light_dashRTD',0,2,11
+	.db	'Light_dashTCS',0,3,11
+	.db	'Light_brake',0,4,11
+	.db	'Cooling_waterPump',0,5,11
+	.db	'Cooling_motorFans',0,6,11
+	.db	'Cooling_batteryFans',0,7,0,4
+	.db	'float',0,4,4,12
+	.db	'Light_set',0,3,203,1,6,6,1,1,1,1,9
+	.db	'light',0,3,203,1,22,2
+	.dl	309
+	.db	9
+	.db	'percent',0,3,203,1,36,2
+	.dl	457
+	.db	0
+_84:
+	.db	4
+	.db	'char',0,1,6,13
+	.db	'_CoolingSystem',0,4,6,16,20,14
+	.db	'sm',0
+	.dl	216
+	.db	4,2,35,0,14
+	.db	'waterPumpMinPercent',0
+	.dl	457
+	.db	4,2,35,4,14
+	.db	'waterPumpLow',0
+	.dl	521
+	.db	1,2,35,8,14
+	.db	'waterPumpHigh',0
+	.dl	521
+	.db	1,2,35,9,14
+	.db	'waterPumpPercent',0
+	.dl	457
+	.db	4,2,35,10,14
+	.db	'motorFanLow',0
+	.dl	521
+	.db	1,2,35,14,14
+	.db	'motorFanHigh',0
+	.dl	521
+	.db	1,2,35,15,14
+	.db	'motorFanState',0
+	.dl	222
+	.db	1,2,35,16,14
+	.db	'batteryFanLow',0
+	.dl	521
+	.db	1,2,35,17,14
+	.db	'batteryFanHigh',0
+	.dl	521
+	.db	1,2,35,18,14
+	.db	'batteryFanState',0
+	.dl	222
+	.db	1,2,35,19,0
+_76:
+	.db	3,5
+	.dl	529
+_81:
+	.db	4
+	.db	'int',0,2,5,5
+	.db	'getPercent',0,5,15,8,6
+	.dl	457
+	.db	1,1,1,1,9
+	.db	'value',0,5,15,26,2
+	.dl	457
+	.db	9
+	.db	'start',0,5,15,40,2
+	.dl	457
+	.db	9
+	.db	'end',0,5,15,54,2
+	.dl	457
+	.db	9
+	.db	'zeroToOneOnly',0,5,15,64,2
+	.dl	222
+	.db	0,5
+	.db	'max',0,5,18,8,6
+	.dl	150
+	.db	1,1,1,1,9
+	.db	'a',0,5,18,19,2
+	.dl	150
+	.db	9
+	.db	'b',0,5,18,29,2
+	.dl	150
+	.db	0,4
+	.db	'unsigned short int',0,2,7,15
+	.db	'__wchar_t',0,6,1,1
+	.dl	944
+	.db	15
+	.db	'__size_t',0,6,1,1
+	.dl	150
+	.db	3,5
+	.dl	138
+	.db	15
+	.db	'__prof_adm',0,6,1,1
+	.dl	1001
+	.db	4
+	.db	'unsigned long int',0,4,7,15
+	.db	'__codeptr',0,6,1,1
+	.dl	1026
+	.db	15
+	.db	'size_t',0,1,29,25
+	.dl	150
+	.db	15
+	.db	'ubyte1',0,7,21,29
+	.dl	222
+	.db	15
+	.db	'ubyte2',0,7,22,29
+	.dl	150
+	.db	15
+	.db	'ubyte4',0,7,23,29
+	.dl	1026
+	.db	15
+	.db	'sbyte1',0,7,25,29
+	.dl	521
+	.db	15
+	.db	'sbyte2',0,7,26,29
+	.dl	806
+	.db	15
+	.db	'float4',0,7,29,29
+	.dl	457
+	.db	15
+	.db	'bool',0,7,31,29
+	.dl	222
+	.db	15
+	.db	'IO_ErrorType',0,8,150,1,17
+	.dl	150
+	.db	15
+	.db	'SerialManager',0,2,7,31
+	.dl	196
+	.db	15
+	.db	'Light',0,3,113,3
+	.dl	309
+	.db	13
+	.db	'_Sensor',0,3,126,16,22,14
+	.db	'specMin',0
+	.dl	1026
+	.db	4,2,35,0,14
+	.db	'specMax',0
+	.dl	1026
+	.db	4,2,35,4,14
+	.db	'sensorValue',0
+	.dl	1026
+	.db	4,2,35,8,14
+	.db	'fresh',0
+	.dl	222
+	.db	1,2,35,12,14
+	.db	'ioErr_powerInit',0
+	.dl	150
+	.db	2,2,35,14,14
+	.db	'ioErr_powerSet',0
+	.dl	150
+	.db	2,2,35,16,14
+	.db	'ioErr_signalInit',0
+	.dl	150
+	.db	2,2,35,18,14
+	.db	'ioErr_signalGet',0
+	.dl	150
+	.db	2,2,35,20,0,15
+	.db	'Sensor',0,3,143,1,3
+	.dl	1241
+	.db	15
+	.db	'CoolingSystem',0,4,30,1
+	.dl	529
+	.db	15
+	.db	'_iob_flag_t',0,9,82,25
+	.dl	944
+	.db	0
+	; End of section
+
+	.debug		.debug_abbrev
+_59:
+	.db	1,17,1,3,8,37,8,27,8,19,15,128,70,12,16,6,0,0,2,59,0,3,8,0,0,3,15,0,51,15,73,19,0,0,4,36,0,3,8,11,15,62
+	.db	15,0,0,5,46,1,3,8,58,15,59,15,57,15,51,15,73,19,54,15,39,12,63,12,60,12,0,0,6,5,0,58,15,59,15,57,15,51
+	.db	15,73,19,0,0,7,19,0,3,8,58,15,59,15,57,15,60,12,0,0,8,38,0,73,19,0,0,9,5,0,3,8,58,15,59,15,57,15,51,15
+	.db	73,19,0,0,10,4,1,58,15,59,15,57,15,11,15,0,0,11,40,0,3,8,28,13,0,0,12,46,1,3,8,58,15,59,15,57,15,51,15
+	.db	54,15,39,12,63,12,60,12,0,0,13,19,1,3,8,58,15,59,15,57,15,11,15,0,0,14,13,0,3,8,73,19,11,15,56,9,0,0,15
+	.db	22,0,3,8,58,15,59,15,57,15,73,19,0,0,0
+	; End of section
+
+	.debug		.debug_line
+_60:
+	.dl	_659-_658
+_658:
+	.dw	3
+	.dl	_661-_660
+_660:
+	.db	2,1,-4,9,10,0,1,1,1,1,0,0,0,1
+	.db	'c:\\Program Files (x86)\\TASKING\\C166-VX v4.0r1\\include\\',0
+	.db	'..\\..\\..\\Environment\\inc',0,0
+	.db	'stdlib.h',0,1,0,0
+	.db	'serial.h',0,0,0,0
+	.db	'sensors.h',0,0,0,0
+	.db	'cooling.h',0,0,0,0
+	.db	'mathFunctions.h',0,0,0,0
+	.db	'cooling.c',0,0,0,0
+	.db	'ptypes_xe167.h',0,2,0,0
+	.db	'IO_Constants.h',0,2,0,0
+	.db	'stdio.h',0,1,0,0,0
+_661:
+_659:
+	; End of section
+
+	.debug		.debug_pubnames
+	.dl	85
+	.dw	2
+	.dl	_58,1484,166
+	.db	'malloc',0
+	.dl	250
+	.db	'SerialManager_send',0
+	.dl	466
+	.db	'Light_set',0
+	.dl	813
+	.db	'getPercent',0
+	.dl	904
+	.db	'max',0
+	.dl	0
+	; End of section
+
+	.debug		.debug_info, cluster 'CoolingSystem_new'
+_61:
+	.dl	249
+	.dw	3
+	.dl	_62
+	.db	4,1
+	.db	'cooling.c',0
+	.db	'TASKING VX-toolset for C166: C compiler',0
+	.db	'C:\\Users\\helix\\Desktop\\SRE\\SRE SDK 2017-18\\VCU\\Environment\\dev\\SRE-3\\',0,12,1
+	.dl	_64,_63
+	.db	2
+	.dl	_57
+	.db	3
+	.db	'CoolingSystem_new',0,1,14,16,6
+	.dl	_76
+	.db	1,1,1
+	.dl	_22,_65,_21
+	.db	12,19,146,176,2,0,64,36,146,161,2,0,33,4
+	.db	'serialMan',0,1,14,49,2
+	.dl	_77,_78
+	.db	5
+	.dl	_22,_65
+	.db	6
+	.db	'me',0,1,16,20,2
+	.dl	_76,_79
+	.db	0,0,0
+	; End of section
+
+	.debug		.debug_abbrev, cluster 'CoolingSystem_new'
+_62:
+	.db	1,17,1,3,8,37,8,27,8,19,15,128,70,12,85,6,16,6,0,0,2,61,0,24,16,0,0,3,46,1,3,8,58,15,59,15,57,15,51,15
+	.db	73,16,54,15,39,12,63,12,17,1,18,1,64,6,42,9,0,0,4,5,0,3,8,58,15,59,15,57,15,51,15,73,16,2,6,0,0,5,11,1
+	.db	17,1,18,1,0,0,6,52,0,3,8,58,15,59,15,57,15,51,15,73,16,2,6,0,0,0
+	; End of section
+
+	.debug		.debug_line, cluster 'CoolingSystem_new'
+_63:
+	.dl	_663-_662
+_662:
+	.dw	3
+	.dl	_665-_664
+_664:
+	.db	2,1,-4,9,10,0,1,1,1,1,0,0,0,1,0
+	.db	'cooling.c',0,0,0,0,0
+_665:
+	.db	5,48,7,0,5,2
+	.dl	_22
+	.db	3,15,1,5,7,9
+	.dw	_666-_22
+	.db	3,5,1,5,31,9
+	.dw	_667-_666
+	.db	1,5,29,9
+	.dw	_668-_667
+	.db	1,5,31,9
+	.dw	_669-_668
+	.db	1,5,29,9
+	.dw	_670-_669
+	.db	1,5,7,9
+	.dw	_671-_670
+	.db	3,1,1,5,24,9
+	.dw	_672-_671
+	.db	1,5,22,9
+	.dw	_673-_672
+	.db	1,5,7,9
+	.dw	_674-_673
+	.db	3,1,1,5,25,9
+	.dw	_675-_674
+	.db	1,5,23,9
+	.dw	_676-_675
+	.db	1,5,7,9
+	.dw	_677-_676
+	.db	3,1,1,5,23,9
+	.dw	_678-_677
+	.db	3,4,1,5,26,9
+	.dw	_679-_678
+	.db	3,124,1,5,25,9
+	.dw	_680-_679
+	.db	3,6,1,5,26,9
+	.dw	_681-_680
+	.db	3,122,1,5,7,9
+	.dw	_682-_681
+	.db	3,4,1,5,21,9
+	.dw	_683-_682
+	.db	1,5,7,9
+	.dw	_684-_683
+	.db	3,1,1,5,24,9
+	.dw	_685-_684
+	.db	1,5,22,9
+	.dw	_686-_685
+	.db	1,5,7,9
+	.dw	_687-_686
+	.db	3,1,1,5,23,9
+	.dw	_688-_687
+	.db	1,5,7,9
+	.dw	_689-_688
+	.db	3,8,1,5,23,9
+	.dw	_690-_689
+	.db	1,5,7,9
+	.dw	_691-_690
+	.db	3,1,1,5,26,9
+	.dw	_692-_691
+	.db	1,5,24,9
+	.dw	_693-_692
+	.db	1,5,7,9
+	.dw	_694-_693
+	.db	3,1,1,5,25,9
+	.dw	_695-_694
+	.db	1,5,1,9
+	.dw	_696-_695
+	.db	3,3,1,7,9
+	.dw	_65-_696
+	.db	0,1,1
+_663:
+	; End of section
+
+	.debug		.debug_ranges, cluster 'CoolingSystem_new'
+_64:
+	.dl	-1,_22,0,_65-_22,0,0
+	; End of section
+
+	.debug		.debug_pubnames
+	.dl	36
+	.dw	2
+	.dl	_61,253,147
+	.db	'CoolingSystem_new',0
+	.dl	0
+	; End of section
+
+	.debug		.debug_info, cluster 'CoolingSystem_calculations'
+_66:
+	.dl	311
+	.dw	3
+	.dl	_67
+	.db	4,1
+	.db	'cooling.c',0
+	.db	'TASKING VX-toolset for C166: C compiler',0
+	.db	'C:\\Users\\helix\\Desktop\\SRE\\SRE SDK 2017-18\\VCU\\Environment\\dev\\SRE-3\\',0,12,1
+	.dl	_69,_68
+	.db	2
+	.dl	_57
+	.db	3
+	.db	'CoolingSystem_calculations',0,1,49,6,6,1,1,1
+	.dl	_34,_70,_33
+	.db	12,19,146,176,2,0,64,36,146,161,2,0,33,4
+	.db	'me',0,1,49,48,2
+	.dl	_76,_80
+	.db	4
+	.db	'motorControllerTemp',0,1,49,59,2
+	.dl	_81,_82
+	.db	4
+	.db	'motorTemp',0,1,49,87,2
+	.dl	_81,_83
+	.db	4
+	.db	'batteryTemp',0,1,49,105,2
+	.dl	_84,_85
+	.db	5
+	.dl	_34,_70
+	.db	0,0
+	; End of section
+
+	.debug		.debug_abbrev, cluster 'CoolingSystem_calculations'
+_67:
+	.db	1,17,1,3,8,37,8,27,8,19,15,128,70,12,85,6,16,6,0,0,2,61,0,24,16,0,0,3,46,1,3,8,58,15,59,15,57,15,51,15
+	.db	54,15,39,12,63,12,17,1,18,1,64,6,42,9,0,0,4,5,0,3,8,58,15,59,15,57,15,51,15,73,16,2,6,0,0,5,11,0,17,1
+	.db	18,1,0,0,0
+	; End of section
+
+	.debug		.debug_line, cluster 'CoolingSystem_calculations'
+_68:
+	.dl	_698-_697
+_697:
+	.dw	3
+	.dl	_700-_699
+_699:
+	.db	2,1,-4,9,10,0,1,1,1,1,0,0,0,1,0
+	.db	'cooling.c',0,0,0,0,0
+_700:
+	.db	5,6,7,0,5,2
+	.dl	_34
+	.db	3,48,1,5,34,9
+	.dw	_165-_34
+	.db	3,4,1,5,6,9
+	.dw	_701-_165
+	.db	3,124,1,5,11,9
+	.dw	_469-_701
+	.db	3,6,1,5,6,9
+	.dw	_702-_469
+	.db	3,122,1,5,11,9
+	.dw	_470-_702
+	.db	3,6,1,5,34,9
+	.dw	_703-_470
+	.db	3,126,1,5,9,9
+	.dw	_704-_703
+	.db	1,5,63,9
+	.dw	_705-_704
+	.db	1,5,30,9
+	.dw	_3-_705
+	.db	3,2,1,5,32,9
+	.dw	_706-_3
+	.db	1,5,30,9
+	.dw	_707-_706
+	.db	1,5,32,9
+	.dw	_708-_707
+	.db	1,5,30,9
+	.dw	_709-_708
+	.db	1,5,34,9
+	.dw	_710-_709
+	.db	1,5,38,9
+	.dw	_4-_710
+	.db	3,2,1,5,14,9
+	.dw	_711-_4
+	.db	1,5,38,9
+	.dw	_472-_711
+	.db	1,5,14,9
+	.dw	_712-_472
+	.db	1,5,66,9
+	.dw	_713-_712
+	.db	1,5,30,9
+	.dw	_714-_713
+	.db	3,2,1,5,32,9
+	.dw	_715-_714
+	.db	1,5,30,9
+	.dw	_716-_715
+	.db	1,5,32,9
+	.dw	_717-_716
+	.db	1,5,30,9
+	.dw	_474-_717
+	.db	1,5,34,9
+	.dw	_718-_474
+	.db	1,5,78,9
+	.dw	_6-_718
+	.db	3,4,1,5,127,9
+	.dw	_475-_6
+	.db	1,5,56,9
+	.dw	_719-_475
+	.db	1,5,127,9
+	.dw	_720-_719
+	.db	1,5,56,9
+	.dw	_721-_720
+	.db	1,5,92,9
+	.dw	_722-_721
+	.db	1,5,56,9
+	.dw	_723-_722
+	.db	1,5,92,9
+	.dw	_724-_723
+	.db	1,5,110,9
+	.dw	_725-_724
+	.db	1,5,92,9
+	.dw	_726-_725
+	.db	1,5,110,9
+	.dw	_727-_726
+	.db	1,5,37,9
+	.dw	_187-_727
+	.db	1,5,52,9
+	.dw	_728-_187
+	.db	1,5,37,9
+	.dw	_729-_728
+	.db	1,5,40,9
+	.dw	_730-_729
+	.db	1,5,32,9
+	.dw	_731-_730
+	.db	1,5,35,9
+	.dw	_732-_731
+	.db	1,5,30,9
+	.dw	_733-_732
+	.db	1,5,35,9
+	.dw	_734-_733
+	.db	1,5,30,9
+	.dw	_735-_734
+	.db	1,5,10,9
+	.dw	_5-_735
+	.db	3,41,1,5,5,9
+	.dw	_736-_5
+	.db	1,5,39,7,9
+	.dw	_737-_736
+	.db	3,2,1,5,13,9
+	.dw	_738-_737
+	.db	1,5,69,9
+	.dw	_739-_738
+	.db	1,5,33,9
+	.dw	_10-_739
+	.db	3,2,1,5,31,9
+	.dw	_740-_10
+	.db	1,5,34,9
+	.dw	_741-_740
+	.db	3,1,1,5,40,9
+	.dw	_742-_741
+	.db	1,5,9,9
+	.dw	_743-_742
+	.db	3,125,1,5,38,9
+	.dw	_9-_743
+	.db	3,8,1,5,13,9
+	.dw	_744-_9
+	.db	1,5,67,9
+	.dw	_745-_744
+	.db	1,5,33,9
+	.dw	_746-_745
+	.db	3,3,1,5,31,9
+	.dw	_747-_746
+	.db	1,5,34,9
+	.dw	_748-_747
+	.db	3,1,1,5,40,9
+	.dw	_749-_748
+	.db	1,5,11,9
+	.dw	_11-_749
+	.db	3,5,1,5,5,9
+	.dw	_750-_11
+	.db	1,5,29,9
+	.dw	_751-_750
+	.db	3,2,1,5,9,9
+	.dw	_752-_751
+	.db	1,5,35,9
+	.dw	_753-_752
+	.db	3,2,1,5,33,9
+	.dw	_483-_753
+	.db	1,5,34,9
+	.dw	_754-_483
+	.db	3,1,1,5,40,9
+	.dw	_755-_754
+	.db	1,5,9,9
+	.dw	_756-_755
+	.db	3,125,1,5,30,9
+	.dw	_15-_756
+	.db	3,8,1,5,9,9
+	.dw	_757-_15
+	.db	1,5,35,9
+	.dw	_758-_757
+	.db	3,2,1,5,33,9
+	.dw	_485-_758
+	.db	1,5,34,9
+	.dw	_759-_485
+	.db	3,1,1,5,40,9
+	.dw	_760-_759
+	.db	1,5,1,9
+	.dw	_16-_760
+	.db	3,4,1,9
+	.dw	_70-_16
+	.db	0,1,1
+_698:
+	; End of section
+
+	.debug		.debug_ranges, cluster 'CoolingSystem_calculations'
+_69:
+	.dl	-1,_34,0,_70-_34,0,0
+	; End of section
+
+	.debug		.debug_pubnames
+	.dl	45
+	.dw	2
+	.dl	_66,315,147
+	.db	'CoolingSystem_calculations',0
+	.dl	0
+	; End of section
+
+	.debug		.debug_info, cluster 'CoolingSystem_enactCooling'
+_71:
+	.dl	232
+	.dw	3
+	.dl	_72
+	.db	4,1
+	.db	'cooling.c',0
+	.db	'TASKING VX-toolset for C166: C compiler',0
+	.db	'C:\\Users\\helix\\Desktop\\SRE\\SRE SDK 2017-18\\VCU\\Environment\\dev\\SRE-3\\',0,12,1
+	.dl	_74,_73
+	.db	2
+	.dl	_57
+	.db	3
+	.db	'CoolingSystem_enactCooling',0,1,157,1,6,6,1,1,1
+	.dl	_46,_75,_45
+	.db	12,19,146,176,2,0,64,36,146,161,2,0,33,4
+	.db	'me',0,1,157,1,48,2
+	.dl	_76,_86
+	.db	5
+	.dl	_46,_75
+	.db	0,0
+	; End of section
+
+	.debug		.debug_abbrev, cluster 'CoolingSystem_enactCooling'
+_72:
+	.db	1,17,1,3,8,37,8,27,8,19,15,128,70,12,85,6,16,6,0,0,2,61,0,24,16,0,0,3,46,1,3,8,58,15,59,15,57,15,51,15
+	.db	54,15,39,12,63,12,17,1,18,1,64,6,42,9,0,0,4,5,0,3,8,58,15,59,15,57,15,51,15,73,16,2,6,0,0,5,11,0,17,1
+	.db	18,1,0,0,0
+	; End of section
+
+	.debug		.debug_line, cluster 'CoolingSystem_enactCooling'
+_73:
+	.dl	_762-_761
+_761:
+	.dw	3
+	.dl	_764-_763
+_763:
+	.db	2,1,-4,9,10,0,1,1,1,1,0,0,0,1,0
+	.db	'cooling.c',0,0,0,0,0
+_764:
+	.db	5,6,7,0,5,2
+	.dl	_46
+	.db	3,156,1,1,5,36,9
+	.dw	_509-_46
+	.db	3,3,1,5,6,9
+	.dw	_765-_509
+	.db	3,125,1,5,36,9
+	.dw	_766-_765
+	.db	3,3,1,5,6,9
+	.dw	_655-_766
+	.db	3,125,1,5,36,9
+	.dw	_656-_655
+	.db	3,3,1,9
+	.dw	_767-_656
+	.db	3,1,1,5,15,9
+	.dw	_768-_767
+	.db	1,5,36,9
+	.dw	_769-_768
+	.db	1,5,52,9
+	.dw	_770-_769
+	.db	1,5,38,9
+	.dw	_19-_770
+	.db	3,1,1,5,60,9
+	.dw	_771-_19
+	.db	3,127,1,5,15,9
+	.dw	_772-_771
+	.db	3,1,1,5,38,9
+	.dw	_773-_772
+	.db	1,5,56,9
+	.dw	_774-_773
+	.db	1,5,64,9
+	.dw	_20-_774
+	.db	1,5,1,9
+	.dw	_775-_20
+	.db	3,2,1,9
+	.dw	_75-_775
+	.db	0,1,1
+_762:
+	; End of section
+
+	.debug		.debug_ranges, cluster 'CoolingSystem_enactCooling'
+_74:
+	.dl	-1,_46,0,_75-_46,0,0
+	; End of section
+
+	.debug		.debug_pubnames
+	.dl	45
+	.dw	2
+	.dl	_71,236,147
+	.db	'CoolingSystem_enactCooling',0
+	.dl	0
+	; End of section
+
+	.debug		.debug_loc, cluster 'CoolingSystem_calculations'
+_33:
+	.dl	-1,_34,0,_88-_34
+	.dw	58
+	.db	127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_35-_39
+_39:
+	.db	146,177,2,0,47
+	.dw	_38-_40
+_40:
+_35:
+	.db	18,49,46,40
+	.dw	_36-_41
+_41:
+	.db	146,178,2,0,47
+	.dw	_38-_42
+_42:
+_36:
+	.db	18,50,46,40
+	.dw	_37-_43
+_43:
+	.db	146,179,2,0,47
+	.dw	_38-_44
+_44:
+_37:
+	.db	146,180,2,0
+_38:
+	.db	22,19,62,36,33
+	.dl	_88-_34,_99-_34
+	.dw	60
+	.db	127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_89-_93
+_93:
+	.db	146,177,2,0,47
+	.dw	_92-_94
+_94:
+_89:
+	.db	18,49,46,40
+	.dw	_90-_95
+_95:
+	.db	146,178,2,0,47
+	.dw	_92-_96
+_96:
+_90:
+	.db	18,50,46,40
+	.dw	_91-_97
+_97:
+	.db	146,179,2,0,47
+	.dw	_92-_98
+_98:
+_91:
+	.db	146,180,2,0
+_92:
+	.db	22,19,62,36,33,50,34
+	.dl	_99-_34,_110-_34
+	.dw	60
+	.db	127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_100-_104
+_104:
+	.db	146,177,2,0,47
+	.dw	_103-_105
+_105:
+_100:
+	.db	18,49,46,40
+	.dw	_101-_106
+_106:
+	.db	146,178,2,0,47
+	.dw	_103-_107
+_107:
+_101:
+	.db	18,50,46,40
+	.dw	_102-_108
+_108:
+	.db	146,179,2,0,47
+	.dw	_103-_109
+_109:
+_102:
+	.db	146,180,2,0
+_103:
+	.db	22,19,62,36,33,52,34
+	.dl	_110-_34,_121-_34
+	.dw	60
+	.db	127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_111-_115
+_115:
+	.db	146,177,2,0,47
+	.dw	_114-_116
+_116:
+_111:
+	.db	18,49,46,40
+	.dw	_112-_117
+_117:
+	.db	146,178,2,0,47
+	.dw	_114-_118
+_118:
+_112:
+	.db	18,50,46,40
+	.dw	_113-_119
+_119:
+	.db	146,179,2,0,47
+	.dw	_114-_120
+_120:
+_113:
+	.db	146,180,2,0
+_114:
+	.db	22,19,62,36,33,54,34
+	.dl	_121-_34,_132-_34
+	.dw	60
+	.db	127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_122-_126
+_126:
+	.db	146,177,2,0,47
+	.dw	_125-_127
+_127:
+_122:
+	.db	18,49,46,40
+	.dw	_123-_128
+_128:
+	.db	146,178,2,0,47
+	.dw	_125-_129
+_129:
+_123:
+	.db	18,50,46,40
+	.dw	_124-_130
+_130:
+	.db	146,179,2,0,47
+	.dw	_125-_131
+_131:
+_124:
+	.db	146,180,2,0
+_125:
+	.db	22,19,62,36,33,56,34
+	.dl	_132-_34,_143-_34
+	.dw	60
+	.db	127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_133-_137
+_137:
+	.db	146,177,2,0,47
+	.dw	_136-_138
+_138:
+_133:
+	.db	18,49,46,40
+	.dw	_134-_139
+_139:
+	.db	146,178,2,0,47
+	.dw	_136-_140
+_140:
+_134:
+	.db	18,50,46,40
+	.dw	_135-_141
+_141:
+	.db	146,179,2,0,47
+	.dw	_136-_142
+_142:
+_135:
+	.db	146,180,2,0
+_136:
+	.db	22,19,62,36,33,58,34
+	.dl	_143-_34,_154-_34
+	.dw	60
+	.db	127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_144-_148
+_148:
+	.db	146,177,2,0,47
+	.dw	_147-_149
+_149:
+_144:
+	.db	18,49,46,40
+	.dw	_145-_150
+_150:
+	.db	146,178,2,0,47
+	.dw	_147-_151
+_151:
+_145:
+	.db	18,50,46,40
+	.dw	_146-_152
+_152:
+	.db	146,179,2,0,47
+	.dw	_147-_153
+_153:
+_146:
+	.db	146,180,2,0
+_147:
+	.db	22,19,62,36,33,60,34
+	.dl	_154-_34,_165-_34
+	.dw	60
+	.db	127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_155-_159
+_159:
+	.db	146,177,2,0,47
+	.dw	_158-_160
+_160:
+_155:
+	.db	18,49,46,40
+	.dw	_156-_161
+_161:
+	.db	146,178,2,0,47
+	.dw	_158-_162
+_162:
+_156:
+	.db	18,50,46,40
+	.dw	_157-_163
+_163:
+	.db	146,179,2,0,47
+	.dw	_158-_164
+_164:
+_157:
+	.db	146,180,2,0
+_158:
+	.db	22,19,62,36,33,62,34
+	.dl	_165-_34,_176-_34
+	.dw	60
+	.db	127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_166-_170
+_170:
+	.db	146,177,2,0,47
+	.dw	_169-_171
+_171:
+_166:
+	.db	18,49,46,40
+	.dw	_167-_172
+_172:
+	.db	146,178,2,0,47
+	.dw	_169-_173
+_173:
+_167:
+	.db	18,50,46,40
+	.dw	_168-_174
+_174:
+	.db	146,179,2,0,47
+	.dw	_169-_175
+_175:
+_168:
+	.db	146,180,2,0
+_169:
+	.db	22,19,62,36,33,74,34
+	.dl	_176-_34,_187-_34
+	.dw	60
+	.db	127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_177-_181
+_181:
+	.db	146,177,2,0,47
+	.dw	_180-_182
+_182:
+_177:
+	.db	18,49,46,40
+	.dw	_178-_183
+_183:
+	.db	146,178,2,0,47
+	.dw	_180-_184
+_184:
+_178:
+	.db	18,50,46,40
+	.dw	_179-_185
+_185:
+	.db	146,179,2,0,47
+	.dw	_180-_186
+_186:
+_179:
+	.db	146,180,2,0
+_180:
+	.db	22,19,62,36,33,76,34
+	.dl	_187-_34,_198-_34
+	.dw	60
+	.db	127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_188-_192
+_192:
+	.db	146,177,2,0,47
+	.dw	_191-_193
+_193:
+_188:
+	.db	18,49,46,40
+	.dw	_189-_194
+_194:
+	.db	146,178,2,0,47
+	.dw	_191-_195
+_195:
+_189:
+	.db	18,50,46,40
+	.dw	_190-_196
+_196:
+	.db	146,179,2,0,47
+	.dw	_191-_197
+_197:
+_190:
+	.db	146,180,2,0
+_191:
+	.db	22,19,62,36,33,74,34
+	.dl	_198-_34,_209-_34
+	.dw	60
+	.db	127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_199-_203
+_203:
+	.db	146,177,2,0,47
+	.dw	_202-_204
+_204:
+_199:
+	.db	18,49,46,40
+	.dw	_200-_205
+_205:
+	.db	146,178,2,0,47
+	.dw	_202-_206
+_206:
+_200:
+	.db	18,50,46,40
+	.dw	_201-_207
+_207:
+	.db	146,179,2,0,47
+	.dw	_202-_208
+_208:
+_201:
+	.db	146,180,2,0
+_202:
+	.db	22,19,62,36,33,62,34
+	.dl	_209-_34,_220-_34
+	.dw	60
+	.db	127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_210-_214
+_214:
+	.db	146,177,2,0,47
+	.dw	_213-_215
+_215:
+_210:
+	.db	18,49,46,40
+	.dw	_211-_216
+_216:
+	.db	146,178,2,0,47
+	.dw	_213-_217
+_217:
+_211:
+	.db	18,50,46,40
+	.dw	_212-_218
+_218:
+	.db	146,179,2,0,47
+	.dw	_213-_219
+_219:
+_212:
+	.db	146,180,2,0
+_213:
+	.db	22,19,62,36,33,60,34
+	.dl	_220-_34,_231-_34
+	.dw	60
+	.db	127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_221-_225
+_225:
+	.db	146,177,2,0,47
+	.dw	_224-_226
+_226:
+_221:
+	.db	18,49,46,40
+	.dw	_222-_227
+_227:
+	.db	146,178,2,0,47
+	.dw	_224-_228
+_228:
+_222:
+	.db	18,50,46,40
+	.dw	_223-_229
+_229:
+	.db	146,179,2,0,47
+	.dw	_224-_230
+_230:
+_223:
+	.db	146,180,2,0
+_224:
+	.db	22,19,62,36,33,58,34
+	.dl	_231-_34,_242-_34
+	.dw	60
+	.db	127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_232-_236
+_236:
+	.db	146,177,2,0,47
+	.dw	_235-_237
+_237:
+_232:
+	.db	18,49,46,40
+	.dw	_233-_238
+_238:
+	.db	146,178,2,0,47
+	.dw	_235-_239
+_239:
+_233:
+	.db	18,50,46,40
+	.dw	_234-_240
+_240:
+	.db	146,179,2,0,47
+	.dw	_235-_241
+_241:
+_234:
+	.db	146,180,2,0
+_235:
+	.db	22,19,62,36,33,56,34
+	.dl	_242-_34,_253-_34
+	.dw	60
+	.db	127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_243-_247
+_247:
+	.db	146,177,2,0,47
+	.dw	_246-_248
+_248:
+_243:
+	.db	18,49,46,40
+	.dw	_244-_249
+_249:
+	.db	146,178,2,0,47
+	.dw	_246-_250
+_250:
+_244:
+	.db	18,50,46,40
+	.dw	_245-_251
+_251:
+	.db	146,179,2,0,47
+	.dw	_246-_252
+_252:
+_245:
+	.db	146,180,2,0
+_246:
+	.db	22,19,62,36,33,54,34
+	.dl	_253-_34,_264-_34
+	.dw	60
+	.db	127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_254-_258
+_258:
+	.db	146,177,2,0,47
+	.dw	_257-_259
+_259:
+_254:
+	.db	18,49,46,40
+	.dw	_255-_260
+_260:
+	.db	146,178,2,0,47
+	.dw	_257-_261
+_261:
+_255:
+	.db	18,50,46,40
+	.dw	_256-_262
+_262:
+	.db	146,179,2,0,47
+	.dw	_257-_263
+_263:
+_256:
+	.db	146,180,2,0
+_257:
+	.db	22,19,62,36,33,52,34
+	.dl	_264-_34,_275-_34
+	.dw	60
+	.db	127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_265-_269
+_269:
+	.db	146,177,2,0,47
+	.dw	_268-_270
+_270:
+_265:
+	.db	18,49,46,40
+	.dw	_266-_271
+_271:
+	.db	146,178,2,0,47
+	.dw	_268-_272
+_272:
+_266:
+	.db	18,50,46,40
+	.dw	_267-_273
+_273:
+	.db	146,179,2,0,47
+	.dw	_268-_274
+_274:
+_267:
+	.db	146,180,2,0
+_268:
+	.db	22,19,62,36,33,50,34
+	.dl	_275-_34,_70-_34
+	.dw	58
+	.db	127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_276-_280
+_280:
+	.db	146,177,2,0,47
+	.dw	_279-_281
+_281:
+_276:
+	.db	18,49,46,40
+	.dw	_277-_282
+_282:
+	.db	146,178,2,0,47
+	.dw	_279-_283
+_283:
+_277:
+	.db	18,50,46,40
+	.dw	_278-_284
+_284:
+	.db	146,179,2,0,47
+	.dw	_279-_285
+_285:
+_278:
+	.db	146,180,2,0
+_279:
+	.db	22,19,62,36,33
+	.dl	0,0
+_85:
+	.dl	-1,_34,0,_70-_34
+	.dw	2
+	.db	145,0
+	.dl	_482-_34,_483-_34
+	.dw	4
+	.db	84,157,8,8
+	.dl	_484-_34,_485-_34
+	.dw	4
+	.db	84,157,8,8
+	.dl	0,0
+_80:
+	.dl	-1,_34,0,_466-_34
+	.dw	6
+	.db	82,147,2,83,147,2
+	.dl	_486-_34,_17-_34
+	.dw	6
+	.db	91,147,2,92,147,2
+	.dl	0,0
+_82:
+	.dl	-1,_34,0,_467-_34
+	.dw	1
+	.db	84
+	.dl	_469-_34,_70-_34
+	.dw	2
+	.db	145,110
+	.dl	_471-_34,_468-_34
+	.dw	1
+	.db	92
+	.dl	_472-_34,_473-_34
+	.dw	1
+	.db	92
+	.dl	_466-_34,_475-_34
+	.dw	1
+	.db	82
+	.dl	_477-_34,_478-_34
+	.dw	1
+	.db	92
+	.dl	_479-_34,_480-_34
+	.dw	1
+	.db	92
+	.dl	0,0
+_83:
+	.dl	-1,_34,0,_468-_34
+	.dw	1
+	.db	85
+	.dl	_470-_34,_70-_34
+	.dw	2
+	.db	145,112
+	.dl	_468-_34,_3-_34
+	.dw	1
+	.db	92
+	.dl	_4-_34,_472-_34
+	.dw	1
+	.db	92
+	.dl	_473-_34,_474-_34
+	.dw	1
+	.db	92
+	.dl	_476-_34,_475-_34
+	.dw	1
+	.db	83
+	.dl	_478-_34,_10-_34
+	.dw	1
+	.db	92
+	.dl	_480-_34,_481-_34
+	.dw	1
+	.db	92
+	.dl	0,0
+	; End of section
+
+	.debug		.debug_loc, cluster 'CoolingSystem_enactCooling'
+_45:
+	.dl	-1,_46,0,_487-_46
+	.dw	58
+	.db	127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_47-_51
+_51:
+	.db	146,177,2,0,47
+	.dw	_50-_52
+_52:
+_47:
+	.db	18,49,46,40
+	.dw	_48-_53
+_53:
+	.db	146,178,2,0,47
+	.dw	_50-_54
+_54:
+_48:
+	.db	18,50,46,40
+	.dw	_49-_55
+_55:
+	.db	146,179,2,0,47
+	.dw	_50-_56
+_56:
+_49:
+	.db	146,180,2,0
+_50:
+	.db	22,19,62,36,33
+	.dl	_487-_46,_498-_46
+	.dw	60
+	.db	127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_488-_492
+_492:
+	.db	146,177,2,0,47
+	.dw	_491-_493
+_493:
+_488:
+	.db	18,49,46,40
+	.dw	_489-_494
+_494:
+	.db	146,178,2,0,47
+	.dw	_491-_495
+_495:
+_489:
+	.db	18,50,46,40
+	.dw	_490-_496
+_496:
+	.db	146,179,2,0,47
+	.dw	_491-_497
+_497:
+_490:
+	.db	146,180,2,0
+_491:
+	.db	22,19,62,36,33,50,34
+	.dl	_498-_46,_509-_46
+	.dw	60
+	.db	127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_499-_503
+_503:
+	.db	146,177,2,0,47
+	.dw	_502-_504
+_504:
+_499:
+	.db	18,49,46,40
+	.dw	_500-_505
+_505:
+	.db	146,178,2,0,47
+	.dw	_502-_506
+_506:
+_500:
+	.db	18,50,46,40
+	.dw	_501-_507
+_507:
+	.db	146,179,2,0,47
+	.dw	_502-_508
+_508:
+_501:
+	.db	146,180,2,0
+_502:
+	.db	22,19,62,36,33,52,34
+	.dl	_509-_46,_520-_46
+	.dw	60
+	.db	127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_510-_514
+_514:
+	.db	146,177,2,0,47
+	.dw	_513-_515
+_515:
+_510:
+	.db	18,49,46,40
+	.dw	_511-_516
+_516:
+	.db	146,178,2,0,47
+	.dw	_513-_517
+_517:
+_511:
+	.db	18,50,46,40
+	.dw	_512-_518
+_518:
+	.db	146,179,2,0,47
+	.dw	_513-_519
+_519:
+_512:
+	.db	146,180,2,0
+_513:
+	.db	22,19,62,36,33,54,34
+	.dl	_520-_46,_531-_46
+	.dw	60
+	.db	127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_521-_525
+_525:
+	.db	146,177,2,0,47
+	.dw	_524-_526
+_526:
+_521:
+	.db	18,49,46,40
+	.dw	_522-_527
+_527:
+	.db	146,178,2,0,47
+	.dw	_524-_528
+_528:
+_522:
+	.db	18,50,46,40
+	.dw	_523-_529
+_529:
+	.db	146,179,2,0,47
+	.dw	_524-_530
+_530:
+_523:
+	.db	146,180,2,0
+_524:
+	.db	22,19,62,36,33,56,34
+	.dl	_531-_46,_542-_46
+	.dw	60
+	.db	127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_532-_536
+_536:
+	.db	146,177,2,0,47
+	.dw	_535-_537
+_537:
+_532:
+	.db	18,49,46,40
+	.dw	_533-_538
+_538:
+	.db	146,178,2,0,47
+	.dw	_535-_539
+_539:
+_533:
+	.db	18,50,46,40
+	.dw	_534-_540
+_540:
+	.db	146,179,2,0,47
+	.dw	_535-_541
+_541:
+_534:
+	.db	146,180,2,0
+_535:
+	.db	22,19,62,36,33,54,34
+	.dl	_542-_46,_553-_46
+	.dw	60
+	.db	127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_543-_547
+_547:
+	.db	146,177,2,0,47
+	.dw	_546-_548
+_548:
+_543:
+	.db	18,49,46,40
+	.dw	_544-_549
+_549:
+	.db	146,178,2,0,47
+	.dw	_546-_550
+_550:
+_544:
+	.db	18,50,46,40
+	.dw	_545-_551
+_551:
+	.db	146,179,2,0,47
+	.dw	_546-_552
+_552:
+_545:
+	.db	146,180,2,0
+_546:
+	.db	22,19,62,36,33,52,34
+	.dl	_553-_46,_564-_46
+	.dw	60
+	.db	127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_554-_558
+_558:
+	.db	146,177,2,0,47
+	.dw	_557-_559
+_559:
+_554:
+	.db	18,49,46,40
+	.dw	_555-_560
+_560:
+	.db	146,178,2,0,47
+	.dw	_557-_561
+_561:
+_555:
+	.db	18,50,46,40
+	.dw	_556-_562
+_562:
+	.db	146,179,2,0,47
+	.dw	_557-_563
+_563:
+_556:
+	.db	146,180,2,0
+_557:
+	.db	22,19,62,36,33,50,34
+	.dl	_564-_46,_75-_46
+	.dw	58
+	.db	127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_565-_569
+_569:
+	.db	146,177,2,0,47
+	.dw	_568-_570
+_570:
+_565:
+	.db	18,49,46,40
+	.dw	_566-_571
+_571:
+	.db	146,178,2,0,47
+	.dw	_568-_572
+_572:
+_566:
+	.db	18,50,46,40
+	.dw	_567-_573
+_573:
+	.db	146,179,2,0,47
+	.dw	_568-_574
+_574:
+_567:
+	.db	146,180,2,0
+_568:
+	.db	22,19,62,36,33
+	.dl	0,0
+_86:
+	.dl	-1,_46,0,_655-_46
+	.dw	6
+	.db	82,147,2,83,147,2
+	.dl	_656-_46,_657-_46
+	.dw	6
+	.db	88,147,2,89,147,2
+	.dl	0,0
+	; End of section
+
+	.debug		.debug_loc, cluster 'CoolingSystem_new'
+_21:
+	.dl	-1,_22,0,_65-_22
+	.dw	58
+	.db	127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_23-_27
+_27:
+	.db	146,177,2,0,47
+	.dw	_26-_28
+_28:
+_23:
+	.db	18,49,46,40
+	.dw	_24-_29
+_29:
+	.db	146,178,2,0,47
+	.dw	_26-_30
+_30:
+_24:
+	.db	18,50,46,40
+	.dw	_25-_31
+_31:
+	.db	146,179,2,0,47
+	.dw	_26-_32
+_32:
+_25:
+	.db	146,180,2,0
+_26:
+	.db	22,19,62,36,33
+	.dl	0,0
+_79:
+	.dl	0,0
+_78:
+	.dl	-1,_22,0,_87-_22
+	.dw	6
+	.db	82,147,2,83,147,2
+	.dl	0,0
+	; End of section
+
+	.debug		.debug_frame
+_776:
+	.dl	184
+	.dl	-1
+	.db	3,0,2,2,173,2,15,60,127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_777-_781
+_781:
+	.db	146,177,2,0,47
+	.dw	_780-_782
+_782:
+_777:
+	.db	18,49,46,40
+	.dw	_778-_783
+_783:
+	.db	146,178,2,0,47
+	.dw	_780-_784
+_784:
+_778:
+	.db	18,50,46,40
+	.dw	_779-_785
+_785:
+	.db	146,179,2,0,47
+	.dw	_780-_786
+_786:
+_779:
+	.db	146,180,2,0
+_780:
+	.db	22,19,62,36,33,48,34,16,173,2,12,19,146,176,2,0,64,36,146,161,2,0,33,8,15,22,161,2,5,19,146,161,2,4,8
+	.db	162,2,8,166,2,8,177,2,8,178,2,8,179,2,8,180,2,8,0,8,1,8,6,8,7,8,8,8,9,8,10,8,167,2,8,168,2,8,169,2,8,170
+	.db	2,8,171,2,8,172,2,16,174,2,12,19,146,176,2,0,64,36,146,161,2,0,33,16,175,2,12,19,146,176,2,0,64,36,146
+	.db	161,2,2,33,8,176,2
+	; End of section
+
+	.debug		.debug_frame, cluster 'CoolingSystem_new'
+	.dl	12
+	.dl	_776,_22,_65-_22
+	; End of section
+
+	.debug		.debug_frame, cluster 'CoolingSystem_calculations'
+	.dl	1352
+	.dl	_776,_34,_70-_34
+	.db	4
+	.dl	(_88-_34)/2
+	.db	15,60,127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_286-_290
+_290:
+	.db	146,177,2,0,47
+	.dw	_289-_291
+_291:
+_286:
+	.db	18,49,46,40
+	.dw	_287-_292
+_292:
+	.db	146,178,2,0,47
+	.dw	_289-_293
+_293:
+_287:
+	.db	18,50,46,40
+	.dw	_288-_294
+_294:
+	.db	146,179,2,0,47
+	.dw	_289-_295
+_295:
+_288:
+	.db	146,180,2,0
+_289:
+	.db	22,19,62,36,33,50,34,22,15,3,19,127,2,17,0,127,4
+	.dl	(_99-_88)/2
+	.db	15,60,127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_296-_300
+_300:
+	.db	146,177,2,0,47
+	.dw	_299-_301
+_301:
+_296:
+	.db	18,49,46,40
+	.dw	_297-_302
+_302:
+	.db	146,178,2,0,47
+	.dw	_299-_303
+_303:
+_297:
+	.db	18,50,46,40
+	.dw	_298-_304
+_304:
+	.db	146,179,2,0,47
+	.dw	_299-_305
+_305:
+_298:
+	.db	146,180,2,0
+_299:
+	.db	22,19,62,36,33,52,34,22,15,3,19,127,4,17,1,126,4
+	.dl	(_110-_99)/2
+	.db	15,60,127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_306-_310
+_310:
+	.db	146,177,2,0,47
+	.dw	_309-_311
+_311:
+_306:
+	.db	18,49,46,40
+	.dw	_307-_312
+_312:
+	.db	146,178,2,0,47
+	.dw	_309-_313
+_313:
+_307:
+	.db	18,50,46,40
+	.dw	_308-_314
+_314:
+	.db	146,179,2,0,47
+	.dw	_309-_315
+_315:
+_308:
+	.db	146,180,2,0
+_309:
+	.db	22,19,62,36,33,54,34,22,15,3,19,127,6,17,6,125,4
+	.dl	(_121-_110)/2
+	.db	15,60,127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_316-_320
+_320:
+	.db	146,177,2,0,47
+	.dw	_319-_321
+_321:
+_316:
+	.db	18,49,46,40
+	.dw	_317-_322
+_322:
+	.db	146,178,2,0,47
+	.dw	_319-_323
+_323:
+_317:
+	.db	18,50,46,40
+	.dw	_318-_324
+_324:
+	.db	146,179,2,0,47
+	.dw	_319-_325
+_325:
+_318:
+	.db	146,180,2,0
+_319:
+	.db	22,19,62,36,33,56,34,22,15,3,19,127,8,17,7,124,4
+	.dl	(_132-_121)/2
+	.db	15,60,127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_326-_330
+_330:
+	.db	146,177,2,0,47
+	.dw	_329-_331
+_331:
+_326:
+	.db	18,49,46,40
+	.dw	_327-_332
+_332:
+	.db	146,178,2,0,47
+	.dw	_329-_333
+_333:
+_327:
+	.db	18,50,46,40
+	.dw	_328-_334
+_334:
+	.db	146,179,2,0,47
+	.dw	_329-_335
+_335:
+_328:
+	.db	146,180,2,0
+_329:
+	.db	22,19,62,36,33,58,34,22,15,3,19,127,10,17,8,123,4
+	.dl	(_143-_132)/2
+	.db	15,60,127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_336-_340
+_340:
+	.db	146,177,2,0,47
+	.dw	_339-_341
+_341:
+_336:
+	.db	18,49,46,40
+	.dw	_337-_342
+_342:
+	.db	146,178,2,0,47
+	.dw	_339-_343
+_343:
+_337:
+	.db	18,50,46,40
+	.dw	_338-_344
+_344:
+	.db	146,179,2,0,47
+	.dw	_339-_345
+_345:
+_338:
+	.db	146,180,2,0
+_339:
+	.db	22,19,62,36,33,60,34,22,15,3,19,127,12,17,9,122,4
+	.dl	(_154-_143)/2
+	.db	15,60,127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_346-_350
+_350:
+	.db	146,177,2,0,47
+	.dw	_349-_351
+_351:
+_346:
+	.db	18,49,46,40
+	.dw	_347-_352
+_352:
+	.db	146,178,2,0,47
+	.dw	_349-_353
+_353:
+_347:
+	.db	18,50,46,40
+	.dw	_348-_354
+_354:
+	.db	146,179,2,0,47
+	.dw	_349-_355
+_355:
+_348:
+	.db	146,180,2,0
+_349:
+	.db	22,19,62,36,33,62,34,22,15,3,19,127,14,17,10,121,4
+	.dl	(_165-_154)/2
+	.db	15,60,127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_356-_360
+_360:
+	.db	146,177,2,0,47
+	.dw	_359-_361
+_361:
+_356:
+	.db	18,49,46,40
+	.dw	_357-_362
+_362:
+	.db	146,178,2,0,47
+	.dw	_359-_363
+_363:
+_357:
+	.db	18,50,46,40
+	.dw	_358-_364
+_364:
+	.db	146,179,2,0,47
+	.dw	_359-_365
+_365:
+_358:
+	.db	146,180,2,0
+_359:
+	.db	22,19,62,36,33,74,34,22,15,3,19,127,26,4
+	.dl	(_176-_165)/2
+	.db	15,60,127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_366-_370
+_370:
+	.db	146,177,2,0,47
+	.dw	_369-_371
+_371:
+_366:
+	.db	18,49,46,40
+	.dw	_367-_372
+_372:
+	.db	146,178,2,0,47
+	.dw	_369-_373
+_373:
+_367:
+	.db	18,50,46,40
+	.dw	_368-_374
+_374:
+	.db	146,179,2,0,47
+	.dw	_369-_375
+_375:
+_368:
+	.db	146,180,2,0
+_369:
+	.db	22,19,62,36,33,76,34,22,15,3,19,127,28,4
+	.dl	(_187-_176)/2
+	.db	15,60,127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_376-_380
+_380:
+	.db	146,177,2,0,47
+	.dw	_379-_381
+_381:
+_376:
+	.db	18,49,46,40
+	.dw	_377-_382
+_382:
+	.db	146,178,2,0,47
+	.dw	_379-_383
+_383:
+_377:
+	.db	18,50,46,40
+	.dw	_378-_384
+_384:
+	.db	146,179,2,0,47
+	.dw	_379-_385
+_385:
+_378:
+	.db	146,180,2,0
+_379:
+	.db	22,19,62,36,33,74,34,22,15,3,19,127,26,4
+	.dl	(_198-_187)/2
+	.db	15,60,127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_386-_390
+_390:
+	.db	146,177,2,0,47
+	.dw	_389-_391
+_391:
+_386:
+	.db	18,49,46,40
+	.dw	_387-_392
+_392:
+	.db	146,178,2,0,47
+	.dw	_389-_393
+_393:
+_387:
+	.db	18,50,46,40
+	.dw	_388-_394
+_394:
+	.db	146,179,2,0,47
+	.dw	_389-_395
+_395:
+_388:
+	.db	146,180,2,0
+_389:
+	.db	22,19,62,36,33,62,34,22,15,3,19,127,14,4
+	.dl	(_209-_198)/2
+	.db	15,60,127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_396-_400
+_400:
+	.db	146,177,2,0,47
+	.dw	_399-_401
+_401:
+_396:
+	.db	18,49,46,40
+	.dw	_397-_402
+_402:
+	.db	146,178,2,0,47
+	.dw	_399-_403
+_403:
+_397:
+	.db	18,50,46,40
+	.dw	_398-_404
+_404:
+	.db	146,179,2,0,47
+	.dw	_399-_405
+_405:
+_398:
+	.db	146,180,2,0
+_399:
+	.db	22,19,62,36,33,60,34,22,15,3,19,127,12,202,4
+	.dl	(_220-_209)/2
+	.db	15,60,127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_406-_410
+_410:
+	.db	146,177,2,0,47
+	.dw	_409-_411
+_411:
+_406:
+	.db	18,49,46,40
+	.dw	_407-_412
+_412:
+	.db	146,178,2,0,47
+	.dw	_409-_413
+_413:
+_407:
+	.db	18,50,46,40
+	.dw	_408-_414
+_414:
+	.db	146,179,2,0,47
+	.dw	_409-_415
+_415:
+_408:
+	.db	146,180,2,0
+_409:
+	.db	22,19,62,36,33,58,34,22,15,3,19,127,10,201,4
+	.dl	(_231-_220)/2
+	.db	15,60,127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_416-_420
+_420:
+	.db	146,177,2,0,47
+	.dw	_419-_421
+_421:
+_416:
+	.db	18,49,46,40
+	.dw	_417-_422
+_422:
+	.db	146,178,2,0,47
+	.dw	_419-_423
+_423:
+_417:
+	.db	18,50,46,40
+	.dw	_418-_424
+_424:
+	.db	146,179,2,0,47
+	.dw	_419-_425
+_425:
+_418:
+	.db	146,180,2,0
+_419:
+	.db	22,19,62,36,33,56,34,22,15,3,19,127,8,200,4
+	.dl	(_242-_231)/2
+	.db	15,60,127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_426-_430
+_430:
+	.db	146,177,2,0,47
+	.dw	_429-_431
+_431:
+_426:
+	.db	18,49,46,40
+	.dw	_427-_432
+_432:
+	.db	146,178,2,0,47
+	.dw	_429-_433
+_433:
+_427:
+	.db	18,50,46,40
+	.dw	_428-_434
+_434:
+	.db	146,179,2,0,47
+	.dw	_429-_435
+_435:
+_428:
+	.db	146,180,2,0
+_429:
+	.db	22,19,62,36,33,54,34,22,15,3,19,127,6,199,4
+	.dl	(_253-_242)/2
+	.db	15,60,127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_436-_440
+_440:
+	.db	146,177,2,0,47
+	.dw	_439-_441
+_441:
+_436:
+	.db	18,49,46,40
+	.dw	_437-_442
+_442:
+	.db	146,178,2,0,47
+	.dw	_439-_443
+_443:
+_437:
+	.db	18,50,46,40
+	.dw	_438-_444
+_444:
+	.db	146,179,2,0,47
+	.dw	_439-_445
+_445:
+_438:
+	.db	146,180,2,0
+_439:
+	.db	22,19,62,36,33,52,34,22,15,3,19,127,4,198,4
+	.dl	(_264-_253)/2
+	.db	15,60,127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_446-_450
+_450:
+	.db	146,177,2,0,47
+	.dw	_449-_451
+_451:
+_446:
+	.db	18,49,46,40
+	.dw	_447-_452
+_452:
+	.db	146,178,2,0,47
+	.dw	_449-_453
+_453:
+_447:
+	.db	18,50,46,40
+	.dw	_448-_454
+_454:
+	.db	146,179,2,0,47
+	.dw	_449-_455
+_455:
+_448:
+	.db	146,180,2,0
+_449:
+	.db	22,19,62,36,33,50,34,22,15,3,19,127,2,193,4
+	.dl	(_275-_264)/2
+	.db	15,60,127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_456-_460
+_460:
+	.db	146,177,2,0,47
+	.dw	_459-_461
+_461:
+_456:
+	.db	18,49,46,40
+	.dw	_457-_462
+_462:
+	.db	146,178,2,0,47
+	.dw	_459-_463
+_463:
+_457:
+	.db	18,50,46,40
+	.dw	_458-_464
+_464:
+	.db	146,179,2,0,47
+	.dw	_459-_465
+_465:
+_458:
+	.db	146,180,2,0
+_459:
+	.db	22,19,62,36,33,48,34,8,15,192,0,0
+	; End of section
+
+	.debug		.debug_frame, cluster 'CoolingSystem_enactCooling'
+	.dl	608
+	.dl	_776,_46,_75-_46
+	.db	4
+	.dl	(_487-_46)/2
+	.db	15,60,127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_575-_579
+_579:
+	.db	146,177,2,0,47
+	.dw	_578-_580
+_580:
+_575:
+	.db	18,49,46,40
+	.dw	_576-_581
+_581:
+	.db	146,178,2,0,47
+	.dw	_578-_582
+_582:
+_576:
+	.db	18,50,46,40
+	.dw	_577-_583
+_583:
+	.db	146,179,2,0,47
+	.dw	_578-_584
+_584:
+_577:
+	.db	146,180,2,0
+_578:
+	.db	22,19,62,36,33,50,34,22,15,3,19,127,2,17,1,127,4
+	.dl	(_498-_487)/2
+	.db	15,60,127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_585-_589
+_589:
+	.db	146,177,2,0,47
+	.dw	_588-_590
+_590:
+_585:
+	.db	18,49,46,40
+	.dw	_586-_591
+_591:
+	.db	146,178,2,0,47
+	.dw	_588-_592
+_592:
+_586:
+	.db	18,50,46,40
+	.dw	_587-_593
+_593:
+	.db	146,179,2,0,47
+	.dw	_588-_594
+_594:
+_587:
+	.db	146,180,2,0
+_588:
+	.db	22,19,62,36,33,52,34,22,15,3,19,127,4,17,6,126,4
+	.dl	(_509-_498)/2
+	.db	15,60,127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_595-_599
+_599:
+	.db	146,177,2,0,47
+	.dw	_598-_600
+_600:
+_595:
+	.db	18,49,46,40
+	.dw	_596-_601
+_601:
+	.db	146,178,2,0,47
+	.dw	_598-_602
+_602:
+_596:
+	.db	18,50,46,40
+	.dw	_597-_603
+_603:
+	.db	146,179,2,0,47
+	.dw	_598-_604
+_604:
+_597:
+	.db	146,180,2,0
+_598:
+	.db	22,19,62,36,33,54,34,22,15,3,19,127,6,17,8,125,4
+	.dl	(_520-_509)/2
+	.db	15,60,127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_605-_609
+_609:
+	.db	146,177,2,0,47
+	.dw	_608-_610
+_610:
+_605:
+	.db	18,49,46,40
+	.dw	_606-_611
+_611:
+	.db	146,178,2,0,47
+	.dw	_608-_612
+_612:
+_606:
+	.db	18,50,46,40
+	.dw	_607-_613
+_613:
+	.db	146,179,2,0,47
+	.dw	_608-_614
+_614:
+_607:
+	.db	146,180,2,0
+_608:
+	.db	22,19,62,36,33,56,34,22,15,3,19,127,8,17,9,124,4
+	.dl	(_531-_520)/2
+	.db	15,60,127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_615-_619
+_619:
+	.db	146,177,2,0,47
+	.dw	_618-_620
+_620:
+_615:
+	.db	18,49,46,40
+	.dw	_616-_621
+_621:
+	.db	146,178,2,0,47
+	.dw	_618-_622
+_622:
+_616:
+	.db	18,50,46,40
+	.dw	_617-_623
+_623:
+	.db	146,179,2,0,47
+	.dw	_618-_624
+_624:
+_617:
+	.db	146,180,2,0
+_618:
+	.db	22,19,62,36,33,54,34,22,15,3,19,127,6,201,4
+	.dl	(_542-_531)/2
+	.db	15,60,127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_625-_629
+_629:
+	.db	146,177,2,0,47
+	.dw	_628-_630
+_630:
+_625:
+	.db	18,49,46,40
+	.dw	_626-_631
+_631:
+	.db	146,178,2,0,47
+	.dw	_628-_632
+_632:
+_626:
+	.db	18,50,46,40
+	.dw	_627-_633
+_633:
+	.db	146,179,2,0,47
+	.dw	_628-_634
+_634:
+_627:
+	.db	146,180,2,0
+_628:
+	.db	22,19,62,36,33,52,34,22,15,3,19,127,4,200,4
+	.dl	(_553-_542)/2
+	.db	15,60,127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_635-_639
+_639:
+	.db	146,177,2,0,47
+	.dw	_638-_640
+_640:
+_635:
+	.db	18,49,46,40
+	.dw	_636-_641
+_641:
+	.db	146,178,2,0,47
+	.dw	_638-_642
+_642:
+_636:
+	.db	18,50,46,40
+	.dw	_637-_643
+_643:
+	.db	146,179,2,0,47
+	.dw	_638-_644
+_644:
+_637:
+	.db	146,180,2,0
+_638:
+	.db	22,19,62,36,33,50,34,22,15,3,19,127,2,198,4
+	.dl	(_564-_553)/2
+	.db	15,60,127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_645-_649
+_649:
+	.db	146,177,2,0,47
+	.dw	_648-_650
+_650:
+_645:
+	.db	18,49,46,40
+	.dw	_646-_651
+_651:
+	.db	146,178,2,0,47
+	.dw	_648-_652
+_652:
+_646:
+	.db	18,50,46,40
+	.dw	_647-_653
+_653:
+	.db	146,179,2,0,47
+	.dw	_648-_654
+_654:
+_647:
+	.db	146,180,2,0
+_648:
+	.db	22,19,62,36,33,48,34,8,15,193
+	; End of section
+
+
+
+	; Module end
+	.end

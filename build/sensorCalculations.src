@@ -1,5 +1,5 @@
 	; TASKING VX-toolset for C166: C compiler v4.0r1 Build 741 SN 07744515
-	; Options: -f cc10884a -c99 -Mh --fp-model=FT -Cxc2287 --core=xc16x -DTASKING_VIPER -D__USIC_MEM_TYPE=__PAGE_080_MEM_TYPE -D__MULTICAN_MEM_TYPE=__PAGE_080_MEM_TYPE -DTTC50 -DRTS_TTC_FLASH_DATE_YEAR=2018 -DRTS_TTC_FLASH_DATE_MONTH=4 -DRTS_TTC_FLASH_DATE_DAY=5 -DRTS_TTC_FLASH_DATE_HOUR=22 -DRTS_TTC_FLASH_DATE_MINUTE=31 -I..\..\..\Environment\inc -I..\..\..\Environment\inc_int -I..\..\..\Environment\bsp -I. --tradeoff=0 --no-tasking-sfr -ga --language=+cmp14,+div32,-gcc,-strings -O3 --source --mac -o build\sensorCalculations.src
+	; Options: -f cc13772a -c99 -Mh --fp-model=FT -Cxc2287 --core=xc16x -DTASKING_VIPER -D__USIC_MEM_TYPE=__PAGE_080_MEM_TYPE -D__MULTICAN_MEM_TYPE=__PAGE_080_MEM_TYPE -DTTC50 -DRTS_TTC_FLASH_DATE_YEAR=2018 -DRTS_TTC_FLASH_DATE_MONTH=4 -DRTS_TTC_FLASH_DATE_DAY=5 -DRTS_TTC_FLASH_DATE_HOUR=18 -DRTS_TTC_FLASH_DATE_MINUTE=55 -I..\..\..\Environment\inc -I..\..\..\Environment\inc_int -I..\..\..\Environment\bsp -I. --tradeoff=0 --no-tasking-sfr -ga --language=+cmp14,+div32,-gcc,-strings -O3 --source --mac -o build\sensorCalculations.src
 	; Module start
 	.source	'sensorCalculations.c'
 code_CalibrateBPS	.section	code, cluster 'CalibrateBPS', new
@@ -426,7 +426,7 @@ _75:
 	.extern	__div_dpf : far
 	.debug		.debug_info
 _53:
-	.dl	401
+	.dl	398
 	.dw	3
 	.dl	_54
 	.db	4
@@ -434,44 +434,44 @@ _52:
 	.db	1
 	.db	'sensorCalculations.c',0
 	.db	'TASKING VX-toolset for C166: C compiler',0
-	.db	'C:\\Users\\helix\\Desktop\\SRE\\SRE SDK 2017-18\\VCU\\Environment\\dev\\Example_\\',0,12,1
+	.db	'C:\\Users\\helix\\Desktop\\SRE\\SRE SDK 2017-18\\VCU\\Environment\\dev\\SRE-3\\',0,12,1
 	.dl	_55
 _76:
 	.db	2
 	.db	'double',0,8,4,2
 	.db	'unsigned int',0,2,7,3
 	.db	'__size_t',0,1,1,1
-	.dl	162
+	.dl	159
 	.db	4
 	.db	'void',0,5,5
-	.dl	195
+	.dl	192
 	.db	3
 	.db	'__prof_adm',0,1,1,1
-	.dl	201
+	.dl	198
 	.db	2
 	.db	'unsigned long int',0,4,7,3
 	.db	'__codeptr',0,1,1,1
-	.dl	226
+	.dl	223
 	.db	2
 	.db	'unsigned short int',0,2,7,3
 	.db	'_iob_flag_t',0,2,82,25
-	.dl	265
+	.dl	262
 	.db	2
 	.db	'unsigned char',0,1,8,3
 	.db	'ubyte1',0,3,21,29
-	.dl	307
+	.dl	304
 	.db	3
 	.db	'ubyte2',0,3,22,29
-	.dl	162
+	.dl	159
 	.db	3
 	.db	'ubyte4',0,3,23,29
-	.dl	226
+	.dl	223
 	.db	3
 	.db	'bool',0,3,31,29
-	.dl	307
+	.dl	304
 	.db	3
 	.db	'IO_ErrorType',0,4,150,1,17
-	.dl	162
+	.dl	159
 	.db	0
 	; End of section
 
@@ -501,13 +501,13 @@ _334:
 
 	.debug		.debug_info, cluster 'CalibrateBPS'
 _56:
-	.dl	215
+	.dl	212
 	.dw	3
 	.dl	_57
 	.db	4,1
 	.db	'sensorCalculations.c',0
 	.db	'TASKING VX-toolset for C166: C compiler',0
-	.db	'C:\\Users\\helix\\Desktop\\SRE\\SRE SDK 2017-18\\VCU\\Environment\\dev\\Example_\\',0,12,1
+	.db	'C:\\Users\\helix\\Desktop\\SRE\\SRE SDK 2017-18\\VCU\\Environment\\dev\\SRE-3\\',0,12,1
 	.dl	_59,_58
 	.db	2
 	.dl	_52
@@ -551,20 +551,20 @@ _59:
 	.debug		.debug_pubnames
 	.dl	31
 	.dw	2
-	.dl	_56,219,161
+	.dl	_56,216,158
 	.db	'CalibrateBPS',0
 	.dl	0
 	; End of section
 
 	.debug		.debug_info, cluster 'GetBrakePosition'
 _61:
-	.dl	219
+	.dl	216
 	.dw	3
 	.dl	_62
 	.db	4,1
 	.db	'sensorCalculations.c',0
 	.db	'TASKING VX-toolset for C166: C compiler',0
-	.db	'C:\\Users\\helix\\Desktop\\SRE\\SRE SDK 2017-18\\VCU\\Environment\\dev\\Example_\\',0,12,1
+	.db	'C:\\Users\\helix\\Desktop\\SRE\\SRE SDK 2017-18\\VCU\\Environment\\dev\\SRE-3\\',0,12,1
 	.dl	_64,_63
 	.db	2
 	.dl	_52
@@ -608,20 +608,20 @@ _64:
 	.debug		.debug_pubnames
 	.dl	35
 	.dw	2
-	.dl	_61,223,161
+	.dl	_61,220,158
 	.db	'GetBrakePosition',0
 	.dl	0
 	; End of section
 
 	.debug		.debug_info, cluster 'freq_to_rpm'
 _66:
-	.dl	237
+	.dl	234
 	.dw	3
 	.dl	_67
 	.db	4,1
 	.db	'sensorCalculations.c',0
 	.db	'TASKING VX-toolset for C166: C compiler',0
-	.db	'C:\\Users\\helix\\Desktop\\SRE\\SRE SDK 2017-18\\VCU\\Environment\\dev\\Example_\\',0,12,1
+	.db	'C:\\Users\\helix\\Desktop\\SRE\\SRE SDK 2017-18\\VCU\\Environment\\dev\\SRE-3\\',0,12,1
 	.dl	_69,_68
 	.db	2
 	.dl	_52
@@ -681,20 +681,20 @@ _69:
 	.debug		.debug_pubnames
 	.dl	30
 	.dw	2
-	.dl	_66,241,161
+	.dl	_66,238,158
 	.db	'freq_to_rpm',0
 	.dl	0
 	; End of section
 
 	.debug		.debug_info, cluster 'rpm_to_mph'
 _71:
-	.dl	235
+	.dl	232
 	.dw	3
 	.dl	_72
 	.db	4,1
 	.db	'sensorCalculations.c',0
 	.db	'TASKING VX-toolset for C166: C compiler',0
-	.db	'C:\\Users\\helix\\Desktop\\SRE\\SRE SDK 2017-18\\VCU\\Environment\\dev\\Example_\\',0,12,1
+	.db	'C:\\Users\\helix\\Desktop\\SRE\\SRE SDK 2017-18\\VCU\\Environment\\dev\\SRE-3\\',0,12,1
 	.dl	_74,_73
 	.db	2
 	.dl	_52
@@ -758,7 +758,7 @@ _74:
 	.debug		.debug_pubnames
 	.dl	29
 	.dw	2
-	.dl	_71,239,161
+	.dl	_71,236,158
 	.db	'rpm_to_mph',0
 	.dl	0
 	; End of section

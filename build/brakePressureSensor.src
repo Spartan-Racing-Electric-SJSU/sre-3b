@@ -1,5 +1,5 @@
 	; TASKING VX-toolset for C166: C compiler v4.0r1 Build 741 SN 07744515
-	; Options: -f cc1016a -c99 -Mh --fp-model=FT -Cxc2287 --core=xc16x -DTASKING_VIPER -D__USIC_MEM_TYPE=__PAGE_080_MEM_TYPE -D__MULTICAN_MEM_TYPE=__PAGE_080_MEM_TYPE -DTTC50 -DRTS_TTC_FLASH_DATE_YEAR=2018 -DRTS_TTC_FLASH_DATE_MONTH=4 -DRTS_TTC_FLASH_DATE_DAY=5 -DRTS_TTC_FLASH_DATE_HOUR=18 -DRTS_TTC_FLASH_DATE_MINUTE=54 -I..\..\..\Environment\inc -I..\..\..\Environment\inc_int -I..\..\..\Environment\bsp -I. --tradeoff=0 --no-tasking-sfr -ga --language=+cmp14,+div32,-gcc,-strings -O3 --source --mac -o build\brakePressureSensor.src
+	; Options: -f cc8172a -c99 -Mh --fp-model=FT -Cxc2287 --core=xc16x -DTASKING_VIPER -D__USIC_MEM_TYPE=__PAGE_080_MEM_TYPE -D__MULTICAN_MEM_TYPE=__PAGE_080_MEM_TYPE -DTTC50 -DRTS_TTC_FLASH_DATE_YEAR=2018 -DRTS_TTC_FLASH_DATE_MONTH=2 -DRTS_TTC_FLASH_DATE_DAY=2 -DRTS_TTC_FLASH_DATE_HOUR=16 -DRTS_TTC_FLASH_DATE_MINUTE=21 -I..\..\..\Environment\inc -I..\..\..\Environment\inc_int -I..\..\..\Environment\bsp -I. --tradeoff=0 --no-tasking-sfr -ga --language=+cmp14,+div32,-gcc,-strings -O3 --source --mac -o build\brakePressureSensor.src
 	; Module start
 	.source	'brakePressureSensor.c'
 code_BrakePressureSensor_new	.section	code, cluster 'BrakePressureSensor_new', new
@@ -56,104 +56,124 @@ _1361:
 _1362:
 
 ; brakePressureSensor.c	    25      //me->tps1 = (benchMode == TRUE) ? &Sensor_BenchTPS1 : &Sensor_TPS1;
-; brakePressureSensor.c	    26  	
-; brakePressureSensor.c	    27  	//Where/should these be hardcoded?
-; brakePressureSensor.c	    28  	me->bps0_reverse = FALSE;
+; brakePressureSensor.c	    26  
+; brakePressureSensor.c	    27  	//Note: BPS sits slightly below 0.5V but it's still within range
+; brakePressureSensor.c	    28  	Sensor_BPS0.specMin = 500 - 4000 * .005; //0.5V +/- 0.5%
+	movw	r11,#0x1e0
+	exts	#@seg(_Sensor_BPS0),#0x1
+	movw	@sof(_Sensor_BPS0),r11
+_1363:
+
+; brakePressureSensor.c	    29  	Sensor_BPS0.specMax = 4500 + 4000 * .0025; //+/- 0.25%
+	movw	r11,#0x119e
+	exts	#@seg(_Sensor_BPS0+0x4),#0x1
+	movw	@sof(_Sensor_BPS0+0x4),r11
+_1364:
+
+; brakePressureSensor.c	    30  
+; brakePressureSensor.c	    31  	//Where/should these be hardcoded?
+; brakePressureSensor.c	    32  	me->bps0_reverse = FALSE;
 	movw	r11,r2
 	movw	r12,r3
 	addw	r11,#0xa
 	addcw	r12,#0x0
-_1363:
+_1365:
+	exts	#@seg(_Sensor_BPS0+0x2),#0x1
+	movw	@sof(_Sensor_BPS0+0x2),ZEROS
+_1366:
+	exts	#@seg(_Sensor_BPS0+0x6),#0x1
+	movw	@sof(_Sensor_BPS0+0x6),ZEROS
+_1367:
 	movb	rh4,#0x0
-_1364:
+_1368:
 	exts	r12,#0x1
 	movb	[r11],rh4
-_1365:
+_1369:
 
-; brakePressureSensor.c	    29  	//me->bps1_reverse = TRUE;
-; brakePressureSensor.c	    30  
-; brakePressureSensor.c	    31      me->percent = 0;
+; brakePressureSensor.c	    33  	//me->bps1_reverse = TRUE;
+; brakePressureSensor.c	    34  
+; brakePressureSensor.c	    35      me->percent = 0;
 	movw	r11,r2
 	movw	r12,r3
 	addw	r11,#0x1a
 	addcw	r12,#0x0
-_1366:
+_1370:
 	movw	r13,#0x0
-_1367:
+_1371:
 	exts	r12,#0x1
 	movw	[r11],r13
 	addw	r11,#0x2
 	addcw	r12,#0x0
 _192:
 
-; brakePressureSensor.c	    32      me->runCalibration = FALSE;  //Do not run the calibration at the next main loop cycle
-; brakePressureSensor.c	    33  
-; brakePressureSensor.c	    34      //me->calibrated = FALSE;
-; brakePressureSensor.c	    35      BrakePressureSensor_resetCalibration(me);
-; brakePressureSensor.c	    36  
-; brakePressureSensor.c	    37      return me;
-; brakePressureSensor.c	    38  }
-; brakePressureSensor.c	    39  
-; brakePressureSensor.c	    40  //Updates all values based on sensor readings, safety checks, etc
-; brakePressureSensor.c	    41  void BrakePressureSensor_update(BrakePressureSensor* me, bool bench)
-; brakePressureSensor.c	    42  {
-; brakePressureSensor.c	    43  	me->bps0_value = (ubyte2) me->bps0->sensorValue;
-; brakePressureSensor.c	    44  	//me->bps1_value = me->bps1->sensorValue;
-; brakePressureSensor.c	    45  
-; brakePressureSensor.c	    46  	me->percent = 0;
-; brakePressureSensor.c	    47  	//ubyte2 errorCount = 0;
-; brakePressureSensor.c	    48  	
-; brakePressureSensor.c	    49  	//This function runs before the calibration cycle function.  If calibration is currently
-; brakePressureSensor.c	    50  	//running, then set the percentage to zero for safety purposes.
-; brakePressureSensor.c	    51  	if (me->runCalibration == TRUE || me->calibrated == FALSE)
-; brakePressureSensor.c	    52  	{
-; brakePressureSensor.c	    53  		me->bps0_percent = 0;
-; brakePressureSensor.c	    54  		//errorCount++;  //DO SOMETHING WITH THIS
-; brakePressureSensor.c	    55  	}
-; brakePressureSensor.c	    56  	else
-; brakePressureSensor.c	    57  	{
-; brakePressureSensor.c	    58  		me->bps0_percent = getPercent(me->bps0_value, me->bps0_calibMin, me->bps0_calibMax, TRUE);
-; brakePressureSensor.c	    59  		me->percent = me->bps0_percent;
-; brakePressureSensor.c	    60  	}
-; brakePressureSensor.c	    61  
-; brakePressureSensor.c	    62  	if (me->percent <= 0)
-; brakePressureSensor.c	    63  	{
-; brakePressureSensor.c	    64  		Light_set(Light_brake, 0);
-; brakePressureSensor.c	    65  	}
-; brakePressureSensor.c	    66  	else if (bench == FALSE)
+; brakePressureSensor.c	    36      me->runCalibration = FALSE;  //Do not run the calibration at the next main loop cycle
+; brakePressureSensor.c	    37  
+; brakePressureSensor.c	    38      //me->calibrated = FALSE;
+; brakePressureSensor.c	    39      BrakePressureSensor_resetCalibration(me);
+; brakePressureSensor.c	    40  
+; brakePressureSensor.c	    41      return me;
+; brakePressureSensor.c	    42  }
+; brakePressureSensor.c	    43  
+; brakePressureSensor.c	    44  //Updates all values based on sensor readings, safety checks, etc
+; brakePressureSensor.c	    45  void BrakePressureSensor_update(BrakePressureSensor* me, bool bench)
+; brakePressureSensor.c	    46  {
+; brakePressureSensor.c	    47  	me->bps0_value = me->bps0->sensorValue;
+; brakePressureSensor.c	    48  	//me->bps1_value = me->bps1->sensorValue;
+; brakePressureSensor.c	    49  
+; brakePressureSensor.c	    50  	me->percent = 0;
+; brakePressureSensor.c	    51  	//ubyte2 errorCount = 0;
+; brakePressureSensor.c	    52  	
+; brakePressureSensor.c	    53  	//This function runs before the calibration cycle function.  If calibration is currently
+; brakePressureSensor.c	    54  	//running, then set the percentage to zero for safety purposes.
+; brakePressureSensor.c	    55  	if (me->runCalibration == TRUE || me->calibrated == FALSE)
+; brakePressureSensor.c	    56  	{
+; brakePressureSensor.c	    57  		me->bps0_percent = 0;
+; brakePressureSensor.c	    58  		//errorCount++;  //DO SOMETHING WITH THIS
+; brakePressureSensor.c	    59  	}
+; brakePressureSensor.c	    60  	else
+; brakePressureSensor.c	    61  	{
+; brakePressureSensor.c	    62  		me->bps0_percent = getPercent(me->bps0_value, me->bps0_calibMin, me->bps0_calibMax, TRUE);
+; brakePressureSensor.c	    63  		me->percent = me->bps0_percent;
+; brakePressureSensor.c	    64  	}
+; brakePressureSensor.c	    65  
+; brakePressureSensor.c	    66  	if (me->percent <= 0)
 ; brakePressureSensor.c	    67  	{
-; brakePressureSensor.c	    68  		Light_set(Light_brake, 1);
+; brakePressureSensor.c	    68  		Light_set(Light_brake, 0);
 ; brakePressureSensor.c	    69  	}
-; brakePressureSensor.c	    70  	else
+; brakePressureSensor.c	    70  	else if (bench == FALSE)
 ; brakePressureSensor.c	    71  	{
-; brakePressureSensor.c	    72  		if (me->percent > 0 && me->percent < .02)
-; brakePressureSensor.c	    73  		{
-; brakePressureSensor.c	    74  			Light_set(Light_brake, .20);
-; brakePressureSensor.c	    75  		}
-; brakePressureSensor.c	    76  		else if (me->percent >= .02 && me->percent < .30)
+; brakePressureSensor.c	    72  		Light_set(Light_brake, 1);
+; brakePressureSensor.c	    73  	}
+; brakePressureSensor.c	    74  	else
+; brakePressureSensor.c	    75  	{
+; brakePressureSensor.c	    76  		if (me->percent > 0 && me->percent < .02)
 ; brakePressureSensor.c	    77  		{
-; brakePressureSensor.c	    78  			Light_set(Light_brake, .30);
+; brakePressureSensor.c	    78  			Light_set(Light_brake, .20);
 ; brakePressureSensor.c	    79  		}
-; brakePressureSensor.c	    80  		else if (me->percent >= .30)
+; brakePressureSensor.c	    80  		else if (me->percent >= .02 && me->percent < .30)
 ; brakePressureSensor.c	    81  		{
-; brakePressureSensor.c	    82  			Light_set(Light_brake, me->percent);
+; brakePressureSensor.c	    82  			Light_set(Light_brake, .30);
 ; brakePressureSensor.c	    83  		}
-; brakePressureSensor.c	    84  	}
-; brakePressureSensor.c	    85  }
-; brakePressureSensor.c	    86  
-; brakePressureSensor.c	    87  void BrakePressureSensor_resetCalibration(BrakePressureSensor* me)
-; brakePressureSensor.c	    88  {
-; brakePressureSensor.c	    89      me->calibrated = FALSE;
-; brakePressureSensor.c	    90      //me->bps0_rawCalibMin = me->bps0->specMax;
-; brakePressureSensor.c	    91      //me->bps0_rawCalibMax = me->bps0->specMin;
-; brakePressureSensor.c	    92      //me->bps0_calibMin = me->bps0->specMax;
-; brakePressureSensor.c	    93  	//me->bps0_calibMax = me->bps0->specMin;
-; brakePressureSensor.c	    94  	me->bps0_calibMin = 550;
+; brakePressureSensor.c	    84  		else if (me->percent >= .30)
+; brakePressureSensor.c	    85  		{
+; brakePressureSensor.c	    86  			Light_set(Light_brake, me->percent);
+; brakePressureSensor.c	    87  		}
+; brakePressureSensor.c	    88  	}
+; brakePressureSensor.c	    89  }
+; brakePressureSensor.c	    90  
+; brakePressureSensor.c	    91  void BrakePressureSensor_resetCalibration(BrakePressureSensor* me)
+; brakePressureSensor.c	    92  {
+; brakePressureSensor.c	    93      me->calibrated = FALSE;
+; brakePressureSensor.c	    94      //me->bps0_rawCalibMin = me->bps0->specMax;
+; brakePressureSensor.c	    95      //me->bps0_rawCalibMax = me->bps0->specMin;
+; brakePressureSensor.c	    96      //me->bps0_calibMin = me->bps0->specMax;
+; brakePressureSensor.c	    97  	//me->bps0_calibMax = me->bps0->specMin;
+; brakePressureSensor.c	    98  	me->bps0_calibMin = 550;
 	movw	r14,r3
 _193:
 	exts	r12,#0x1
 	movw	[r11],r13
-_1368:
+_1372:
 	movw	r11,r2
 	movw	r12,r3
 	addw	r11,#0x12
@@ -168,41 +188,41 @@ _200:
 	movw	r12,r3
 	addw	r11,#0x19
 	addcw	r12,#0x0
-_1369:
+_1373:
 	addw	r13,#0x6
 	addcw	r14,#0x0
-_1370:
+_1374:
 	exts	r12,#0x1
 	movb	[r11],rh4
-_1371:
+_1375:
 	movw	r4,#0x226
-_1372:
+_1376:
 	exts	r14,#0x1
 	movw	[r13],r4
-_1373:
+_1377:
 
-; brakePressureSensor.c	    95  	me->bps0_calibMax = 1250;
+; brakePressureSensor.c	    99  	me->bps0_calibMax = 1250;
 	movw	r13,r2
 	movw	r14,r3
 	addw	r13,#0x8
 	addcw	r14,#0x0
-_1374:
+_1378:
 	movw	r4,#0x4e2
-_1375:
+_1379:
 	exts	r14,#0x1
 	movw	[r13],r4
-_1376:
+_1380:
 
-; brakePressureSensor.c	    96  
-; brakePressureSensor.c	    97      //me->bps1_rawCalibMin = me->bps1->specMax;
-; brakePressureSensor.c	    98      //me->bps1_rawCalibMax = me->bps1->specMin;
-; brakePressureSensor.c	    99  	//me->bps1_calibMin = me->bps1->specMax;
-; brakePressureSensor.c	   100  	//me->bps1_calibMax = me->bps1->specMin;
-; brakePressureSensor.c	   101  //	me->bps1_calibMin = me->bps1->sensorValue;
-; brakePressureSensor.c	   102  //	me->bps1_calibMax = me->bps1->sensorValue;
-; brakePressureSensor.c	   103      me->calibrated = TRUE;
+; brakePressureSensor.c	   100  
+; brakePressureSensor.c	   101      //me->bps1_rawCalibMin = me->bps1->specMax;
+; brakePressureSensor.c	   102      //me->bps1_rawCalibMax = me->bps1->specMin;
+; brakePressureSensor.c	   103  	//me->bps1_calibMin = me->bps1->specMax;
+; brakePressureSensor.c	   104  	//me->bps1_calibMax = me->bps1->specMin;
+; brakePressureSensor.c	   105  //	me->bps1_calibMin = me->bps1->sensorValue;
+; brakePressureSensor.c	   106  //	me->bps1_calibMax = me->bps1->sensorValue;
+; brakePressureSensor.c	   107      me->calibrated = TRUE;
 	movb	rh4,#0x1
-_1377:
+_1381:
 	exts	r12,#0x1
 	movb	[r11],rh4
 _201:
@@ -219,9 +239,9 @@ _BrakePressureSensor_update	.proc	far
 	subw	r15,#0x2
 _226:
 	movw	r13,r2
-_1382:
+_1386:
 	movw	r14,r2
-_1383:
+_1387:
 	CoSTORE	[r15-],MSW
 _237:
 	CoSTORE	[r15-],MAL
@@ -244,55 +264,55 @@ _325:
 	subw	r15,#0x2
 _336:
 	movw	r5,r3
-_1384:
+_1388:
 	movw	r9,r3
-_1385:
+_1389:
 	movb	[r15],rl4
 _735:
 	movw	r4,r3
 _733:
 	addw	r13,#0x2
 	addcw	r4,#0x0
-_1386:
+_1390:
 	addw	r14,#0xc
 	addcw	r5,#0x0
-_1387:
+_1391:
 	exts	r4,#0x1
 	movw	r8,[r13]
 	addw	r13,#0x2
 	addcw	r4,#0x0
-_1388:
+_1392:
 	movw	r11,r2
-_1389:
+_1393:
 	exts	r4,#0x1
 	movw	r13,[r13]
-_1390:
+_1394:
 	addw	r8,#0x8
 	addcw	r13,#0x0
-_1391:
+_1395:
 	movw	r12,r3
 _736:
 	exts	r13,#0x1
 	movw	r4,[r8]
 	addw	r8,#0x2
 	addcw	r13,#0x0
-_1392:
+_1396:
 	movw	r7,r3
-_1393:
+_1397:
 	exts	r13,#0x1
 	CoLOAD	r4,[r8]
-_1394:
+_1398:
 	movw	r8,r2
 	addw	r8,#0x1a
 	addcw	r9,#0x0
-_1395:
+_1399:
 	movw	r4,r8
-_1396:
+_1400:
 	exts	r5,#0x1
 	CoSTORE	[r14],MAL
-_1397:
+_1401:
 	movw	r13,#0x0
-_1398:
+_1402:
 	movw	r10,r9
 	exts	r10,#0x1
 	movw	[r4],r13
@@ -300,29 +320,29 @@ _1398:
 	addcw	r10,#0x0
 	exts	r10,#0x1
 	movw	[r4],r13
-_1399:
+_1403:
 	movw	r10,r2
-_1400:
+_1404:
 	addw	r2,#0x12
 _734:
 	addcw	r3,#0x0
-_1401:
+_1405:
 	addw	r10,#0xe
 	addcw	r7,#0x0
-_1402:
+_1406:
 	exts	r3,#0x1
 	movb	rh4,[r2]
-_1403:
+_1407:
 	cmpb	rh4,#0x1
 	jmp-	cc_eq,_3
-_1404:
+_1408:
 	movw	r13,r11
 	movw	r4,r12
 	addw	r13,#0x19
 	addcw	r4,#0x0
 	exts	r4,#0x1
 	movb	rh4,[r13]
-_1405:
+_1409:
 	jmp-	cc_ne,_4
 _3:
 	movw	r11,#0x0
@@ -333,42 +353,42 @@ _737:
 	addcw	r7,#0x0
 	exts	r7,#0x1
 	movw	[r10],r11
-_1406:
+_1410:
 	jmp	_5
 _4:
 	subw	r15,#0x2
 _347:
 	movb	rh4,#0x1
 	movb	[r15],rh4
-_1407:
+_1411:
 	exts	r5,#0x1
 	movw	r2,[r14]
-_1408:
+_1412:
 	movw	r4,r11
 	movw	r5,r12
 	addw	r4,#0x6
 	addcw	r5,#0x0
-_1409:
+_1413:
 	addw	r11,#0x8
 _738:
 	addcw	r12,#0x0
-_1410:
+_1414:
 	call	__us2spf
 	movw	r14,r2
-_1411:
+_1415:
 	exts	r5,#0x1
 	movw	r2,[r4]
-_1412:
+_1416:
 	movw	r13,r3
-_1413:
+_1417:
 	call	__us2spf
 	movw	r4,r2
-_1414:
+_1418:
 	exts	r12,#0x1
 	movw	r2,[r11]
-_1415:
+_1419:
 	movw	r5,r3
-_1416:
+_1420:
 	call	__us2spf
 	movw	r11,r2
 	movw	r12,r3
@@ -383,22 +403,22 @@ _358:
 	movw	[r11],r2
 	addw	r11,#0x2
 	addcw	r12,#0x0
-_1417:
+_1421:
 	movw	r13,r8
-_1418:
+_1422:
 	exts	r12,#0x1
 	movw	[r11],r3
-_1419:
+_1423:
 	exts	r7,#0x1
 	movw	r11,[r10]
 	addw	r10,#0x2
 	addcw	r7,#0x0
-_1420:
+_1424:
 	movw	r14,r9
-_1421:
+_1425:
 	exts	r7,#0x1
 	movw	r12,[r10]
-_1422:
+_1426:
 	exts	r14,#0x1
 	movw	[r13],r11
 	addw	r13,#0x2
@@ -411,30 +431,30 @@ _5:
 	movw	r9,[r8]
 	addw	r8,#0x2
 	addcw	r11,#0x0
-_1423:
+_1427:
 	movw	r2,r9
-_1424:
+_1428:
 	exts	r11,#0x1
 	movw	r8,[r8]
-_1425:
+_1429:
 	movw	r3,r8
 	movw	r4,#0x0
 	movw	r5,#0x0
 	call	__less_than_or_equal_spf
 	movb	rl2,rl2
-_1426:
+_1430:
 	jmp+	cc_eq,_6
-_1427:
+_1431:
 	movb	rl2,#0x4
 	movw	r4,#0x0
 	movw	r5,#0x0
-_1428:
+_1432:
 	jmp	_7
 _6:
 	movb	rh4,[r15]
 _739:
 	jmp+	cc_ne,_8
-_1429:
+_1433:
 	movw	r5,#0x3f80
 	movb	rl2,#0x4
 	movw	r4,#0x0
@@ -448,73 +468,73 @@ _741:
 	movw	r5,#0x0
 	call	__larger_than_spf
 	movb	rl2,rl2
-_1430:
+_1434:
 	jmp	cc_eq,_10
-_1431:
+_1435:
 	movw	r2,r9
 	movw	r3,r8
 	call	__spf2dpf
-_1432:
+_1436:
 	movw	r11,#0x147b
 	movw	r12,#0x47ae
 	movw	r13,#0x7ae1
 	movw	r14,#0x3f94
-_1433:
+_1437:
 	call	__less_than_dpf
 	movb	rl2,rl2
 	jmp+	cc_eq,_11
-_1434:
+_1438:
 	movw	r4,#0xcccd
 	movw	r5,#0x3e4c
 	movb	rl2,#0x4
-_1435:
+_1439:
 	jmp	_12
 _11:
 _10:
 	movw	r2,r9
 	movw	r3,r8
 	call	__spf2dpf
-_1436:
+_1440:
 	movw	r10,r2
-_1437:
+_1441:
 	movw	r11,#0x147b
 	movw	r12,#0x47ae
 	movw	r13,#0x7ae1
 	movw	r14,#0x3f94
-_1438:
+_1442:
 	call	__larger_than_or_equal_dpf
 	movb	rl2,rl2
-_1439:
+_1443:
 	jmp	cc_eq,_13
-_1440:
+_1444:
 	movw	r11,#0x3333
 	movw	r14,#0x3fd3
-_1441:
+_1445:
 	movw	r2,r10
 	movw	r12,r11
 	movw	r13,r11
 	call	__less_than_dpf
 	movb	rl2,rl2
 	jmp+	cc_eq,_14
-_1442:
+_1446:
 	movw	r4,#0x999a
 	movw	r5,#0x3e99
 	movb	rl2,#0x4
-_1443:
+_1447:
 	jmp	_15
 _14:
 _13:
 	movw	r11,#0x3333
 	movw	r14,#0x3fd3
-_1444:
+_1448:
 	movw	r2,r10
 	movw	r12,r11
 	movw	r13,r11
 	call	__larger_than_or_equal_dpf
 	movb	rl2,rl2
-_1445:
+_1449:
 	jmp+	cc_eq,_16
-_1446:
+_1450:
 	movb	rl2,#0x4
 	movw	r4,r9
 	movw	r5,r8
@@ -566,28 +586,28 @@ _BrakePressureSensor_resetCalibration	.proc	far
 	movw	r12,r3
 	addw	r11,#0x6
 	addcw	r12,#0x0
-_1457:
+_1461:
 	movw	r13,#0x226
-_1458:
+_1462:
 	exts	r12,#0x1
 	movw	[r11],r13
-_1459:
+_1463:
 	movw	r11,r2
 	movw	r12,r3
 	addw	r11,#0x8
 	addcw	r12,#0x0
-_1460:
+_1464:
 	movw	r13,#0x4e2
-_1461:
+_1465:
 	exts	r12,#0x1
 	movw	[r11],r13
-_1462:
+_1466:
 	addw	r2,#0x19
 _742:
 	addcw	r3,#0x0
-_1463:
+_1467:
 
-; brakePressureSensor.c	   104  }
+; brakePressureSensor.c	   108  }
 	movb	rh4,#0x1
 	exts	r3,#0x1
 	movb	[r2],rh4
@@ -599,15 +619,15 @@ _163:
 code_BrakePressureSensor_saveCalibrationToEEPROM	.section	code, cluster 'BrakePressureSensor_saveCalibrationToEEPROM', new
 	.global	_BrakePressureSensor_saveCalibrationToEEPROM
 
-; brakePressureSensor.c	   105  
-; brakePressureSensor.c	   106  void BrakePressureSensor_saveCalibrationToEEPROM(BrakePressureSensor* me)
+; brakePressureSensor.c	   109  
+; brakePressureSensor.c	   110  void BrakePressureSensor_saveCalibrationToEEPROM(BrakePressureSensor* me)
 ; Function _BrakePressureSensor_saveCalibrationToEEPROM
 _69:
 _BrakePressureSensor_saveCalibrationToEEPROM	.proc	far
 
-; brakePressureSensor.c	   107  {
-; brakePressureSensor.c	   108  
-; brakePressureSensor.c	   109  }
+; brakePressureSensor.c	   111  {
+; brakePressureSensor.c	   112  
+; brakePressureSensor.c	   113  }
 	ret
 _168:
 	; End of function
@@ -616,15 +636,15 @@ _168:
 code_BrakePressureSensor_loadCalibrationFromEEPROM	.section	code, cluster 'BrakePressureSensor_loadCalibrationFromEEPROM', new
 	.global	_BrakePressureSensor_loadCalibrationFromEEPROM
 
-; brakePressureSensor.c	   110  
-; brakePressureSensor.c	   111  void BrakePressureSensor_loadCalibrationFromEEPROM(BrakePressureSensor* me)
+; brakePressureSensor.c	   114  
+; brakePressureSensor.c	   115  void BrakePressureSensor_loadCalibrationFromEEPROM(BrakePressureSensor* me)
 ; Function _BrakePressureSensor_loadCalibrationFromEEPROM
 _81:
 _BrakePressureSensor_loadCalibrationFromEEPROM	.proc	far
 
-; brakePressureSensor.c	   112  {
-; brakePressureSensor.c	   113  
-; brakePressureSensor.c	   114  }
+; brakePressureSensor.c	   116  {
+; brakePressureSensor.c	   117  
+; brakePressureSensor.c	   118  }
 	ret
 _173:
 	; End of function
@@ -633,8 +653,8 @@ _173:
 code_BrakePressureSensor_startCalibration	.section	code, cluster 'BrakePressureSensor_startCalibration', new
 	.global	_BrakePressureSensor_startCalibration
 
-; brakePressureSensor.c	   115  
-; brakePressureSensor.c	   116  void BrakePressureSensor_startCalibration(BrakePressureSensor* me, ubyte1 secondsToRun)
+; brakePressureSensor.c	   119  
+; brakePressureSensor.c	   120  void BrakePressureSensor_startCalibration(BrakePressureSensor* me, ubyte1 secondsToRun)
 ; Function _BrakePressureSensor_startCalibration
 _93:
 _BrakePressureSensor_startCalibration	.proc	far
@@ -648,32 +668,32 @@ _765:
 	movw	r9,r3
 _871:
 
-; brakePressureSensor.c	   117  {
-; brakePressureSensor.c	   118      if (me->runCalibration == FALSE) //Ignore the button if calibration is already running
-; brakePressureSensor.c	   119      {
-; brakePressureSensor.c	   120          me->runCalibration = TRUE;
-; brakePressureSensor.c	   121          BrakePressureSensor_resetCalibration(me);
-; brakePressureSensor.c	   122          me->calibrated = FALSE;
-; brakePressureSensor.c	   123          IO_RTC_StartTime(&(me->timestamp_calibrationStart));
+; brakePressureSensor.c	   121  {
+; brakePressureSensor.c	   122      if (me->runCalibration == FALSE) //Ignore the button if calibration is already running
+; brakePressureSensor.c	   123      {
+; brakePressureSensor.c	   124          me->runCalibration = TRUE;
+; brakePressureSensor.c	   125          BrakePressureSensor_resetCalibration(me);
+; brakePressureSensor.c	   126          me->calibrated = FALSE;
+; brakePressureSensor.c	   127          IO_RTC_StartTime(&(me->timestamp_calibrationStart));
 	movw	r13,r2
 	movw	r14,r3
-_1476:
+_1480:
 	addw	r2,#0x12
 _869:
 	addcw	r3,#0x0
-_1477:
+_1481:
 	movb	rh6,rl4
 _873:
 	addw	r13,#0x14
 	addcw	r14,#0x0
-_1478:
+_1482:
 	exts	r3,#0x1
 	movb	rh4,[r2]
-_1479:
+_1483:
 	jmp-	cc_ne,_17
-_1480:
+_1484:
 	movb	rh4,#0x1
-_1481:
+_1485:
 	exts	r3,#0x1
 	movb	[r2],rh4
 _214:
@@ -681,64 +701,64 @@ _214:
 	movw	r3,r9
 	addw	r2,#0x19
 	addcw	r3,#0x0
-_1482:
+_1486:
 	movw	r11,r8
 	movw	r12,r9
 	addw	r11,#0x6
 	addcw	r12,#0x0
-_1483:
+_1487:
 	movb	rl4,#0x0
 _870:
 	exts	r3,#0x1
 	movb	[r2],rl4
-_1484:
+_1488:
 	movw	r5,#0x226
-_1485:
+_1489:
 	exts	r12,#0x1
 	movw	[r11],r5
-_1486:
+_1490:
 	movw	r11,r8
 	movw	r12,r9
 	addw	r11,#0x8
 	addcw	r12,#0x0
 _215:
 
-; brakePressureSensor.c	   124          me->calibrationRunTime = secondsToRun;
+; brakePressureSensor.c	   128          me->calibrationRunTime = secondsToRun;
 	addw	r8,#0x18
 _872:
 	addcw	r9,#0x0
 _218:
 	movw	r5,#0x4e2
-_1487:
+_1491:
 	exts	r12,#0x1
 	movw	[r11],r5
-_1488:
+_1492:
 _219:
 	exts	r3,#0x2
 	movb	[r2],rh4
 	movb	[r2],rl4
-_1489:
+_1493:
 	movw	r2,r13
 	movw	r3,r14
 	call	_IO_RTC_StartTime
-_1490:
+_1494:
 	exts	r9,#0x1
 	movb	[r8],rh6
-_1491:
+_1495:
 	jmp	_18
 _17:
 
-; brakePressureSensor.c	   125      }
-; brakePressureSensor.c	   126      else
-; brakePressureSensor.c	   127      {
-; brakePressureSensor.c	   128          IO_RTC_StartTime(&(me->timestamp_calibrationStart));  //extend the calibration time
+; brakePressureSensor.c	   129      }
+; brakePressureSensor.c	   130      else
+; brakePressureSensor.c	   131      {
+; brakePressureSensor.c	   132          IO_RTC_StartTime(&(me->timestamp_calibrationStart));  //extend the calibration time
 	movw	r2,r13
 	movw	r3,r14
 	call	_IO_RTC_StartTime
 _18:
 
-; brakePressureSensor.c	   129      }
-; brakePressureSensor.c	   130  }
+; brakePressureSensor.c	   133      }
+; brakePressureSensor.c	   134  }
 	movw	r9,[r15+]
 _776:
 	movw	r8,[r15+]
@@ -753,19 +773,19 @@ _178:
 code_BrakePressureSensor_calibrationCycle	.section	code, cluster 'BrakePressureSensor_calibrationCycle', new
 	.global	_BrakePressureSensor_calibrationCycle
 
-; brakePressureSensor.c	   131  
-; brakePressureSensor.c	   132  /*-------------------------------------------------------------------
-; brakePressureSensor.c	   133  * CalibrateTPS
-; brakePressureSensor.c	   134  * Description: Records TPS minimum/maximum voltages (when?) and stores them (where?), or flags that calibration is complete
-; brakePressureSensor.c	   135  * Parameters:
-; brakePressureSensor.c	   136  * Inputs:
-; brakePressureSensor.c	   137  * Returns:
-; brakePressureSensor.c	   138  * Notes:
-; brakePressureSensor.c	   139  * Throws:
-; brakePressureSensor.c	   140  -------------------------------------------------------------------*/
-; brakePressureSensor.c	   141  // Physical pedal travel will only occur across the center (about 1/2) of the actual sensor's range of travel
-; brakePressureSensor.c	   142  // The rules (especially EV2.3.6) are written about % of PEDAL travel, not percent of sensor range, so we must calculate pedal travel by recording the min/max voltages at min/max throttle positions
-; brakePressureSensor.c	   143  void BrakePressureSensor_calibrationCycle(BrakePressureSensor* me, ubyte1* errorCount)
+; brakePressureSensor.c	   135  
+; brakePressureSensor.c	   136  /*-------------------------------------------------------------------
+; brakePressureSensor.c	   137  * CalibrateTPS
+; brakePressureSensor.c	   138  * Description: Records TPS minimum/maximum voltages (when?) and stores them (where?), or flags that calibration is complete
+; brakePressureSensor.c	   139  * Parameters:
+; brakePressureSensor.c	   140  * Inputs:
+; brakePressureSensor.c	   141  * Returns:
+; brakePressureSensor.c	   142  * Notes:
+; brakePressureSensor.c	   143  * Throws:
+; brakePressureSensor.c	   144  -------------------------------------------------------------------*/
+; brakePressureSensor.c	   145  // Physical pedal travel will only occur across the center (about 1/2) of the actual sensor's range of travel
+; brakePressureSensor.c	   146  // The rules (especially EV2.3.6) are written about % of PEDAL travel, not percent of sensor range, so we must calculate pedal travel by recording the min/max voltages at min/max throttle positions
+; brakePressureSensor.c	   147  void BrakePressureSensor_calibrationCycle(BrakePressureSensor* me, ubyte1* errorCount)
 ; Function _BrakePressureSensor_calibrationCycle
 _105:
 _BrakePressureSensor_calibrationCycle	.proc	far
@@ -796,8 +816,8 @@ _984:
 	movw	r0,r3
 _1341:
 
-; brakePressureSensor.c	   144  {
-; brakePressureSensor.c	   145      if (me->runCalibration == TRUE)
+; brakePressureSensor.c	   148  {
+; brakePressureSensor.c	   149      if (me->runCalibration == TRUE)
 	addw	r2,#0x12
 _1342:
 	addcw	r3,#0x0
@@ -808,57 +828,57 @@ _1342:
 _1339:
 	cmpb	rh4,#0x1
 	jmp+	cc_ne,_19
-_1496:
+_1500:
 
-; brakePressureSensor.c	   146      {
-; brakePressureSensor.c	   147          if (IO_RTC_GetTimeUS(me->timestamp_calibrationStart) < (ubyte4)(me->calibrationRunTime) * 1000 * 1000)
+; brakePressureSensor.c	   150      {
+; brakePressureSensor.c	   151          if (IO_RTC_GetTimeUS(me->timestamp_calibrationStart) < (ubyte4)(me->calibrationRunTime) * 1000 * 1000)
 	movw	r11,r8
 	movw	r12,r0
 	addw	r11,#0x14
 	addcw	r12,#0x0
-_1497:
+_1501:
 
-; brakePressureSensor.c	   148          {
-; brakePressureSensor.c	   149  			//The calibration itself
-; brakePressureSensor.c	   150  			if (me->bps0->sensorValue < me->bps0_calibMin) { me->bps0_calibMin = (ubyte2) me->bps0->sensorValue; }
+; brakePressureSensor.c	   152          {
+; brakePressureSensor.c	   153  			//The calibration itself
+; brakePressureSensor.c	   154  			if (me->bps0->sensorValue < me->bps0_calibMin) { me->bps0_calibMin = me->bps0->sensorValue; }
 	movw	r10,r8
-_1498:
+_1502:
 	exts	r12,#0x1
 	movw	r2,[r11]
 _1340:
 	addw	r11,#0x2
 	addcw	r12,#0x0
-_1499:
+_1503:
 	movw	r9,r0
-_1500:
+_1504:
 	exts	r12,#0x1
 	movw	r3,[r11]
 	call	_IO_RTC_GetTimeUS
-_1501:
+_1505:
 	movw	r11,r8
 	movw	r12,r0
 	addw	r11,#0x18
 	addcw	r12,#0x0
-_1502:
+_1506:
 	addw	r10,#0x6
 	addcw	r9,#0x0
-_1503:
+_1507:
 	exts	r12,#0x1
 	movb	rh4,[r11]
-_1504:
+_1508:
 	movbz	r11,rh4
-_1505:
+_1509:
 	movw	r12,#0x4240
 	movw	r13,#0xf
-_1506:
+_1510:
 	CoMULu	r11,r13
 	CoSHL	#0x10
 	CoMACu	r11,r12
-_1507:
+_1511:
 	cmpw	r2,MAL
 	subcw	r3,MAH
 	jmp	cc_uge,_20
-_1508:
+_1512:
 	movw	r14,r8
 	movw	r4,r0
 	addw	r14,#0x2
@@ -871,7 +891,7 @@ _1508:
 	addcw	r12,#0x0
 	exts	r12,#0x1
 	movw	r11,[r11]
-_1509:
+_1513:
 	addw	r13,#0x8
 	addcw	r11,#0x0
 	exts	r11,#0x1
@@ -880,30 +900,30 @@ _1509:
 	addcw	r11,#0x0
 	exts	r11,#0x1
 	movw	r11,[r13]
-_1510:
+_1514:
 	exts	r9,#0x1
 	movw	r13,[r10]
-_1511:
+_1515:
 	cmpw	r12,r13
 	subcw	r11,#0x0
 	jmp-	cc_uge,_21
-_1512:
+_1516:
 	exts	r9,#0x1
 	movw	[r10],r12
 _21:
 
-; brakePressureSensor.c	   151  			if (me->bps0->sensorValue > me->bps0_calibMax) { me->bps0_calibMax = (ubyte2) me->bps0->sensorValue; }
+; brakePressureSensor.c	   155  			if (me->bps0->sensorValue > me->bps0_calibMax) { me->bps0_calibMax = me->bps0->sensorValue; }
 	exts	r4,#0x1
 	movw	r11,[r14]
 	addw	r14,#0x2
 	addcw	r4,#0x0
-_1513:
+_1517:
 	addw	r8,#0x8
 	addcw	r0,#0x0
-_1514:
+_1518:
 	exts	r4,#0x1
 	movw	r12,[r14]
-_1515:
+_1519:
 	addw	r11,#0x8
 	addcw	r12,#0x0
 	exts	r12,#0x1
@@ -912,43 +932,43 @@ _1515:
 	addcw	r12,#0x0
 	exts	r12,#0x1
 	movw	r11,[r11]
-_1516:
+_1520:
 	exts	r0,#0x1
 	movw	r12,[r8]
-_1517:
+_1521:
 	cmpw	r13,r12
 	subcw	r11,#0x0
 	jmp-	cc_ule,_22
-_1518:
+_1522:
 	exts	r0,#0x1
 	movw	[r8],r13
-_1519:
+_1523:
 	jmp	_23
 _20:
 
-; brakePressureSensor.c	   152  
-; brakePressureSensor.c	   153  			//if (me->bps1->sensorValue < me->bps1_calibMin) { me->bps1_calibMin = me->bps1->sensorValue; }
-; brakePressureSensor.c	   154  			//if (me->bps1->sensorValue > me->bps1_calibMax) { me->bps1_calibMax = me->bps1->sensorValue; }
-; brakePressureSensor.c	   155  
-; brakePressureSensor.c	   156          }
-; brakePressureSensor.c	   157          else  //Calibration shutdown
-; brakePressureSensor.c	   158          {
-; brakePressureSensor.c	   159              float4 pedalTopPlay = 1.02;
-; brakePressureSensor.c	   160              float4 pedalBottomPlay = .95;
-; brakePressureSensor.c	   161  
-; brakePressureSensor.c	   162              me->bps0_calibMin *= me->bps0_reverse ? pedalBottomPlay : pedalTopPlay;
+; brakePressureSensor.c	   156  
+; brakePressureSensor.c	   157  			//if (me->bps1->sensorValue < me->bps1_calibMin) { me->bps1_calibMin = me->bps1->sensorValue; }
+; brakePressureSensor.c	   158  			//if (me->bps1->sensorValue > me->bps1_calibMax) { me->bps1_calibMax = me->bps1->sensorValue; }
+; brakePressureSensor.c	   159  
+; brakePressureSensor.c	   160          }
+; brakePressureSensor.c	   161          else  //Calibration shutdown
+; brakePressureSensor.c	   162          {
+; brakePressureSensor.c	   163              float4 pedalTopPlay = 1.02;
+; brakePressureSensor.c	   164              float4 pedalBottomPlay = .95;
+; brakePressureSensor.c	   165  
+; brakePressureSensor.c	   166              me->bps0_calibMin *= me->bps0_reverse ? pedalBottomPlay : pedalTopPlay;
 	movw	r11,r8
 	movw	r12,r0
 	addw	r11,#0xa
 	addcw	r12,#0x0
 	exts	r12,#0x1
 	movb	rh7,[r11]
-_1520:
+_1524:
 	jmp	cc_eq,_24
-_1521:
+_1525:
 	movw	r4,#0x3333
 	movw	r5,#0x3f73
-_1522:
+_1526:
 	jmp	_25
 _24:
 	movw	r4,#0x8f5c
@@ -957,20 +977,20 @@ _25:
 	exts	r9,#0x1
 	movw	r2,[r10]
 	call	__us2spf
-_1523:
+_1527:
 	call	__mul_spf
 	call	__spf2us
 	exts	r9,#0x1
 	movw	[r10],r2
-_1524:
+_1528:
 
-; brakePressureSensor.c	   163              me->bps0_calibMax *= me->bps0_reverse ? pedalTopPlay : pedalBottomPlay;
+; brakePressureSensor.c	   167              me->bps0_calibMax *= me->bps0_reverse ? pedalTopPlay : pedalBottomPlay;
 	cmpb	rh7,#0x0
 	jmp	cc_eq,_26
-_1525:
+_1529:
 	movw	r4,#0x8f5c
 	movw	r5,#0x3f82
-_1526:
+_1530:
 	jmp	_27
 _26:
 	movw	r4,#0x3333
@@ -980,40 +1000,40 @@ _27:
 	movw	r12,r0
 	addw	r11,#0x8
 	addcw	r12,#0x0
-_1527:
+_1531:
 
-; brakePressureSensor.c	   164              //me->bps1_calibMin *= me->bps1_reverse ? pedalBottomPlay : pedalTopPlay;
-; brakePressureSensor.c	   165              //me->bps1_calibMax *= me->bps1_reverse ? pedalTopPlay : pedalBottomPlay;
-; brakePressureSensor.c	   166  
-; brakePressureSensor.c	   167  			me->runCalibration = FALSE;
-; brakePressureSensor.c	   168  			me->calibrated = TRUE;
+; brakePressureSensor.c	   168              //me->bps1_calibMin *= me->bps1_reverse ? pedalBottomPlay : pedalTopPlay;
+; brakePressureSensor.c	   169              //me->bps1_calibMax *= me->bps1_reverse ? pedalTopPlay : pedalBottomPlay;
+; brakePressureSensor.c	   170  
+; brakePressureSensor.c	   171  			me->runCalibration = FALSE;
+; brakePressureSensor.c	   172  			me->calibrated = TRUE;
 	addw	r8,#0x19
 	addcw	r0,#0x0
-_1528:
+_1532:
 	exts	r12,#0x1
 	movw	r2,[r11]
 	call	__us2spf
-_1529:
+_1533:
 	call	__mul_spf
 	call	__spf2us
 	exts	r12,#0x1
 	movw	[r11],r2
-_1530:
+_1534:
 	movw	r11,[r15+#0x2]
-_1531:
+_1535:
 	movb	rh4,#0x0
-_1532:
+_1536:
 	movw	r12,[r15]
 	exts	r12,#0x1
 	movb	[r11],rh4
-_1533:
+_1537:
 	movb	rh4,#0x1
-_1534:
+_1538:
 	exts	r0,#0x1
 	movb	[r8],rh4
-_1535:
+_1539:
 
-; brakePressureSensor.c	   169  			Light_set(Light_dashTCS, 0);
+; brakePressureSensor.c	   173  			Light_set(Light_dashTCS, 0);
 	movb	rl2,#0x3
 	movw	r4,#0x0
 	movw	r5,#0x0
@@ -1022,26 +1042,26 @@ _23:
 _22:
 _19:
 
-; brakePressureSensor.c	   170  			
-; brakePressureSensor.c	   171  
-; brakePressureSensor.c	   172          }
-; brakePressureSensor.c	   173  
-; brakePressureSensor.c	   174      }
-; brakePressureSensor.c	   175      else
-; brakePressureSensor.c	   176      {
-; brakePressureSensor.c	   177          //TODO: Throw warning: calibrationCycle helper function was called but calibration should not be running
+; brakePressureSensor.c	   174  			
+; brakePressureSensor.c	   175  
+; brakePressureSensor.c	   176          }
+; brakePressureSensor.c	   177  
 ; brakePressureSensor.c	   178      }
-; brakePressureSensor.c	   179  
-; brakePressureSensor.c	   180      //TODO: Write calibration data to EEPROM
-; brakePressureSensor.c	   181  
-; brakePressureSensor.c	   182      //TODO: Check for valid/reasonable calibration data
+; brakePressureSensor.c	   179      else
+; brakePressureSensor.c	   180      {
+; brakePressureSensor.c	   181          //TODO: Throw warning: calibrationCycle helper function was called but calibration should not be running
+; brakePressureSensor.c	   182      }
 ; brakePressureSensor.c	   183  
-; brakePressureSensor.c	   184      //TODO: Do something on the display to show that voltages are being recorded
+; brakePressureSensor.c	   184      //TODO: Write calibration data to EEPROM
 ; brakePressureSensor.c	   185  
-; brakePressureSensor.c	   186      //Idea: Display "bars" filling up on right segment (for gas pedal) _=E=_=E...
-; brakePressureSensor.c	   187      //      Once calibration data makes sense, show pedal location (0-10%, 10-90%, 90-100%) with bars
-; brakePressureSensor.c	   188  
-; brakePressureSensor.c	   189  }
+; brakePressureSensor.c	   186      //TODO: Check for valid/reasonable calibration data
+; brakePressureSensor.c	   187  
+; brakePressureSensor.c	   188      //TODO: Do something on the display to show that voltages are being recorded
+; brakePressureSensor.c	   189  
+; brakePressureSensor.c	   190      //Idea: Display "bars" filling up on right segment (for gas pedal) _=E=_=E...
+; brakePressureSensor.c	   191      //      Once calibration data makes sense, show pedal location (0-10%, 10-90%, 90-100%) with bars
+; brakePressureSensor.c	   192  
+; brakePressureSensor.c	   193  }
 	addw	r15,#0x4
 _995:
 	movw	r10,[r15+]
@@ -1078,19 +1098,19 @@ _183:
 code_BrakePressureSensor_getIndividualSensorPercent	.section	code, cluster 'BrakePressureSensor_getIndividualSensorPercent', new
 	.global	_BrakePressureSensor_getIndividualSensorPercent
 
-; brakePressureSensor.c	   190  
-; brakePressureSensor.c	   191  
-; brakePressureSensor.c	   192  void BrakePressureSensor_getIndividualSensorPercent(BrakePressureSensor* me, ubyte1 sensorNumber, float4* percent)
+; brakePressureSensor.c	   194  
+; brakePressureSensor.c	   195  
+; brakePressureSensor.c	   196  void BrakePressureSensor_getIndividualSensorPercent(BrakePressureSensor* me, ubyte1 sensorNumber, float4* percent)
 ; Function _BrakePressureSensor_getIndividualSensorPercent
 _117:
 _BrakePressureSensor_getIndividualSensorPercent	.proc	far
 
-; brakePressureSensor.c	   193  {
-; brakePressureSensor.c	   194  	//Sensor* bps;
-; brakePressureSensor.c	   195  	//ubyte2 calMin;
-; brakePressureSensor.c	   196  	//ubyte2 calMax;
-; brakePressureSensor.c	   197  
-; brakePressureSensor.c	   198  	switch (sensorNumber)
+; brakePressureSensor.c	   197  {
+; brakePressureSensor.c	   198  	//Sensor* bps;
+; brakePressureSensor.c	   199  	//ubyte2 calMin;
+; brakePressureSensor.c	   200  	//ubyte2 calMax;
+; brakePressureSensor.c	   201  
+; brakePressureSensor.c	   202  	switch (sensorNumber)
 	movbz	r13,rl4
 _1345:
 	cmpw	r13,#0x1
@@ -1111,11 +1131,11 @@ _$1$swt	.label	word
 
 code_BrakePressureSensor_getIndividualSensorPercent	.section	code, cluster 'BrakePressureSensor_getIndividualSensorPercent'
 
-; brakePressureSensor.c	   199  	{
-; brakePressureSensor.c	   200  	case 0:
+; brakePressureSensor.c	   203  	{
+; brakePressureSensor.c	   204  	case 0:
 _29:
 
-; brakePressureSensor.c	   201  		*percent = me->bps0_percent;
+; brakePressureSensor.c	   205  		*percent = me->bps0_percent;
 	addw	r2,#0xe
 	addcw	r3,#0x0
 	exts	r3,#0x1
@@ -1125,28 +1145,28 @@ _1346:
 	addcw	r3,#0x0
 	exts	r3,#0x1
 	movw	r14,[r2]
-_1451:
+_1455:
 	exts	r12,#0x1
 	movw	[r11],r13
 	addw	r11,#0x2
 	addcw	r12,#0x0
 	exts	r12,#0x1
 	movw	[r11],r14
-_1452:
+_1456:
 
-; brakePressureSensor.c	   202  		//bps = me->bps0;
-; brakePressureSensor.c	   203  		//calMin = me->bps0_calibMin;
-; brakePressureSensor.c	   204  		//calMax = me->bps0_calibMax;
-; brakePressureSensor.c	   205  		break;
-; brakePressureSensor.c	   206  	case 1:
-; brakePressureSensor.c	   207  		*percent = 0;//me->bps1_percent;
-; brakePressureSensor.c	   208  		//bps = me->bps1;
-; brakePressureSensor.c	   209  		//calMin = me->bps1_calibMin;
-; brakePressureSensor.c	   210  		//calMax = me->bps1_calibMax;
-; brakePressureSensor.c	   211  		break;
-; brakePressureSensor.c	   212  	}
-; brakePressureSensor.c	   213  	//float4 TPS0PedalPercent = getPercent(me->tps0->sensorValue, calMin, calMax, TRUE); //Analog Input 0
-; brakePressureSensor.c	   214  }
+; brakePressureSensor.c	   206  		//bps = me->bps0;
+; brakePressureSensor.c	   207  		//calMin = me->bps0_calibMin;
+; brakePressureSensor.c	   208  		//calMax = me->bps0_calibMax;
+; brakePressureSensor.c	   209  		break;
+; brakePressureSensor.c	   210  	case 1:
+; brakePressureSensor.c	   211  		*percent = 0;//me->bps1_percent;
+; brakePressureSensor.c	   212  		//bps = me->bps1;
+; brakePressureSensor.c	   213  		//calMin = me->bps1_calibMin;
+; brakePressureSensor.c	   214  		//calMax = me->bps1_calibMax;
+; brakePressureSensor.c	   215  		break;
+; brakePressureSensor.c	   216  	}
+; brakePressureSensor.c	   217  	//float4 TPS0PedalPercent = getPercent(me->tps0->sensorValue, calMin, calMax, TRUE); //Analog Input 0
+; brakePressureSensor.c	   218  }
 	ret
 _30:
 	movw	r13,#0x0
@@ -1166,25 +1186,25 @@ _158:
 code_BrakePressureSensor_getPedalTravel	.section	code, cluster 'BrakePressureSensor_getPedalTravel', new
 	.global	_BrakePressureSensor_getPedalTravel
 
-; brakePressureSensor.c	   215  
-; brakePressureSensor.c	   216  
-; brakePressureSensor.c	   217  /*-------------------------------------------------------------------
-; brakePressureSensor.c	   218  * GetThrottlePosition
-; brakePressureSensor.c	   219  * Description: Reads TPS Pin voltages and returns % of throttle pedal travel.
-; brakePressureSensor.c	   220  * Parameters:  None
-; brakePressureSensor.c	   221  * Inputs:      Assumes TPS#.sensorValue has been set by main loop
-; brakePressureSensor.c	   222  * Returns:     Throttle value in percent (from 0 to 1)
-; brakePressureSensor.c	   223  * Notes:       Valid pedal travel is from 10% (0.10) to 90% (0.90), not including mechanical limits.
-; brakePressureSensor.c	   224  * Throws:      000 - TPS0 voltage out of range
-; brakePressureSensor.c	   225  *              001 - TPS1 voltage out of range, 002
-; brakePressureSensor.c	   226  -------------------------------------------------------------------*/
-; brakePressureSensor.c	   227  void BrakePressureSensor_getPedalTravel(BrakePressureSensor* me, ubyte1* errorCount, float4* pedalPercent)
+; brakePressureSensor.c	   219  
+; brakePressureSensor.c	   220  
+; brakePressureSensor.c	   221  /*-------------------------------------------------------------------
+; brakePressureSensor.c	   222  * GetThrottlePosition
+; brakePressureSensor.c	   223  * Description: Reads TPS Pin voltages and returns % of throttle pedal travel.
+; brakePressureSensor.c	   224  * Parameters:  None
+; brakePressureSensor.c	   225  * Inputs:      Assumes TPS#.sensorValue has been set by main loop
+; brakePressureSensor.c	   226  * Returns:     Throttle value in percent (from 0 to 1)
+; brakePressureSensor.c	   227  * Notes:       Valid pedal travel is from 10% (0.10) to 90% (0.90), not including mechanical limits.
+; brakePressureSensor.c	   228  * Throws:      000 - TPS0 voltage out of range
+; brakePressureSensor.c	   229  *              001 - TPS1 voltage out of range, 002
+; brakePressureSensor.c	   230  -------------------------------------------------------------------*/
+; brakePressureSensor.c	   231  void BrakePressureSensor_getPedalTravel(BrakePressureSensor* me, ubyte1* errorCount, float4* pedalPercent)
 ; Function _BrakePressureSensor_getPedalTravel
 _129:
 _BrakePressureSensor_getPedalTravel	.proc	far
 
-; brakePressureSensor.c	   228  {
-; brakePressureSensor.c	   229  	*pedalPercent = me->percent;
+; brakePressureSensor.c	   232  {
+; brakePressureSensor.c	   233  	*pedalPercent = me->percent;
 	addw	r2,#0x1a
 _1348:
 	addcw	r3,#0x0
@@ -1194,29 +1214,29 @@ _1348:
 	addcw	r3,#0x0
 	exts	r3,#0x1
 	movw	r14,[r2]
-_1540:
+_1544:
 	exts	r12,#0x1
 	movw	[r11],r13
 	addw	r11,#0x2
 	addcw	r12,#0x0
 	exts	r12,#0x1
 	movw	[r11],r14
-_1541:
+_1545:
 
-; brakePressureSensor.c	   230  
-; brakePressureSensor.c	   231      //What about other error states?
-; brakePressureSensor.c	   232      //Voltage outside of calibration range
-; brakePressureSensor.c	   233      //Voltages off center
 ; brakePressureSensor.c	   234  
-; brakePressureSensor.c	   235      //    if (errorCount > 0)
-; brakePressureSensor.c	   236      //    {
-; brakePressureSensor.c	   237      //        return 0;
-; brakePressureSensor.c	   238      //    }
-; brakePressureSensor.c	   239      //    else
+; brakePressureSensor.c	   235      //What about other error states?
+; brakePressureSensor.c	   236      //Voltage outside of calibration range
+; brakePressureSensor.c	   237      //Voltages off center
+; brakePressureSensor.c	   238  
+; brakePressureSensor.c	   239      //    if (errorCount > 0)
 ; brakePressureSensor.c	   240      //    {
-; brakePressureSensor.c	   241      //return (TPS0PedalPercent + TPS1PedalPercent) / 2;
+; brakePressureSensor.c	   241      //        return 0;
 ; brakePressureSensor.c	   242      //    }
-; brakePressureSensor.c	   243  }
+; brakePressureSensor.c	   243      //    else
+; brakePressureSensor.c	   244      //    {
+; brakePressureSensor.c	   245      //return (TPS0PedalPercent + TPS1PedalPercent) / 2;
+; brakePressureSensor.c	   246      //    }
+; brakePressureSensor.c	   247  }
 	ret
 _188:
 	; End of function
@@ -1262,7 +1282,7 @@ _188:
 	.extern	__spf2us : far
 	.debug		.debug_info
 _141:
-	.dl	1536
+	.dl	1533
 	.dw	3
 	.dl	_142
 	.db	4
@@ -1270,7 +1290,7 @@ _140:
 	.db	1
 	.db	'brakePressureSensor.c',0
 	.db	'TASKING VX-toolset for C166: C compiler',0
-	.db	'C:\\Users\\helix\\Desktop\\SRE\\SRE SDK 2017-18\\VCU\\Environment\\dev\\Example_\\',0,12,1
+	.db	'C:\\Users\\helix\\Desktop\\SRE\\SRE SDK 2017-18\\VCU\\Environment\\dev\\SRE-3\\',0,12,1
 	.dl	_143
 _203:
 	.db	2
@@ -1279,107 +1299,107 @@ _203:
 	.db	'unsigned int',0,2,7,3
 	.db	'_Sensor',0,3,126,16,22,4
 	.db	'specMin',0
-	.dl	170
+	.dl	167
 	.db	4,2,35,0,4
 	.db	'specMax',0
-	.dl	170
+	.dl	167
 	.db	4,2,35,4,4
 	.db	'sensorValue',0
-	.dl	170
+	.dl	167
 	.db	4,2,35,8,4
 	.db	'fresh',0
-	.dl	153
+	.dl	150
 	.db	1,2,35,12,4
 	.db	'ioErr_powerInit',0
-	.dl	191
+	.dl	188
 	.db	2,2,35,14,4
 	.db	'ioErr_powerSet',0
-	.dl	191
+	.dl	188
 	.db	2,2,35,16,4
 	.db	'ioErr_signalInit',0
-	.dl	191
+	.dl	188
 	.db	2,2,35,18,4
 	.db	'ioErr_signalGet',0
-	.dl	191
+	.dl	188
 	.db	2,2,35,20,0,5,5
-	.dl	207
+	.dl	204
 	.db	2
 	.db	'float',0,4,4,3
 	.db	'_BrakePressureSensor',0,2,10,16,32,4
 	.db	'bench',0
-	.dl	153
+	.dl	150
 	.db	1,2,35,0,4
 	.db	'bps0',0
-	.dl	391
+	.dl	388
 	.db	4,2,35,2,4
 	.db	'bps0_calibMin',0
-	.dl	191
+	.dl	188
 	.db	2,2,35,6,4
 	.db	'bps0_calibMax',0
-	.dl	191
+	.dl	188
 	.db	2,2,35,8,4
 	.db	'bps0_reverse',0
-	.dl	153
+	.dl	150
 	.db	1,2,35,10,4
 	.db	'bps0_value',0
-	.dl	191
+	.dl	188
 	.db	2,2,35,12,4
 	.db	'bps0_percent',0
-	.dl	397
+	.dl	394
 	.db	4,2,35,14,4
 	.db	'runCalibration',0
-	.dl	153
+	.dl	150
 	.db	1,2,35,18,4
 	.db	'timestamp_calibrationStart',0
-	.dl	170
+	.dl	167
 	.db	4,2,35,20,4
 	.db	'calibrationRunTime',0
-	.dl	153
+	.dl	150
 	.db	1,2,35,24,4
 	.db	'calibrated',0
-	.dl	153
+	.dl	150
 	.db	1,2,35,25,4
 	.db	'percent',0
-	.dl	397
+	.dl	394
 	.db	4,2,35,26,4
 	.db	'implausibility',0
-	.dl	153
+	.dl	150
 	.db	1,2,35,30,0
 _189:
 	.db	5,5
-	.dl	406
+	.dl	403
 _191:
 	.db	6
-	.db	'BrakePressureSensor_resetCalibration',0,1,1,87,6,6,1,1
+	.db	'BrakePressureSensor_resetCalibration',0,1,1,91,6,6,1,1
 _194:
 	.db	7
-	.db	'me',0,1,87,64,2
-	.dl	721
+	.db	'me',0,1,91,64,2
+	.dl	718
 _196:
 	.db	8,0,9
 	.db	'void',0,5,5
-	.dl	786
+	.dl	783
 	.db	10
 	.db	'malloc',0,4,78,33,6
-	.dl	792
+	.dl	789
 	.db	1,1,1,1,11,4,78,44,2
-	.dl	191
+	.dl	188
 	.db	0,5,5
-	.dl	170
+	.dl	167
 	.db	12
-	.dl	828
+	.dl	825
 	.db	10
 	.db	'IO_RTC_StartTime',0,5,118,15,6
-	.dl	191
+	.dl	188
 	.db	1,1,1,1,7
 	.db	'timestamp',0,5,118,49,2
-	.dl	834
+	.dl	831
 	.db	0,10
 	.db	'IO_RTC_GetTimeUS',0,5,143,1,9,6
-	.dl	170
+	.dl	167
 	.db	1,1,1,1,7
 	.db	'timestamp',0,5,143,1,35,2
-	.dl	170
+	.dl	167
 	.db	0,13,3,103,9,1,14
 	.db	'Light_dashEco',0,0,14
 	.db	'Light_dashError',0,1,14
@@ -1389,82 +1409,82 @@ _196:
 	.db	'Cooling_waterPump',0,5,14
 	.db	'Cooling_motorFans',0,6,14
 	.db	'Cooling_batteryFans',0,7,0,15
-	.db	'Light_set',0,3,204,1,6,6,1,1,1,1,7
-	.db	'light',0,3,204,1,22,2
-	.dl	941
+	.db	'Light_set',0,3,203,1,6,6,1,1,1,1,7
+	.db	'light',0,3,203,1,22,2
+	.dl	938
 	.db	7
-	.db	'percent',0,3,204,1,36,2
-	.dl	397
+	.db	'percent',0,3,203,1,36,2
+	.dl	394
 	.db	0
 _207:
 	.db	5,5
-	.dl	397
+	.dl	394
 _221:
 	.db	5,5
-	.dl	153
+	.dl	150
 	.db	10
 	.db	'getPercent',0,6,15,8,6
-	.dl	397
+	.dl	394
 	.db	1,1,1,1,7
 	.db	'value',0,6,15,26,2
-	.dl	397
+	.dl	394
 	.db	7
 	.db	'start',0,6,15,40,2
-	.dl	397
+	.dl	394
 	.db	7
 	.db	'end',0,6,15,54,2
-	.dl	397
+	.dl	394
 	.db	7
 	.db	'zeroToOneOnly',0,6,15,64,2
-	.dl	153
+	.dl	150
 	.db	0,2
 	.db	'unsigned short int',0,2,7,16
 	.db	'__wchar_t',0,1,1,1
-	.dl	1247
+	.dl	1244
 	.db	16
 	.db	'__size_t',0,1,1,1
-	.dl	191
+	.dl	188
 	.db	5,5
-	.dl	786
+	.dl	783
 	.db	16
 	.db	'__prof_adm',0,1,1,1
-	.dl	1304
+	.dl	1301
 	.db	16
 	.db	'__codeptr',0,1,1,1
-	.dl	170
+	.dl	167
 	.db	16
 	.db	'size_t',0,4,29,25
-	.dl	191
+	.dl	188
 	.db	16
 	.db	'ubyte1',0,7,21,29
-	.dl	153
+	.dl	150
 	.db	16
 	.db	'ubyte2',0,7,22,29
-	.dl	191
+	.dl	188
 	.db	16
 	.db	'ubyte4',0,7,23,29
-	.dl	170
+	.dl	167
 	.db	16
 	.db	'float4',0,7,29,29
-	.dl	397
+	.dl	394
 	.db	16
 	.db	'bool',0,7,31,29
-	.dl	153
+	.dl	150
 	.db	16
 	.db	'IO_ErrorType',0,8,150,1,17
-	.dl	191
+	.dl	188
 	.db	16
 	.db	'Light',0,3,113,3
-	.dl	941
+	.dl	938
 	.db	16
 	.db	'Sensor',0,3,143,1,3
-	.dl	207
+	.dl	204
 	.db	17
 	.db	'Sensor_BPS0',0,3,156,1,15,5
-	.dl	207
+	.dl	204
 	.db	1,1,16
 	.db	'BrakePressureSensor',0,2,37,3
-	.dl	406
+	.dl	403
 	.db	0
 	; End of section
 
@@ -1504,28 +1524,28 @@ _1350:
 	.debug		.debug_pubnames
 	.dl	96
 	.dw	2
-	.dl	_141,1540,798
+	.dl	_141,1537,795
 	.db	'malloc',0
-	.dl	839
+	.dl	836
 	.db	'IO_RTC_StartTime',0
-	.dl	889
+	.dl	886
 	.db	'IO_RTC_GetTimeUS',0
-	.dl	1089
+	.dl	1086
 	.db	'Light_set',0
-	.dl	1156
+	.dl	1153
 	.db	'getPercent',0
 	.dl	0
 	; End of section
 
 	.debug		.debug_info, cluster 'BrakePressureSensor_new'
 _144:
-	.dl	325
+	.dl	322
 	.dw	3
 	.dl	_145
 	.db	4,1
 	.db	'brakePressureSensor.c',0
 	.db	'TASKING VX-toolset for C166: C compiler',0
-	.db	'C:\\Users\\helix\\Desktop\\SRE\\SRE SDK 2017-18\\VCU\\Environment\\dev\\Example_\\',0,12,1
+	.db	'C:\\Users\\helix\\Desktop\\SRE\\SRE SDK 2017-18\\VCU\\Environment\\dev\\SRE-3\\',0,12,1
 	.dl	_147,_146
 	.db	2
 	.dl	_140
@@ -1585,50 +1605,58 @@ _1356:
 	.dw	_1360-_1359
 	.db	1,5,14,9
 	.dw	_1361-_1360
-	.db	1,5,4,9
+	.db	1,5,22,9
 	.dw	_1362-_1361
-	.db	3,4,1,5,21,9
+	.db	3,4,1,9
 	.dw	_1363-_1362
-	.db	1,5,19,9
+	.db	3,1,1,5,4,9
 	.dw	_1364-_1363
-	.db	1,5,7,9
+	.db	3,3,1,5,22,9
 	.dw	_1365-_1364
-	.db	3,3,1,5,19,9
+	.db	3,124,1,9
 	.dw	_1366-_1365
-	.db	1,5,17,9
+	.db	3,1,1,5,21,9
 	.dw	_1367-_1366
+	.db	3,3,1,5,19,9
+	.dw	_1368-_1367
+	.db	1,5,7,9
+	.dw	_1369-_1368
+	.db	3,3,1,5,19,9
+	.dw	_1370-_1369
+	.db	1,5,17,9
+	.dw	_1371-_1370
 	.db	1,5,4,9
-	.dw	_192-_1367
+	.dw	_192-_1371
 	.db	3,63,1,5,17,9
 	.dw	_193-_192
 	.db	3,65,1,5,7,9
-	.dw	_1368-_193
+	.dw	_1372-_193
 	.db	3,1,1,5,4,9
-	.dw	_198-_1368
+	.dw	_198-_1372
 	.db	3,62,1,5,24,9
 	.dw	_199-_198
 	.db	3,66,1,5,7,9
 	.dw	_200-_199
 	.db	3,57,1,5,4,9
-	.dw	_1369-_200
+	.dw	_1373-_200
 	.db	3,5,1,5,20,9
-	.dw	_1370-_1369
-	.db	3,123,1,5,22,9
-	.dw	_1371-_1370
-	.db	3,5,1,5,20,9
-	.dw	_1372-_1371
-	.db	1,5,4,9
-	.dw	_1373-_1372
-	.db	3,1,1,5,22,9
 	.dw	_1374-_1373
-	.db	1,5,20,9
+	.db	3,123,1,5,22,9
 	.dw	_1375-_1374
-	.db	1,5,22,9
+	.db	3,5,1,5,20,9
 	.dw	_1376-_1375
-	.db	3,8,1,5,20,9
+	.db	1,5,4,9
 	.dw	_1377-_1376
+	.db	3,1,1,5,22,9
+	.dw	_1378-_1377
+	.db	1,5,20,9
+	.dw	_1379-_1378
+	.db	1,5,22,9
+	.dw	_1380-_1379
+	.db	3,8,1,5,20,9
+	.dw	_1381-_1380
 	.db	1,5,1,9
-	.dw	_201-_1377
+	.dw	_201-_1381
 	.db	3,191,127,1,7,9
 	.dw	_148-_201
 	.db	0,1,1
@@ -1645,31 +1673,31 @@ _197:
 	.debug		.debug_pubnames
 	.dl	42
 	.dw	2
-	.dl	_144,329,162
+	.dl	_144,326,159
 	.db	'BrakePressureSensor_new',0
 	.dl	0
 	; End of section
 
 	.debug		.debug_info, cluster 'BrakePressureSensor_update'
 _149:
-	.dl	264
+	.dl	261
 	.dw	3
 	.dl	_150
 	.db	4,1
 	.db	'brakePressureSensor.c',0
 	.db	'TASKING VX-toolset for C166: C compiler',0
-	.db	'C:\\Users\\helix\\Desktop\\SRE\\SRE SDK 2017-18\\VCU\\Environment\\dev\\Example_\\',0,12,1
+	.db	'C:\\Users\\helix\\Desktop\\SRE\\SRE SDK 2017-18\\VCU\\Environment\\dev\\SRE-3\\',0,12,1
 	.dl	_152,_151
 	.db	2
 	.dl	_140
 	.db	3
-	.db	'BrakePressureSensor_update',0,1,41,6,6,1,1,1
+	.db	'BrakePressureSensor_update',0,1,45,6,6,1,1,1
 	.dl	_45,_153,_44
 	.db	12,19,146,176,2,0,64,36,146,161,2,0,33,4
-	.db	'me',0,1,41,54,2
+	.db	'me',0,1,45,54,2
 	.dl	_189,_202
 	.db	4
-	.db	'bench',0,1,41,63,2
+	.db	'bench',0,1,45,63,2
 	.dl	_203,_204
 	.db	5
 	.dl	_45,_153
@@ -1685,180 +1713,180 @@ _150:
 
 	.debug		.debug_line, cluster 'BrakePressureSensor_update'
 _151:
-	.dl	_1379-_1378
-_1378:
+	.dl	_1383-_1382
+_1382:
 	.dw	3
-	.dl	_1381-_1380
-_1380:
+	.dl	_1385-_1384
+_1384:
 	.db	2,1,-4,9,10,0,1,1,1,1,0,0,0,1,0
 	.db	'brakePressureSensor.c',0,0,0,0,0
-_1381:
+_1385:
 	.db	5,6,7,0,5,2
 	.dl	_45
-	.db	3,40,1,5,30,9
+	.db	3,44,1,5,21,9
 	.dw	_226-_45
 	.db	3,2,1,5,4,9
-	.dw	_1382-_226
+	.dw	_1386-_226
 	.db	1,5,6,9
-	.dw	_1383-_1382
-	.db	3,126,1,5,4,9
-	.dw	_336-_1383
-	.db	3,2,1,9
-	.dw	_1384-_336
-	.db	3,3,1,5,6,9
-	.dw	_1385-_1384
-	.db	3,123,1,5,30,9
-	.dw	_735-_1385
-	.db	3,2,1,5,4,9
-	.dw	_1386-_735
-	.db	1,5,30,9
 	.dw	_1387-_1386
-	.db	1,5,6,9
-	.dw	_1388-_1387
-	.db	3,126,1,5,30,9
+	.db	3,126,1,5,4,9
+	.dw	_336-_1387
+	.db	3,2,1,9
+	.dw	_1388-_336
+	.db	3,3,1,5,6,9
 	.dw	_1389-_1388
-	.db	3,2,1,5,36,9
-	.dw	_1390-_1389
-	.db	1,5,6,9
+	.db	3,123,1,5,21,9
+	.dw	_735-_1389
+	.db	3,2,1,5,4,9
+	.dw	_1390-_735
+	.db	1,5,21,9
 	.dw	_1391-_1390
-	.db	3,126,1,5,36,9
-	.dw	_736-_1391
-	.db	3,2,1,5,5,9
-	.dw	_1392-_736
-	.db	3,10,1,5,36,9
+	.db	1,5,6,9
+	.dw	_1392-_1391
+	.db	3,126,1,5,21,9
 	.dw	_1393-_1392
-	.db	3,118,1,5,4,9
+	.db	3,2,1,5,27,9
 	.dw	_1394-_1393
-	.db	3,3,1,5,14,9
+	.db	1,5,6,9
 	.dw	_1395-_1394
-	.db	1,5,17,9
-	.dw	_1396-_1395
-	.db	3,125,1,5,16,9
+	.db	3,126,1,5,27,9
+	.dw	_736-_1395
+	.db	3,2,1,5,5,9
+	.dw	_1396-_736
+	.db	3,10,1,5,27,9
 	.dw	_1397-_1396
-	.db	3,3,1,5,14,9
+	.db	3,118,1,5,4,9
 	.dw	_1398-_1397
-	.db	1,5,5,9
+	.db	3,3,1,5,14,9
 	.dw	_1399-_1398
-	.db	3,7,1,5,8,9
+	.db	1,5,17,9
 	.dw	_1400-_1399
-	.db	3,126,1,5,5,9
+	.db	3,125,1,5,16,9
 	.dw	_1401-_1400
-	.db	3,2,1,5,8,9
+	.db	3,3,1,5,14,9
 	.dw	_1402-_1401
-	.db	3,126,1,5,6,9
+	.db	1,5,5,9
 	.dw	_1403-_1402
-	.db	1,5,38,9
+	.db	3,7,1,5,8,9
 	.dw	_1404-_1403
-	.db	1,5,51,9
+	.db	3,126,1,5,5,9
 	.dw	_1405-_1404
+	.db	3,2,1,5,8,9
+	.dw	_1406-_1405
+	.db	3,126,1,5,6,9
+	.dw	_1407-_1406
+	.db	1,5,38,9
+	.dw	_1408-_1407
+	.db	1,5,51,9
+	.dw	_1409-_1408
 	.db	1,5,22,7,9
-	.dw	_3-_1405
+	.dw	_3-_1409
 	.db	3,2,1,5,20,9
 	.dw	_737-_3
 	.db	1,5,23,9
-	.dw	_1406-_737
+	.dw	_1410-_737
 	.db	1,5,87,9
-	.dw	_4-_1406
+	.dw	_4-_1410
 	.db	3,5,1,5,35,9
-	.dw	_1407-_4
+	.dw	_1411-_4
 	.db	1,5,51,9
-	.dw	_1408-_1407
-	.db	1,5,70,9
-	.dw	_1409-_1408
-	.db	1,5,35,9
-	.dw	_1410-_1409
-	.db	1,5,51,9
-	.dw	_1411-_1410
-	.db	1,5,35,9
 	.dw	_1412-_1411
-	.db	1,5,51,9
-	.dw	_1413-_1412
 	.db	1,5,70,9
+	.dw	_1413-_1412
+	.db	1,5,35,9
 	.dw	_1414-_1413
 	.db	1,5,51,9
 	.dw	_1415-_1414
-	.db	1,5,70,9
+	.db	1,5,35,9
 	.dw	_1416-_1415
-	.db	1,5,20,9
-	.dw	_358-_1416
-	.db	1,5,15,9
-	.dw	_1417-_358
-	.db	3,1,1,5,20,9
+	.db	1,5,51,9
+	.dw	_1417-_1416
+	.db	1,5,70,9
 	.dw	_1418-_1417
-	.db	3,127,1,5,19,9
+	.db	1,5,51,9
 	.dw	_1419-_1418
-	.db	3,1,1,5,15,9
+	.db	1,5,70,9
 	.dw	_1420-_1419
-	.db	1,5,19,9
-	.dw	_1421-_1420
+	.db	1,5,20,9
+	.dw	_358-_1420
 	.db	1,5,15,9
+	.dw	_1421-_358
+	.db	3,1,1,5,20,9
 	.dw	_1422-_1421
-	.db	1,5,8,9
-	.dw	_5-_1422
-	.db	3,3,1,5,18,9
-	.dw	_1423-_5
-	.db	1,5,8,9
+	.db	3,127,1,5,19,9
+	.dw	_1423-_1422
+	.db	3,1,1,5,15,9
 	.dw	_1424-_1423
-	.db	1,5,18,9
+	.db	1,5,19,9
 	.dw	_1425-_1424
-	.db	1,5,2,9
+	.db	1,5,15,9
 	.dw	_1426-_1425
-	.db	1,5,26,7,9
-	.dw	_1427-_1426
-	.db	3,2,1,5,28,9
+	.db	1,5,8,9
+	.dw	_5-_1426
+	.db	3,3,1,5,18,9
+	.dw	_1427-_5
+	.db	1,5,8,9
 	.dw	_1428-_1427
-	.db	1,5,7,9
-	.dw	_6-_1428
-	.db	3,2,1,5,26,9
-	.dw	_1429-_6
+	.db	1,5,18,9
+	.dw	_1429-_1428
+	.db	1,5,2,9
+	.dw	_1430-_1429
+	.db	1,5,26,7,9
+	.dw	_1431-_1430
 	.db	3,2,1,5,28,9
-	.dw	_740-_1429
+	.dw	_1432-_1431
+	.db	1,5,7,9
+	.dw	_6-_1432
+	.db	3,2,1,5,26,9
+	.dw	_1433-_6
+	.db	3,2,1,5,28,9
+	.dw	_740-_1433
 	.db	1,5,19,9
 	.dw	_8-_740
 	.db	3,4,1,5,7,9
-	.dw	_1430-_8
+	.dw	_1434-_8
 	.db	1,5,28,7,9
-	.dw	_1431-_1430
-	.db	1,5,40,9
-	.dw	_1432-_1431
-	.db	1,5,38,9
-	.dw	_1433-_1432
-	.db	1,5,27,9
-	.dw	_1434-_1433
-	.db	3,2,1,5,31,9
 	.dw	_1435-_1434
-	.db	1,5,28,9
-	.dw	_10-_1435
-	.db	3,126,1,5,43,9
-	.dw	_1436-_10
-	.db	1,5,27,9
+	.db	1,5,40,9
+	.dw	_1436-_1435
+	.db	1,5,38,9
 	.dw	_1437-_1436
-	.db	3,4,1,5,24,9
+	.db	1,5,27,9
 	.dw	_1438-_1437
-	.db	1,5,12,9
-	.dw	_1439-_1438
-	.db	1,5,48,7,9
-	.dw	_1440-_1439
-	.db	1,5,46,9
-	.dw	_1441-_1440
-	.db	1,5,27,9
-	.dw	_1442-_1441
 	.db	3,2,1,5,31,9
-	.dw	_1443-_1442
+	.dw	_1439-_1438
+	.db	1,5,28,9
+	.dw	_10-_1439
+	.db	3,126,1,5,43,9
+	.dw	_1440-_10
 	.db	1,5,27,9
-	.dw	_13-_1443
-	.db	3,2,1,5,24,9
-	.dw	_1444-_13
-	.db	1,5,8,9
+	.dw	_1441-_1440
+	.db	3,4,1,5,24,9
+	.dw	_1442-_1441
+	.db	1,5,12,9
+	.dw	_1443-_1442
+	.db	1,5,48,7,9
+	.dw	_1444-_1443
+	.db	1,5,46,9
 	.dw	_1445-_1444
-	.db	1,5,29,7,9
+	.db	1,5,27,9
 	.dw	_1446-_1445
+	.db	3,2,1,5,31,9
+	.dw	_1447-_1446
+	.db	1,5,27,9
+	.dw	_13-_1447
+	.db	3,2,1,5,24,9
+	.dw	_1448-_13
+	.db	1,5,8,9
+	.dw	_1449-_1448
+	.db	1,5,29,7,9
+	.dw	_1450-_1449
 	.db	3,2,1,5,1,9
-	.dw	_16-_1446
+	.dw	_16-_1450
 	.db	3,3,1,9
 	.dw	_153-_16
 	.db	0,1,1
-_1379:
+_1383:
 	; End of section
 
 	.debug		.debug_ranges, cluster 'BrakePressureSensor_update'
@@ -1869,34 +1897,34 @@ _152:
 	.debug		.debug_pubnames
 	.dl	45
 	.dw	2
-	.dl	_149,268,162
+	.dl	_149,265,159
 	.db	'BrakePressureSensor_update',0
 	.dl	0
 	; End of section
 
 	.debug		.debug_info, cluster 'BrakePressureSensor_getIndividualSensorPercent'
 _154:
-	.dl	316
+	.dl	313
 	.dw	3
 	.dl	_155
 	.db	4,1
 	.db	'brakePressureSensor.c',0
 	.db	'TASKING VX-toolset for C166: C compiler',0
-	.db	'C:\\Users\\helix\\Desktop\\SRE\\SRE SDK 2017-18\\VCU\\Environment\\dev\\Example_\\',0,12,1
+	.db	'C:\\Users\\helix\\Desktop\\SRE\\SRE SDK 2017-18\\VCU\\Environment\\dev\\SRE-3\\',0,12,1
 	.dl	_157,_156
 	.db	2
 	.dl	_140
 	.db	3
-	.db	'BrakePressureSensor_getIndividualSensorPercent',0,1,192,1,6,6,1,1,1
+	.db	'BrakePressureSensor_getIndividualSensorPercent',0,1,196,1,6,6,1,1,1
 	.dl	_117,_158,_116
 	.db	12,19,146,176,2,0,64,36,146,161,2,0,33,4
-	.db	'me',0,1,192,1,74,2
+	.db	'me',0,1,196,1,74,2
 	.dl	_189,_205
 	.db	4
-	.db	'sensorNumber',0,1,192,1,85,2
+	.db	'sensorNumber',0,1,196,1,85,2
 	.dl	_203,_206
 	.db	4
-	.db	'percent',0,1,192,1,107,2
+	.db	'percent',0,1,196,1,107,2
 	.dl	_207,_208
 	.db	5
 	.dl	_117,_158
@@ -1912,24 +1940,24 @@ _155:
 
 	.debug		.debug_line, cluster 'BrakePressureSensor_getIndividualSensorPercent'
 _156:
-	.dl	_1448-_1447
-_1447:
+	.dl	_1452-_1451
+_1451:
 	.dw	3
-	.dl	_1450-_1449
-_1449:
+	.dl	_1454-_1453
+_1453:
 	.db	2,1,-4,9,10,0,1,1,1,1,0,0,0,1,0
 	.db	'brakePressureSensor.c',0,0,0,0,0
-_1450:
+_1454:
 	.db	5,2,7,0,5,2
 	.dl	_117
-	.db	3,197,1,1,5,16,9
+	.db	3,201,1,1,5,16,9
 	.dw	_29-_117
 	.db	3,3,1,5,12,9
-	.dw	_1451-_29
+	.dw	_1455-_29
 	.db	1,5,1,9
-	.dw	_1452-_1451
+	.dw	_1456-_1455
 	.db	3,13,1,5,14,7,9
-	.dw	_30-_1452
+	.dw	_30-_1456
 	.db	3,121,1,5,12,9
 	.dw	_1347-_30
 	.db	1,5,1,9
@@ -1937,7 +1965,7 @@ _1450:
 	.db	3,7,1,7,9
 	.dw	_158-_28
 	.db	0,1,1
-_1448:
+_1452:
 	; End of section
 
 	.debug		.debug_ranges, cluster 'BrakePressureSensor_getIndividualSensorPercent'
@@ -1948,20 +1976,20 @@ _157:
 	.debug		.debug_pubnames
 	.dl	65
 	.dw	2
-	.dl	_154,320,162
+	.dl	_154,317,159
 	.db	'BrakePressureSensor_getIndividualSensorPercent',0
 	.dl	0
 	; End of section
 
 	.debug		.debug_info, cluster 'BrakePressureSensor_resetCalibration'
 _159:
-	.dl	209
+	.dl	206
 	.dw	3
 	.dl	_160
 	.db	4,1
 	.db	'brakePressureSensor.c',0
 	.db	'TASKING VX-toolset for C166: C compiler',0
-	.db	'C:\\Users\\helix\\Desktop\\SRE\\SRE SDK 2017-18\\VCU\\Environment\\dev\\Example_\\',0,12,1
+	.db	'C:\\Users\\helix\\Desktop\\SRE\\SRE SDK 2017-18\\VCU\\Environment\\dev\\SRE-3\\',0,12,1
 	.dl	_162,_161
 	.db	2
 	.dl	_140
@@ -1984,34 +2012,34 @@ _160:
 
 	.debug		.debug_line, cluster 'BrakePressureSensor_resetCalibration'
 _161:
-	.dl	_1454-_1453
-_1453:
+	.dl	_1458-_1457
+_1457:
 	.dw	3
-	.dl	_1456-_1455
-_1455:
+	.dl	_1460-_1459
+_1459:
 	.db	2,1,-4,9,10,0,1,1,1,1,0,0,0,1,0
 	.db	'brakePressureSensor.c',0,0,0,0,0
-_1456:
+_1460:
 	.db	5,4,7,0,5,2
 	.dl	_57
-	.db	3,221,0,1,5,22,9
-	.dw	_1457-_57
+	.db	3,225,0,1,5,22,9
+	.dw	_1461-_57
 	.db	1,5,20,9
-	.dw	_1458-_1457
-	.db	1,5,4,9
-	.dw	_1459-_1458
-	.db	3,1,1,5,22,9
-	.dw	_1460-_1459
-	.db	1,5,20,9
-	.dw	_1461-_1460
-	.db	1,5,7,9
 	.dw	_1462-_1461
-	.db	3,122,1,5,1,9
+	.db	1,5,4,9
 	.dw	_1463-_1462
+	.db	3,1,1,5,22,9
+	.dw	_1464-_1463
+	.db	1,5,20,9
+	.dw	_1465-_1464
+	.db	1,5,7,9
+	.dw	_1466-_1465
+	.db	3,122,1,5,1,9
+	.dw	_1467-_1466
 	.db	3,15,1,9
-	.dw	_163-_1463
+	.dw	_163-_1467
 	.db	0,1,1
-_1454:
+_1458:
 	; End of section
 
 	.debug		.debug_ranges, cluster 'BrakePressureSensor_resetCalibration'
@@ -2021,21 +2049,21 @@ _162:
 
 	.debug		.debug_info, cluster 'BrakePressureSensor_saveCalibrationToEEPROM'
 _164:
-	.dl	262
+	.dl	259
 	.dw	3
 	.dl	_165
 	.db	4,1
 	.db	'brakePressureSensor.c',0
 	.db	'TASKING VX-toolset for C166: C compiler',0
-	.db	'C:\\Users\\helix\\Desktop\\SRE\\SRE SDK 2017-18\\VCU\\Environment\\dev\\Example_\\',0,12,1
+	.db	'C:\\Users\\helix\\Desktop\\SRE\\SRE SDK 2017-18\\VCU\\Environment\\dev\\SRE-3\\',0,12,1
 	.dl	_167,_166
 	.db	2
 	.dl	_140
 	.db	3
-	.db	'BrakePressureSensor_saveCalibrationToEEPROM',0,1,106,6,6,1,1,1
+	.db	'BrakePressureSensor_saveCalibrationToEEPROM',0,1,110,6,6,1,1,1
 	.dl	_69,_168,_68
 	.db	12,19,146,176,2,0,64,36,146,161,2,0,33,4
-	.db	'me',0,1,106,71,2
+	.db	'me',0,1,110,71,2
 	.dl	_189,_210
 	.db	5
 	.dl	_69,_168
@@ -2051,20 +2079,20 @@ _165:
 
 	.debug		.debug_line, cluster 'BrakePressureSensor_saveCalibrationToEEPROM'
 _166:
-	.dl	_1465-_1464
-_1464:
+	.dl	_1469-_1468
+_1468:
 	.dw	3
-	.dl	_1467-_1466
-_1466:
+	.dl	_1471-_1470
+_1470:
 	.db	2,1,-4,9,10,0,1,1,1,1,0,0,0,1,0
 	.db	'brakePressureSensor.c',0,0,0,0,0
-_1467:
+_1471:
 	.db	5,1,7,0,5,2
 	.dl	_69
-	.db	3,236,0,1,7,9
+	.db	3,240,0,1,7,9
 	.dw	_168-_69
 	.db	0,1,1
-_1465:
+_1469:
 	; End of section
 
 	.debug		.debug_ranges, cluster 'BrakePressureSensor_saveCalibrationToEEPROM'
@@ -2075,28 +2103,28 @@ _167:
 	.debug		.debug_pubnames
 	.dl	62
 	.dw	2
-	.dl	_164,266,162
+	.dl	_164,263,159
 	.db	'BrakePressureSensor_saveCalibrationToEEPROM',0
 	.dl	0
 	; End of section
 
 	.debug		.debug_info, cluster 'BrakePressureSensor_loadCalibrationFromEEPROM'
 _169:
-	.dl	264
+	.dl	261
 	.dw	3
 	.dl	_170
 	.db	4,1
 	.db	'brakePressureSensor.c',0
 	.db	'TASKING VX-toolset for C166: C compiler',0
-	.db	'C:\\Users\\helix\\Desktop\\SRE\\SRE SDK 2017-18\\VCU\\Environment\\dev\\Example_\\',0,12,1
+	.db	'C:\\Users\\helix\\Desktop\\SRE\\SRE SDK 2017-18\\VCU\\Environment\\dev\\SRE-3\\',0,12,1
 	.dl	_172,_171
 	.db	2
 	.dl	_140
 	.db	3
-	.db	'BrakePressureSensor_loadCalibrationFromEEPROM',0,1,111,6,6,1,1,1
+	.db	'BrakePressureSensor_loadCalibrationFromEEPROM',0,1,115,6,6,1,1,1
 	.dl	_81,_173,_80
 	.db	12,19,146,176,2,0,64,36,146,161,2,0,33,4
-	.db	'me',0,1,111,73,2
+	.db	'me',0,1,115,73,2
 	.dl	_189,_211
 	.db	5
 	.dl	_81,_173
@@ -2112,20 +2140,20 @@ _170:
 
 	.debug		.debug_line, cluster 'BrakePressureSensor_loadCalibrationFromEEPROM'
 _171:
-	.dl	_1469-_1468
-_1468:
+	.dl	_1473-_1472
+_1472:
 	.dw	3
-	.dl	_1471-_1470
-_1470:
+	.dl	_1475-_1474
+_1474:
 	.db	2,1,-4,9,10,0,1,1,1,1,0,0,0,1,0
 	.db	'brakePressureSensor.c',0,0,0,0,0
-_1471:
+_1475:
 	.db	5,1,7,0,5,2
 	.dl	_81
-	.db	3,241,0,1,7,9
+	.db	3,245,0,1,7,9
 	.dw	_173-_81
 	.db	0,1,1
-_1469:
+_1473:
 	; End of section
 
 	.debug		.debug_ranges, cluster 'BrakePressureSensor_loadCalibrationFromEEPROM'
@@ -2136,31 +2164,31 @@ _172:
 	.debug		.debug_pubnames
 	.dl	64
 	.dw	2
-	.dl	_169,268,162
+	.dl	_169,265,159
 	.db	'BrakePressureSensor_loadCalibrationFromEEPROM',0
 	.dl	0
 	; End of section
 
 	.debug		.debug_info, cluster 'BrakePressureSensor_startCalibration'
 _174:
-	.dl	337
+	.dl	334
 	.dw	3
 	.dl	_175
 	.db	4,1
 	.db	'brakePressureSensor.c',0
 	.db	'TASKING VX-toolset for C166: C compiler',0
-	.db	'C:\\Users\\helix\\Desktop\\SRE\\SRE SDK 2017-18\\VCU\\Environment\\dev\\Example_\\',0,12,1
+	.db	'C:\\Users\\helix\\Desktop\\SRE\\SRE SDK 2017-18\\VCU\\Environment\\dev\\SRE-3\\',0,12,1
 	.dl	_177,_176
 	.db	2
 	.dl	_140
 	.db	3
-	.db	'BrakePressureSensor_startCalibration',0,1,116,6,6,1,1,1
+	.db	'BrakePressureSensor_startCalibration',0,1,120,6,6,1,1,1
 	.dl	_93,_178,_92
 	.db	12,19,146,176,2,0,64,36,146,161,2,0,33,4
-	.db	'me',0,1,116,64,2
+	.db	'me',0,1,120,64,2
 	.dl	_189,_212
 	.db	4
-	.db	'secondsToRun',0,1,116,75,2
+	.db	'secondsToRun',0,1,120,75,2
 	.dl	_203,_213
 	.db	5
 	.dl	_93,_178
@@ -2186,70 +2214,70 @@ _175:
 
 	.debug		.debug_line, cluster 'BrakePressureSensor_startCalibration'
 _176:
-	.dl	_1473-_1472
-_1472:
+	.dl	_1477-_1476
+_1476:
 	.dw	3
-	.dl	_1475-_1474
-_1474:
+	.dl	_1479-_1478
+_1478:
 	.db	2,1,-4,9,10,0,1,1,1,1,0,0,0,1,0
 	.db	'brakePressureSensor.c',0,0,0,0,0
-_1475:
+_1479:
 	.db	5,6,7,0,5,2
 	.dl	_93
-	.db	3,243,0,1,5,30,9
+	.db	3,247,0,1,5,30,9
 	.dw	_871-_93
 	.db	3,7,1,5,11,9
-	.dw	_1476-_871
+	.dw	_1480-_871
 	.db	3,123,1,5,6,9
-	.dw	_1477-_1476
-	.db	3,126,1,5,30,9
-	.dw	_873-_1477
-	.db	3,7,1,5,11,9
-	.dw	_1478-_873
-	.db	3,123,1,5,5,9
-	.dw	_1479-_1478
-	.db	1,5,30,7,9
-	.dw	_1480-_1479
-	.db	3,2,1,5,28,9
 	.dw	_1481-_1480
-	.db	1,5,7,9
-	.dw	_214-_1481
-	.db	3,97,1,5,4,9
-	.dw	_1482-_214
-	.db	3,5,1,5,22,9
+	.db	3,126,1,5,30,9
+	.dw	_873-_1481
+	.db	3,7,1,5,11,9
+	.dw	_1482-_873
+	.db	3,123,1,5,5,9
 	.dw	_1483-_1482
-	.db	3,123,1,5,20,9
-	.dw	_870-_1483
-	.db	1,5,22,9
-	.dw	_1484-_870
-	.db	3,5,1,5,20,9
+	.db	1,5,30,7,9
+	.dw	_1484-_1483
+	.db	3,2,1,5,28,9
 	.dw	_1485-_1484
+	.db	1,5,7,9
+	.dw	_214-_1485
+	.db	3,97,1,5,4,9
+	.dw	_1486-_214
+	.db	3,5,1,5,22,9
+	.dw	_1487-_1486
+	.db	3,123,1,5,20,9
+	.dw	_870-_1487
+	.db	1,5,22,9
+	.dw	_1488-_870
+	.db	3,5,1,5,20,9
+	.dw	_1489-_1488
 	.db	1,5,4,9
-	.dw	_1486-_1485
+	.dw	_1490-_1489
 	.db	3,1,1,5,11,9
-	.dw	_215-_1486
+	.dw	_215-_1490
 	.db	3,29,1,5,22,9
 	.dw	_218-_215
 	.db	3,99,1,5,20,9
-	.dw	_1487-_218
+	.dw	_1491-_218
 	.db	1,9
-	.dw	_1488-_1487
+	.dw	_1492-_1491
 	.db	3,8,1,5,24,9
-	.dw	_219-_1488
+	.dw	_219-_1492
 	.db	3,19,1,5,30,9
-	.dw	_1489-_219
+	.dw	_1493-_219
 	.db	3,1,1,5,32,9
-	.dw	_1490-_1489
+	.dw	_1494-_1493
 	.db	3,1,1,5,34,9
-	.dw	_1491-_1490
+	.dw	_1495-_1494
 	.db	3,124,1,5,30,9
-	.dw	_17-_1491
+	.dw	_17-_1495
 	.db	3,8,1,5,1,9
 	.dw	_18-_17
 	.db	3,2,1,9
 	.dw	_178-_18
 	.db	0,1,1
-_1473:
+_1477:
 	; End of section
 
 	.debug		.debug_ranges, cluster 'BrakePressureSensor_startCalibration'
@@ -2262,31 +2290,31 @@ _217:
 	.debug		.debug_pubnames
 	.dl	55
 	.dw	2
-	.dl	_174,341,162
+	.dl	_174,338,159
 	.db	'BrakePressureSensor_startCalibration',0
 	.dl	0
 	; End of section
 
 	.debug		.debug_info, cluster 'BrakePressureSensor_calibrationCycle'
 _179:
-	.dl	292
+	.dl	289
 	.dw	3
 	.dl	_180
 	.db	4,1
 	.db	'brakePressureSensor.c',0
 	.db	'TASKING VX-toolset for C166: C compiler',0
-	.db	'C:\\Users\\helix\\Desktop\\SRE\\SRE SDK 2017-18\\VCU\\Environment\\dev\\Example_\\',0,12,1
+	.db	'C:\\Users\\helix\\Desktop\\SRE\\SRE SDK 2017-18\\VCU\\Environment\\dev\\SRE-3\\',0,12,1
 	.dl	_182,_181
 	.db	2
 	.dl	_140
 	.db	3
-	.db	'BrakePressureSensor_calibrationCycle',0,1,143,1,6,6,1,1,1
+	.db	'BrakePressureSensor_calibrationCycle',0,1,147,1,6,6,1,1,1
 	.dl	_105,_183,_104
 	.db	12,19,146,176,2,0,64,36,146,161,2,0,33,4
-	.db	'me',0,1,143,1,64,2
+	.db	'me',0,1,147,1,64,2
 	.dl	_189,_220
 	.db	4
-	.db	'errorCount',0,1,143,1,76,2
+	.db	'errorCount',0,1,147,1,76,2
 	.dl	_221,_222
 	.db	5
 	.dl	_105,_183
@@ -2304,118 +2332,118 @@ _180:
 
 	.debug		.debug_line, cluster 'BrakePressureSensor_calibrationCycle'
 _181:
-	.dl	_1493-_1492
-_1492:
+	.dl	_1497-_1496
+_1496:
 	.dw	3
-	.dl	_1495-_1494
-_1494:
+	.dl	_1499-_1498
+_1498:
 	.db	2,1,-4,9,10,0,1,1,1,1,0,0,0,1,0
 	.db	'brakePressureSensor.c',0,0,0,0,0
-_1495:
+_1499:
 	.db	5,6,7,0,5,2
 	.dl	_105
-	.db	3,142,1,1,5,11,9
+	.db	3,146,1,1,5,11,9
 	.dw	_1341-_105
 	.db	3,2,1,5,5,9
 	.dw	_1339-_1341
 	.db	1,5,32,9
-	.dw	_1496-_1339
+	.dw	_1500-_1339
 	.db	3,2,1,5,34,9
-	.dw	_1497-_1496
-	.db	3,3,1,5,32,9
-	.dw	_1498-_1497
-	.db	3,125,1,5,34,9
-	.dw	_1499-_1498
-	.db	3,3,1,5,32,9
-	.dw	_1500-_1499
-	.db	3,125,1,5,75,9
 	.dw	_1501-_1500
-	.db	1,5,34,9
+	.db	3,3,1,5,32,9
 	.dw	_1502-_1501
-	.db	3,3,1,5,75,9
+	.db	3,125,1,5,34,9
 	.dw	_1503-_1502
-	.db	3,125,1,5,64,9
+	.db	3,3,1,5,32,9
 	.dw	_1504-_1503
-	.db	1,5,104,9
+	.db	3,125,1,5,75,9
 	.dw	_1505-_1504
-	.db	1,5,97,9
+	.db	1,5,34,9
 	.dw	_1506-_1505
-	.db	1,5,9,9
+	.db	3,3,1,5,75,9
 	.dw	_1507-_1506
-	.db	1,5,10,9
+	.db	3,125,1,5,64,9
 	.dw	_1508-_1507
-	.db	3,3,1,5,16,9
+	.db	1,5,104,9
 	.dw	_1509-_1508
-	.db	1,5,34,9
+	.db	1,5,97,9
 	.dw	_1510-_1509
-	.db	1,5,4,9
+	.db	1,5,9,9
 	.dw	_1511-_1510
-	.db	1,5,71,9
+	.db	1,5,10,9
 	.dw	_1512-_1511
-	.db	1,5,10,9
-	.dw	_21-_1512
-	.db	3,1,1,5,34,9
-	.dw	_1513-_21
-	.db	1,5,10,9
-	.dw	_1514-_1513
-	.db	1,5,16,9
-	.dw	_1515-_1514
+	.db	3,3,1,5,16,9
+	.dw	_1513-_1512
 	.db	1,5,34,9
-	.dw	_1516-_1515
+	.dw	_1514-_1513
 	.db	1,5,4,9
-	.dw	_1517-_1516
+	.dw	_1515-_1514
 	.db	1,5,71,9
+	.dw	_1516-_1515
+	.db	1,5,10,9
+	.dw	_21-_1516
+	.db	3,1,1,5,34,9
+	.dw	_1517-_21
+	.db	1,5,10,9
 	.dw	_1518-_1517
-	.db	1,5,4,9
+	.db	1,5,16,9
 	.dw	_1519-_1518
-	.db	1,5,36,9
-	.dw	_20-_1519
-	.db	3,11,1,5,34,9
-	.dw	_1520-_20
-	.db	1,5,51,7,9
+	.db	1,5,34,9
+	.dw	_1520-_1519
+	.db	1,5,4,9
 	.dw	_1521-_1520
-	.db	1,5,69,9
+	.db	1,5,71,9
 	.dw	_1522-_1521
+	.db	1,5,4,9
+	.dw	_1523-_1522
+	.db	1,5,36,9
+	.dw	_20-_1523
+	.db	3,11,1,5,34,9
+	.dw	_1524-_20
+	.db	1,5,51,7,9
+	.dw	_1525-_1524
+	.db	1,5,69,9
+	.dw	_1526-_1525
 	.db	1,5,51,9
-	.dw	_24-_1522
+	.dw	_24-_1526
 	.db	1,5,15,9
 	.dw	_25-_24
 	.db	1,5,31,9
-	.dw	_1523-_25
+	.dw	_1527-_25
 	.db	1,5,34,9
-	.dw	_1524-_1523
+	.dw	_1528-_1527
 	.db	3,1,1,5,51,9
-	.dw	_1525-_1524
+	.dw	_1529-_1528
 	.db	1,5,66,9
-	.dw	_1526-_1525
+	.dw	_1530-_1529
 	.db	1,5,51,9
-	.dw	_26-_1526
+	.dw	_26-_1530
 	.db	1,5,15,9
 	.dw	_27-_26
 	.db	1,5,6,9
-	.dw	_1527-_27
+	.dw	_1531-_27
 	.db	3,5,1,5,15,9
-	.dw	_1528-_1527
-	.db	3,123,1,5,31,9
-	.dw	_1529-_1528
-	.db	1,5,23,9
-	.dw	_1530-_1529
-	.db	3,4,1,5,25,9
-	.dw	_1531-_1530
-	.db	1,5,23,9
 	.dw	_1532-_1531
-	.db	1,5,21,9
+	.db	3,123,1,5,31,9
 	.dw	_1533-_1532
-	.db	3,1,1,5,19,9
+	.db	1,5,23,9
 	.dw	_1534-_1533
-	.db	1,5,29,9
+	.db	3,4,1,5,25,9
 	.dw	_1535-_1534
+	.db	1,5,23,9
+	.dw	_1536-_1535
+	.db	1,5,21,9
+	.dw	_1537-_1536
+	.db	3,1,1,5,19,9
+	.dw	_1538-_1537
+	.db	1,5,29,9
+	.dw	_1539-_1538
 	.db	3,1,1,5,1,9
-	.dw	_19-_1535
+	.dw	_19-_1539
 	.db	3,20,1,9
 	.dw	_183-_19
 	.db	0,1,1
-_1493:
+_1497:
 	; End of section
 
 	.debug		.debug_ranges, cluster 'BrakePressureSensor_calibrationCycle'
@@ -2426,34 +2454,34 @@ _182:
 	.debug		.debug_pubnames
 	.dl	55
 	.dw	2
-	.dl	_179,296,162
+	.dl	_179,293,159
 	.db	'BrakePressureSensor_calibrationCycle',0
 	.dl	0
 	; End of section
 
 	.debug		.debug_info, cluster 'BrakePressureSensor_getPedalTravel'
 _184:
-	.dl	307
+	.dl	304
 	.dw	3
 	.dl	_185
 	.db	4,1
 	.db	'brakePressureSensor.c',0
 	.db	'TASKING VX-toolset for C166: C compiler',0
-	.db	'C:\\Users\\helix\\Desktop\\SRE\\SRE SDK 2017-18\\VCU\\Environment\\dev\\Example_\\',0,12,1
+	.db	'C:\\Users\\helix\\Desktop\\SRE\\SRE SDK 2017-18\\VCU\\Environment\\dev\\SRE-3\\',0,12,1
 	.dl	_187,_186
 	.db	2
 	.dl	_140
 	.db	3
-	.db	'BrakePressureSensor_getPedalTravel',0,1,227,1,6,6,1,1,1
+	.db	'BrakePressureSensor_getPedalTravel',0,1,231,1,6,6,1,1,1
 	.dl	_129,_188,_128
 	.db	12,19,146,176,2,0,64,36,146,161,2,0,33,4
-	.db	'me',0,1,227,1,62,2
+	.db	'me',0,1,231,1,62,2
 	.dl	_189,_223
 	.db	4
-	.db	'errorCount',0,1,227,1,74,2
+	.db	'errorCount',0,1,231,1,74,2
 	.dl	_221,_224
 	.db	4
-	.db	'pedalPercent',0,1,227,1,94,2
+	.db	'pedalPercent',0,1,231,1,94,2
 	.dl	_207,_225
 	.db	5
 	.dl	_129,_188
@@ -2469,24 +2497,24 @@ _185:
 
 	.debug		.debug_line, cluster 'BrakePressureSensor_getPedalTravel'
 _186:
-	.dl	_1537-_1536
-_1536:
+	.dl	_1541-_1540
+_1540:
 	.dw	3
-	.dl	_1539-_1538
-_1538:
+	.dl	_1543-_1542
+_1542:
 	.db	2,1,-4,9,10,0,1,1,1,1,0,0,0,1,0
 	.db	'brakePressureSensor.c',0,0,0,0,0
-_1539:
+_1543:
 	.db	5,20,7,0,5,2
 	.dl	_129
-	.db	3,228,1,1,5,16,9
-	.dw	_1540-_129
+	.db	3,232,1,1,5,16,9
+	.dw	_1544-_129
 	.db	1,5,1,9
-	.dw	_1541-_1540
+	.dw	_1545-_1544
 	.db	3,14,1,7,9
-	.dw	_188-_1541
+	.dw	_188-_1545
 	.db	0,1,1
-_1537:
+_1541:
 	; End of section
 
 	.debug		.debug_ranges, cluster 'BrakePressureSensor_getPedalTravel'
@@ -2497,7 +2525,7 @@ _187:
 	.debug		.debug_pubnames
 	.dl	53
 	.dw	2
-	.dl	_184,311,162
+	.dl	_184,308,159
 	.db	'BrakePressureSensor_getPedalTravel',0
 	.dl	0
 	; End of section
@@ -4382,34 +4410,34 @@ _202:
 	; End of section
 
 	.debug		.debug_frame
-_1542:
+_1546:
 	.dl	184
 	.dl	-1
 	.db	3,0,2,2,173,2,15,60,127,0,18,10
 	.dw	16383
 	.db	26,22,62,37,18,48,46,40
-	.dw	_1543-_1547
-_1547:
-	.db	146,177,2,0,47
-	.dw	_1546-_1548
-_1548:
-_1543:
-	.db	18,49,46,40
-	.dw	_1544-_1549
-_1549:
-	.db	146,178,2,0,47
-	.dw	_1546-_1550
-_1550:
-_1544:
-	.db	18,50,46,40
-	.dw	_1545-_1551
+	.dw	_1547-_1551
 _1551:
-	.db	146,179,2,0,47
-	.dw	_1546-_1552
+	.db	146,177,2,0,47
+	.dw	_1550-_1552
 _1552:
-_1545:
+_1547:
+	.db	18,49,46,40
+	.dw	_1548-_1553
+_1553:
+	.db	146,178,2,0,47
+	.dw	_1550-_1554
+_1554:
+_1548:
+	.db	18,50,46,40
+	.dw	_1549-_1555
+_1555:
+	.db	146,179,2,0,47
+	.dw	_1550-_1556
+_1556:
+_1549:
 	.db	146,180,2,0
-_1546:
+_1550:
 	.db	22,19,62,36,33,48,34,16,173,2,12,19,146,176,2,0,64,36,146,161,2,0,33,8,15,22,161,2,5,19,146,161,2,4,8
 	.db	162,2,8,166,2,8,177,2,8,178,2,8,179,2,8,180,2,8,0,8,1,8,6,8,7,8,8,8,9,8,10,8,167,2,8,168,2,8,169,2,8,170
 	.db	2,8,171,2,8,172,2,16,174,2,12,19,146,176,2,0,64,36,146,161,2,0,33,16,175,2,12,19,146,176,2,0,64,36,146
@@ -4418,12 +4446,12 @@ _1546:
 
 	.debug		.debug_frame, cluster 'BrakePressureSensor_new'
 	.dl	12
-	.dl	_1542,_33,_148-_33
+	.dl	_1546,_33,_148-_33
 	; End of section
 
 	.debug		.debug_frame, cluster 'BrakePressureSensor_update'
 	.dl	1812
-	.dl	_1542,_45,_153-_45
+	.dl	_1546,_45,_153-_45
 	.db	4
 	.dl	(_226-_45)/2
 	.db	15,60,127,0,18,10
@@ -5083,25 +5111,25 @@ _726:
 
 	.debug		.debug_frame, cluster 'BrakePressureSensor_resetCalibration'
 	.dl	20
-	.dl	_1542,_57,_163-_57
+	.dl	_1546,_57,_163-_57
 	.db	8,160,2,8,5,8,14,0
 	; End of section
 
 	.debug		.debug_frame, cluster 'BrakePressureSensor_saveCalibrationToEEPROM'
 	.dl	32
-	.dl	_1542,_69,_168-_69
+	.dl	_1546,_69,_168-_69
 	.db	8,160,2,8,2,8,3,8,4,8,5,8,11,8,12,8,13,8,14,0
 	; End of section
 
 	.debug		.debug_frame, cluster 'BrakePressureSensor_loadCalibrationFromEEPROM'
 	.dl	32
-	.dl	_1542,_81,_173-_81
+	.dl	_1546,_81,_173-_81
 	.db	8,160,2,8,2,8,3,8,4,8,5,8,11,8,12,8,13,8,14,0
 	; End of section
 
 	.debug		.debug_frame, cluster 'BrakePressureSensor_startCalibration'
 	.dl	460
-	.dl	_1542,_93,_178-_93
+	.dl	_1546,_93,_178-_93
 	.db	4
 	.dl	(_743-_93)/2
 	.db	15,60,127,0,18,10
@@ -5269,7 +5297,7 @@ _862:
 
 	.debug		.debug_frame, cluster 'BrakePressureSensor_calibrationCycle'
 	.dl	1668
-	.dl	_1542,_105,_183-_105
+	.dl	_1546,_105,_183-_105
 	.db	4
 	.dl	(_874-_105)/2
 	.db	15,60,127,0,18,10
@@ -5875,13 +5903,13 @@ _1332:
 
 	.debug		.debug_frame, cluster 'BrakePressureSensor_getIndividualSensorPercent'
 	.dl	20
-	.dl	_1542,_117,_158-_117
+	.dl	_1546,_117,_158-_117
 	.db	8,160,2,8,5,0,0,0
 	; End of section
 
 	.debug		.debug_frame, cluster 'BrakePressureSensor_getPedalTravel'
 	.dl	20
-	.dl	_1542,_129,_188-_129
+	.dl	_1546,_129,_188-_129
 	.db	8,160,2,8,4,8,5,0
 	; End of section
 

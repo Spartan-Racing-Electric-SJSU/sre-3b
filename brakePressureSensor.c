@@ -23,7 +23,11 @@ BrakePressureSensor* BrakePressureSensor_new(void)
     //TODO: Make sure the main loop is running before doing this
     me->bps0 = &Sensor_BPS0;
     //me->tps1 = (benchMode == TRUE) ? &Sensor_BenchTPS1 : &Sensor_TPS1;
-	
+
+	//Note: BPS sits slightly below 0.5V but it's still within range
+	Sensor_BPS0.specMin = 500 - 4000 * .005; //0.5V +/- 0.5%
+	Sensor_BPS0.specMax = 4500 + 4000 * .0025; //+/- 0.25%
+
 	//Where/should these be hardcoded?
 	me->bps0_reverse = FALSE;
 	//me->bps1_reverse = TRUE;
@@ -40,7 +44,7 @@ BrakePressureSensor* BrakePressureSensor_new(void)
 //Updates all values based on sensor readings, safety checks, etc
 void BrakePressureSensor_update(BrakePressureSensor* me, bool bench)
 {
-	me->bps0_value = (ubyte2) me->bps0->sensorValue;
+	me->bps0_value = me->bps0->sensorValue;
 	//me->bps1_value = me->bps1->sensorValue;
 
 	me->percent = 0;
@@ -147,8 +151,8 @@ void BrakePressureSensor_calibrationCycle(BrakePressureSensor* me, ubyte1* error
         if (IO_RTC_GetTimeUS(me->timestamp_calibrationStart) < (ubyte4)(me->calibrationRunTime) * 1000 * 1000)
         {
 			//The calibration itself
-			if (me->bps0->sensorValue < me->bps0_calibMin) { me->bps0_calibMin = (ubyte2) me->bps0->sensorValue; }
-			if (me->bps0->sensorValue > me->bps0_calibMax) { me->bps0_calibMax = (ubyte2) me->bps0->sensorValue; }
+			if (me->bps0->sensorValue < me->bps0_calibMin) { me->bps0_calibMin = me->bps0->sensorValue; }
+			if (me->bps0->sensorValue > me->bps0_calibMax) { me->bps0_calibMax = me->bps0->sensorValue; }
 
 			//if (me->bps1->sensorValue < me->bps1_calibMin) { me->bps1_calibMin = me->bps1->sensorValue; }
 			//if (me->bps1->sensorValue > me->bps1_calibMax) { me->bps1_calibMax = me->bps1->sensorValue; }
