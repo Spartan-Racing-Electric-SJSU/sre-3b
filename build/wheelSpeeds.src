@@ -1,0 +1,4174 @@
+	; TASKING VX-toolset for C166: C compiler v4.0r1 Build 741 SN 07744515
+	; Options: -f cc13416a -c99 -Mh --fp-model=FT -Cxc2287 --core=xc16x -DTASKING_VIPER -D__USIC_MEM_TYPE=__PAGE_080_MEM_TYPE -D__MULTICAN_MEM_TYPE=__PAGE_080_MEM_TYPE -DTTC50 -DRTS_TTC_FLASH_DATE_YEAR=2018 -DRTS_TTC_FLASH_DATE_MONTH=4 -DRTS_TTC_FLASH_DATE_DAY=5 -DRTS_TTC_FLASH_DATE_HOUR=18 -DRTS_TTC_FLASH_DATE_MINUTE=55 -I..\..\..\Environment\inc -I..\..\..\Environment\inc_int -I..\..\..\Environment\bsp -I. --tradeoff=0 --no-tasking-sfr -ga --language=+cmp14,+div32,-gcc,-strings -O3 --source --mac -o build\wheelSpeeds.src
+	; Module start
+	.source	'wheelSpeeds.c'
+code_WheelSpeeds_new	.section	code, cluster 'WheelSpeeds_new', new
+	.global	_WheelSpeeds_new
+
+; wheelSpeeds.c	     1  #include <stdlib.h>  //Needed for malloc
+; wheelSpeeds.c	     2  #include <math.h>
+; wheelSpeeds.c	     3  #include "IO_RTC.h"
+; wheelSpeeds.c	     4  #include "IO_DIO.h"
+; wheelSpeeds.c	     5  
+; wheelSpeeds.c	     6  #include "wheelSpeeds.h"
+; wheelSpeeds.c	     7  #include "mathFunctions.h"
+; wheelSpeeds.c	     8  
+; wheelSpeeds.c	     9  #include "sensors.h"
+; wheelSpeeds.c	    10  //extern Sensor Sensor_BPS0;
+; wheelSpeeds.c	    11  //extern Sensor Sensor_BenchTPS1;
+; wheelSpeeds.c	    12  
+; wheelSpeeds.c	    13  
+; wheelSpeeds.c	    14  /*****************************************************************************
+; wheelSpeeds.c	    15  * Wheel Speed object
+; wheelSpeeds.c	    16  ******************************************************************************
+; wheelSpeeds.c	    17  * This object converts raw wheel speed sensor readings to usable formats
+; wheelSpeeds.c	    18  * for i.e. traction control
+; wheelSpeeds.c	    19  ****************************************************************************/
+; wheelSpeeds.c	    20  
+; wheelSpeeds.c	    21  struct _WheelSpeeds
+; wheelSpeeds.c	    22  {
+; wheelSpeeds.c	    23  	float4 tireCircumferenceMeters_F;  //calculated
+; wheelSpeeds.c	    24  	float4 tireCircumferenceMeters_R;  //calculated
+; wheelSpeeds.c	    25  	float4 pulsesPerRotation_F;
+; wheelSpeeds.c	    26  	float4 pulsesPerRotation_R;
+; wheelSpeeds.c	    27  	float4 speed_FL;
+; wheelSpeeds.c	    28  	float4 speed_FR;
+; wheelSpeeds.c	    29  	float4 speed_RL;
+; wheelSpeeds.c	    30  	float4 speed_RR;
+; wheelSpeeds.c	    31  };
+; wheelSpeeds.c	    32  
+; wheelSpeeds.c	    33  
+; wheelSpeeds.c	    34  
+; wheelSpeeds.c	    35  /*****************************************************************************
+; wheelSpeeds.c	    36  * Torque Encoder (TPS) functions
+; wheelSpeeds.c	    37  * RULE EV2.3.5:
+; wheelSpeeds.c	    38  * If an implausibility occurs between the values of these two sensors the power to the motor(s) must be immediately shut down completely.
+; wheelSpeeds.c	    39  * It is not necessary to completely deactivate the tractive system, the motor controller(s) shutting down the power to the motor(s) is sufficient.
+; wheelSpeeds.c	    40  ****************************************************************************/
+; wheelSpeeds.c	    41  WheelSpeeds* WheelSpeeds_new(float4 tireDiameterInches_F, float4 tireDiameterInches_R, ubyte1 pulsesPerRotation_F, ubyte1 pulsesPerRotation_R)
+; Function _WheelSpeeds_new
+_21:
+_WheelSpeeds_new	.proc	far
+	movw	[-r15],r0
+_142:
+	movw	[-r15],r1
+_153:
+	movw	[-r15],r6
+_164:
+	movw	[-r15],r7
+_175:
+	movw	[-r15],r8
+_186:
+	movw	[-r15],r9
+_197:
+	movw	[-r15],r10
+_208:
+	subw	r15,#0x6
+_219:
+	movw	r8,r2
+_983:
+
+; wheelSpeeds.c	    42  {
+; wheelSpeeds.c	    43  	WheelSpeeds* me = (WheelSpeeds*)malloc(sizeof(struct _WheelSpeeds));
+	movw	r2,#0x20
+_478:
+	movw	[r15+#0x4],r4
+	movw	[r15+#0x2],r5
+	movw	r9,r3
+_480:
+	call	_malloc
+_479:
+	movw	[r15],r2
+	movw	r7,r3
+_984:
+
+; wheelSpeeds.c	    44      
+; wheelSpeeds.c	    45  	//1 inch = .0254 m
+; wheelSpeeds.c	    46  	me->tireCircumferenceMeters_F = 3.14159 * (.0254 * tireDiameterInches_F);
+	movw	r2,r8
+	movw	r3,r9
+	call	__spf2dpf
+_985:
+	movw	r11,#0xaa6
+	movw	r12,#0x2546
+	movw	r13,#0x275
+	movw	r14,#0x3f9a
+_986:
+	call	__mul_dpf
+_987:
+	movw	r11,#0x866e
+	movw	r12,#0xf01b
+	movw	r13,#0x21f9
+	movw	r14,#0x4009
+_988:
+	call	__mul_dpf
+_989:
+	movw	r11,[r15]
+_990:
+	call	__dpf2spf
+_991:
+	movw	r12,r7
+	exts	r12,#0x1
+	movw	[r11],r2
+	addw	r11,#0x2
+	addcw	r12,#0x0
+_992:
+
+; wheelSpeeds.c	    47  	me->tireCircumferenceMeters_R = 3.14159 * (.0254 * tireDiameterInches_R);
+	movw	r8,r7
+_481:
+	exts	r12,#0x1
+	movw	[r11],r3
+_993:
+	movw	r9,[r15]
+	addw	r9,#0x4
+	addcw	r8,#0x0
+_994:
+	movw	r2,[r15+#0x4]
+	movw	r3,[r15+#0x2]
+_482:
+	call	__spf2dpf
+_483:
+	movw	r11,#0xaa6
+	movw	r12,#0x2546
+	movw	r13,#0x275
+	movw	r14,#0x3f9a
+_995:
+	call	__mul_dpf
+_996:
+	movw	r11,#0x866e
+	movw	r12,#0xf01b
+	movw	r13,#0x21f9
+	movw	r14,#0x4009
+_997:
+	call	__mul_dpf
+	call	__dpf2spf
+_998:
+	exts	r8,#0x1
+	movw	[r9],r2
+	addw	r9,#0x2
+	addcw	r8,#0x0
+_999:
+
+; wheelSpeeds.c	    48  	me->pulsesPerRotation_F = pulsesPerRotation_F;
+	movw	r12,r7
+_1000:
+	exts	r8,#0x1
+	movw	[r9],r3
+_1001:
+	movw	r11,[r15]
+	addw	r11,#0x8
+	addcw	r12,#0x0
+_1002:
+	movb	rl2,[r15+#0x14]
+_484:
+	call	__uc2spf
+_485:
+	exts	r12,#0x1
+	movw	[r11],r2
+	addw	r11,#0x2
+	addcw	r12,#0x0
+_1003:
+
+; wheelSpeeds.c	    49  	me->pulsesPerRotation_R = pulsesPerRotation_R;
+; wheelSpeeds.c	    50  	me->speed_FL = 0;
+	movw	r13,#0x0
+_1004:
+	exts	r12,#0x1
+	movw	[r11],r3
+_1005:
+	movw	r11,[r15]
+	movw	r12,r7
+	addw	r11,#0xc
+	addcw	r12,#0x0
+_1006:
+	movb	rl2,[r15+#0x16]
+_486:
+	call	__uc2spf
+_487:
+	exts	r12,#0x1
+	movw	[r11],r2
+	addw	r11,#0x2
+	addcw	r12,#0x0
+_1007:
+
+; wheelSpeeds.c	    51  	me->speed_FR = 0;
+; wheelSpeeds.c	    52  	me->speed_RL = 0;
+; wheelSpeeds.c	    53  	me->speed_RR = 0;
+; wheelSpeeds.c	    54  
+; wheelSpeeds.c	    55  	//Turn on WSS power pins
+; wheelSpeeds.c	    56  	IO_DO_Set(IO_DO_06, TRUE); //Front WSS x2
+	movb	rl2,#0x1e
+_1008:
+	exts	r12,#0x1
+	movw	[r11],r3
+_1009:
+	movw	r11,[r15]
+	movw	r12,r7
+	addw	r11,#0x10
+	addcw	r12,#0x0
+_1010:
+	movb	rh2,#0x1
+_1011:
+	exts	r12,#0x1
+	movw	[r11],r13
+	addw	r11,#0x2
+	addcw	r12,#0x0
+	exts	r12,#0x1
+	movw	[r11],r13
+_1012:
+	movw	r11,[r15]
+	movw	r12,r7
+	addw	r11,#0x14
+	addcw	r12,#0x0
+_1013:
+	exts	r12,#0x1
+	movw	[r11],r13
+	addw	r11,#0x2
+	addcw	r12,#0x0
+	exts	r12,#0x1
+	movw	[r11],r13
+_1014:
+	movw	r11,[r15]
+	movw	r12,r7
+	addw	r11,#0x18
+	addcw	r12,#0x0
+_1015:
+	exts	r12,#0x1
+	movw	[r11],r13
+	addw	r11,#0x2
+	addcw	r12,#0x0
+	exts	r12,#0x1
+	movw	[r11],r13
+_1016:
+	movw	r11,[r15]
+	movw	r12,r7
+	addw	r11,#0x1c
+	addcw	r12,#0x0
+_1017:
+	exts	r12,#0x1
+	movw	[r11],r13
+	addw	r11,#0x2
+	addcw	r12,#0x0
+	exts	r12,#0x1
+	movw	[r11],r13
+_1018:
+	call	_IO_DO_Set
+_1019:
+
+; wheelSpeeds.c	    57  	IO_DO_Set(IO_DO_07, TRUE); //Rear  WSS x2
+	movb	rl2,#0x1f
+_1020:
+	movb	rh2,#0x1
+	call	_IO_DO_Set
+_1021:
+
+; wheelSpeeds.c	    58  
+; wheelSpeeds.c	    59  	return me;
+	movw	r2,[r15]
+_488:
+	movw	r3,r7
+_1022:
+
+; wheelSpeeds.c	    60  }
+	addw	r15,#0x6
+_230:
+	movw	r10,[r15+]
+_241:
+	movw	r9,[r15+]
+_252:
+	movw	r8,[r15+]
+_263:
+	movw	r7,[r15+]
+_274:
+	movw	r6,[r15+]
+_285:
+	movw	r1,[r15+]
+_296:
+	movw	r0,[r15+]
+_307:
+	ret
+_100:
+	; End of function
+	; End of section
+
+code_WheelSpeeds_update	.section	code, cluster 'WheelSpeeds_update', new
+	.global	_WheelSpeeds_update
+
+; wheelSpeeds.c	    61  
+; wheelSpeeds.c	    62  void WheelSpeeds_update(WheelSpeeds* me)
+; Function _WheelSpeeds_update
+_33:
+_WheelSpeeds_update	.proc	far
+
+; wheelSpeeds.c	    63  {
+; wheelSpeeds.c	    64  	//speed (m/s) = m * pulses/sec / pulses
+; wheelSpeeds.c	    65  	me->speed_FL = me->tireCircumferenceMeters_F * Sensor_WSS_FL.sensorValue / me->pulsesPerRotation_F;
+	movw	r11,r2
+	movw	r12,r3
+	addw	r11,#0x8
+	addcw	r12,#0x0
+_1027:
+	movw	[-r15],r0
+_489:
+	movw	[-r15],r1
+_500:
+	movw	[-r15],r6
+_511:
+	movw	[-r15],r7
+_522:
+	movw	[-r15],r8
+_533:
+	movw	[-r15],r9
+_544:
+	movw	[-r15],r10
+_555:
+	movw	r7,r2
+	movw	r0,r3
+_784:
+	exts	r12,#0x1
+	movw	r13,[r11]
+	addw	r11,#0x2
+	addcw	r12,#0x0
+	exts	r12,#0x1
+	movw	r8,[r11]
+_1028:
+	movw	r11,r2
+	movw	r12,r3
+	exts	r12,#0x1
+	movw	r9,[r11]
+	addw	r11,#0x2
+	addcw	r12,#0x0
+_1029:
+	movw	r4,r9
+_1030:
+	exts	r12,#0x1
+	movw	r10,[r11]
+_1031:
+	movw	r12,r2
+	movw	r11,r3
+	addw	r12,#0x10
+	addcw	r11,#0x0
+_1032:
+	exts	#@seg(_Sensor_WSS_FL+0x8),#0x1
+	movw	r2,@sof(_Sensor_WSS_FL+0x8)
+_783:
+	exts	#@seg(_Sensor_WSS_FL+0xa),#0x1
+	movw	r3,@sof(_Sensor_WSS_FL+0xa)
+	call	__ul2spf
+_1033:
+	movw	r5,r10
+	call	__mul_spf
+_1034:
+	movw	r4,r13
+	movw	r5,r8
+	call	__div_spf
+_1035:
+	exts	r11,#0x1
+	movw	[r12],r2
+	addw	r12,#0x2
+	addcw	r11,#0x0
+_1036:
+
+; wheelSpeeds.c	    66  	me->speed_FR = me->tireCircumferenceMeters_F * Sensor_WSS_FR.sensorValue / me->pulsesPerRotation_F;
+	movw	r4,r9
+_1037:
+	exts	r11,#0x1
+	movw	[r12],r3
+_1038:
+	movw	r12,r7
+	movw	r11,r0
+	addw	r12,#0x14
+	addcw	r11,#0x0
+_1039:
+	exts	#@seg(_Sensor_WSS_FR+0x8),#0x1
+	movw	r2,@sof(_Sensor_WSS_FR+0x8)
+	exts	#@seg(_Sensor_WSS_FR+0xa),#0x1
+	movw	r3,@sof(_Sensor_WSS_FR+0xa)
+	call	__ul2spf
+_1040:
+	movw	r5,r10
+	call	__mul_spf
+_1041:
+	movw	r4,r13
+	movw	r5,r8
+	call	__div_spf
+_1042:
+	exts	r11,#0x1
+	movw	[r12],r2
+	addw	r12,#0x2
+	addcw	r11,#0x0
+	exts	r11,#0x1
+	movw	[r12],r3
+_1043:
+
+; wheelSpeeds.c	    67  	me->speed_RL = me->tireCircumferenceMeters_R * Sensor_WSS_RL.sensorValue / me->pulsesPerRotation_R;
+	movw	r11,r7
+	movw	r12,r0
+	addw	r11,#0xc
+	addcw	r12,#0x0
+_1044:
+	exts	#@seg(_Sensor_WSS_RL+0x8),#0x1
+	movw	r2,@sof(_Sensor_WSS_RL+0x8)
+_1045:
+	exts	r12,#0x1
+	movw	r10,[r11]
+	addw	r11,#0x2
+	addcw	r12,#0x0
+_1046:
+	exts	#@seg(_Sensor_WSS_RL+0xa),#0x1
+	movw	r3,@sof(_Sensor_WSS_RL+0xa)
+_1047:
+	exts	r12,#0x1
+	movw	r9,[r11]
+_1048:
+	movw	r11,r7
+	movw	r12,r0
+	addw	r11,#0x4
+	addcw	r12,#0x0
+_1049:
+	call	__ul2spf
+_1050:
+	exts	r12,#0x1
+	movw	r8,[r11]
+	addw	r11,#0x2
+	addcw	r12,#0x0
+_1051:
+	movw	r4,r8
+_1052:
+	exts	r12,#0x1
+	movw	r13,[r11]
+_1053:
+	movw	r12,r7
+	movw	r11,r0
+	addw	r12,#0x18
+	addcw	r11,#0x0
+_1054:
+	movw	r5,r13
+	call	__mul_spf
+_1055:
+	movw	r4,r10
+	movw	r5,r9
+	call	__div_spf
+_1056:
+	exts	r11,#0x1
+	movw	[r12],r2
+	addw	r12,#0x2
+	addcw	r11,#0x0
+_1057:
+
+; wheelSpeeds.c	    68  	me->speed_RR = me->tireCircumferenceMeters_R * Sensor_WSS_RR.sensorValue / me->pulsesPerRotation_R;
+	addw	r7,#0x1c
+_785:
+	addcw	r0,#0x0
+_1058:
+	exts	r11,#0x1
+	movw	[r12],r3
+_1059:
+	exts	#@seg(_Sensor_WSS_RR+0x8),#0x1
+	movw	r2,@sof(_Sensor_WSS_RR+0x8)
+	exts	#@seg(_Sensor_WSS_RR+0xa),#0x1
+	movw	r3,@sof(_Sensor_WSS_RR+0xa)
+	call	__ul2spf
+_1060:
+	movw	r4,r8
+	movw	r5,r13
+	call	__mul_spf
+_1061:
+	movw	r4,r10
+	movw	r5,r9
+	call	__div_spf
+_1062:
+	exts	r0,#0x1
+	movw	[r7],r2
+	addw	r7,#0x2
+	addcw	r0,#0x0
+	exts	r0,#0x1
+	movw	[r7],r3
+_1063:
+
+; wheelSpeeds.c	    69  }
+	movw	r10,[r15+]
+_566:
+	movw	r9,[r15+]
+_577:
+	movw	r8,[r15+]
+_588:
+	movw	r7,[r15+]
+_599:
+	movw	r6,[r15+]
+_610:
+	movw	r1,[r15+]
+_621:
+	movw	r0,[r15+]
+_632:
+	ret
+_105:
+	; End of function
+	; End of section
+
+code_WheelSpeeds_getWheelSpeed	.section	code, cluster 'WheelSpeeds_getWheelSpeed', new
+	.global	_WheelSpeeds_getWheelSpeed
+
+; wheelSpeeds.c	    70  
+; wheelSpeeds.c	    71  float4 WheelSpeeds_getWheelSpeed(WheelSpeeds* me, Wheel corner)
+; Function _WheelSpeeds_getWheelSpeed
+_45:
+_WheelSpeeds_getWheelSpeed	.proc	far
+	movw	r11,r2
+_788:
+
+; wheelSpeeds.c	    72  {
+; wheelSpeeds.c	    73  	float4 speed;
+; wheelSpeeds.c	    74  	switch (corner)
+	movbs	r12,rl4
+_789:
+	cmpw	r12,#0x3
+	jmp	cc_ugt,_3
+	shl	r12,#0x1
+_786:
+	exts	#@seg(_$1$swt),#0x1
+	movw	r12,[r12+#@sof(_$1$swt)]
+	jmpi	[r12]
+_787:
+	; End of section
+
+shuge__1_swt	.section	shuge, romdata, new
+_$1$swt	.label	word
+	.dw	@sof(_4)
+	.dw	@sof(_5)
+	.dw	@sof(_6)
+	.dw	@sof(_7)
+	; End of section
+
+code_WheelSpeeds_getWheelSpeed	.section	code, cluster 'WheelSpeeds_getWheelSpeed'
+
+; wheelSpeeds.c	    75  	{
+; wheelSpeeds.c	    76  	case FL:
+_4:
+
+; wheelSpeeds.c	    77  		speed = me->speed_FL;
+	addw	r11,#0x10
+_791:
+	addcw	r3,#0x0
+_790:
+	exts	r3,#0x1
+	movw	r2,[r11]
+	addw	r11,#0x2
+	addcw	r3,#0x0
+	exts	r3,#0x1
+	movw	r3,[r11]
+_792:
+
+; wheelSpeeds.c	    78  		break;
+; wheelSpeeds.c	    79  	case FR:
+; wheelSpeeds.c	    80  		speed = me->speed_FR;
+; wheelSpeeds.c	    81  		break;
+; wheelSpeeds.c	    82  	case RL:
+; wheelSpeeds.c	    83  		speed = me->speed_RL;
+; wheelSpeeds.c	    84  		break;
+; wheelSpeeds.c	    85  	case RR:
+; wheelSpeeds.c	    86  		speed = me->speed_RR;
+; wheelSpeeds.c	    87  		break;
+; wheelSpeeds.c	    88  	default:
+; wheelSpeeds.c	    89  		speed = 0;
+; wheelSpeeds.c	    90  	}
+; wheelSpeeds.c	    91  
+; wheelSpeeds.c	    92  	return speed;
+; wheelSpeeds.c	    93  }
+	ret
+_5:
+	addw	r11,#0x14
+_794:
+	addcw	r3,#0x0
+_793:
+	exts	r3,#0x1
+	movw	r2,[r11]
+	addw	r11,#0x2
+	addcw	r3,#0x0
+	exts	r3,#0x1
+	movw	r3,[r11]
+_795:
+	ret
+_6:
+	addw	r11,#0x18
+_797:
+	addcw	r3,#0x0
+_796:
+	exts	r3,#0x1
+	movw	r2,[r11]
+	addw	r11,#0x2
+	addcw	r3,#0x0
+	exts	r3,#0x1
+	movw	r3,[r11]
+_798:
+	ret
+_7:
+	addw	r11,#0x1c
+_800:
+	addcw	r3,#0x0
+_799:
+	exts	r3,#0x1
+	movw	r2,[r11]
+	addw	r11,#0x2
+	addcw	r3,#0x0
+	exts	r3,#0x1
+	movw	r3,[r11]
+_801:
+	ret
+_3:
+	movw	r2,#0x0
+_803:
+	movw	r3,#0x0
+_802:
+	ret
+_110:
+	; End of function
+	; End of section
+
+code_WheelSpeeds_getSlowestFront	.section	code, cluster 'WheelSpeeds_getSlowestFront', new
+	.global	_WheelSpeeds_getSlowestFront
+
+; wheelSpeeds.c	    94  
+; wheelSpeeds.c	    95  float4 WheelSpeeds_getSlowestFront(WheelSpeeds* me)
+; Function _WheelSpeeds_getSlowestFront
+_57:
+_WheelSpeeds_getSlowestFront	.proc	far
+
+; wheelSpeeds.c	    96  {
+; wheelSpeeds.c	    97  	return (me->speed_FL < me->speed_FR) ? me->speed_FL : me->speed_FR;
+	movw	r11,r2
+	movw	r12,r3
+	addw	r11,#0x14
+	addcw	r12,#0x0
+_1072:
+	movw	[-r15],r0
+_804:
+	exts	r12,#0x1
+	movw	r4,[r11]
+	addw	r11,#0x2
+	addcw	r12,#0x0
+_1073:
+	addw	r2,#0x10
+_846:
+	addcw	r3,#0x0
+_1074:
+	exts	r12,#0x1
+	movw	r5,[r11]
+_1075:
+	exts	r3,#0x1
+	movw	r11,[r2]
+	addw	r2,#0x2
+	addcw	r3,#0x0
+	exts	r3,#0x1
+	movw	r3,[r2]
+_1076:
+	movw	r2,r11
+	call	__less_than_spf
+_1077:
+	cmpb	rl2,#0x0
+	jmp	cc_eq,_14
+_1078:
+	movw	r4,r11
+	movw	r5,r3
+_14:
+	movw	r2,r4
+	movw	r3,r5
+_1079:
+
+; wheelSpeeds.c	    98  }
+	movw	r0,[r15+]
+_815:
+	ret
+_115:
+	; End of function
+	; End of section
+
+code_WheelSpeeds_getFastestRear	.section	code, cluster 'WheelSpeeds_getFastestRear', new
+	.global	_WheelSpeeds_getFastestRear
+
+; wheelSpeeds.c	    99  
+; wheelSpeeds.c	   100  float4 WheelSpeeds_getFastestRear(WheelSpeeds* me)
+; Function _WheelSpeeds_getFastestRear
+_69:
+_WheelSpeeds_getFastestRear	.proc	far
+
+; wheelSpeeds.c	   101  {
+; wheelSpeeds.c	   102  	return (me->speed_RL > me->speed_RR) ? me->speed_RL : me->speed_RR;
+	movw	r11,r2
+	movw	r12,r3
+	addw	r11,#0x1c
+	addcw	r12,#0x0
+_1084:
+	movw	[-r15],r0
+_847:
+	exts	r12,#0x1
+	movw	r4,[r11]
+	addw	r11,#0x2
+	addcw	r12,#0x0
+_1085:
+	addw	r2,#0x18
+_889:
+	addcw	r3,#0x0
+_1086:
+	exts	r12,#0x1
+	movw	r5,[r11]
+_1087:
+	exts	r3,#0x1
+	movw	r11,[r2]
+	addw	r2,#0x2
+	addcw	r3,#0x0
+	exts	r3,#0x1
+	movw	r3,[r2]
+_1088:
+	movw	r2,r11
+	call	__larger_than_spf
+_1089:
+	cmpb	rl2,#0x0
+	jmp	cc_eq,_17
+_1090:
+	movw	r4,r11
+	movw	r5,r3
+_17:
+	movw	r2,r4
+	movw	r3,r5
+_1091:
+
+; wheelSpeeds.c	   103  }
+	movw	r0,[r15+]
+_858:
+	ret
+_120:
+	; End of function
+	; End of section
+
+code_WheelSpeeds_getGroundSpeed	.section	code, cluster 'WheelSpeeds_getGroundSpeed', new
+	.global	_WheelSpeeds_getGroundSpeed
+
+; wheelSpeeds.c	   104  
+; wheelSpeeds.c	   105  float4 WheelSpeeds_getGroundSpeed(WheelSpeeds* me)
+; Function _WheelSpeeds_getGroundSpeed
+_81:
+_WheelSpeeds_getGroundSpeed	.proc	far
+
+; wheelSpeeds.c	   106  {
+; wheelSpeeds.c	   107  	return (me->speed_FL + me->speed_FR) / 2;
+	movw	r11,r2
+	movw	r12,r3
+	addw	r11,#0x10
+	addcw	r12,#0x0
+_1096:
+	addw	r2,#0x14
+_974:
+	addcw	r3,#0x0
+_1097:
+	movw	[-r15],r1
+_890:
+	movw	[-r15],r6
+_901:
+	exts	r12,#0x1
+	movw	r13,[r11]
+	addw	r11,#0x2
+	addcw	r12,#0x0
+_1098:
+	exts	r3,#0x1
+	movw	r4,[r2]
+	addw	r2,#0x2
+	addcw	r3,#0x0
+	exts	r3,#0x1
+	movw	r5,[r2]
+_1099:
+	movw	r2,r13
+	exts	r12,#0x1
+	movw	r3,[r11]
+	call	__add_spf
+_1100:
+	movw	r5,#0x3f00
+_1101:
+	movw	r4,#0x0
+	call	__mul_spf
+_1102:
+
+; wheelSpeeds.c	   108  }
+	movw	r6,[r15+]
+_912:
+	movw	r1,[r15+]
+_923:
+	ret
+_125:
+	; End of function
+	; End of section
+
+	.calls	'_WheelSpeeds_new','__spf2dpf',8,2
+	.calls	'_WheelSpeeds_new','__mul_dpf',8,4
+	.calls	'_WheelSpeeds_new','__dpf2spf',8,2
+	.calls	'_WheelSpeeds_new','__uc2spf',4,0
+	.calls	'_WheelSpeeds_update','__ul2spf',8,0
+	.calls	'_WheelSpeeds_update','__mul_spf',8,0
+	.calls	'_WheelSpeeds_update','__div_spf',8,0
+	.calls	'_WheelSpeeds_getSlowestFront','__less_than_spf',8,0
+	.calls	'_WheelSpeeds_getFastestRear','__larger_than_spf',8,0
+	.calls	'_WheelSpeeds_getGroundSpeed','__add_spf',8,0
+	.calls	'_WheelSpeeds_getGroundSpeed','__mul_spf',8,0
+	.calls	'_WheelSpeeds_new','_malloc'
+	.calls	'_WheelSpeeds_new','_IO_DO_Set'
+	.calls	'_WheelSpeeds_new','',4,20
+	.calls	'_WheelSpeeds_update','',4,14
+	.calls	'_WheelSpeeds_getWheelSpeed','',4,0
+	.calls	'_WheelSpeeds_getSlowestFront','',4,2
+	.calls	'_WheelSpeeds_getFastestRear','',4,2
+	.calls	'_WheelSpeeds_getGroundSpeed','',4,4
+	.extern	_malloc : far
+	.extern	_IO_DO_Set : far
+	.extern	_Sensor_WSS_FL : word
+	.extern	_Sensor_WSS_FR : word
+	.extern	_Sensor_WSS_RL : word
+	.extern	_Sensor_WSS_RR : word
+	.extern	__spf2dpf : far
+	.extern	__mul_dpf : far
+	.extern	__dpf2spf : far
+	.extern	__uc2spf : far
+	.extern	__ul2spf : far
+	.extern	__mul_spf : far
+	.extern	__div_spf : far
+	.extern	__less_than_spf : far
+	.extern	__larger_than_spf : far
+	.extern	__add_spf : far
+	.debug		.debug_info
+_93:
+	.dl	1108
+	.dw	3
+	.dl	_94
+	.db	4
+_92:
+	.db	1
+	.db	'wheelSpeeds.c',0
+	.db	'TASKING VX-toolset for C166: C compiler',0
+	.db	'C:\\Users\\helix\\Desktop\\SRE\\SRE SDK 2017-18\\VCU\\Environment\\dev\\SRE-3\\',0,12,1
+	.dl	_95
+	.db	2
+	.db	'void',0,3,5
+	.dl	142
+	.db	4
+	.db	'unsigned int',0,2,7,5
+	.db	'malloc',0,1,78,33,6
+	.dl	148
+	.db	1,1,1,1,6,1,78,44,2
+	.dl	154
+	.db	0
+_130:
+	.db	4
+	.db	'unsigned char',0,1,8,5
+	.db	'IO_DO_Set',0,2,141,2,14,6
+	.dl	154
+	.db	1,1,1,1,7
+	.db	'do_channel',0,2,141,2,32,2
+	.dl	200
+	.db	7
+	.db	'do_value',0,2,142,2,30,2
+	.dl	200
+	.db	0
+_127:
+	.db	4
+	.db	'float',0,4,4,8
+	.db	'_WheelSpeeds',0,3,21,8,32,9
+	.db	'tireCircumferenceMeters_F',0
+	.dl	282
+	.db	4,2,35,0,9
+	.db	'tireCircumferenceMeters_R',0
+	.dl	282
+	.db	4,2,35,4,9
+	.db	'pulsesPerRotation_F',0
+	.dl	282
+	.db	4,2,35,8,9
+	.db	'pulsesPerRotation_R',0
+	.dl	282
+	.db	4,2,35,12,9
+	.db	'speed_FL',0
+	.dl	282
+	.db	4,2,35,16,9
+	.db	'speed_FR',0
+	.dl	282
+	.db	4,2,35,20,9
+	.db	'speed_RL',0
+	.dl	282
+	.db	4,2,35,24,9
+	.db	'speed_RR',0
+	.dl	282
+	.db	4,2,35,28,0
+_126:
+	.db	3,5
+	.dl	291
+_136:
+	.db	10,4,7,9,1,11
+	.db	'FL',0,0,11
+	.db	'FR',0,1,11
+	.db	'RL',0,2,11
+	.db	'RR',0,3,0,4
+	.db	'unsigned short int',0,2,7,12
+	.db	'__wchar_t',0,3,1,1
+	.dl	542
+	.db	12
+	.db	'__size_t',0,3,1,1
+	.dl	154
+	.db	3,5
+	.dl	142
+	.db	12
+	.db	'__prof_adm',0,3,1,1
+	.dl	599
+	.db	4
+	.db	'unsigned long int',0,4,7,12
+	.db	'__codeptr',0,3,1,1
+	.dl	624
+	.db	12
+	.db	'size_t',0,1,29,25
+	.dl	154
+	.db	12
+	.db	'ubyte1',0,5,21,29
+	.dl	200
+	.db	12
+	.db	'ubyte2',0,5,22,29
+	.dl	154
+	.db	12
+	.db	'ubyte4',0,5,23,29
+	.dl	624
+	.db	12
+	.db	'float4',0,5,29,29
+	.dl	282
+	.db	12
+	.db	'bool',0,5,31,29
+	.dl	200
+	.db	12
+	.db	'IO_ErrorType',0,6,150,1,17
+	.dl	154
+	.db	8
+	.db	'_Sensor',0,7,126,16,22,9
+	.db	'specMin',0
+	.dl	624
+	.db	4,2,35,0,9
+	.db	'specMax',0
+	.dl	624
+	.db	4,2,35,4,9
+	.db	'sensorValue',0
+	.dl	624
+	.db	4,2,35,8,9
+	.db	'fresh',0
+	.dl	200
+	.db	1,2,35,12,9
+	.db	'ioErr_powerInit',0
+	.dl	154
+	.db	2,2,35,14,9
+	.db	'ioErr_powerSet',0
+	.dl	154
+	.db	2,2,35,16,9
+	.db	'ioErr_signalInit',0
+	.dl	154
+	.db	2,2,35,18,9
+	.db	'ioErr_signalGet',0
+	.dl	154
+	.db	2,2,35,20,0,12
+	.db	'Sensor',0,7,143,1,3
+	.dl	773
+	.db	13
+	.db	'Sensor_WSS_FL',0,7,160,1,15,5
+	.dl	773
+	.db	1,1,13
+	.db	'Sensor_WSS_FR',0,7,161,1,15,5
+	.dl	773
+	.db	1,1,13
+	.db	'Sensor_WSS_RL',0,7,162,1,15,5
+	.dl	773
+	.db	1,1,13
+	.db	'Sensor_WSS_RR',0,7,163,1,15,5
+	.dl	773
+	.db	1,1,12
+	.db	'Wheel',0,4,7,30
+	.dl	516
+	.db	12
+	.db	'WheelSpeeds',0,4,12,29
+	.dl	291
+	.db	0
+	; End of section
+
+	.debug		.debug_abbrev
+_94:
+	.db	1,17,1,3,8,37,8,27,8,19,15,128,70,12,16,6,0,0,2,59,0,3,8,0,0,3,15,0,51,15,73,19,0,0,4,36,0,3,8,11,15,62
+	.db	15,0,0,5,46,1,3,8,58,15,59,15,57,15,51,15,73,19,54,15,39,12,63,12,60,12,0,0,6,5,0,58,15,59,15,57,15,51
+	.db	15,73,19,0,0,7,5,0,3,8,58,15,59,15,57,15,51,15,73,19,0,0,8,19,1,3,8,58,15,59,15,57,15,11,15,0,0,9,13,0
+	.db	3,8,73,19,11,15,56,9,0,0,10,4,1,58,15,59,15,57,15,11,15,0,0,11,40,0,3,8,28,13,0,0,12,22,0,3,8,58,15,59
+	.db	15,57,15,73,19,0,0,13,52,0,3,8,58,15,59,15,57,15,51,15,73,19,63,12,60,12,0,0,0
+	; End of section
+
+	.debug		.debug_line
+_95:
+	.dl	_976-_975
+_975:
+	.dw	3
+	.dl	_978-_977
+_977:
+	.db	2,1,-4,9,10,0,1,1,1,1,0,0,0,1
+	.db	'c:\\Program Files (x86)\\TASKING\\C166-VX v4.0r1\\include\\',0
+	.db	'..\\..\\..\\Environment\\inc',0,0
+	.db	'stdlib.h',0,1,0,0
+	.db	'IO_DIO.h',0,2,0,0
+	.db	'wheelSpeeds.c',0,0,0,0
+	.db	'wheelSpeeds.h',0,0,0,0
+	.db	'ptypes_xe167.h',0,2,0,0
+	.db	'IO_Constants.h',0,2,0,0
+	.db	'sensors.h',0,0,0,0,0
+_978:
+_976:
+	; End of section
+
+	.debug		.debug_pubnames
+	.dl	39
+	.dw	2
+	.dl	_93,1112,170
+	.db	'malloc',0
+	.dl	217
+	.db	'IO_DO_Set',0
+	.dl	0
+	; End of section
+
+	.debug		.debug_info, cluster 'WheelSpeeds_new'
+_96:
+	.dl	362
+	.dw	3
+	.dl	_97
+	.db	4,1
+	.db	'wheelSpeeds.c',0
+	.db	'TASKING VX-toolset for C166: C compiler',0
+	.db	'C:\\Users\\helix\\Desktop\\SRE\\SRE SDK 2017-18\\VCU\\Environment\\dev\\SRE-3\\',0,12,1
+	.dl	_99,_98
+	.db	2
+	.dl	_92
+	.db	3
+	.db	'WheelSpeeds_new',0,1,41,14,6
+	.dl	_126
+	.db	1,1,1
+	.dl	_21,_100,_20
+	.db	12,19,146,176,2,0,64,36,146,161,2,0,33,4
+	.db	'tireDiameterInches_F',0,1,41,37,2
+	.dl	_127,_128
+	.db	4
+	.db	'tireDiameterInches_R',0,1,41,66,2
+	.dl	_127,_129
+	.db	4
+	.db	'pulsesPerRotation_F',0,1,41,95,2
+	.dl	_130,_131
+	.db	4
+	.db	'pulsesPerRotation_R',0,1,41,123,2
+	.dl	_130,_132
+	.db	5
+	.dl	_21,_100
+	.db	6
+	.db	'me',0,1,43,15,2
+	.dl	_126,_133
+	.db	0,0,0
+	; End of section
+
+	.debug		.debug_abbrev, cluster 'WheelSpeeds_new'
+_97:
+	.db	1,17,1,3,8,37,8,27,8,19,15,128,70,12,85,6,16,6,0,0,2,61,0,24,16,0,0,3,46,1,3,8,58,15,59,15,57,15,51,15
+	.db	73,16,54,15,39,12,63,12,17,1,18,1,64,6,42,9,0,0,4,5,0,3,8,58,15,59,15,57,15,51,15,73,16,2,6,0,0,5,11,1
+	.db	17,1,18,1,0,0,6,52,0,3,8,58,15,59,15,57,15,51,15,73,16,2,6,0,0,0
+	; End of section
+
+	.debug		.debug_line, cluster 'WheelSpeeds_new'
+_98:
+	.dl	_980-_979
+_979:
+	.dw	3
+	.dl	_982-_981
+_981:
+	.db	2,1,-4,9,10,0,1,1,1,1,0,0,0,1,0
+	.db	'wheelSpeeds.c',0,0,0,0,0
+_982:
+	.db	5,14,7,0,5,2
+	.dl	_21
+	.db	3,40,1,5,41,9
+	.dw	_983-_21
+	.db	3,2,1,5,14,9
+	.dw	_478-_983
+	.db	3,126,1,5,41,9
+	.dw	_480-_478
+	.db	3,2,1,5,18,9
+	.dw	_479-_480
+	.db	1,5,53,9
+	.dw	_984-_479
+	.db	3,3,1,5,45,9
+	.dw	_985-_984
+	.db	1,5,51,9
+	.dw	_986-_985
+	.db	1,5,34,9
+	.dw	_987-_986
+	.db	1,5,42,9
+	.dw	_988-_987
+	.db	1,5,32,9
+	.dw	_989-_988
+	.db	1,5,42,9
+	.dw	_990-_989
+	.db	1,5,32,9
+	.dw	_991-_990
+	.db	1,5,4,9
+	.dw	_992-_991
+	.db	3,1,1,5,32,9
+	.dw	_481-_992
+	.db	3,127,1,5,4,9
+	.dw	_993-_481
+	.db	3,1,1,5,53,9
+	.dw	_994-_993
+	.db	1,5,45,9
+	.dw	_483-_994
+	.db	1,5,51,9
+	.dw	_995-_483
+	.db	1,5,34,9
+	.dw	_996-_995
+	.db	1,5,42,9
+	.dw	_997-_996
+	.db	1,5,32,9
+	.dw	_998-_997
+	.db	1,5,4,9
+	.dw	_999-_998
+	.db	3,1,1,5,32,9
+	.dw	_1000-_999
+	.db	3,127,1,5,4,9
+	.dw	_1001-_1000
+	.db	3,1,1,5,28,9
+	.dw	_1002-_1001
+	.db	1,5,26,9
+	.dw	_485-_1002
+	.db	1,5,17,9
+	.dw	_1003-_485
+	.db	3,2,1,5,26,9
+	.dw	_1004-_1003
+	.db	3,126,1,5,4,9
+	.dw	_1005-_1004
+	.db	3,1,1,5,28,9
+	.dw	_1006-_1005
+	.db	1,5,26,9
+	.dw	_487-_1006
+	.db	1,5,12,9
+	.dw	_1007-_487
+	.db	3,7,1,5,26,9
+	.dw	_1008-_1007
+	.db	3,121,1,5,4,9
+	.dw	_1009-_1008
+	.db	3,1,1,5,22,9
+	.dw	_1010-_1009
+	.db	3,6,1,5,15,9
+	.dw	_1011-_1010
+	.db	3,122,1,5,4,9
+	.dw	_1012-_1011
+	.db	3,1,1,5,15,9
+	.dw	_1013-_1012
+	.db	1,5,4,9
+	.dw	_1014-_1013
+	.db	3,1,1,5,15,9
+	.dw	_1015-_1014
+	.db	1,5,4,9
+	.dw	_1016-_1015
+	.db	3,1,1,5,15,9
+	.dw	_1017-_1016
+	.db	1,5,22,9
+	.dw	_1018-_1017
+	.db	3,3,1,5,12,9
+	.dw	_1019-_1018
+	.db	3,1,1,5,22,9
+	.dw	_1020-_1019
+	.db	1,5,2,9
+	.dw	_1021-_1020
+	.db	3,2,1,5,1,9
+	.dw	_1022-_1021
+	.db	3,1,1,9
+	.dw	_100-_1022
+	.db	0,1,1
+_980:
+	; End of section
+
+	.debug		.debug_ranges, cluster 'WheelSpeeds_new'
+_99:
+	.dl	-1,_21,0,_100-_21,0,0
+	; End of section
+
+	.debug		.debug_pubnames
+	.dl	34
+	.dw	2
+	.dl	_96,366,151
+	.db	'WheelSpeeds_new',0
+	.dl	0
+	; End of section
+
+	.debug		.debug_info, cluster 'WheelSpeeds_update'
+_101:
+	.dl	226
+	.dw	3
+	.dl	_102
+	.db	4,1
+	.db	'wheelSpeeds.c',0
+	.db	'TASKING VX-toolset for C166: C compiler',0
+	.db	'C:\\Users\\helix\\Desktop\\SRE\\SRE SDK 2017-18\\VCU\\Environment\\dev\\SRE-3\\',0,12,1
+	.dl	_104,_103
+	.db	2
+	.dl	_92
+	.db	3
+	.db	'WheelSpeeds_update',0,1,62,6,6,1,1,1
+	.dl	_33,_105,_32
+	.db	12,19,146,176,2,0,64,36,146,161,2,0,33,4
+	.db	'me',0,1,62,38,2
+	.dl	_126,_134
+	.db	5
+	.dl	_33,_105
+	.db	0,0
+	; End of section
+
+	.debug		.debug_abbrev, cluster 'WheelSpeeds_update'
+_102:
+	.db	1,17,1,3,8,37,8,27,8,19,15,128,70,12,85,6,16,6,0,0,2,61,0,24,16,0,0,3,46,1,3,8,58,15,59,15,57,15,51,15
+	.db	54,15,39,12,63,12,17,1,18,1,64,6,42,9,0,0,4,5,0,3,8,58,15,59,15,57,15,51,15,73,16,2,6,0,0,5,11,0,17,1
+	.db	18,1,0,0,0
+	; End of section
+
+	.debug		.debug_line, cluster 'WheelSpeeds_update'
+_103:
+	.dl	_1024-_1023
+_1023:
+	.dw	3
+	.dl	_1026-_1025
+_1025:
+	.db	2,1,-4,9,10,0,1,1,1,1,0,0,0,1,0
+	.db	'wheelSpeeds.c',0,0,0,0,0
+_1026:
+	.db	5,79,7,0,5,2
+	.dl	_33
+	.db	3,192,0,1,5,6,9
+	.dw	_1027-_33
+	.db	3,125,1,5,79,9
+	.dw	_784-_1027
+	.db	3,3,1,5,19,9
+	.dw	_1028-_784
+	.db	1,5,47,9
+	.dw	_1029-_1028
+	.db	1,5,19,9
+	.dw	_1030-_1029
+	.db	1,5,4,9
+	.dw	_1031-_1030
+	.db	1,5,62,9
+	.dw	_1032-_1031
+	.db	1,5,47,9
+	.dw	_1033-_1032
+	.db	1,5,75,9
+	.dw	_1034-_1033
+	.db	1,5,15,9
+	.dw	_1035-_1034
+	.db	1,5,47,9
+	.dw	_1036-_1035
+	.db	3,1,1,5,15,9
+	.dw	_1037-_1036
+	.db	3,127,1,5,4,9
+	.dw	_1038-_1037
+	.db	3,1,1,5,62,9
+	.dw	_1039-_1038
+	.db	1,5,47,9
+	.dw	_1040-_1039
+	.db	1,5,75,9
+	.dw	_1041-_1040
+	.db	1,5,15,9
+	.dw	_1042-_1041
+	.db	1,5,79,9
+	.dw	_1043-_1042
+	.db	3,1,1,5,62,9
+	.dw	_1044-_1043
+	.db	1,5,79,9
+	.dw	_1045-_1044
+	.db	1,5,62,9
+	.dw	_1046-_1045
+	.db	1,5,79,9
+	.dw	_1047-_1046
+	.db	1,5,19,9
+	.dw	_1048-_1047
+	.db	1,5,62,9
+	.dw	_1049-_1048
+	.db	1,5,19,9
+	.dw	_1050-_1049
+	.db	1,5,47,9
+	.dw	_1051-_1050
+	.db	1,5,19,9
+	.dw	_1052-_1051
+	.db	1,5,4,9
+	.dw	_1053-_1052
+	.db	1,5,47,9
+	.dw	_1054-_1053
+	.db	1,5,75,9
+	.dw	_1055-_1054
+	.db	1,5,15,9
+	.dw	_1056-_1055
+	.db	1,5,4,9
+	.dw	_1057-_1056
+	.db	3,1,1,5,15,9
+	.dw	_1058-_1057
+	.db	3,127,1,5,62,9
+	.dw	_1059-_1058
+	.db	3,1,1,5,47,9
+	.dw	_1060-_1059
+	.db	1,5,75,9
+	.dw	_1061-_1060
+	.db	1,5,15,9
+	.dw	_1062-_1061
+	.db	1,5,1,9
+	.dw	_1063-_1062
+	.db	3,1,1,9
+	.dw	_105-_1063
+	.db	0,1,1
+_1024:
+	; End of section
+
+	.debug		.debug_ranges, cluster 'WheelSpeeds_update'
+_104:
+	.dl	-1,_33,0,_105-_33,0,0
+	; End of section
+
+	.debug		.debug_pubnames
+	.dl	37
+	.dw	2
+	.dl	_101,230,151
+	.db	'WheelSpeeds_update',0
+	.dl	0
+	; End of section
+
+	.debug		.debug_info, cluster 'WheelSpeeds_getWheelSpeed'
+_106:
+	.dl	277
+	.dw	3
+	.dl	_107
+	.db	4,1
+	.db	'wheelSpeeds.c',0
+	.db	'TASKING VX-toolset for C166: C compiler',0
+	.db	'C:\\Users\\helix\\Desktop\\SRE\\SRE SDK 2017-18\\VCU\\Environment\\dev\\SRE-3\\',0,12,1
+	.dl	_109,_108
+	.db	2
+	.dl	_92
+	.db	3
+	.db	'WheelSpeeds_getWheelSpeed',0,1,71,8,6
+	.dl	_127
+	.db	1,1,1
+	.dl	_45,_110,_44
+	.db	12,19,146,176,2,0,64,36,146,161,2,0,33,4
+	.db	'me',0,1,71,47,2
+	.dl	_126,_135
+	.db	4
+	.db	'corner',0,1,71,57,2
+	.dl	_136,_137
+	.db	5
+	.dl	_45,_110
+	.db	6
+	.db	'speed',0,1,73,9,2
+	.dl	_127,_138
+	.db	0,0,0
+	; End of section
+
+	.debug		.debug_abbrev, cluster 'WheelSpeeds_getWheelSpeed'
+_107:
+	.db	1,17,1,3,8,37,8,27,8,19,15,128,70,12,85,6,16,6,0,0,2,61,0,24,16,0,0,3,46,1,3,8,58,15,59,15,57,15,51,15
+	.db	73,16,54,15,39,12,63,12,17,1,18,1,64,6,42,9,0,0,4,5,0,3,8,58,15,59,15,57,15,51,15,73,16,2,6,0,0,5,11,1
+	.db	17,1,18,1,0,0,6,52,0,3,8,58,15,59,15,57,15,51,15,73,16,2,6,0,0,0
+	; End of section
+
+	.debug		.debug_line, cluster 'WheelSpeeds_getWheelSpeed'
+_108:
+	.dl	_1065-_1064
+_1064:
+	.dw	3
+	.dl	_1067-_1066
+_1066:
+	.db	2,1,-4,9,10,0,1,1,1,1,0,0,0,1,0
+	.db	'wheelSpeeds.c',0,0,0,0,0
+_1067:
+	.db	5,8,7,0,5,2
+	.dl	_45
+	.db	3,198,0,1,5,2,9
+	.dw	_788-_45
+	.db	3,3,1,5,13,9
+	.dw	_4-_788
+	.db	3,3,1,5,9,9
+	.dw	_790-_4
+	.db	1,5,1,9
+	.dw	_792-_790
+	.db	3,16,1,5,13,7,9
+	.dw	_5-_792
+	.db	3,115,1,5,9,9
+	.dw	_793-_5
+	.db	1,5,1,9
+	.dw	_795-_793
+	.db	3,13,1,5,13,7,9
+	.dw	_6-_795
+	.db	3,118,1,5,9,9
+	.dw	_796-_6
+	.db	1,5,1,9
+	.dw	_798-_796
+	.db	3,10,1,5,13,7,9
+	.dw	_7-_798
+	.db	3,121,1,5,9,9
+	.dw	_799-_7
+	.db	1,5,1,9
+	.dw	_801-_799
+	.db	3,7,1,5,9,7,9
+	.dw	_3-_801
+	.db	3,124,1,5,1,9
+	.dw	_802-_3
+	.db	3,4,1,7,9
+	.dw	_110-_802
+	.db	0,1,1
+_1065:
+	; End of section
+
+	.debug		.debug_ranges, cluster 'WheelSpeeds_getWheelSpeed'
+_109:
+	.dl	-1,_45,0,_110-_45,0,0
+	; End of section
+
+	.debug		.debug_pubnames
+	.dl	44
+	.dw	2
+	.dl	_106,281,151
+	.db	'WheelSpeeds_getWheelSpeed',0
+	.dl	0
+	; End of section
+
+	.debug		.debug_info, cluster 'WheelSpeeds_getSlowestFront'
+_111:
+	.dl	239
+	.dw	3
+	.dl	_112
+	.db	4,1
+	.db	'wheelSpeeds.c',0
+	.db	'TASKING VX-toolset for C166: C compiler',0
+	.db	'C:\\Users\\helix\\Desktop\\SRE\\SRE SDK 2017-18\\VCU\\Environment\\dev\\SRE-3\\',0,12,1
+	.dl	_114,_113
+	.db	2
+	.dl	_92
+	.db	3
+	.db	'WheelSpeeds_getSlowestFront',0,1,95,8,6
+	.dl	_127
+	.db	1,1,1
+	.dl	_57,_115,_56
+	.db	12,19,146,176,2,0,64,36,146,161,2,0,33,4
+	.db	'me',0,1,95,49,2
+	.dl	_126,_139
+	.db	5
+	.dl	_57,_115
+	.db	0,0
+	; End of section
+
+	.debug		.debug_abbrev, cluster 'WheelSpeeds_getSlowestFront'
+_112:
+	.db	1,17,1,3,8,37,8,27,8,19,15,128,70,12,85,6,16,6,0,0,2,61,0,24,16,0,0,3,46,1,3,8,58,15,59,15,57,15,51,15
+	.db	73,16,54,15,39,12,63,12,17,1,18,1,64,6,42,9,0,0,4,5,0,3,8,58,15,59,15,57,15,51,15,73,16,2,6,0,0,5,11,0
+	.db	17,1,18,1,0,0,0
+	; End of section
+
+	.debug		.debug_line, cluster 'WheelSpeeds_getSlowestFront'
+_113:
+	.dl	_1069-_1068
+_1068:
+	.dw	3
+	.dl	_1071-_1070
+_1070:
+	.db	2,1,-4,9,10,0,1,1,1,1,0,0,0,1,0
+	.db	'wheelSpeeds.c',0,0,0,0,0
+_1071:
+	.db	5,27,7,0,5,2
+	.dl	_57
+	.db	3,224,0,1,5,8,9
+	.dw	_1072-_57
+	.db	3,126,1,5,27,9
+	.dw	_804-_1072
+	.db	3,2,1,5,12,9
+	.dw	_1073-_804
+	.db	1,5,27,9
+	.dw	_1074-_1073
+	.db	1,5,12,9
+	.dw	_1075-_1074
+	.db	1,5,23,9
+	.dw	_1076-_1075
+	.db	1,5,9,9
+	.dw	_1077-_1076
+	.db	1,5,39,9
+	.dw	_1078-_1077
+	.db	1,5,2,9
+	.dw	_14-_1078
+	.db	1,5,1,9
+	.dw	_1079-_14
+	.db	3,1,1,9
+	.dw	_115-_1079
+	.db	0,1,1
+_1069:
+	; End of section
+
+	.debug		.debug_ranges, cluster 'WheelSpeeds_getSlowestFront'
+_114:
+	.dl	-1,_57,0,_115-_57,0,0
+	; End of section
+
+	.debug		.debug_pubnames
+	.dl	46
+	.dw	2
+	.dl	_111,243,151
+	.db	'WheelSpeeds_getSlowestFront',0
+	.dl	0
+	; End of section
+
+	.debug		.debug_info, cluster 'WheelSpeeds_getFastestRear'
+_116:
+	.dl	238
+	.dw	3
+	.dl	_117
+	.db	4,1
+	.db	'wheelSpeeds.c',0
+	.db	'TASKING VX-toolset for C166: C compiler',0
+	.db	'C:\\Users\\helix\\Desktop\\SRE\\SRE SDK 2017-18\\VCU\\Environment\\dev\\SRE-3\\',0,12,1
+	.dl	_119,_118
+	.db	2
+	.dl	_92
+	.db	3
+	.db	'WheelSpeeds_getFastestRear',0,1,100,8,6
+	.dl	_127
+	.db	1,1,1
+	.dl	_69,_120,_68
+	.db	12,19,146,176,2,0,64,36,146,161,2,0,33,4
+	.db	'me',0,1,100,48,2
+	.dl	_126,_140
+	.db	5
+	.dl	_69,_120
+	.db	0,0
+	; End of section
+
+	.debug		.debug_abbrev, cluster 'WheelSpeeds_getFastestRear'
+_117:
+	.db	1,17,1,3,8,37,8,27,8,19,15,128,70,12,85,6,16,6,0,0,2,61,0,24,16,0,0,3,46,1,3,8,58,15,59,15,57,15,51,15
+	.db	73,16,54,15,39,12,63,12,17,1,18,1,64,6,42,9,0,0,4,5,0,3,8,58,15,59,15,57,15,51,15,73,16,2,6,0,0,5,11,0
+	.db	17,1,18,1,0,0,0
+	; End of section
+
+	.debug		.debug_line, cluster 'WheelSpeeds_getFastestRear'
+_118:
+	.dl	_1081-_1080
+_1080:
+	.dw	3
+	.dl	_1083-_1082
+_1082:
+	.db	2,1,-4,9,10,0,1,1,1,1,0,0,0,1,0
+	.db	'wheelSpeeds.c',0,0,0,0,0
+_1083:
+	.db	5,27,7,0,5,2
+	.dl	_69
+	.db	3,229,0,1,5,8,9
+	.dw	_1084-_69
+	.db	3,126,1,5,27,9
+	.dw	_847-_1084
+	.db	3,2,1,5,12,9
+	.dw	_1085-_847
+	.db	1,5,27,9
+	.dw	_1086-_1085
+	.db	1,5,12,9
+	.dw	_1087-_1086
+	.db	1,5,23,9
+	.dw	_1088-_1087
+	.db	1,5,9,9
+	.dw	_1089-_1088
+	.db	1,5,39,9
+	.dw	_1090-_1089
+	.db	1,5,2,9
+	.dw	_17-_1090
+	.db	1,5,1,9
+	.dw	_1091-_17
+	.db	3,1,1,9
+	.dw	_120-_1091
+	.db	0,1,1
+_1081:
+	; End of section
+
+	.debug		.debug_ranges, cluster 'WheelSpeeds_getFastestRear'
+_119:
+	.dl	-1,_69,0,_120-_69,0,0
+	; End of section
+
+	.debug		.debug_pubnames
+	.dl	45
+	.dw	2
+	.dl	_116,242,151
+	.db	'WheelSpeeds_getFastestRear',0
+	.dl	0
+	; End of section
+
+	.debug		.debug_info, cluster 'WheelSpeeds_getGroundSpeed'
+_121:
+	.dl	238
+	.dw	3
+	.dl	_122
+	.db	4,1
+	.db	'wheelSpeeds.c',0
+	.db	'TASKING VX-toolset for C166: C compiler',0
+	.db	'C:\\Users\\helix\\Desktop\\SRE\\SRE SDK 2017-18\\VCU\\Environment\\dev\\SRE-3\\',0,12,1
+	.dl	_124,_123
+	.db	2
+	.dl	_92
+	.db	3
+	.db	'WheelSpeeds_getGroundSpeed',0,1,105,8,6
+	.dl	_127
+	.db	1,1,1
+	.dl	_81,_125,_80
+	.db	12,19,146,176,2,0,64,36,146,161,2,0,33,4
+	.db	'me',0,1,105,48,2
+	.dl	_126,_141
+	.db	5
+	.dl	_81,_125
+	.db	0,0
+	; End of section
+
+	.debug		.debug_abbrev, cluster 'WheelSpeeds_getGroundSpeed'
+_122:
+	.db	1,17,1,3,8,37,8,27,8,19,15,128,70,12,85,6,16,6,0,0,2,61,0,24,16,0,0,3,46,1,3,8,58,15,59,15,57,15,51,15
+	.db	73,16,54,15,39,12,63,12,17,1,18,1,64,6,42,9,0,0,4,5,0,3,8,58,15,59,15,57,15,51,15,73,16,2,6,0,0,5,11,0
+	.db	17,1,18,1,0,0,0
+	; End of section
+
+	.debug		.debug_line, cluster 'WheelSpeeds_getGroundSpeed'
+_123:
+	.dl	_1093-_1092
+_1092:
+	.dw	3
+	.dl	_1095-_1094
+_1094:
+	.db	2,1,-4,9,10,0,1,1,1,1,0,0,0,1,0
+	.db	'wheelSpeeds.c',0,0,0,0,0
+_1095:
+	.db	5,12,7,0,5,2
+	.dl	_81
+	.db	3,234,0,1,5,27,9
+	.dw	_1096-_81
+	.db	1,5,8,9
+	.dw	_1097-_1096
+	.db	3,126,1,5,12,9
+	.dw	_901-_1097
+	.db	3,2,1,5,27,9
+	.dw	_1098-_901
+	.db	1,5,23,9
+	.dw	_1099-_1098
+	.db	1,5,41,9
+	.dw	_1100-_1099
+	.db	1,5,23,9
+	.dw	_1101-_1100
+	.db	1,5,1,9
+	.dw	_1102-_1101
+	.db	3,1,1,9
+	.dw	_125-_1102
+	.db	0,1,1
+_1093:
+	; End of section
+
+	.debug		.debug_ranges, cluster 'WheelSpeeds_getGroundSpeed'
+_124:
+	.dl	-1,_81,0,_125-_81,0,0
+	; End of section
+
+	.debug		.debug_pubnames
+	.dl	45
+	.dw	2
+	.dl	_121,242,151
+	.db	'WheelSpeeds_getGroundSpeed',0
+	.dl	0
+	; End of section
+
+	.debug		.debug_loc, cluster 'WheelSpeeds_getFastestRear'
+_68:
+	.dl	-1,_69,0,_847-_69
+	.dw	58
+	.db	127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_70-_74
+_74:
+	.db	146,177,2,0,47
+	.dw	_73-_75
+_75:
+_70:
+	.db	18,49,46,40
+	.dw	_71-_76
+_76:
+	.db	146,178,2,0,47
+	.dw	_73-_77
+_77:
+_71:
+	.db	18,50,46,40
+	.dw	_72-_78
+_78:
+	.db	146,179,2,0,47
+	.dw	_73-_79
+_79:
+_72:
+	.db	146,180,2,0
+_73:
+	.db	22,19,62,36,33
+	.dl	_847-_69,_858-_69
+	.dw	60
+	.db	127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_848-_852
+_852:
+	.db	146,177,2,0,47
+	.dw	_851-_853
+_853:
+_848:
+	.db	18,49,46,40
+	.dw	_849-_854
+_854:
+	.db	146,178,2,0,47
+	.dw	_851-_855
+_855:
+_849:
+	.db	18,50,46,40
+	.dw	_850-_856
+_856:
+	.db	146,179,2,0,47
+	.dw	_851-_857
+_857:
+_850:
+	.db	146,180,2,0
+_851:
+	.db	22,19,62,36,33,50,34
+	.dl	_858-_69,_120-_69
+	.dw	58
+	.db	127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_859-_863
+_863:
+	.db	146,177,2,0,47
+	.dw	_862-_864
+_864:
+_859:
+	.db	18,49,46,40
+	.dw	_860-_865
+_865:
+	.db	146,178,2,0,47
+	.dw	_862-_866
+_866:
+_860:
+	.db	18,50,46,40
+	.dw	_861-_867
+_867:
+	.db	146,179,2,0,47
+	.dw	_862-_868
+_868:
+_861:
+	.db	146,180,2,0
+_862:
+	.db	22,19,62,36,33
+	.dl	0,0
+_140:
+	.dl	-1,_69,0,_889-_69
+	.dw	6
+	.db	82,147,2,83,147,2
+	.dl	0,0
+	; End of section
+
+	.debug		.debug_loc, cluster 'WheelSpeeds_getGroundSpeed'
+_80:
+	.dl	-1,_81,0,_890-_81
+	.dw	58
+	.db	127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_82-_86
+_86:
+	.db	146,177,2,0,47
+	.dw	_85-_87
+_87:
+_82:
+	.db	18,49,46,40
+	.dw	_83-_88
+_88:
+	.db	146,178,2,0,47
+	.dw	_85-_89
+_89:
+_83:
+	.db	18,50,46,40
+	.dw	_84-_90
+_90:
+	.db	146,179,2,0,47
+	.dw	_85-_91
+_91:
+_84:
+	.db	146,180,2,0
+_85:
+	.db	22,19,62,36,33
+	.dl	_890-_81,_901-_81
+	.dw	60
+	.db	127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_891-_895
+_895:
+	.db	146,177,2,0,47
+	.dw	_894-_896
+_896:
+_891:
+	.db	18,49,46,40
+	.dw	_892-_897
+_897:
+	.db	146,178,2,0,47
+	.dw	_894-_898
+_898:
+_892:
+	.db	18,50,46,40
+	.dw	_893-_899
+_899:
+	.db	146,179,2,0,47
+	.dw	_894-_900
+_900:
+_893:
+	.db	146,180,2,0
+_894:
+	.db	22,19,62,36,33,50,34
+	.dl	_901-_81,_912-_81
+	.dw	60
+	.db	127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_902-_906
+_906:
+	.db	146,177,2,0,47
+	.dw	_905-_907
+_907:
+_902:
+	.db	18,49,46,40
+	.dw	_903-_908
+_908:
+	.db	146,178,2,0,47
+	.dw	_905-_909
+_909:
+_903:
+	.db	18,50,46,40
+	.dw	_904-_910
+_910:
+	.db	146,179,2,0,47
+	.dw	_905-_911
+_911:
+_904:
+	.db	146,180,2,0
+_905:
+	.db	22,19,62,36,33,52,34
+	.dl	_912-_81,_923-_81
+	.dw	60
+	.db	127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_913-_917
+_917:
+	.db	146,177,2,0,47
+	.dw	_916-_918
+_918:
+_913:
+	.db	18,49,46,40
+	.dw	_914-_919
+_919:
+	.db	146,178,2,0,47
+	.dw	_916-_920
+_920:
+_914:
+	.db	18,50,46,40
+	.dw	_915-_921
+_921:
+	.db	146,179,2,0,47
+	.dw	_916-_922
+_922:
+_915:
+	.db	146,180,2,0
+_916:
+	.db	22,19,62,36,33,50,34
+	.dl	_923-_81,_125-_81
+	.dw	58
+	.db	127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_924-_928
+_928:
+	.db	146,177,2,0,47
+	.dw	_927-_929
+_929:
+_924:
+	.db	18,49,46,40
+	.dw	_925-_930
+_930:
+	.db	146,178,2,0,47
+	.dw	_927-_931
+_931:
+_925:
+	.db	18,50,46,40
+	.dw	_926-_932
+_932:
+	.db	146,179,2,0,47
+	.dw	_927-_933
+_933:
+_926:
+	.db	146,180,2,0
+_927:
+	.db	22,19,62,36,33
+	.dl	0,0
+_141:
+	.dl	-1,_81,0,_974-_81
+	.dw	6
+	.db	82,147,2,83,147,2
+	.dl	0,0
+	; End of section
+
+	.debug		.debug_loc, cluster 'WheelSpeeds_getSlowestFront'
+_56:
+	.dl	-1,_57,0,_804-_57
+	.dw	58
+	.db	127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_58-_62
+_62:
+	.db	146,177,2,0,47
+	.dw	_61-_63
+_63:
+_58:
+	.db	18,49,46,40
+	.dw	_59-_64
+_64:
+	.db	146,178,2,0,47
+	.dw	_61-_65
+_65:
+_59:
+	.db	18,50,46,40
+	.dw	_60-_66
+_66:
+	.db	146,179,2,0,47
+	.dw	_61-_67
+_67:
+_60:
+	.db	146,180,2,0
+_61:
+	.db	22,19,62,36,33
+	.dl	_804-_57,_815-_57
+	.dw	60
+	.db	127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_805-_809
+_809:
+	.db	146,177,2,0,47
+	.dw	_808-_810
+_810:
+_805:
+	.db	18,49,46,40
+	.dw	_806-_811
+_811:
+	.db	146,178,2,0,47
+	.dw	_808-_812
+_812:
+_806:
+	.db	18,50,46,40
+	.dw	_807-_813
+_813:
+	.db	146,179,2,0,47
+	.dw	_808-_814
+_814:
+_807:
+	.db	146,180,2,0
+_808:
+	.db	22,19,62,36,33,50,34
+	.dl	_815-_57,_115-_57
+	.dw	58
+	.db	127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_816-_820
+_820:
+	.db	146,177,2,0,47
+	.dw	_819-_821
+_821:
+_816:
+	.db	18,49,46,40
+	.dw	_817-_822
+_822:
+	.db	146,178,2,0,47
+	.dw	_819-_823
+_823:
+_817:
+	.db	18,50,46,40
+	.dw	_818-_824
+_824:
+	.db	146,179,2,0,47
+	.dw	_819-_825
+_825:
+_818:
+	.db	146,180,2,0
+_819:
+	.db	22,19,62,36,33
+	.dl	0,0
+_139:
+	.dl	-1,_57,0,_846-_57
+	.dw	6
+	.db	82,147,2,83,147,2
+	.dl	0,0
+	; End of section
+
+	.debug		.debug_loc, cluster 'WheelSpeeds_getWheelSpeed'
+_44:
+	.dl	-1,_45,0,_110-_45
+	.dw	58
+	.db	127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_46-_50
+_50:
+	.db	146,177,2,0,47
+	.dw	_49-_51
+_51:
+_46:
+	.db	18,49,46,40
+	.dw	_47-_52
+_52:
+	.db	146,178,2,0,47
+	.dw	_49-_53
+_53:
+_47:
+	.db	18,50,46,40
+	.dw	_48-_54
+_54:
+	.db	146,179,2,0,47
+	.dw	_49-_55
+_55:
+_48:
+	.db	146,180,2,0
+_49:
+	.db	22,19,62,36,33
+	.dl	0,0
+_137:
+	.dl	-1,_45,0,_786-_45
+	.dw	4
+	.db	84,157,8,0
+	.dl	_789-_45,_787-_45
+	.dw	1
+	.db	92
+	.dl	_4-_45,_110-_45
+	.dw	1
+	.db	92
+	.dl	_3-_45,_110-_45
+	.dw	4
+	.db	84,157,8,0
+	.dl	0,0
+_135:
+	.dl	-1,_45,0,_787-_45
+	.dw	6
+	.db	82,147,2,83,147,2
+	.dl	_788-_45,_787-_45
+	.dw	6
+	.db	91,147,2,83,147,2
+	.dl	_4-_45,_790-_45
+	.dw	6
+	.db	91,147,2,83,147,2
+	.dl	_4-_45,_791-_45
+	.dw	6
+	.db	82,147,2,83,147,2
+	.dl	_5-_45,_793-_45
+	.dw	6
+	.db	91,147,2,83,147,2
+	.dl	_5-_45,_794-_45
+	.dw	6
+	.db	82,147,2,83,147,2
+	.dl	_6-_45,_796-_45
+	.dw	6
+	.db	91,147,2,83,147,2
+	.dl	_6-_45,_797-_45
+	.dw	6
+	.db	82,147,2,83,147,2
+	.dl	_7-_45,_799-_45
+	.dw	6
+	.db	91,147,2,83,147,2
+	.dl	_7-_45,_800-_45
+	.dw	6
+	.db	82,147,2,83,147,2
+	.dl	_3-_45,_802-_45
+	.dw	6
+	.db	91,147,2,83,147,2
+	.dl	_3-_45,_803-_45
+	.dw	6
+	.db	82,147,2,83,147,2
+	.dl	0,0
+_138:
+	.dl	-1,_45,_792-_45,_5-_45
+	.dw	6
+	.db	82,147,2,83,147,2
+	.dl	_795-_45,_6-_45
+	.dw	6
+	.db	82,147,2,83,147,2
+	.dl	_798-_45,_7-_45
+	.dw	6
+	.db	82,147,2,83,147,2
+	.dl	_801-_45,_3-_45
+	.dw	6
+	.db	82,147,2,83,147,2
+	.dl	_802-_45,_110-_45
+	.dw	6
+	.db	82,147,2,83,147,2
+	.dl	0,0
+	; End of section
+
+	.debug		.debug_loc, cluster 'WheelSpeeds_new'
+_20:
+	.dl	-1,_21,0,_142-_21
+	.dw	58
+	.db	127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_22-_26
+_26:
+	.db	146,177,2,0,47
+	.dw	_25-_27
+_27:
+_22:
+	.db	18,49,46,40
+	.dw	_23-_28
+_28:
+	.db	146,178,2,0,47
+	.dw	_25-_29
+_29:
+_23:
+	.db	18,50,46,40
+	.dw	_24-_30
+_30:
+	.db	146,179,2,0,47
+	.dw	_25-_31
+_31:
+_24:
+	.db	146,180,2,0
+_25:
+	.db	22,19,62,36,33
+	.dl	_142-_21,_153-_21
+	.dw	60
+	.db	127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_143-_147
+_147:
+	.db	146,177,2,0,47
+	.dw	_146-_148
+_148:
+_143:
+	.db	18,49,46,40
+	.dw	_144-_149
+_149:
+	.db	146,178,2,0,47
+	.dw	_146-_150
+_150:
+_144:
+	.db	18,50,46,40
+	.dw	_145-_151
+_151:
+	.db	146,179,2,0,47
+	.dw	_146-_152
+_152:
+_145:
+	.db	146,180,2,0
+_146:
+	.db	22,19,62,36,33,50,34
+	.dl	_153-_21,_164-_21
+	.dw	60
+	.db	127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_154-_158
+_158:
+	.db	146,177,2,0,47
+	.dw	_157-_159
+_159:
+_154:
+	.db	18,49,46,40
+	.dw	_155-_160
+_160:
+	.db	146,178,2,0,47
+	.dw	_157-_161
+_161:
+_155:
+	.db	18,50,46,40
+	.dw	_156-_162
+_162:
+	.db	146,179,2,0,47
+	.dw	_157-_163
+_163:
+_156:
+	.db	146,180,2,0
+_157:
+	.db	22,19,62,36,33,52,34
+	.dl	_164-_21,_175-_21
+	.dw	60
+	.db	127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_165-_169
+_169:
+	.db	146,177,2,0,47
+	.dw	_168-_170
+_170:
+_165:
+	.db	18,49,46,40
+	.dw	_166-_171
+_171:
+	.db	146,178,2,0,47
+	.dw	_168-_172
+_172:
+_166:
+	.db	18,50,46,40
+	.dw	_167-_173
+_173:
+	.db	146,179,2,0,47
+	.dw	_168-_174
+_174:
+_167:
+	.db	146,180,2,0
+_168:
+	.db	22,19,62,36,33,54,34
+	.dl	_175-_21,_186-_21
+	.dw	60
+	.db	127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_176-_180
+_180:
+	.db	146,177,2,0,47
+	.dw	_179-_181
+_181:
+_176:
+	.db	18,49,46,40
+	.dw	_177-_182
+_182:
+	.db	146,178,2,0,47
+	.dw	_179-_183
+_183:
+_177:
+	.db	18,50,46,40
+	.dw	_178-_184
+_184:
+	.db	146,179,2,0,47
+	.dw	_179-_185
+_185:
+_178:
+	.db	146,180,2,0
+_179:
+	.db	22,19,62,36,33,56,34
+	.dl	_186-_21,_197-_21
+	.dw	60
+	.db	127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_187-_191
+_191:
+	.db	146,177,2,0,47
+	.dw	_190-_192
+_192:
+_187:
+	.db	18,49,46,40
+	.dw	_188-_193
+_193:
+	.db	146,178,2,0,47
+	.dw	_190-_194
+_194:
+_188:
+	.db	18,50,46,40
+	.dw	_189-_195
+_195:
+	.db	146,179,2,0,47
+	.dw	_190-_196
+_196:
+_189:
+	.db	146,180,2,0
+_190:
+	.db	22,19,62,36,33,58,34
+	.dl	_197-_21,_208-_21
+	.dw	60
+	.db	127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_198-_202
+_202:
+	.db	146,177,2,0,47
+	.dw	_201-_203
+_203:
+_198:
+	.db	18,49,46,40
+	.dw	_199-_204
+_204:
+	.db	146,178,2,0,47
+	.dw	_201-_205
+_205:
+_199:
+	.db	18,50,46,40
+	.dw	_200-_206
+_206:
+	.db	146,179,2,0,47
+	.dw	_201-_207
+_207:
+_200:
+	.db	146,180,2,0
+_201:
+	.db	22,19,62,36,33,60,34
+	.dl	_208-_21,_219-_21
+	.dw	60
+	.db	127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_209-_213
+_213:
+	.db	146,177,2,0,47
+	.dw	_212-_214
+_214:
+_209:
+	.db	18,49,46,40
+	.dw	_210-_215
+_215:
+	.db	146,178,2,0,47
+	.dw	_212-_216
+_216:
+_210:
+	.db	18,50,46,40
+	.dw	_211-_217
+_217:
+	.db	146,179,2,0,47
+	.dw	_212-_218
+_218:
+_211:
+	.db	146,180,2,0
+_212:
+	.db	22,19,62,36,33,62,34
+	.dl	_219-_21,_230-_21
+	.dw	60
+	.db	127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_220-_224
+_224:
+	.db	146,177,2,0,47
+	.dw	_223-_225
+_225:
+_220:
+	.db	18,49,46,40
+	.dw	_221-_226
+_226:
+	.db	146,178,2,0,47
+	.dw	_223-_227
+_227:
+_221:
+	.db	18,50,46,40
+	.dw	_222-_228
+_228:
+	.db	146,179,2,0,47
+	.dw	_223-_229
+_229:
+_222:
+	.db	146,180,2,0
+_223:
+	.db	22,19,62,36,33,68,34
+	.dl	_230-_21,_241-_21
+	.dw	60
+	.db	127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_231-_235
+_235:
+	.db	146,177,2,0,47
+	.dw	_234-_236
+_236:
+_231:
+	.db	18,49,46,40
+	.dw	_232-_237
+_237:
+	.db	146,178,2,0,47
+	.dw	_234-_238
+_238:
+_232:
+	.db	18,50,46,40
+	.dw	_233-_239
+_239:
+	.db	146,179,2,0,47
+	.dw	_234-_240
+_240:
+_233:
+	.db	146,180,2,0
+_234:
+	.db	22,19,62,36,33,62,34
+	.dl	_241-_21,_252-_21
+	.dw	60
+	.db	127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_242-_246
+_246:
+	.db	146,177,2,0,47
+	.dw	_245-_247
+_247:
+_242:
+	.db	18,49,46,40
+	.dw	_243-_248
+_248:
+	.db	146,178,2,0,47
+	.dw	_245-_249
+_249:
+_243:
+	.db	18,50,46,40
+	.dw	_244-_250
+_250:
+	.db	146,179,2,0,47
+	.dw	_245-_251
+_251:
+_244:
+	.db	146,180,2,0
+_245:
+	.db	22,19,62,36,33,60,34
+	.dl	_252-_21,_263-_21
+	.dw	60
+	.db	127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_253-_257
+_257:
+	.db	146,177,2,0,47
+	.dw	_256-_258
+_258:
+_253:
+	.db	18,49,46,40
+	.dw	_254-_259
+_259:
+	.db	146,178,2,0,47
+	.dw	_256-_260
+_260:
+_254:
+	.db	18,50,46,40
+	.dw	_255-_261
+_261:
+	.db	146,179,2,0,47
+	.dw	_256-_262
+_262:
+_255:
+	.db	146,180,2,0
+_256:
+	.db	22,19,62,36,33,58,34
+	.dl	_263-_21,_274-_21
+	.dw	60
+	.db	127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_264-_268
+_268:
+	.db	146,177,2,0,47
+	.dw	_267-_269
+_269:
+_264:
+	.db	18,49,46,40
+	.dw	_265-_270
+_270:
+	.db	146,178,2,0,47
+	.dw	_267-_271
+_271:
+_265:
+	.db	18,50,46,40
+	.dw	_266-_272
+_272:
+	.db	146,179,2,0,47
+	.dw	_267-_273
+_273:
+_266:
+	.db	146,180,2,0
+_267:
+	.db	22,19,62,36,33,56,34
+	.dl	_274-_21,_285-_21
+	.dw	60
+	.db	127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_275-_279
+_279:
+	.db	146,177,2,0,47
+	.dw	_278-_280
+_280:
+_275:
+	.db	18,49,46,40
+	.dw	_276-_281
+_281:
+	.db	146,178,2,0,47
+	.dw	_278-_282
+_282:
+_276:
+	.db	18,50,46,40
+	.dw	_277-_283
+_283:
+	.db	146,179,2,0,47
+	.dw	_278-_284
+_284:
+_277:
+	.db	146,180,2,0
+_278:
+	.db	22,19,62,36,33,54,34
+	.dl	_285-_21,_296-_21
+	.dw	60
+	.db	127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_286-_290
+_290:
+	.db	146,177,2,0,47
+	.dw	_289-_291
+_291:
+_286:
+	.db	18,49,46,40
+	.dw	_287-_292
+_292:
+	.db	146,178,2,0,47
+	.dw	_289-_293
+_293:
+_287:
+	.db	18,50,46,40
+	.dw	_288-_294
+_294:
+	.db	146,179,2,0,47
+	.dw	_289-_295
+_295:
+_288:
+	.db	146,180,2,0
+_289:
+	.db	22,19,62,36,33,52,34
+	.dl	_296-_21,_307-_21
+	.dw	60
+	.db	127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_297-_301
+_301:
+	.db	146,177,2,0,47
+	.dw	_300-_302
+_302:
+_297:
+	.db	18,49,46,40
+	.dw	_298-_303
+_303:
+	.db	146,178,2,0,47
+	.dw	_300-_304
+_304:
+_298:
+	.db	18,50,46,40
+	.dw	_299-_305
+_305:
+	.db	146,179,2,0,47
+	.dw	_300-_306
+_306:
+_299:
+	.db	146,180,2,0
+_300:
+	.db	22,19,62,36,33,50,34
+	.dl	_307-_21,_100-_21
+	.dw	58
+	.db	127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_308-_312
+_312:
+	.db	146,177,2,0,47
+	.dw	_311-_313
+_313:
+_308:
+	.db	18,49,46,40
+	.dw	_309-_314
+_314:
+	.db	146,178,2,0,47
+	.dw	_311-_315
+_315:
+_309:
+	.db	18,50,46,40
+	.dw	_310-_316
+_316:
+	.db	146,179,2,0,47
+	.dw	_311-_317
+_317:
+_310:
+	.db	146,180,2,0
+_311:
+	.db	22,19,62,36,33
+	.dl	0,0
+_133:
+	.dl	-1,_21,_488-_21,_274-_21
+	.dw	6
+	.db	82,147,2,87,147,2
+	.dl	0,0
+_131:
+	.dl	-1,_21,0,_100-_21
+	.dw	2
+	.db	145,0
+	.dl	_484-_21,_485-_21
+	.dw	4
+	.db	82,157,8,0
+	.dl	0,0
+_132:
+	.dl	-1,_21,0,_100-_21
+	.dw	2
+	.db	145,2
+	.dl	_486-_21,_487-_21
+	.dw	4
+	.db	82,157,8,0
+	.dl	0,0
+_128:
+	.dl	-1,_21,0,_478-_21
+	.dw	6
+	.db	82,147,2,83,147,2
+	.dl	_480-_21,_481-_21
+	.dw	6
+	.db	88,147,2,89,147,2
+	.dl	0,0
+_129:
+	.dl	-1,_21,0,_479-_21
+	.dw	6
+	.db	84,147,2,85,147,2
+	.dl	_482-_21,_483-_21
+	.dw	6
+	.db	82,147,2,83,147,2
+	.dl	0,0
+	; End of section
+
+	.debug		.debug_loc, cluster 'WheelSpeeds_update'
+_32:
+	.dl	-1,_33,0,_489-_33
+	.dw	58
+	.db	127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_34-_38
+_38:
+	.db	146,177,2,0,47
+	.dw	_37-_39
+_39:
+_34:
+	.db	18,49,46,40
+	.dw	_35-_40
+_40:
+	.db	146,178,2,0,47
+	.dw	_37-_41
+_41:
+_35:
+	.db	18,50,46,40
+	.dw	_36-_42
+_42:
+	.db	146,179,2,0,47
+	.dw	_37-_43
+_43:
+_36:
+	.db	146,180,2,0
+_37:
+	.db	22,19,62,36,33
+	.dl	_489-_33,_500-_33
+	.dw	60
+	.db	127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_490-_494
+_494:
+	.db	146,177,2,0,47
+	.dw	_493-_495
+_495:
+_490:
+	.db	18,49,46,40
+	.dw	_491-_496
+_496:
+	.db	146,178,2,0,47
+	.dw	_493-_497
+_497:
+_491:
+	.db	18,50,46,40
+	.dw	_492-_498
+_498:
+	.db	146,179,2,0,47
+	.dw	_493-_499
+_499:
+_492:
+	.db	146,180,2,0
+_493:
+	.db	22,19,62,36,33,50,34
+	.dl	_500-_33,_511-_33
+	.dw	60
+	.db	127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_501-_505
+_505:
+	.db	146,177,2,0,47
+	.dw	_504-_506
+_506:
+_501:
+	.db	18,49,46,40
+	.dw	_502-_507
+_507:
+	.db	146,178,2,0,47
+	.dw	_504-_508
+_508:
+_502:
+	.db	18,50,46,40
+	.dw	_503-_509
+_509:
+	.db	146,179,2,0,47
+	.dw	_504-_510
+_510:
+_503:
+	.db	146,180,2,0
+_504:
+	.db	22,19,62,36,33,52,34
+	.dl	_511-_33,_522-_33
+	.dw	60
+	.db	127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_512-_516
+_516:
+	.db	146,177,2,0,47
+	.dw	_515-_517
+_517:
+_512:
+	.db	18,49,46,40
+	.dw	_513-_518
+_518:
+	.db	146,178,2,0,47
+	.dw	_515-_519
+_519:
+_513:
+	.db	18,50,46,40
+	.dw	_514-_520
+_520:
+	.db	146,179,2,0,47
+	.dw	_515-_521
+_521:
+_514:
+	.db	146,180,2,0
+_515:
+	.db	22,19,62,36,33,54,34
+	.dl	_522-_33,_533-_33
+	.dw	60
+	.db	127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_523-_527
+_527:
+	.db	146,177,2,0,47
+	.dw	_526-_528
+_528:
+_523:
+	.db	18,49,46,40
+	.dw	_524-_529
+_529:
+	.db	146,178,2,0,47
+	.dw	_526-_530
+_530:
+_524:
+	.db	18,50,46,40
+	.dw	_525-_531
+_531:
+	.db	146,179,2,0,47
+	.dw	_526-_532
+_532:
+_525:
+	.db	146,180,2,0
+_526:
+	.db	22,19,62,36,33,56,34
+	.dl	_533-_33,_544-_33
+	.dw	60
+	.db	127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_534-_538
+_538:
+	.db	146,177,2,0,47
+	.dw	_537-_539
+_539:
+_534:
+	.db	18,49,46,40
+	.dw	_535-_540
+_540:
+	.db	146,178,2,0,47
+	.dw	_537-_541
+_541:
+_535:
+	.db	18,50,46,40
+	.dw	_536-_542
+_542:
+	.db	146,179,2,0,47
+	.dw	_537-_543
+_543:
+_536:
+	.db	146,180,2,0
+_537:
+	.db	22,19,62,36,33,58,34
+	.dl	_544-_33,_555-_33
+	.dw	60
+	.db	127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_545-_549
+_549:
+	.db	146,177,2,0,47
+	.dw	_548-_550
+_550:
+_545:
+	.db	18,49,46,40
+	.dw	_546-_551
+_551:
+	.db	146,178,2,0,47
+	.dw	_548-_552
+_552:
+_546:
+	.db	18,50,46,40
+	.dw	_547-_553
+_553:
+	.db	146,179,2,0,47
+	.dw	_548-_554
+_554:
+_547:
+	.db	146,180,2,0
+_548:
+	.db	22,19,62,36,33,60,34
+	.dl	_555-_33,_566-_33
+	.dw	60
+	.db	127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_556-_560
+_560:
+	.db	146,177,2,0,47
+	.dw	_559-_561
+_561:
+_556:
+	.db	18,49,46,40
+	.dw	_557-_562
+_562:
+	.db	146,178,2,0,47
+	.dw	_559-_563
+_563:
+_557:
+	.db	18,50,46,40
+	.dw	_558-_564
+_564:
+	.db	146,179,2,0,47
+	.dw	_559-_565
+_565:
+_558:
+	.db	146,180,2,0
+_559:
+	.db	22,19,62,36,33,62,34
+	.dl	_566-_33,_577-_33
+	.dw	60
+	.db	127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_567-_571
+_571:
+	.db	146,177,2,0,47
+	.dw	_570-_572
+_572:
+_567:
+	.db	18,49,46,40
+	.dw	_568-_573
+_573:
+	.db	146,178,2,0,47
+	.dw	_570-_574
+_574:
+_568:
+	.db	18,50,46,40
+	.dw	_569-_575
+_575:
+	.db	146,179,2,0,47
+	.dw	_570-_576
+_576:
+_569:
+	.db	146,180,2,0
+_570:
+	.db	22,19,62,36,33,60,34
+	.dl	_577-_33,_588-_33
+	.dw	60
+	.db	127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_578-_582
+_582:
+	.db	146,177,2,0,47
+	.dw	_581-_583
+_583:
+_578:
+	.db	18,49,46,40
+	.dw	_579-_584
+_584:
+	.db	146,178,2,0,47
+	.dw	_581-_585
+_585:
+_579:
+	.db	18,50,46,40
+	.dw	_580-_586
+_586:
+	.db	146,179,2,0,47
+	.dw	_581-_587
+_587:
+_580:
+	.db	146,180,2,0
+_581:
+	.db	22,19,62,36,33,58,34
+	.dl	_588-_33,_599-_33
+	.dw	60
+	.db	127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_589-_593
+_593:
+	.db	146,177,2,0,47
+	.dw	_592-_594
+_594:
+_589:
+	.db	18,49,46,40
+	.dw	_590-_595
+_595:
+	.db	146,178,2,0,47
+	.dw	_592-_596
+_596:
+_590:
+	.db	18,50,46,40
+	.dw	_591-_597
+_597:
+	.db	146,179,2,0,47
+	.dw	_592-_598
+_598:
+_591:
+	.db	146,180,2,0
+_592:
+	.db	22,19,62,36,33,56,34
+	.dl	_599-_33,_610-_33
+	.dw	60
+	.db	127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_600-_604
+_604:
+	.db	146,177,2,0,47
+	.dw	_603-_605
+_605:
+_600:
+	.db	18,49,46,40
+	.dw	_601-_606
+_606:
+	.db	146,178,2,0,47
+	.dw	_603-_607
+_607:
+_601:
+	.db	18,50,46,40
+	.dw	_602-_608
+_608:
+	.db	146,179,2,0,47
+	.dw	_603-_609
+_609:
+_602:
+	.db	146,180,2,0
+_603:
+	.db	22,19,62,36,33,54,34
+	.dl	_610-_33,_621-_33
+	.dw	60
+	.db	127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_611-_615
+_615:
+	.db	146,177,2,0,47
+	.dw	_614-_616
+_616:
+_611:
+	.db	18,49,46,40
+	.dw	_612-_617
+_617:
+	.db	146,178,2,0,47
+	.dw	_614-_618
+_618:
+_612:
+	.db	18,50,46,40
+	.dw	_613-_619
+_619:
+	.db	146,179,2,0,47
+	.dw	_614-_620
+_620:
+_613:
+	.db	146,180,2,0
+_614:
+	.db	22,19,62,36,33,52,34
+	.dl	_621-_33,_632-_33
+	.dw	60
+	.db	127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_622-_626
+_626:
+	.db	146,177,2,0,47
+	.dw	_625-_627
+_627:
+_622:
+	.db	18,49,46,40
+	.dw	_623-_628
+_628:
+	.db	146,178,2,0,47
+	.dw	_625-_629
+_629:
+_623:
+	.db	18,50,46,40
+	.dw	_624-_630
+_630:
+	.db	146,179,2,0,47
+	.dw	_625-_631
+_631:
+_624:
+	.db	146,180,2,0
+_625:
+	.db	22,19,62,36,33,50,34
+	.dl	_632-_33,_105-_33
+	.dw	58
+	.db	127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_633-_637
+_637:
+	.db	146,177,2,0,47
+	.dw	_636-_638
+_638:
+_633:
+	.db	18,49,46,40
+	.dw	_634-_639
+_639:
+	.db	146,178,2,0,47
+	.dw	_636-_640
+_640:
+_634:
+	.db	18,50,46,40
+	.dw	_635-_641
+_641:
+	.db	146,179,2,0,47
+	.dw	_636-_642
+_642:
+_635:
+	.db	146,180,2,0
+_636:
+	.db	22,19,62,36,33
+	.dl	0,0
+_134:
+	.dl	-1,_33,0,_783-_33
+	.dw	6
+	.db	82,147,2,83,147,2
+	.dl	_784-_33,_785-_33
+	.dw	6
+	.db	87,147,2,80,147,2
+	.dl	0,0
+	; End of section
+
+	.debug		.debug_frame
+_1103:
+	.dl	184
+	.dl	-1
+	.db	3,0,2,2,173,2,15,60,127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_1104-_1108
+_1108:
+	.db	146,177,2,0,47
+	.dw	_1107-_1109
+_1109:
+_1104:
+	.db	18,49,46,40
+	.dw	_1105-_1110
+_1110:
+	.db	146,178,2,0,47
+	.dw	_1107-_1111
+_1111:
+_1105:
+	.db	18,50,46,40
+	.dw	_1106-_1112
+_1112:
+	.db	146,179,2,0,47
+	.dw	_1107-_1113
+_1113:
+_1106:
+	.db	146,180,2,0
+_1107:
+	.db	22,19,62,36,33,48,34,16,173,2,12,19,146,176,2,0,64,36,146,161,2,0,33,8,15,22,161,2,5,19,146,161,2,4,8
+	.db	162,2,8,166,2,8,177,2,8,178,2,8,179,2,8,180,2,8,0,8,1,8,6,8,7,8,8,8,9,8,10,8,167,2,8,168,2,8,169,2,8,170
+	.db	2,8,171,2,8,172,2,16,174,2,12,19,146,176,2,0,64,36,146,161,2,0,33,16,175,2,12,19,146,176,2,0,64,36,146
+	.db	161,2,2,33,8,176,2
+	; End of section
+
+	.debug		.debug_frame, cluster 'WheelSpeeds_new'
+	.dl	1204
+	.dl	_1103,_21,_100-_21
+	.db	4
+	.dl	(_142-_21)/2
+	.db	15,60,127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_318-_322
+_322:
+	.db	146,177,2,0,47
+	.dw	_321-_323
+_323:
+_318:
+	.db	18,49,46,40
+	.dw	_319-_324
+_324:
+	.db	146,178,2,0,47
+	.dw	_321-_325
+_325:
+_319:
+	.db	18,50,46,40
+	.dw	_320-_326
+_326:
+	.db	146,179,2,0,47
+	.dw	_321-_327
+_327:
+_320:
+	.db	146,180,2,0
+_321:
+	.db	22,19,62,36,33,50,34,22,15,3,19,127,2,17,0,127,4
+	.dl	(_153-_142)/2
+	.db	15,60,127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_328-_332
+_332:
+	.db	146,177,2,0,47
+	.dw	_331-_333
+_333:
+_328:
+	.db	18,49,46,40
+	.dw	_329-_334
+_334:
+	.db	146,178,2,0,47
+	.dw	_331-_335
+_335:
+_329:
+	.db	18,50,46,40
+	.dw	_330-_336
+_336:
+	.db	146,179,2,0,47
+	.dw	_331-_337
+_337:
+_330:
+	.db	146,180,2,0
+_331:
+	.db	22,19,62,36,33,52,34,22,15,3,19,127,4,17,1,126,4
+	.dl	(_164-_153)/2
+	.db	15,60,127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_338-_342
+_342:
+	.db	146,177,2,0,47
+	.dw	_341-_343
+_343:
+_338:
+	.db	18,49,46,40
+	.dw	_339-_344
+_344:
+	.db	146,178,2,0,47
+	.dw	_341-_345
+_345:
+_339:
+	.db	18,50,46,40
+	.dw	_340-_346
+_346:
+	.db	146,179,2,0,47
+	.dw	_341-_347
+_347:
+_340:
+	.db	146,180,2,0
+_341:
+	.db	22,19,62,36,33,54,34,22,15,3,19,127,6,17,6,125,4
+	.dl	(_175-_164)/2
+	.db	15,60,127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_348-_352
+_352:
+	.db	146,177,2,0,47
+	.dw	_351-_353
+_353:
+_348:
+	.db	18,49,46,40
+	.dw	_349-_354
+_354:
+	.db	146,178,2,0,47
+	.dw	_351-_355
+_355:
+_349:
+	.db	18,50,46,40
+	.dw	_350-_356
+_356:
+	.db	146,179,2,0,47
+	.dw	_351-_357
+_357:
+_350:
+	.db	146,180,2,0
+_351:
+	.db	22,19,62,36,33,56,34,22,15,3,19,127,8,17,7,124,4
+	.dl	(_186-_175)/2
+	.db	15,60,127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_358-_362
+_362:
+	.db	146,177,2,0,47
+	.dw	_361-_363
+_363:
+_358:
+	.db	18,49,46,40
+	.dw	_359-_364
+_364:
+	.db	146,178,2,0,47
+	.dw	_361-_365
+_365:
+_359:
+	.db	18,50,46,40
+	.dw	_360-_366
+_366:
+	.db	146,179,2,0,47
+	.dw	_361-_367
+_367:
+_360:
+	.db	146,180,2,0
+_361:
+	.db	22,19,62,36,33,58,34,22,15,3,19,127,10,17,8,123,4
+	.dl	(_197-_186)/2
+	.db	15,60,127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_368-_372
+_372:
+	.db	146,177,2,0,47
+	.dw	_371-_373
+_373:
+_368:
+	.db	18,49,46,40
+	.dw	_369-_374
+_374:
+	.db	146,178,2,0,47
+	.dw	_371-_375
+_375:
+_369:
+	.db	18,50,46,40
+	.dw	_370-_376
+_376:
+	.db	146,179,2,0,47
+	.dw	_371-_377
+_377:
+_370:
+	.db	146,180,2,0
+_371:
+	.db	22,19,62,36,33,60,34,22,15,3,19,127,12,17,9,122,4
+	.dl	(_208-_197)/2
+	.db	15,60,127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_378-_382
+_382:
+	.db	146,177,2,0,47
+	.dw	_381-_383
+_383:
+_378:
+	.db	18,49,46,40
+	.dw	_379-_384
+_384:
+	.db	146,178,2,0,47
+	.dw	_381-_385
+_385:
+_379:
+	.db	18,50,46,40
+	.dw	_380-_386
+_386:
+	.db	146,179,2,0,47
+	.dw	_381-_387
+_387:
+_380:
+	.db	146,180,2,0
+_381:
+	.db	22,19,62,36,33,62,34,22,15,3,19,127,14,17,10,121,4
+	.dl	(_219-_208)/2
+	.db	15,60,127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_388-_392
+_392:
+	.db	146,177,2,0,47
+	.dw	_391-_393
+_393:
+_388:
+	.db	18,49,46,40
+	.dw	_389-_394
+_394:
+	.db	146,178,2,0,47
+	.dw	_391-_395
+_395:
+_389:
+	.db	18,50,46,40
+	.dw	_390-_396
+_396:
+	.db	146,179,2,0,47
+	.dw	_391-_397
+_397:
+_390:
+	.db	146,180,2,0
+_391:
+	.db	22,19,62,36,33,68,34,22,15,3,19,127,20,4
+	.dl	(_230-_219)/2
+	.db	15,60,127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_398-_402
+_402:
+	.db	146,177,2,0,47
+	.dw	_401-_403
+_403:
+_398:
+	.db	18,49,46,40
+	.dw	_399-_404
+_404:
+	.db	146,178,2,0,47
+	.dw	_401-_405
+_405:
+_399:
+	.db	18,50,46,40
+	.dw	_400-_406
+_406:
+	.db	146,179,2,0,47
+	.dw	_401-_407
+_407:
+_400:
+	.db	146,180,2,0
+_401:
+	.db	22,19,62,36,33,62,34,22,15,3,19,127,14,4
+	.dl	(_241-_230)/2
+	.db	15,60,127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_408-_412
+_412:
+	.db	146,177,2,0,47
+	.dw	_411-_413
+_413:
+_408:
+	.db	18,49,46,40
+	.dw	_409-_414
+_414:
+	.db	146,178,2,0,47
+	.dw	_411-_415
+_415:
+_409:
+	.db	18,50,46,40
+	.dw	_410-_416
+_416:
+	.db	146,179,2,0,47
+	.dw	_411-_417
+_417:
+_410:
+	.db	146,180,2,0
+_411:
+	.db	22,19,62,36,33,60,34,22,15,3,19,127,12,202,4
+	.dl	(_252-_241)/2
+	.db	15,60,127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_418-_422
+_422:
+	.db	146,177,2,0,47
+	.dw	_421-_423
+_423:
+_418:
+	.db	18,49,46,40
+	.dw	_419-_424
+_424:
+	.db	146,178,2,0,47
+	.dw	_421-_425
+_425:
+_419:
+	.db	18,50,46,40
+	.dw	_420-_426
+_426:
+	.db	146,179,2,0,47
+	.dw	_421-_427
+_427:
+_420:
+	.db	146,180,2,0
+_421:
+	.db	22,19,62,36,33,58,34,22,15,3,19,127,10,201,4
+	.dl	(_263-_252)/2
+	.db	15,60,127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_428-_432
+_432:
+	.db	146,177,2,0,47
+	.dw	_431-_433
+_433:
+_428:
+	.db	18,49,46,40
+	.dw	_429-_434
+_434:
+	.db	146,178,2,0,47
+	.dw	_431-_435
+_435:
+_429:
+	.db	18,50,46,40
+	.dw	_430-_436
+_436:
+	.db	146,179,2,0,47
+	.dw	_431-_437
+_437:
+_430:
+	.db	146,180,2,0
+_431:
+	.db	22,19,62,36,33,56,34,22,15,3,19,127,8,200,4
+	.dl	(_274-_263)/2
+	.db	15,60,127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_438-_442
+_442:
+	.db	146,177,2,0,47
+	.dw	_441-_443
+_443:
+_438:
+	.db	18,49,46,40
+	.dw	_439-_444
+_444:
+	.db	146,178,2,0,47
+	.dw	_441-_445
+_445:
+_439:
+	.db	18,50,46,40
+	.dw	_440-_446
+_446:
+	.db	146,179,2,0,47
+	.dw	_441-_447
+_447:
+_440:
+	.db	146,180,2,0
+_441:
+	.db	22,19,62,36,33,54,34,22,15,3,19,127,6,199,4
+	.dl	(_285-_274)/2
+	.db	15,60,127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_448-_452
+_452:
+	.db	146,177,2,0,47
+	.dw	_451-_453
+_453:
+_448:
+	.db	18,49,46,40
+	.dw	_449-_454
+_454:
+	.db	146,178,2,0,47
+	.dw	_451-_455
+_455:
+_449:
+	.db	18,50,46,40
+	.dw	_450-_456
+_456:
+	.db	146,179,2,0,47
+	.dw	_451-_457
+_457:
+_450:
+	.db	146,180,2,0
+_451:
+	.db	22,19,62,36,33,52,34,22,15,3,19,127,4,198,4
+	.dl	(_296-_285)/2
+	.db	15,60,127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_458-_462
+_462:
+	.db	146,177,2,0,47
+	.dw	_461-_463
+_463:
+_458:
+	.db	18,49,46,40
+	.dw	_459-_464
+_464:
+	.db	146,178,2,0,47
+	.dw	_461-_465
+_465:
+_459:
+	.db	18,50,46,40
+	.dw	_460-_466
+_466:
+	.db	146,179,2,0,47
+	.dw	_461-_467
+_467:
+_460:
+	.db	146,180,2,0
+_461:
+	.db	22,19,62,36,33,50,34,22,15,3,19,127,2,193,4
+	.dl	(_307-_296)/2
+	.db	15,60,127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_468-_472
+_472:
+	.db	146,177,2,0,47
+	.dw	_471-_473
+_473:
+_468:
+	.db	18,49,46,40
+	.dw	_469-_474
+_474:
+	.db	146,178,2,0,47
+	.dw	_471-_475
+_475:
+_469:
+	.db	18,50,46,40
+	.dw	_470-_476
+_476:
+	.db	146,179,2,0,47
+	.dw	_471-_477
+_477:
+_470:
+	.db	146,180,2,0
+_471:
+	.db	22,19,62,36,33,48,34,8,15,192
+	; End of section
+
+	.debug		.debug_frame, cluster 'WheelSpeeds_update'
+	.dl	1064
+	.dl	_1103,_33,_105-_33
+	.db	8,160,2,4
+	.dl	(_489-_33)/2
+	.db	15,60,127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_643-_647
+_647:
+	.db	146,177,2,0,47
+	.dw	_646-_648
+_648:
+_643:
+	.db	18,49,46,40
+	.dw	_644-_649
+_649:
+	.db	146,178,2,0,47
+	.dw	_646-_650
+_650:
+_644:
+	.db	18,50,46,40
+	.dw	_645-_651
+_651:
+	.db	146,179,2,0,47
+	.dw	_646-_652
+_652:
+_645:
+	.db	146,180,2,0
+_646:
+	.db	22,19,62,36,33,50,34,22,15,3,19,127,2,17,0,127,4
+	.dl	(_500-_489)/2
+	.db	15,60,127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_653-_657
+_657:
+	.db	146,177,2,0,47
+	.dw	_656-_658
+_658:
+_653:
+	.db	18,49,46,40
+	.dw	_654-_659
+_659:
+	.db	146,178,2,0,47
+	.dw	_656-_660
+_660:
+_654:
+	.db	18,50,46,40
+	.dw	_655-_661
+_661:
+	.db	146,179,2,0,47
+	.dw	_656-_662
+_662:
+_655:
+	.db	146,180,2,0
+_656:
+	.db	22,19,62,36,33,52,34,22,15,3,19,127,4,17,1,126,4
+	.dl	(_511-_500)/2
+	.db	15,60,127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_663-_667
+_667:
+	.db	146,177,2,0,47
+	.dw	_666-_668
+_668:
+_663:
+	.db	18,49,46,40
+	.dw	_664-_669
+_669:
+	.db	146,178,2,0,47
+	.dw	_666-_670
+_670:
+_664:
+	.db	18,50,46,40
+	.dw	_665-_671
+_671:
+	.db	146,179,2,0,47
+	.dw	_666-_672
+_672:
+_665:
+	.db	146,180,2,0
+_666:
+	.db	22,19,62,36,33,54,34,22,15,3,19,127,6,17,6,125,4
+	.dl	(_522-_511)/2
+	.db	15,60,127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_673-_677
+_677:
+	.db	146,177,2,0,47
+	.dw	_676-_678
+_678:
+_673:
+	.db	18,49,46,40
+	.dw	_674-_679
+_679:
+	.db	146,178,2,0,47
+	.dw	_676-_680
+_680:
+_674:
+	.db	18,50,46,40
+	.dw	_675-_681
+_681:
+	.db	146,179,2,0,47
+	.dw	_676-_682
+_682:
+_675:
+	.db	146,180,2,0
+_676:
+	.db	22,19,62,36,33,56,34,22,15,3,19,127,8,17,7,124,4
+	.dl	(_533-_522)/2
+	.db	15,60,127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_683-_687
+_687:
+	.db	146,177,2,0,47
+	.dw	_686-_688
+_688:
+_683:
+	.db	18,49,46,40
+	.dw	_684-_689
+_689:
+	.db	146,178,2,0,47
+	.dw	_686-_690
+_690:
+_684:
+	.db	18,50,46,40
+	.dw	_685-_691
+_691:
+	.db	146,179,2,0,47
+	.dw	_686-_692
+_692:
+_685:
+	.db	146,180,2,0
+_686:
+	.db	22,19,62,36,33,58,34,22,15,3,19,127,10,17,8,123,4
+	.dl	(_544-_533)/2
+	.db	15,60,127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_693-_697
+_697:
+	.db	146,177,2,0,47
+	.dw	_696-_698
+_698:
+_693:
+	.db	18,49,46,40
+	.dw	_694-_699
+_699:
+	.db	146,178,2,0,47
+	.dw	_696-_700
+_700:
+_694:
+	.db	18,50,46,40
+	.dw	_695-_701
+_701:
+	.db	146,179,2,0,47
+	.dw	_696-_702
+_702:
+_695:
+	.db	146,180,2,0
+_696:
+	.db	22,19,62,36,33,60,34,22,15,3,19,127,12,17,9,122,4
+	.dl	(_555-_544)/2
+	.db	15,60,127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_703-_707
+_707:
+	.db	146,177,2,0,47
+	.dw	_706-_708
+_708:
+_703:
+	.db	18,49,46,40
+	.dw	_704-_709
+_709:
+	.db	146,178,2,0,47
+	.dw	_706-_710
+_710:
+_704:
+	.db	18,50,46,40
+	.dw	_705-_711
+_711:
+	.db	146,179,2,0,47
+	.dw	_706-_712
+_712:
+_705:
+	.db	146,180,2,0
+_706:
+	.db	22,19,62,36,33,62,34,22,15,3,19,127,14,17,10,121,4
+	.dl	(_566-_555)/2
+	.db	15,60,127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_713-_717
+_717:
+	.db	146,177,2,0,47
+	.dw	_716-_718
+_718:
+_713:
+	.db	18,49,46,40
+	.dw	_714-_719
+_719:
+	.db	146,178,2,0,47
+	.dw	_716-_720
+_720:
+_714:
+	.db	18,50,46,40
+	.dw	_715-_721
+_721:
+	.db	146,179,2,0,47
+	.dw	_716-_722
+_722:
+_715:
+	.db	146,180,2,0
+_716:
+	.db	22,19,62,36,33,60,34,22,15,3,19,127,12,202,4
+	.dl	(_577-_566)/2
+	.db	15,60,127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_723-_727
+_727:
+	.db	146,177,2,0,47
+	.dw	_726-_728
+_728:
+_723:
+	.db	18,49,46,40
+	.dw	_724-_729
+_729:
+	.db	146,178,2,0,47
+	.dw	_726-_730
+_730:
+_724:
+	.db	18,50,46,40
+	.dw	_725-_731
+_731:
+	.db	146,179,2,0,47
+	.dw	_726-_732
+_732:
+_725:
+	.db	146,180,2,0
+_726:
+	.db	22,19,62,36,33,58,34,22,15,3,19,127,10,201,4
+	.dl	(_588-_577)/2
+	.db	15,60,127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_733-_737
+_737:
+	.db	146,177,2,0,47
+	.dw	_736-_738
+_738:
+_733:
+	.db	18,49,46,40
+	.dw	_734-_739
+_739:
+	.db	146,178,2,0,47
+	.dw	_736-_740
+_740:
+_734:
+	.db	18,50,46,40
+	.dw	_735-_741
+_741:
+	.db	146,179,2,0,47
+	.dw	_736-_742
+_742:
+_735:
+	.db	146,180,2,0
+_736:
+	.db	22,19,62,36,33,56,34,22,15,3,19,127,8,200,4
+	.dl	(_599-_588)/2
+	.db	15,60,127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_743-_747
+_747:
+	.db	146,177,2,0,47
+	.dw	_746-_748
+_748:
+_743:
+	.db	18,49,46,40
+	.dw	_744-_749
+_749:
+	.db	146,178,2,0,47
+	.dw	_746-_750
+_750:
+_744:
+	.db	18,50,46,40
+	.dw	_745-_751
+_751:
+	.db	146,179,2,0,47
+	.dw	_746-_752
+_752:
+_745:
+	.db	146,180,2,0
+_746:
+	.db	22,19,62,36,33,54,34,22,15,3,19,127,6,199,4
+	.dl	(_610-_599)/2
+	.db	15,60,127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_753-_757
+_757:
+	.db	146,177,2,0,47
+	.dw	_756-_758
+_758:
+_753:
+	.db	18,49,46,40
+	.dw	_754-_759
+_759:
+	.db	146,178,2,0,47
+	.dw	_756-_760
+_760:
+_754:
+	.db	18,50,46,40
+	.dw	_755-_761
+_761:
+	.db	146,179,2,0,47
+	.dw	_756-_762
+_762:
+_755:
+	.db	146,180,2,0
+_756:
+	.db	22,19,62,36,33,52,34,22,15,3,19,127,4,198,4
+	.dl	(_621-_610)/2
+	.db	15,60,127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_763-_767
+_767:
+	.db	146,177,2,0,47
+	.dw	_766-_768
+_768:
+_763:
+	.db	18,49,46,40
+	.dw	_764-_769
+_769:
+	.db	146,178,2,0,47
+	.dw	_766-_770
+_770:
+_764:
+	.db	18,50,46,40
+	.dw	_765-_771
+_771:
+	.db	146,179,2,0,47
+	.dw	_766-_772
+_772:
+_765:
+	.db	146,180,2,0
+_766:
+	.db	22,19,62,36,33,50,34,22,15,3,19,127,2,193,4
+	.dl	(_632-_621)/2
+	.db	15,60,127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_773-_777
+_777:
+	.db	146,177,2,0,47
+	.dw	_776-_778
+_778:
+_773:
+	.db	18,49,46,40
+	.dw	_774-_779
+_779:
+	.db	146,178,2,0,47
+	.dw	_776-_780
+_780:
+_774:
+	.db	18,50,46,40
+	.dw	_775-_781
+_781:
+	.db	146,179,2,0,47
+	.dw	_776-_782
+_782:
+_775:
+	.db	146,180,2,0
+_776:
+	.db	22,19,62,36,33,48,34,8,15,192,0,0,0
+	; End of section
+
+	.debug		.debug_frame, cluster 'WheelSpeeds_getWheelSpeed'
+	.dl	24
+	.dl	_1103,_45,_110-_45
+	.db	8,160,2,8,5,8,13,8,14,0,0,0
+	; End of section
+
+	.debug		.debug_frame, cluster 'WheelSpeeds_getSlowestFront'
+	.dl	168
+	.dl	_1103,_57,_115-_57
+	.db	8,160,2,8,13,8,14,4
+	.dl	(_804-_57)/2
+	.db	15,60,127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_826-_830
+_830:
+	.db	146,177,2,0,47
+	.dw	_829-_831
+_831:
+_826:
+	.db	18,49,46,40
+	.dw	_827-_832
+_832:
+	.db	146,178,2,0,47
+	.dw	_829-_833
+_833:
+_827:
+	.db	18,50,46,40
+	.dw	_828-_834
+_834:
+	.db	146,179,2,0,47
+	.dw	_829-_835
+_835:
+_828:
+	.db	146,180,2,0
+_829:
+	.db	22,19,62,36,33,50,34,22,15,3,19,127,2,17,0,127,4
+	.dl	(_815-_804)/2
+	.db	15,60,127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_836-_840
+_840:
+	.db	146,177,2,0,47
+	.dw	_839-_841
+_841:
+_836:
+	.db	18,49,46,40
+	.dw	_837-_842
+_842:
+	.db	146,178,2,0,47
+	.dw	_839-_843
+_843:
+_837:
+	.db	18,50,46,40
+	.dw	_838-_844
+_844:
+	.db	146,179,2,0,47
+	.dw	_839-_845
+_845:
+_838:
+	.db	146,180,2,0
+_839:
+	.db	22,19,62,36,33,48,34,8,15,192,0,0,0
+	; End of section
+
+	.debug		.debug_frame, cluster 'WheelSpeeds_getFastestRear'
+	.dl	168
+	.dl	_1103,_69,_120-_69
+	.db	8,160,2,8,13,8,14,4
+	.dl	(_847-_69)/2
+	.db	15,60,127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_869-_873
+_873:
+	.db	146,177,2,0,47
+	.dw	_872-_874
+_874:
+_869:
+	.db	18,49,46,40
+	.dw	_870-_875
+_875:
+	.db	146,178,2,0,47
+	.dw	_872-_876
+_876:
+_870:
+	.db	18,50,46,40
+	.dw	_871-_877
+_877:
+	.db	146,179,2,0,47
+	.dw	_872-_878
+_878:
+_871:
+	.db	146,180,2,0
+_872:
+	.db	22,19,62,36,33,50,34,22,15,3,19,127,2,17,0,127,4
+	.dl	(_858-_847)/2
+	.db	15,60,127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_879-_883
+_883:
+	.db	146,177,2,0,47
+	.dw	_882-_884
+_884:
+_879:
+	.db	18,49,46,40
+	.dw	_880-_885
+_885:
+	.db	146,178,2,0,47
+	.dw	_882-_886
+_886:
+_880:
+	.db	18,50,46,40
+	.dw	_881-_887
+_887:
+	.db	146,179,2,0,47
+	.dw	_882-_888
+_888:
+_881:
+	.db	146,180,2,0
+_882:
+	.db	22,19,62,36,33,48,34,8,15,192,0,0,0
+	; End of section
+
+	.debug		.debug_frame, cluster 'WheelSpeeds_getGroundSpeed'
+	.dl	312
+	.dl	_1103,_81,_125-_81
+	.db	8,160,2,4
+	.dl	(_890-_81)/2
+	.db	15,60,127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_934-_938
+_938:
+	.db	146,177,2,0,47
+	.dw	_937-_939
+_939:
+_934:
+	.db	18,49,46,40
+	.dw	_935-_940
+_940:
+	.db	146,178,2,0,47
+	.dw	_937-_941
+_941:
+_935:
+	.db	18,50,46,40
+	.dw	_936-_942
+_942:
+	.db	146,179,2,0,47
+	.dw	_937-_943
+_943:
+_936:
+	.db	146,180,2,0
+_937:
+	.db	22,19,62,36,33,50,34,22,15,3,19,127,2,17,1,127,4
+	.dl	(_901-_890)/2
+	.db	15,60,127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_944-_948
+_948:
+	.db	146,177,2,0,47
+	.dw	_947-_949
+_949:
+_944:
+	.db	18,49,46,40
+	.dw	_945-_950
+_950:
+	.db	146,178,2,0,47
+	.dw	_947-_951
+_951:
+_945:
+	.db	18,50,46,40
+	.dw	_946-_952
+_952:
+	.db	146,179,2,0,47
+	.dw	_947-_953
+_953:
+_946:
+	.db	146,180,2,0
+_947:
+	.db	22,19,62,36,33,52,34,22,15,3,19,127,4,17,6,126,4
+	.dl	(_912-_901)/2
+	.db	15,60,127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_954-_958
+_958:
+	.db	146,177,2,0,47
+	.dw	_957-_959
+_959:
+_954:
+	.db	18,49,46,40
+	.dw	_955-_960
+_960:
+	.db	146,178,2,0,47
+	.dw	_957-_961
+_961:
+_955:
+	.db	18,50,46,40
+	.dw	_956-_962
+_962:
+	.db	146,179,2,0,47
+	.dw	_957-_963
+_963:
+_956:
+	.db	146,180,2,0
+_957:
+	.db	22,19,62,36,33,50,34,22,15,3,19,127,2,198,4
+	.dl	(_923-_912)/2
+	.db	15,60,127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_964-_968
+_968:
+	.db	146,177,2,0,47
+	.dw	_967-_969
+_969:
+_964:
+	.db	18,49,46,40
+	.dw	_965-_970
+_970:
+	.db	146,178,2,0,47
+	.dw	_967-_971
+_971:
+_965:
+	.db	18,50,46,40
+	.dw	_966-_972
+_972:
+	.db	146,179,2,0,47
+	.dw	_967-_973
+_973:
+_966:
+	.db	146,180,2,0
+_967:
+	.db	22,19,62,36,33,48,34,8,15,193,0
+	; End of section
+
+
+
+	; Module end
+	.end

@@ -20,4 +20,4 @@
 
 # Questions?
 More information about the SRE-2 can be found in the wiki:  
-https://github.com/Spartan-Racing-Electric-SJSU/sre-3b/wiki
+https://github.com/spartanracingelectric/SRE-2/wiki  
