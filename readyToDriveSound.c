@@ -1,10 +1,9 @@
 #include <stdlib.h>  //Needed for malloc
 
 #include "IO_Driver.h"  //Includes datatypes, constants, etc - should be included in every c file
-#include "IO_PWM.h"
-
+#include "IO_DIO.h"
+#include "IO_RTC.h"
 #include "readyToDriveSound.h"
-
 
 struct _ReadyToDriveSound
 {
@@ -15,8 +14,8 @@ struct _ReadyToDriveSound
 
 ReadyToDriveSound* RTDS_new(void)
 {
-    ReadyToDriveSound* rtds = (ReadyToDriveSound*)malloc(sizeof(struct _ReadyToDriveSound));
-    RTDS_setVolume(rtds, 0, 0);
+    ReadyToDriveSound* rtds = (ReadyToDriveSound*) malloc(sizeof(struct _ReadyToDriveSound));
+    RTDS_setVolume(rtds, 1, 1000000); //1000000 is 1 second
     return rtds;
 }
 
@@ -29,15 +28,20 @@ void RTDS_delete(ReadyToDriveSound* rtds)
 }
 
 void RTDS_setVolume(ReadyToDriveSound* rtds, float4 volumePercent, ubyte4 timeToPlay)
-{
-    IO_PWM_SetDuty(IO_PWM_07, 65535 * volumePercent, NULL);  //Pin 103
-    IO_RTC_StartTime(&(rtds->timeStamp_soundStarted));
-    rtds->timeToSound = timeToPlay;
+{    
+   if(volumePercent == 0){
+        IO_DO_Set(IO_DO_13, FALSE);     //Turn off
+   }
+   else{
+        IO_DO_Set( IO_DO_13, TRUE); //Turn on rtds
+        IO_RTC_StartTime(&(rtds->timeStamp_soundStarted)); //Create a timestamp
+        rtds->timeToSound= timeToPlay;
+   }
 }
 
 void RTDS_shutdownHelper(ReadyToDriveSound* rtds)
 {
-    if (IO_RTC_GetTimeUS(rtds->timeStamp_soundStarted) > rtds->timeToSound)
+    if (IO_RTC_GetTimeUS(rtds->timeStamp_soundStarted) > rtds->timeToSound) //Once time stamp reaches the amount to play, turn off
     {
         RTDS_setVolume(rtds, 0, 0);
     }
