@@ -34,6 +34,7 @@ typedef struct _BrakePressureSensor
     bool calibrated;
     float4 percent;
 	bool implausibility;
+	ubyte1 brakePercentage;
 } BrakePressureSensor;
 
 BrakePressureSensor* BrakePressureSensor_new(void);

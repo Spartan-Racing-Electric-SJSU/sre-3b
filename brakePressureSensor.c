@@ -34,7 +34,7 @@ BrakePressureSensor* BrakePressureSensor_new(void)
 
     me->percent = 0;
     me->runCalibration = FALSE;  //Do not run the calibration at the next main loop cycle
-
+    me->brakePercentage= 0;
     //me->calibrated = FALSE;
     BrakePressureSensor_resetCalibration(me);
 
@@ -62,30 +62,7 @@ void BrakePressureSensor_update(BrakePressureSensor* me, bool bench)
 		me->bps0_percent = getPercent(me->bps0_value, me->bps0_calibMin, me->bps0_calibMax, TRUE);
 		me->percent = me->bps0_percent;
 	}
-
-	if (me->percent <= 0)
-	{
-		Light_set(Light_brake, 0);
-	}
-	else if (bench == FALSE)
-	{
-		Light_set(Light_brake, 1);
-	}
-	else
-	{
-		if (me->percent > 0 && me->percent < .02)
-		{
-			Light_set(Light_brake, .20);
-		}
-		else if (me->percent >= .02 && me->percent < .30)
-		{
-			Light_set(Light_brake, .30);
-		}
-		else if (me->percent >= .30)
-		{
-			Light_set(Light_brake, me->percent);
-		}
-	}
+    
 }
 
 void BrakePressureSensor_resetCalibration(BrakePressureSensor* me)

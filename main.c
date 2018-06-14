@@ -36,7 +36,7 @@
 //Our code
 #include "initializations.h"
 #include "sensors.h"
-#include "canManager.h"
+#include "canManager.h" 
 #include "motorController.h"
 #include "readyToDriveSound.h"
 #include "torqueEncoder.h"
@@ -78,7 +78,7 @@ APDB appl_db =
     ,{ 0 }                    /* ubyte1 reserved[8*4]      */
     , 0                      /* ubyte4 headerCRC          */
 };
-
+ 
 
 extern Sensor Sensor_TPS0;
 extern Sensor Sensor_TPS1;
@@ -133,8 +133,8 @@ void main(void)
     //----------------------------------------------------------------------------
     // Check if we're on the bench or not
     //----------------------------------------------------------------------------
-    bool bench;
-    IO_DI_Init(IO_DI_06, IO_DI_PD_10K);
+    bool bench; 
+    IO_PWM_Init(IO_PWM_02, 50, TRUE, TRUE, IO_ADC_CUR_00, FALSE, NULL ); 
     IO_RTC_StartTime(&timestamp_startTime);
     while (IO_RTC_GetTimeUS(timestamp_startTime) < 55555)
     {
@@ -148,6 +148,8 @@ void main(void)
         while (IO_RTC_GetTimeUS(timestamp_startTime) < 10000);   // wait until 10ms have passed
     }
     IO_DI_DeInit(IO_DI_06);
+    IO_PWM_DeInit(IO_PWM_02);
+
     SerialManager_send(serialMan, bench == TRUE ? "VCU is in bench mode.\n" : "VCU is NOT in bench mode.\n");
     
     //----------------------------------------------------------------------------
@@ -179,13 +181,13 @@ void main(void)
     // Most default values for things should be specified here
     //----------------------------------------------------------------------------    
     ReadyToDriveSound* rtds = RTDS_new();
-	//BatteryManagementSystem* bms = BMS_new();
+    //BatteryManagementSystem* bms = BMS_new();
     MotorController* mcm0 = MotorController_new(serialMan, 0xA0, FORWARD, 1000, 5, 15); //CAN addr, direction, torque limit x10 (100 = 10Nm)
-	TorqueEncoder* tps = TorqueEncoder_new(bench);
-	BrakePressureSensor* bps = BrakePressureSensor_new();
-	WheelSpeeds* wss = WheelSpeeds_new(18, 18, 16, 16);
-	SafetyChecker* sc = SafetyChecker_new(serialMan, 320, 32);  //Must match amp limits 
-	BatteryManagementSystem* bms = BMS_new(serialMan, 0x620);
+    TorqueEncoder* tps = TorqueEncoder_new(bench);
+    BrakePressureSensor* bps = BrakePressureSensor_new();
+    WheelSpeeds* wss = WheelSpeeds_new(18, 18, 16, 16);
+    SafetyChecker* sc = SafetyChecker_new(serialMan, 320, 32);  //Must match amp limits 
+    BatteryManagementSystem* bms = BMS_new(serialMan, 0x620);
     CoolingSystem* cs = CoolingSystem_new(serialMan);
 
     //----------------------------------------------------------------------------
@@ -222,7 +224,7 @@ void main(void)
         // Handle data input streams
         //----------------------------------------------------------------------------
         //Get readings from our sensors and other local devices (buttons, 12v battery, etc)
-		sensors_updateSensors();
+        sensors_updateSensors();
 
         //Pull messages from CAN FIFO and update our object representations.
         //Also echoes can0 messages to can1 for DAQ.
@@ -247,9 +249,9 @@ void main(void)
         //calculations_calculateStuff();
 
         //Run calibration if commanded
-		//if (IO_RTC_GetTimeUS(timestamp_calibStart) < (ubyte4)5000000)
-		if (Sensor_EcoButton.sensorValue == TRUE)
-		{
+        //if (IO_RTC_GetTimeUS(timestamp_calibStart) < (ubyte4)5000000)
+        if (Sensor_EcoButton.sensorValue == TRUE)
+        {
             if (timestamp_EcoButton == 0)
             {
                 SerialManager_send(serialMan, "Eco button detected\n");
@@ -261,10 +263,10 @@ void main(void)
                 //calibrateTPS(TRUE, 5);
                 TorqueEncoder_startCalibration(tps, 5);
                 BrakePressureSensor_startCalibration(bps, 5);
-                Light_set(Light_dashTCS, 1);
+                Light_set(Light_dashEco, 1);
                 //DIGITAL OUTPUT 4 for STATUS LED
             }
-		}
+        }
         else
         {
             if (IO_RTC_GetTimeUS(timestamp_EcoButton) > 10000 && IO_RTC_GetTimeUS(timestamp_EcoButton) < 1000000)
@@ -273,23 +275,33 @@ void main(void)
             }
             timestamp_EcoButton = 0;
         }
-		TorqueEncoder_update(tps);
+
+        TorqueEncoder_update(tps);
         //Every cycle: if the calibration was started and hasn't finished, check the values again
         TorqueEncoder_calibrationCycle(tps, &calibrationErrors); //Todo: deal with calibration errors
-		BrakePressureSensor_update(bps, bench);
-		BrakePressureSensor_calibrationCycle(bps, &calibrationErrors);
+        BrakePressureSensor_update(bps, bench);
+        BrakePressureSensor_calibrationCycle(bps, &calibrationErrors);
+        
+        //Brake Light
+        if (bps->brakePercentage > 10)
+        {   
+            IO_DO_Set(IO_DO_08, TRUE); //Turn on if brake is pressed
+        }
+        else 
+        {
+            IO_DO_Set(IO_DO_08, FALSE); //Turn off if brake is not pressed
+        }
+        //TractionControl_update(tps, mcm0, wss, daq);
 
-		//TractionControl_update(tps, mcm0, wss, daq);
-
-		WheelSpeeds_update(wss);
-		//DataAquisition_update(); //includes accelerometer
-		//TireModel_update()
-		//ControlLaw_update();
-		/*
-		ControlLaw //Tq command
-			TireModel //used by control law -> read from WSS, accelerometer
-			StateObserver //choose driver command or ctrl law
-		*/	
+        WheelSpeeds_update(wss);
+        //DataAquisition_update(); //includes accelerometer
+        //TireModel_update()
+        //ControlLaw_update();
+        /*
+        ControlLaw //Tq command
+            TireModel //used by control law -> read from WSS, accelerometer
+            StateObserver //choose driver command or ctrl law
+        */  
 
         CoolingSystem_calculations(cs, MCM_getTemp(mcm0), MCM_getMotorTemp(mcm0), BMS_getMaxTemp(bms));
         //CoolingSystem_calculations(cs, 20, 20, 20);
@@ -326,8 +338,7 @@ void main(void)
         canOutput_sendDebugMessage(canMan, tps, bps, mcm0, wss, sc);
         //canOutput_sendSensorMessages();
         //canOutput_sendStatusMessages(mcm0);
-
-        
+       
 
         //----------------------------------------------------------------------------
         // Task management stuff (end)

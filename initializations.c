@@ -19,12 +19,12 @@
 //Turns on the VCU's ADC channels and power supplies.
 void vcu_initializeADC(bool benchMode)
 {
-	//----------------------------------------------------------------------------
-	//Power supplies/outputs
-	//----------------------------------------------------------------------------
-	//Analog sensor supplies
+    //----------------------------------------------------------------------------
+    //Power supplies/outputs
+    //----------------------------------------------------------------------------
+    //Analog sensor supplies
     Sensor_TPS0.ioErr_powerSet = Sensor_BPS0.ioErr_powerSet = IO_POWER_Set(IO_ADC_SENSOR_SUPPLY_0, IO_POWER_ON);
-	Sensor_TPS1.ioErr_powerSet = IO_POWER_Set(IO_ADC_SENSOR_SUPPLY_1, IO_POWER_ON);
+    Sensor_TPS1.ioErr_powerSet = IO_POWER_Set(IO_ADC_SENSOR_SUPPLY_1, IO_POWER_ON);
 
     //Variable power supply (used by BPS)
     //IO_POWER_Set(IO_SENSOR_SUPPLY_VAR, IO_POWER_14_5_V);    //IO_POWER_Set(IO_PIN_269, IO_POWER_8_5_V);
@@ -37,28 +37,30 @@ void vcu_initializeADC(bool benchMode)
     IO_DO_Init(IO_DO_03); IO_DO_Set(IO_DO_03, FALSE); //Fan relay - motor fan and radiator fan are on same circuit
     IO_DO_Init(IO_DO_04); IO_DO_Set(IO_DO_04, FALSE); //Battery fan relay
     IO_DO_Init(IO_DO_05); IO_DO_Set(IO_DO_05, benchMode); //power output for switches - only used on bench
+    IO_DO_Init(IO_DO_08); //Brake light initialize (Pin 120)
+    IO_DO_Init(IO_DO_09); //Eco light initialize (Pin 108, 22 on round dash connector)
+    IO_DO_Init(IO_DO_13); //RTDS Initialize (Pin 106)
 
     //Lowside outputs (connects to ground when on)
     IO_DO_Init(IO_ADC_CUR_00); IO_DO_Set(IO_ADC_CUR_00, FALSE); //TCS
-    IO_DO_Init(IO_ADC_CUR_01); IO_DO_Set(IO_ADC_CUR_01, FALSE); //Eco
     IO_DO_Init(IO_ADC_CUR_02); IO_DO_Set(IO_ADC_CUR_02, FALSE); //Err
     IO_DO_Init(IO_ADC_CUR_03); IO_DO_Set(IO_ADC_CUR_03, FALSE); //RTD
 
 
     //Wheel Speed Sensor supplies
     Sensor_WSS_FL.ioErr_powerInit = Sensor_WSS_FR.ioErr_powerInit = IO_DO_Init(IO_DO_06); //Front x2
-	Sensor_WSS_RL.ioErr_powerInit = Sensor_WSS_RR.ioErr_powerInit = IO_DO_Init(IO_DO_07); //Rear  x2
+    Sensor_WSS_RL.ioErr_powerInit = Sensor_WSS_RR.ioErr_powerInit = IO_DO_Init(IO_DO_07); //Rear  x2
 
     //Digital PWM outputs ---------------------------------------------------
-	IO_PWM_Init(IO_PWM_02, 500, TRUE, FALSE, 0, FALSE, NULL); IO_PWM_SetDuty(IO_PWM_02, 0, NULL);  //Brake Light
-	IO_PWM_Init(IO_PWM_03, 500, TRUE, FALSE, 0, FALSE, NULL); IO_PWM_SetDuty(IO_PWM_03, benchMode == TRUE ? 0xFFFF : 0, NULL);  //Bench LED 12V source
-	IO_PWM_Init(IO_PWM_05, 100, TRUE, FALSE, 0, FALSE, NULL); IO_PWM_SetDuty(IO_PWM_05, .90 * 0xFFFF, NULL);  //Water pump signal 
+    IO_PWM_Init(IO_PWM_02, 500, TRUE, FALSE, 0, FALSE, NULL); IO_PWM_SetDuty(IO_PWM_02, 0, NULL);  //Brake Light
+    IO_PWM_Init(IO_PWM_03, 500, TRUE, FALSE, 0, FALSE, NULL); IO_PWM_SetDuty(IO_PWM_03, benchMode == TRUE ? 0xFFFF : 0, NULL);  //Bench LED 12V source
+    IO_PWM_Init(IO_PWM_05, 100, TRUE, FALSE, 0, FALSE, NULL); IO_PWM_SetDuty(IO_PWM_05, .90 * 0xFFFF, NULL);  //Water pump signal 
     IO_PWM_Init(IO_PWM_07, 750, TRUE, FALSE, 0, FALSE, NULL); IO_PWM_SetDuty(IO_PWM_07, 0, NULL);  //RTD Sound
 
     //----------------------------------------------------------------------------
-	//ADC channels
-	//----------------------------------------------------------------------------
-	//TPS+BPS
+    //ADC channels
+    //----------------------------------------------------------------------------
+    //TPS+BPS
     extern Sensor Sensor_BenchTPS0;  //wtf where are these even defined?
     extern Sensor Sensor_BenchTPS1;
 
@@ -66,7 +68,7 @@ void vcu_initializeADC(bool benchMode)
     //IO_ADC_ChannelInit(IO_ADC_5V_01, IO_ADC_RATIOMETRIC, 0, 0, IO_ADC_SENSOR_SUPPLY_1, NULL);
 
     //TPS/BPS
-	//Sensor_BPS0.ioErr_init = IO_ADC_ChannelInit(IO_ADC_5V_02, IO_ADC_RATIOMETRIC, 0, 0, IO_ADC_SENSOR_SUPPLY_0, NULL);
+    //Sensor_BPS0.ioErr_init = IO_ADC_ChannelInit(IO_ADC_5V_02, IO_ADC_RATIOMETRIC, 0, 0, IO_ADC_SENSOR_SUPPLY_0, NULL);
     if (benchMode == TRUE)
     {
         Sensor_TPS0.ioErr_signalInit = IO_ADC_ChannelInit(IO_ADC_5V_00, IO_ADC_RESISTIVE, 0, 0, 0, NULL);
@@ -89,30 +91,30 @@ void vcu_initializeADC(bool benchMode)
     //TCS Pot
     IO_ADC_ChannelInit(IO_ADC_5V_04, IO_ADC_RESISTIVE, 0, 0, 0, NULL);
 
-	//Unused
-	//IO_ADC_ChannelInit(IO_ADC_5V_05, IO_ADC_RESISTIVE, 0, 0, 0, NULL);
+    //Unused
+    //IO_ADC_ChannelInit(IO_ADC_5V_05, IO_ADC_RESISTIVE, 0, 0, 0, NULL);
     //IO_ADC_ChannelInit(IO_ADC_5V_06, IO_ADC_RESISTIVE, 0, 0, 0, NULL);
     //IO_ADC_ChannelInit(IO_ADC_5V_07, IO_ADC_RESISTIVE, 0, 0, 0, NULL);
 
-	//----------------------------------------------------------------------------
-	//PWD channels
-	//----------------------------------------------------------------------------
-	//TPS
+    //----------------------------------------------------------------------------
+    //PWD channels
+    //----------------------------------------------------------------------------
+    //TPS
     //MOVED TO TPS/BPS BLOCK ABOVE
-	
-	//Wheel Speed Sensors (Pulse Width Detection)
+    
+    //Wheel Speed Sensors (Pulse Width Detection)
     Sensor_WSS_FL.ioErr_signalInit = IO_PWD_FreqInit(IO_PWD_10, IO_PWD_FALLING_VAR);  //Is there a reason to look for rising vs falling edge?
     Sensor_WSS_FR.ioErr_signalInit = IO_PWD_FreqInit(IO_PWD_08, IO_PWD_FALLING_VAR);  //Is there a reason to look for rising vs falling edge?
     Sensor_WSS_RL.ioErr_signalInit = IO_PWD_FreqInit(IO_PWD_11, IO_PWD_FALLING_VAR);  //Is there a reason to look for rising vs falling edge?
     Sensor_WSS_RR.ioErr_signalInit = IO_PWD_FreqInit(IO_PWD_09, IO_PWD_FALLING_VAR);  //Is there a reason to look for rising vs falling edge?
-	
+    
     //----------------------------------------------------------------------------
-	//Switches
-	//----------------------------------------------------------------------------
-	Sensor_RTDButton.ioErr_signalInit = IO_DI_Init(IO_DI_00, IO_DI_PD_10K); //RTD Button
+    //Switches
+    //----------------------------------------------------------------------------
+    Sensor_RTDButton.ioErr_signalInit = IO_DI_Init(IO_DI_00, IO_DI_PD_10K); //RTD Button
     Sensor_EcoButton.ioErr_signalInit = IO_DI_Init(IO_DI_01, IO_DI_PD_10K); //Eco Button
     Sensor_TCSSwitchUp.ioErr_signalInit = IO_DI_Init(IO_DI_02, IO_DI_PD_10K); //TCS Switch A
-	Sensor_TCSSwitchDown.ioErr_signalInit = IO_DI_Init(IO_DI_03, IO_DI_PD_10K); //TCS Switch B
+    Sensor_TCSSwitchDown.ioErr_signalInit = IO_DI_Init(IO_DI_03, IO_DI_PD_10K); //TCS Switch B
     Sensor_HVILTerminationSense.ioErr_signalInit = IO_DI_Init(IO_DI_07, IO_DI_PD_10K); //HVIL Term sense, high = HV present
 
     //
