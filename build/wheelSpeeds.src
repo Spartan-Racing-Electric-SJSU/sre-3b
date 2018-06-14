@@ -1,5 +1,5 @@
 	; TASKING VX-toolset for C166: C compiler v4.0r1 Build 741 SN 07744515
-	; Options: -f cc13416a -c99 -Mh --fp-model=FT -Cxc2287 --core=xc16x -DTASKING_VIPER -D__USIC_MEM_TYPE=__PAGE_080_MEM_TYPE -D__MULTICAN_MEM_TYPE=__PAGE_080_MEM_TYPE -DTTC50 -DRTS_TTC_FLASH_DATE_YEAR=2018 -DRTS_TTC_FLASH_DATE_MONTH=4 -DRTS_TTC_FLASH_DATE_DAY=5 -DRTS_TTC_FLASH_DATE_HOUR=18 -DRTS_TTC_FLASH_DATE_MINUTE=55 -I..\..\..\Environment\inc -I..\..\..\Environment\inc_int -I..\..\..\Environment\bsp -I. --tradeoff=0 --no-tasking-sfr -ga --language=+cmp14,+div32,-gcc,-strings -O3 --source --mac -o build\wheelSpeeds.src
+	; Options: -f cc2984a -c99 -Mh --fp-model=FT -Cxc2287 --core=xc16x -DTASKING_VIPER -D__USIC_MEM_TYPE=__PAGE_080_MEM_TYPE -D__MULTICAN_MEM_TYPE=__PAGE_080_MEM_TYPE -DTTC50 -DRTS_TTC_FLASH_DATE_YEAR=2018 -DRTS_TTC_FLASH_DATE_MONTH=5 -DRTS_TTC_FLASH_DATE_DAY=19 -DRTS_TTC_FLASH_DATE_HOUR=3 -DRTS_TTC_FLASH_DATE_MINUTE=27 -I..\..\..\Environment\inc -I..\..\..\Environment\inc_int -I..\..\..\Environment\bsp -I. --tradeoff=0 --no-tasking-sfr -ga --language=+cmp14,+div32,-gcc,-strings -O3 --source --mac -o build\wheelSpeeds.src
 	; Module start
 	.source	'wheelSpeeds.c'
 code_WheelSpeeds_new	.section	code, cluster 'WheelSpeeds_new', new
@@ -836,7 +836,7 @@ _125:
 	.extern	__add_spf : far
 	.debug		.debug_info
 _93:
-	.dl	1108
+	.dl	1113
 	.dw	3
 	.dl	_94
 	.db	4
@@ -844,61 +844,61 @@ _92:
 	.db	1
 	.db	'wheelSpeeds.c',0
 	.db	'TASKING VX-toolset for C166: C compiler',0
-	.db	'C:\\Users\\helix\\Desktop\\SRE\\SRE SDK 2017-18\\VCU\\Environment\\dev\\SRE-3\\',0,12,1
+	.db	'C:\\Users\\Timothy_Le\\Documents\\SRE\\SRE_SDK_2018\\VCU\\Environment\\dev\\sre-3b\\',0,12,1
 	.dl	_95
 	.db	2
 	.db	'void',0,3,5
-	.dl	142
+	.dl	147
 	.db	4
 	.db	'unsigned int',0,2,7,5
 	.db	'malloc',0,1,78,33,6
-	.dl	148
+	.dl	153
 	.db	1,1,1,1,6,1,78,44,2
-	.dl	154
+	.dl	159
 	.db	0
 _130:
 	.db	4
 	.db	'unsigned char',0,1,8,5
 	.db	'IO_DO_Set',0,2,141,2,14,6
-	.dl	154
+	.dl	159
 	.db	1,1,1,1,7
 	.db	'do_channel',0,2,141,2,32,2
-	.dl	200
+	.dl	205
 	.db	7
 	.db	'do_value',0,2,142,2,30,2
-	.dl	200
+	.dl	205
 	.db	0
 _127:
 	.db	4
 	.db	'float',0,4,4,8
 	.db	'_WheelSpeeds',0,3,21,8,32,9
 	.db	'tireCircumferenceMeters_F',0
-	.dl	282
+	.dl	287
 	.db	4,2,35,0,9
 	.db	'tireCircumferenceMeters_R',0
-	.dl	282
+	.dl	287
 	.db	4,2,35,4,9
 	.db	'pulsesPerRotation_F',0
-	.dl	282
+	.dl	287
 	.db	4,2,35,8,9
 	.db	'pulsesPerRotation_R',0
-	.dl	282
+	.dl	287
 	.db	4,2,35,12,9
 	.db	'speed_FL',0
-	.dl	282
+	.dl	287
 	.db	4,2,35,16,9
 	.db	'speed_FR',0
-	.dl	282
+	.dl	287
 	.db	4,2,35,20,9
 	.db	'speed_RL',0
-	.dl	282
+	.dl	287
 	.db	4,2,35,24,9
 	.db	'speed_RR',0
-	.dl	282
+	.dl	287
 	.db	4,2,35,28,0
 _126:
 	.db	3,5
-	.dl	291
+	.dl	296
 _136:
 	.db	10,4,7,9,1,11
 	.db	'FL',0,0,11
@@ -907,86 +907,86 @@ _136:
 	.db	'RR',0,3,0,4
 	.db	'unsigned short int',0,2,7,12
 	.db	'__wchar_t',0,3,1,1
-	.dl	542
+	.dl	547
 	.db	12
 	.db	'__size_t',0,3,1,1
-	.dl	154
+	.dl	159
 	.db	3,5
-	.dl	142
+	.dl	147
 	.db	12
 	.db	'__prof_adm',0,3,1,1
-	.dl	599
+	.dl	604
 	.db	4
 	.db	'unsigned long int',0,4,7,12
 	.db	'__codeptr',0,3,1,1
-	.dl	624
+	.dl	629
 	.db	12
 	.db	'size_t',0,1,29,25
-	.dl	154
+	.dl	159
 	.db	12
 	.db	'ubyte1',0,5,21,29
-	.dl	200
+	.dl	205
 	.db	12
 	.db	'ubyte2',0,5,22,29
-	.dl	154
+	.dl	159
 	.db	12
 	.db	'ubyte4',0,5,23,29
-	.dl	624
+	.dl	629
 	.db	12
 	.db	'float4',0,5,29,29
-	.dl	282
+	.dl	287
 	.db	12
 	.db	'bool',0,5,31,29
-	.dl	200
+	.dl	205
 	.db	12
 	.db	'IO_ErrorType',0,6,150,1,17
-	.dl	154
+	.dl	159
 	.db	8
 	.db	'_Sensor',0,7,126,16,22,9
 	.db	'specMin',0
-	.dl	624
+	.dl	629
 	.db	4,2,35,0,9
 	.db	'specMax',0
-	.dl	624
+	.dl	629
 	.db	4,2,35,4,9
 	.db	'sensorValue',0
-	.dl	624
+	.dl	629
 	.db	4,2,35,8,9
 	.db	'fresh',0
-	.dl	200
+	.dl	205
 	.db	1,2,35,12,9
 	.db	'ioErr_powerInit',0
-	.dl	154
+	.dl	159
 	.db	2,2,35,14,9
 	.db	'ioErr_powerSet',0
-	.dl	154
+	.dl	159
 	.db	2,2,35,16,9
 	.db	'ioErr_signalInit',0
-	.dl	154
+	.dl	159
 	.db	2,2,35,18,9
 	.db	'ioErr_signalGet',0
-	.dl	154
+	.dl	159
 	.db	2,2,35,20,0,12
 	.db	'Sensor',0,7,143,1,3
-	.dl	773
+	.dl	778
 	.db	13
 	.db	'Sensor_WSS_FL',0,7,160,1,15,5
-	.dl	773
+	.dl	778
 	.db	1,1,13
 	.db	'Sensor_WSS_FR',0,7,161,1,15,5
-	.dl	773
+	.dl	778
 	.db	1,1,13
 	.db	'Sensor_WSS_RL',0,7,162,1,15,5
-	.dl	773
+	.dl	778
 	.db	1,1,13
 	.db	'Sensor_WSS_RR',0,7,163,1,15,5
-	.dl	773
+	.dl	778
 	.db	1,1,12
 	.db	'Wheel',0,4,7,30
-	.dl	516
+	.dl	521
 	.db	12
 	.db	'WheelSpeeds',0,4,12,29
-	.dl	291
+	.dl	296
 	.db	0
 	; End of section
 
@@ -1023,22 +1023,22 @@ _976:
 	.debug		.debug_pubnames
 	.dl	39
 	.dw	2
-	.dl	_93,1112,170
+	.dl	_93,1117,175
 	.db	'malloc',0
-	.dl	217
+	.dl	222
 	.db	'IO_DO_Set',0
 	.dl	0
 	; End of section
 
 	.debug		.debug_info, cluster 'WheelSpeeds_new'
 _96:
-	.dl	362
+	.dl	367
 	.dw	3
 	.dl	_97
 	.db	4,1
 	.db	'wheelSpeeds.c',0
 	.db	'TASKING VX-toolset for C166: C compiler',0
-	.db	'C:\\Users\\helix\\Desktop\\SRE\\SRE SDK 2017-18\\VCU\\Environment\\dev\\SRE-3\\',0,12,1
+	.db	'C:\\Users\\Timothy_Le\\Documents\\SRE\\SRE_SDK_2018\\VCU\\Environment\\dev\\sre-3b\\',0,12,1
 	.dl	_99,_98
 	.db	2
 	.dl	_92
@@ -1194,20 +1194,20 @@ _99:
 	.debug		.debug_pubnames
 	.dl	34
 	.dw	2
-	.dl	_96,366,151
+	.dl	_96,371,156
 	.db	'WheelSpeeds_new',0
 	.dl	0
 	; End of section
 
 	.debug		.debug_info, cluster 'WheelSpeeds_update'
 _101:
-	.dl	226
+	.dl	231
 	.dw	3
 	.dl	_102
 	.db	4,1
 	.db	'wheelSpeeds.c',0
 	.db	'TASKING VX-toolset for C166: C compiler',0
-	.db	'C:\\Users\\helix\\Desktop\\SRE\\SRE SDK 2017-18\\VCU\\Environment\\dev\\SRE-3\\',0,12,1
+	.db	'C:\\Users\\Timothy_Le\\Documents\\SRE\\SRE_SDK_2018\\VCU\\Environment\\dev\\sre-3b\\',0,12,1
 	.dl	_104,_103
 	.db	2
 	.dl	_92
@@ -1331,20 +1331,20 @@ _104:
 	.debug		.debug_pubnames
 	.dl	37
 	.dw	2
-	.dl	_101,230,151
+	.dl	_101,235,156
 	.db	'WheelSpeeds_update',0
 	.dl	0
 	; End of section
 
 	.debug		.debug_info, cluster 'WheelSpeeds_getWheelSpeed'
 _106:
-	.dl	277
+	.dl	282
 	.dw	3
 	.dl	_107
 	.db	4,1
 	.db	'wheelSpeeds.c',0
 	.db	'TASKING VX-toolset for C166: C compiler',0
-	.db	'C:\\Users\\helix\\Desktop\\SRE\\SRE SDK 2017-18\\VCU\\Environment\\dev\\SRE-3\\',0,12,1
+	.db	'C:\\Users\\Timothy_Le\\Documents\\SRE\\SRE_SDK_2018\\VCU\\Environment\\dev\\sre-3b\\',0,12,1
 	.dl	_109,_108
 	.db	2
 	.dl	_92
@@ -1430,20 +1430,20 @@ _109:
 	.debug		.debug_pubnames
 	.dl	44
 	.dw	2
-	.dl	_106,281,151
+	.dl	_106,286,156
 	.db	'WheelSpeeds_getWheelSpeed',0
 	.dl	0
 	; End of section
 
 	.debug		.debug_info, cluster 'WheelSpeeds_getSlowestFront'
 _111:
-	.dl	239
+	.dl	244
 	.dw	3
 	.dl	_112
 	.db	4,1
 	.db	'wheelSpeeds.c',0
 	.db	'TASKING VX-toolset for C166: C compiler',0
-	.db	'C:\\Users\\helix\\Desktop\\SRE\\SRE SDK 2017-18\\VCU\\Environment\\dev\\SRE-3\\',0,12,1
+	.db	'C:\\Users\\Timothy_Le\\Documents\\SRE\\SRE_SDK_2018\\VCU\\Environment\\dev\\sre-3b\\',0,12,1
 	.dl	_114,_113
 	.db	2
 	.dl	_92
@@ -1513,20 +1513,20 @@ _114:
 	.debug		.debug_pubnames
 	.dl	46
 	.dw	2
-	.dl	_111,243,151
+	.dl	_111,248,156
 	.db	'WheelSpeeds_getSlowestFront',0
 	.dl	0
 	; End of section
 
 	.debug		.debug_info, cluster 'WheelSpeeds_getFastestRear'
 _116:
-	.dl	238
+	.dl	243
 	.dw	3
 	.dl	_117
 	.db	4,1
 	.db	'wheelSpeeds.c',0
 	.db	'TASKING VX-toolset for C166: C compiler',0
-	.db	'C:\\Users\\helix\\Desktop\\SRE\\SRE SDK 2017-18\\VCU\\Environment\\dev\\SRE-3\\',0,12,1
+	.db	'C:\\Users\\Timothy_Le\\Documents\\SRE\\SRE_SDK_2018\\VCU\\Environment\\dev\\sre-3b\\',0,12,1
 	.dl	_119,_118
 	.db	2
 	.dl	_92
@@ -1596,20 +1596,20 @@ _119:
 	.debug		.debug_pubnames
 	.dl	45
 	.dw	2
-	.dl	_116,242,151
+	.dl	_116,247,156
 	.db	'WheelSpeeds_getFastestRear',0
 	.dl	0
 	; End of section
 
 	.debug		.debug_info, cluster 'WheelSpeeds_getGroundSpeed'
 _121:
-	.dl	238
+	.dl	243
 	.dw	3
 	.dl	_122
 	.db	4,1
 	.db	'wheelSpeeds.c',0
 	.db	'TASKING VX-toolset for C166: C compiler',0
-	.db	'C:\\Users\\helix\\Desktop\\SRE\\SRE SDK 2017-18\\VCU\\Environment\\dev\\SRE-3\\',0,12,1
+	.db	'C:\\Users\\Timothy_Le\\Documents\\SRE\\SRE_SDK_2018\\VCU\\Environment\\dev\\sre-3b\\',0,12,1
 	.dl	_124,_123
 	.db	2
 	.dl	_92
@@ -1675,7 +1675,7 @@ _124:
 	.debug		.debug_pubnames
 	.dl	45
 	.dw	2
-	.dl	_121,242,151
+	.dl	_121,247,156
 	.db	'WheelSpeeds_getGroundSpeed',0
 	.dl	0
 	; End of section

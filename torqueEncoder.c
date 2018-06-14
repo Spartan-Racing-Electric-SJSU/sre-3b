@@ -36,31 +36,15 @@ TorqueEncoder* TorqueEncoder_new(bool benchMode)
     //me->calibrated = FALSE;
     //TorqueEncoder_resetCalibration(me);
 
-    //Datasheet limits (used by safety checker / rules requirement)
-    me->tps0->specMin = 5000 * .05 - 5000 * .006; // = 220
-    me->tps0->specMax = 5000 * .45 + 5000 * .006;
-    me->tps1->specMin = 5000 * .55 - 5000 * .006;
-    me->tps1->specMax = 5000 * .95 + 5000 * .006;
-
     //Default calibration values
-	//SRE-3 sensor
-	me->tps0_calibMin = 300;  //me->tps0->sensorValue;
-	me->tps0_calibMax = 1235;  //me->tps0->sensorValue;
-	me->tps1_calibMin = 2824;  //me->tps1->sensorValue;
-	me->tps1_calibMax = 3758;  //me->tps1->sensorValue;
-
-	//SRE-2 sensor default calibrations
-	//me->tps0_calibMin = 1117;  //me->tps0->sensorValue;
-	//me->tps0_calibMax = 2304;  //me->tps0->sensorValue;
-	//me->tps1_calibMin = 2702;  //me->tps1->sensorValue;
-	//me->tps1_calibMax = 3890;  //me->tps1->sensorValue;
-
-    //Alternate SRE-2
+    me->tps0_calibMin = 1117;  //me->tps0->sensorValue;
+    me->tps0_calibMax = 2304;  //me->tps0->sensorValue;
+    me->tps1_calibMin = 2702;  //me->tps1->sensorValue;
+    me->tps1_calibMax = 3890;  //me->tps1->sensorValue;
     //me->tps0_calibMin = 558;  //me->tps0->sensorValue;
     //me->tps0_calibMax = 2649;  //me->tps0->sensorValue;
     //me->tps1_calibMin = 2382;  //me->tps1->sensorValue;
     //me->tps1_calibMax = 4441;  //me->tps1->sensorValue;
-
     me->calibrated = TRUE;
 
     return me;
@@ -99,10 +83,29 @@ void TorqueEncoder_update(TorqueEncoder* me)
 		{
 			//Calculate individual throttle percentages
 			//Percent = (Voltage - CalibMin) / (CalibMax - CalibMin)
-			me->tps0_percent = getPercent(me->tps0_value, me->tps0_calibMin, me->tps0_calibMax, TRUE);
-			me->tps1_percent = getPercent(me->tps1_value, me->tps1_calibMin, me->tps1_calibMax, TRUE);
+			//float4 TPS0PedalPercent = getPercent(TPS0_Val, TPS0_CalMin, TPS0_CalMax, TRUE); //Analog Input 0
+			//float4 TPS1PedalPercent = getPercent(TPS1_Val, TPS1_CalMin, TPS1_CalMax, TRUE); //Analog input 1
 
-			me->percent = (me->tps0_percent + me->tps1_percent) / 2;
+			me->tps0_percent = getPercent(me->tps0_value, me->tps0_calibMin, me->tps0_calibMax, TRUE);
+
+			//Todo: Fix percent calculator to make this work
+			//me->tps1_percent = getPercent(me->tps1_value, me->tps1_calibMin, me->tps1_calibMax, TRUE);
+			float4 range = me->tps1_calibMax - me->tps1_calibMin;
+			float4 travel = me->tps1_calibMax - me->tps1_value;
+			
+			me->tps1_percent = travel / range;
+			if (travel > range) { me->tps1_percent = 1; }
+			if (travel > me->tps1_calibMax) { me->tps1_percent = 0; }
+
+			//TorqueEncoder_plausibilityCheck(me, 0, &me->implausibility);
+			/*if (me->implausibility == TRUE)
+			{
+				me->percent = 0;
+			}
+			else
+			{*/
+				me->percent = (me->tps0_percent + me->tps1_percent) / 2;
+			//}
 		}
 	}
 }
@@ -110,6 +113,15 @@ void TorqueEncoder_update(TorqueEncoder* me)
 void TorqueEncoder_resetCalibration(TorqueEncoder* me)
 {
     me->calibrated = FALSE;
+    //me->tps0_rawCalibMin = me->tps0->specMax;
+    //me->tps0_rawCalibMax = me->tps0->specMin;
+    //me->tps0_calibMin = me->tps0->specMax;
+	//me->tps0_calibMax = me->tps0->specMin;
+    
+    //me->tps1_rawCalibMin = me->tps1->specMax;
+    //me->tps1_rawCalibMax = me->tps1->specMin;
+	//me->tps1_calibMin = me->tps1->specMax;
+	//me->tps1_calibMax = me->tps1->specMin;
     
     //Normal
     me->tps0_calibMin = me->tps0->sensorValue;
@@ -120,12 +132,12 @@ void TorqueEncoder_resetCalibration(TorqueEncoder* me)
 
 void TorqueEncoder_saveCalibrationToEEPROM(TorqueEncoder* me)
 {
-
+    // left blank for EEPROM
 }
 
 void TorqueEncoder_loadCalibrationFromEEPROM(TorqueEncoder* me)
 {
-
+    // left blank for EEPROM
 }
 
 void TorqueEncoder_startCalibration(TorqueEncoder* me, ubyte1 secondsToRun)
@@ -176,6 +188,11 @@ void TorqueEncoder_calibrationCycle(TorqueEncoder* me, ubyte1* errorCount)
             //float4 pedalTopPlay = 1.05;
             //float4 pedalBottomPlay = .95;
 
+            //me->tps0_calibMin *= me->tps0_reverse ? pedalBottomPlay : pedalTopPlay;
+            //me->tps0_calibMax *= me->tps0_reverse ? pedalTopPlay : pedalBottomPlay;
+            //me->tps1_calibMin *= me->tps1_reverse ? pedalBottomPlay : pedalTopPlay;
+            //me->tps1_calibMax *= me->tps1_reverse ? pedalTopPlay : pedalBottomPlay;
+
             //Shrink the calibrated range slightly
             float4 shrink0 = (me->tps0_calibMax - me->tps0_calibMin) * .05;
             float4 shrink1 = (me->tps1_calibMax - me->tps1_calibMin) * .05;
@@ -183,8 +200,6 @@ void TorqueEncoder_calibrationCycle(TorqueEncoder* me, ubyte1* errorCount)
             me->tps0_calibMax -= shrink0;
             me->tps1_calibMin += shrink1;
             me->tps1_calibMax -= shrink1;
-
-
 			me->runCalibration = FALSE;
 			me->calibrated = TRUE;
 			Light_set(Light_dashTCS, 0);
@@ -211,15 +226,26 @@ void TorqueEncoder_calibrationCycle(TorqueEncoder* me, ubyte1* errorCount)
 
 void TorqueEncoder_getIndividualSensorPercent(TorqueEncoder* me, ubyte1 sensorNumber, float4* percent)
 {
+	//Sensor* tps;
+	//ubyte2 calMin;
+	//ubyte2 calMax;
+
 	switch (sensorNumber)
 	{
 	case 0:
 		*percent = me->tps0_percent;
+		//tps = me->tps0;
+		//calMin = me->tps0_calibMin;
+		//calMax = me->tps0_calibMax;
 		break;
 	case 1:
 		*percent = me->tps1_percent;
+		//tps = me->tps1;
+		//calMin = me->tps1_calibMin;
+		//calMax = me->tps1_calibMax;
 		break;
 	}
+	//float4 TPS0PedalPercent = getPercent(me->tps0->sensorValue, calMin, calMax, TRUE); //Analog Input 0
 }
 
 

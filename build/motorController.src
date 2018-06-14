@@ -1,5 +1,5 @@
 	; TASKING VX-toolset for C166: C compiler v4.0r1 Build 741 SN 07744515
-	; Options: -f cc6084a -c99 -Mh --fp-model=FT -Cxc2287 --core=xc16x -DTASKING_VIPER -D__USIC_MEM_TYPE=__PAGE_080_MEM_TYPE -D__MULTICAN_MEM_TYPE=__PAGE_080_MEM_TYPE -DTTC50 -DRTS_TTC_FLASH_DATE_YEAR=2018 -DRTS_TTC_FLASH_DATE_MONTH=4 -DRTS_TTC_FLASH_DATE_DAY=5 -DRTS_TTC_FLASH_DATE_HOUR=18 -DRTS_TTC_FLASH_DATE_MINUTE=55 -I..\..\..\Environment\inc -I..\..\..\Environment\inc_int -I..\..\..\Environment\bsp -I. --tradeoff=0 --no-tasking-sfr -ga --language=+cmp14,+div32,-gcc,-strings -O3 --source --mac -o build\motorController.src
+	; Options: -f cc12888a -c99 -Mh --fp-model=FT -Cxc2287 --core=xc16x -DTASKING_VIPER -D__USIC_MEM_TYPE=__PAGE_080_MEM_TYPE -D__MULTICAN_MEM_TYPE=__PAGE_080_MEM_TYPE -DTTC50 -DRTS_TTC_FLASH_DATE_YEAR=2018 -DRTS_TTC_FLASH_DATE_MONTH=5 -DRTS_TTC_FLASH_DATE_DAY=19 -DRTS_TTC_FLASH_DATE_HOUR=3 -DRTS_TTC_FLASH_DATE_MINUTE=27 -I..\..\..\Environment\inc -I..\..\..\Environment\inc_int -I..\..\..\Environment\bsp -I. --tradeoff=0 --no-tasking-sfr -ga --language=+cmp14,+div32,-gcc,-strings -O3 --source --mac -o build\motorController.src
 	; Module start
 	.source	'motorController.c'
 code_MotorController_new	.section	code, cluster 'MotorController_new', new
@@ -5200,7 +5200,7 @@ _$7$str	.label	byte
 	.extern	__larger_than_dpf : far
 	.debug		.debug_info
 _593:
-	.dl	4254
+	.dl	4259
 	.dw	3
 	.dl	_594
 	.db	4
@@ -5208,13 +5208,13 @@ _592:
 	.db	1
 	.db	'motorController.c',0
 	.db	'TASKING VX-toolset for C166: C compiler',0
-	.db	'C:\\Users\\helix\\Desktop\\SRE\\SRE SDK 2017-18\\VCU\\Environment\\dev\\SRE-3\\',0,12,1
+	.db	'C:\\Users\\Timothy_Le\\Documents\\SRE\\SRE_SDK_2018\\VCU\\Environment\\dev\\sre-3b\\',0,12,1
 	.dl	_595
 	.db	2
 	.db	'_SerialManager',0,2,7,16,1
 _802:
 	.db	3,5
-	.dl	146
+	.dl	151
 _804:
 	.db	4
 	.db	'unsigned int',0,2,7
@@ -5235,7 +5235,7 @@ _849:
 	.db	'ENABLED',0,0,6
 	.db	'DISABLED',0,1,6
 	.db	'UNKNOWN',0,2,0,7,8
-	.dl	209
+	.dl	214
 	.db	8,7,0
 _808:
 	.db	4
@@ -5245,121 +5245,121 @@ _873:
 	.db	'long int',0,4,5,9
 	.db	'_MotorController',0,1,36,8,84,10
 	.db	'serialMan',0
-	.dl	166
+	.dl	171
 	.db	4,2,35,0,10
 	.db	'canMessageBaseId',0
-	.dl	172
+	.dl	177
 	.db	2,2,35,4,10
 	.db	'timeStamp_inverterEnabled',0
-	.dl	188
+	.dl	193
 	.db	4,2,35,6,10
 	.db	'torqueMaximumDNm',0
-	.dl	172
+	.dl	177
 	.db	2,2,35,10,10
 	.db	'regen_mode',0
-	.dl	209
+	.dl	214
 	.db	1,2,35,12,10
 	.db	'regen_torqueLimitDNm',0
-	.dl	172
+	.dl	177
 	.db	2,2,35,14,10
 	.db	'regen_torqueAtZeroPedalDNm',0
-	.dl	172
+	.dl	177
 	.db	2,2,35,16,10
 	.db	'regen_percentBPSForMaxRegen',0
-	.dl	226
+	.dl	231
 	.db	4,2,35,18,10
 	.db	'regen_percentAPPSForCoasting',0
-	.dl	226
+	.dl	231
 	.db	4,2,35,22,10
 	.db	'regen_minimumSpeedKPH',0
-	.dl	235
+	.dl	240
 	.db	1,2,35,26,10
 	.db	'regen_SpeedRampStart',0
-	.dl	235
+	.dl	240
 	.db	1,2,35,27,10
 	.db	'relayState',0
-	.dl	209
+	.dl	214
 	.db	1,2,35,28,10
 	.db	'previousHVILState',0
-	.dl	209
+	.dl	214
 	.db	1,2,35,29,10
 	.db	'timeStamp_HVILLost',0
-	.dl	188
+	.dl	193
 	.db	4,2,35,30,10
 	.db	'timeStamp_HVILOverrideCommandReceived',0
-	.dl	188
+	.dl	193
 	.db	4,2,35,34,10
 	.db	'HVILOverride',0
-	.dl	209
+	.dl	214
 	.db	1,2,35,38,10
 	.db	'startupStage',0
-	.dl	209
+	.dl	214
 	.db	1,2,35,39,10
 	.db	'lockoutStatus',0
-	.dl	243
+	.dl	248
 	.db	1,2,35,40,10
 	.db	'inverterStatus',0
-	.dl	243
+	.dl	248
 	.db	1,2,35,41,10
 	.db	'startRTDS',0
-	.dl	209
+	.dl	214
 	.db	1,2,35,42,10
 	.db	'faultHistory',0
-	.dl	280
+	.dl	285
 	.db	8,2,35,43,10
 	.db	'motor_temp',0
-	.dl	289
+	.dl	294
 	.db	2,2,35,52,10
 	.db	'DC_Voltage',0
-	.dl	296
+	.dl	301
 	.db	4,2,35,54,10
 	.db	'DC_Current',0
-	.dl	296
+	.dl	301
 	.db	4,2,35,58,10
 	.db	'commandedTorque',0
-	.dl	289
+	.dl	294
 	.db	2,2,35,62,10
 	.db	'currentPower',0
-	.dl	188
+	.dl	193
 	.db	4,2,35,64,10
 	.db	'motorRPM',0
-	.dl	289
+	.dl	294
 	.db	2,2,35,68,10
 	.db	'timeStamp_lastCommandSent',0
-	.dl	188
+	.dl	193
 	.db	4,2,35,70,10
 	.db	'updateCount',0
-	.dl	172
+	.dl	177
 	.db	2,2,35,74,10
 	.db	'commands_torque',0
-	.dl	289
+	.dl	294
 	.db	2,2,35,76,10
 	.db	'commands_torqueLimit',0
-	.dl	289
+	.dl	294
 	.db	2,2,35,78,10
 	.db	'commands_direction',0
-	.dl	209
+	.dl	214
 	.db	1,2,35,80,10
 	.db	'commands_discharge',0
-	.dl	243
+	.dl	248
 	.db	1,2,35,81,10
 	.db	'commands_inverter',0
-	.dl	243
+	.dl	248
 	.db	1,2,35,82,0
 _801:
 	.db	3,5
-	.dl	308
+	.dl	313
 _825:
 	.db	11
 	.db	'MCM_commands_setTorqueDNm',0,1,1,195,4,6,6,1,1
 _826:
 	.db	12
 	.db	'me',0,1,195,4,49,2
-	.dl	1232
+	.dl	1237
 _828:
 	.db	12
 	.db	'newTorque',0,1,195,4,60,2
-	.dl	289
+	.dl	294
 _925:
 	.db	13,0
 _806:
@@ -5376,11 +5376,11 @@ _830:
 _831:
 	.db	12
 	.db	'me',0,1,201,4,49,2
-	.dl	1232
+	.dl	1237
 _833:
 	.db	12
 	.db	'newDirection',0,1,201,4,63,2
-	.dl	1308
+	.dl	1313
 _914:
 	.db	13,0
 _835:
@@ -5389,11 +5389,11 @@ _835:
 _836:
 	.db	12
 	.db	'me',0,1,224,4,48,2
-	.dl	1232
+	.dl	1237
 _838:
 	.db	12
 	.db	'newInverterState',0,1,224,4,59,2
-	.dl	243
+	.dl	248
 _958:
 	.db	13,0
 _840:
@@ -5402,11 +5402,11 @@ _840:
 _841:
 	.db	12
 	.db	'me',0,1,229,4,49,2
-	.dl	1232
+	.dl	1237
 _843:
 	.db	12
 	.db	'setDischargeTo',0,1,229,4,60,2
-	.dl	243
+	.dl	248
 _905:
 	.db	13,0
 _814:
@@ -5415,7 +5415,7 @@ _814:
 _817:
 	.db	12
 	.db	'me',0,1,172,5,60,2
-	.dl	1232
+	.dl	1237
 _819:
 	.db	13,0
 _857:
@@ -5424,11 +5424,11 @@ _857:
 _858:
 	.db	12
 	.db	'me',0,1,132,5,47,2
-	.dl	1232
+	.dl	1237
 _860:
 	.db	12
 	.db	'newState',0,1,132,5,58,2
-	.dl	243
+	.dl	248
 _944:
 	.db	13,0
 _862:
@@ -5437,42 +5437,42 @@ _862:
 _863:
 	.db	12
 	.db	'me',0,1,136,5,48,2
-	.dl	1232
+	.dl	1237
 _865:
 	.db	12
 	.db	'newState',0,1,136,5,59,2
-	.dl	243
+	.dl	248
 _938:
 	.db	13,0
 _867:
 	.db	14
 	.db	'MCM_getLockoutStatus',0,1,1,141,5,8,6
-	.dl	243
+	.dl	248
 	.db	1,1
 _868:
 	.db	12
 	.db	'me',0,1,141,5,46,2
-	.dl	1232
+	.dl	1237
 	.db	13,0
 _870:
 	.db	14
 	.db	'MCM_getInverterStatus',0,1,1,146,5,8,6
-	.dl	243
+	.dl	248
 	.db	1,1
 _871:
 	.db	12
 	.db	'me',0,1,146,5,47,2
-	.dl	1232
+	.dl	1237
 	.db	13,0
 _974:
 	.db	14
 	.db	'MCM_getStartupStage',0,1,1,255,5,8,6
-	.dl	209
+	.dl	214
 	.db	1,1
 _975:
 	.db	12
 	.db	'me',0,1,255,5,45,2
-	.dl	1232
+	.dl	1237
 	.db	13,0
 _928:
 	.db	11
@@ -5480,45 +5480,45 @@ _928:
 _930:
 	.db	12
 	.db	'me',0,1,250,5,43,2
-	.dl	1232
+	.dl	1237
 _932:
 	.db	12
 	.db	'stage',0,1,250,5,54,2
-	.dl	209
+	.dl	214
 _934:
 	.db	13,0,15
 	.db	'void',0,3,5
-	.dl	2002
+	.dl	2007
 	.db	16
 	.db	'malloc',0,4,78,33,6
-	.dl	2008
+	.dl	2013
 	.db	1,1,1,1,17,4,78,44,2
-	.dl	172
+	.dl	177
 	.db	0,16
 	.db	'IO_DO_Set',0,5,141,2,14,6
-	.dl	172
+	.dl	177
 	.db	1,1,1,1,12
 	.db	'do_channel',0,5,141,2,32,2
-	.dl	209
+	.dl	214
 	.db	12
 	.db	'do_value',0,5,142,2,30,2
-	.dl	209
+	.dl	214
 	.db	0,3,5
-	.dl	188
+	.dl	193
 	.db	18
-	.dl	2109
+	.dl	2114
 	.db	16
 	.db	'IO_RTC_StartTime',0,6,118,15,6
-	.dl	172
+	.dl	177
 	.db	1,1,1,1,12
 	.db	'timestamp',0,6,118,49,2
-	.dl	2115
+	.dl	2120
 	.db	0,16
 	.db	'IO_RTC_GetTimeUS',0,6,143,1,9,6
-	.dl	188
+	.dl	193
 	.db	1,1,1,1,12
 	.db	'timestamp',0,6,143,1,35,2
-	.dl	188
+	.dl	193
 	.db	0,5,7,103,9,1,6
 	.db	'Light_dashEco',0,0,6
 	.db	'Light_dashError',0,1,6
@@ -5530,286 +5530,286 @@ _934:
 	.db	'Cooling_batteryFans',0,7,0,19
 	.db	'Light_set',0,7,203,1,6,6,1,1,1,1,12
 	.db	'light',0,7,203,1,22,2
-	.dl	2222
+	.dl	2227
 	.db	12
 	.db	'percent',0,7,203,1,36,2
-	.dl	226
+	.dl	231
 	.db	0,2
 	.db	'_ReadyToDriveSound',0,8,7,16,1
 _951:
 	.db	3,5
-	.dl	2425
+	.dl	2430
 	.db	19
 	.db	'RTDS_setVolume',0,8,13,6,6,1,1,1,1,12
 	.db	'rtds',0,8,13,40,2
-	.dl	2449
+	.dl	2454
 	.db	12
 	.db	'volumePercent',0,8,13,53,2
-	.dl	226
+	.dl	231
 	.db	12
 	.db	'timeToPlay',0,8,13,75,2
-	.dl	188
+	.dl	193
 	.db	0,18
-	.dl	209
+	.dl	214
 	.db	3,5
-	.dl	2537
+	.dl	2542
 	.db	16
 	.db	'SerialManager_send',0,2,18,14,6
-	.dl	172
+	.dl	177
 	.db	1,1,1,1,12
 	.db	'me',0,2,18,48,2
-	.dl	166
+	.dl	171
 	.db	12
 	.db	'data',0,2,18,66,2
-	.dl	2542
+	.dl	2547
 	.db	0,9
 	.db	'_Sensor',0,7,126,16,22,10
 	.db	'specMin',0
-	.dl	188
+	.dl	193
 	.db	4,2,35,0,10
 	.db	'specMax',0
-	.dl	188
+	.dl	193
 	.db	4,2,35,4,10
 	.db	'sensorValue',0
-	.dl	188
+	.dl	193
 	.db	4,2,35,8,10
 	.db	'fresh',0
-	.dl	209
+	.dl	214
 	.db	1,2,35,12,10
 	.db	'ioErr_powerInit',0
-	.dl	172
+	.dl	177
 	.db	2,2,35,14,10
 	.db	'ioErr_powerSet',0
-	.dl	172
+	.dl	177
 	.db	2,2,35,16,10
 	.db	'ioErr_signalInit',0
-	.dl	172
+	.dl	177
 	.db	2,2,35,18,10
 	.db	'ioErr_signalGet',0
-	.dl	172
+	.dl	177
 	.db	2,2,35,20,0
 _892:
 	.db	3,5
-	.dl	2607
+	.dl	2612
 	.db	9
 	.db	'_TorqueEncoder',0,9,10,16,60,10
 	.db	'bench',0
-	.dl	209
+	.dl	214
 	.db	1,2,35,0,10
 	.db	'tps0',0
-	.dl	2791
+	.dl	2796
 	.db	4,2,35,2,10
 	.db	'tps1',0
-	.dl	2791
+	.dl	2796
 	.db	4,2,35,6,10
 	.db	'tps0_calibMin',0
-	.dl	188
+	.dl	193
 	.db	4,2,35,10,10
 	.db	'tps0_calibMax',0
-	.dl	188
+	.dl	193
 	.db	4,2,35,14,10
 	.db	'tps0_reverse',0
-	.dl	209
+	.dl	214
 	.db	1,2,35,18,10
 	.db	'tps0_value',0
-	.dl	188
+	.dl	193
 	.db	4,2,35,20,10
 	.db	'tps0_percent',0
-	.dl	226
+	.dl	231
 	.db	4,2,35,24,10
 	.db	'tps1_calibMin',0
-	.dl	188
+	.dl	193
 	.db	4,2,35,28,10
 	.db	'tps1_calibMax',0
-	.dl	188
+	.dl	193
 	.db	4,2,35,32,10
 	.db	'tps1_reverse',0
-	.dl	209
+	.dl	214
 	.db	1,2,35,36,10
 	.db	'tps1_value',0
-	.dl	188
+	.dl	193
 	.db	4,2,35,38,10
 	.db	'tps1_percent',0
-	.dl	226
+	.dl	231
 	.db	4,2,35,42,10
 	.db	'runCalibration',0
-	.dl	209
+	.dl	214
 	.db	1,2,35,46,10
 	.db	'timestamp_calibrationStart',0
-	.dl	188
+	.dl	193
 	.db	4,2,35,48,10
 	.db	'calibrationRunTime',0
-	.dl	209
+	.dl	214
 	.db	1,2,35,52,10
 	.db	'calibrated',0
-	.dl	209
+	.dl	214
 	.db	1,2,35,53,10
 	.db	'percent',0
-	.dl	226
+	.dl	231
 	.db	4,2,35,54,10
 	.db	'implausibility',0
-	.dl	209
+	.dl	214
 	.db	1,2,35,58,0
 _897:
 	.db	3,5
-	.dl	2797
+	.dl	2802
 	.db	9
 	.db	'_BrakePressureSensor',0,10,10,16,32,10
 	.db	'bench',0
-	.dl	209
+	.dl	214
 	.db	1,2,35,0,10
 	.db	'bps0',0
-	.dl	2791
+	.dl	2796
 	.db	4,2,35,2,10
 	.db	'bps0_calibMin',0
-	.dl	172
+	.dl	177
 	.db	2,2,35,6,10
 	.db	'bps0_calibMax',0
-	.dl	172
+	.dl	177
 	.db	2,2,35,8,10
 	.db	'bps0_reverse',0
-	.dl	209
+	.dl	214
 	.db	1,2,35,10,10
 	.db	'bps0_value',0
-	.dl	172
+	.dl	177
 	.db	2,2,35,12,10
 	.db	'bps0_percent',0
-	.dl	226
+	.dl	231
 	.db	4,2,35,14,10
 	.db	'runCalibration',0
-	.dl	209
+	.dl	214
 	.db	1,2,35,18,10
 	.db	'timestamp_calibrationStart',0
-	.dl	188
+	.dl	193
 	.db	4,2,35,20,10
 	.db	'calibrationRunTime',0
-	.dl	209
+	.dl	214
 	.db	1,2,35,24,10
 	.db	'calibrated',0
-	.dl	209
+	.dl	214
 	.db	1,2,35,25,10
 	.db	'percent',0
-	.dl	226
+	.dl	231
 	.db	4,2,35,26,10
 	.db	'implausibility',0
-	.dl	209
+	.dl	214
 	.db	1,2,35,30,0
 _899:
 	.db	3,5
-	.dl	3236
+	.dl	3241
 	.db	9
 	.db	'_io_can_data_frame',0,11,209,2,16,14,10
 	.db	'data',0
-	.dl	280
+	.dl	285
 	.db	8,2,35,0,10
 	.db	'length',0
-	.dl	209
+	.dl	214
 	.db	1,2,35,8,10
 	.db	'id_format',0
-	.dl	209
+	.dl	214
 	.db	1,2,35,9,10
 	.db	'id',0
-	.dl	188
+	.dl	193
 	.db	4,2,35,10,0
 _972:
 	.db	3,5
-	.dl	3557
+	.dl	3562
 	.db	16
 	.db	'getPercent',0,12,15,8,6
-	.dl	226
+	.dl	231
 	.db	1,1,1,1,12
 	.db	'value',0,12,15,26,2
-	.dl	226
+	.dl	231
 	.db	12
 	.db	'start',0,12,15,40,2
-	.dl	226
+	.dl	231
 	.db	12
 	.db	'end',0,12,15,54,2
-	.dl	226
+	.dl	231
 	.db	12
 	.db	'zeroToOneOnly',0,12,15,64,2
-	.dl	209
+	.dl	214
 	.db	0,4
 	.db	'unsigned short int',0,2,7,20
 	.db	'__wchar_t',0,1,1,1
-	.dl	3741
+	.dl	3746
 	.db	20
 	.db	'__size_t',0,1,1,1
-	.dl	172
+	.dl	177
 	.db	3,5
-	.dl	2002
+	.dl	2007
 	.db	20
 	.db	'__prof_adm',0,1,1,1
-	.dl	3798
+	.dl	3803
 	.db	20
 	.db	'__codeptr',0,1,1,1
-	.dl	188
+	.dl	193
 	.db	20
 	.db	'size_t',0,4,29,25
-	.dl	172
+	.dl	177
 	.db	20
 	.db	'ubyte1',0,13,21,29
-	.dl	209
+	.dl	214
 	.db	20
 	.db	'ubyte2',0,13,22,29
-	.dl	172
+	.dl	177
 	.db	20
 	.db	'ubyte4',0,13,23,29
-	.dl	188
+	.dl	193
 	.db	20
 	.db	'sbyte1',0,13,25,29
-	.dl	235
+	.dl	240
 	.db	20
 	.db	'sbyte2',0,13,26,29
-	.dl	289
+	.dl	294
 	.db	20
 	.db	'sbyte4',0,13,27,29
-	.dl	296
+	.dl	301
 	.db	20
 	.db	'float4',0,13,29,29
-	.dl	226
+	.dl	231
 	.db	20
 	.db	'bool',0,13,31,29
-	.dl	209
+	.dl	214
 	.db	20
 	.db	'IO_ErrorType',0,14,150,1,17
-	.dl	172
+	.dl	177
 	.db	20
 	.db	'IO_CAN_DATA_FRAME',0,11,215,2,3
-	.dl	3557
+	.dl	3562
 	.db	20
 	.db	'Light',0,7,113,3
-	.dl	2222
+	.dl	2227
 	.db	20
 	.db	'Sensor',0,7,143,1,3
-	.dl	2607
+	.dl	2612
 	.db	21
 	.db	'Sensor_RTDButton',0,7,176,1,15,5
-	.dl	2607
+	.dl	2612
 	.db	1,1,20
 	.db	'TorqueEncoder',0,9,36,3
-	.dl	2797
+	.dl	2802
 	.db	20
 	.db	'BrakePressureSensor',0,10,37,3
-	.dl	3236
+	.dl	3241
 	.db	20
 	.db	'ReadyToDriveSound',0,8,7,35
-	.dl	2425
+	.dl	2430
 	.db	20
 	.db	'SerialManager',0,2,7,31
-	.dl	146
+	.dl	151
 	.db	20
 	.db	'Status',0,3,14,45
-	.dl	243
+	.dl	248
 	.db	20
 	.db	'Direction',0,3,19,72
-	.dl	1308
+	.dl	1313
 	.db	20
 	.db	'MotorController',0,3,21,33
-	.dl	308
+	.dl	313
 	.db	20
 	.db	'_iob_flag_t',0,15,82,25
-	.dl	3741
+	.dl	3746
 	.db	0
 	; End of section
 
@@ -5857,34 +5857,34 @@ _3219:
 	.debug		.debug_pubnames
 	.dl	152
 	.dw	2
-	.dl	_593,4258,2014
+	.dl	_593,4263,2019
 	.db	'malloc',0
-	.dl	2044
+	.dl	2049
 	.db	'IO_DO_Set',0
-	.dl	2120
+	.dl	2125
 	.db	'IO_RTC_StartTime',0
-	.dl	2170
+	.dl	2175
 	.db	'IO_RTC_GetTimeUS',0
-	.dl	2370
+	.dl	2375
 	.db	'Light_set',0
-	.dl	2455
+	.dl	2460
 	.db	'RTDS_setVolume',0
-	.dl	2548
+	.dl	2553
 	.db	'SerialManager_send',0
-	.dl	3650
+	.dl	3655
 	.db	'getPercent',0
 	.dl	0
 	; End of section
 
 	.debug		.debug_info, cluster 'MotorController_new'
 _596:
-	.dl	495
+	.dl	500
 	.dw	3
 	.dl	_597
 	.db	4,1
 	.db	'motorController.c',0
 	.db	'TASKING VX-toolset for C166: C compiler',0
-	.db	'C:\\Users\\helix\\Desktop\\SRE\\SRE SDK 2017-18\\VCU\\Environment\\dev\\SRE-3\\',0,12,1
+	.db	'C:\\Users\\Timothy_Le\\Documents\\SRE\\SRE_SDK_2018\\VCU\\Environment\\dev\\sre-3b\\',0,12,1
 	.dl	_599,_598
 	.db	2
 	.dl	_592
@@ -6087,20 +6087,20 @@ _820:
 	.debug		.debug_pubnames
 	.dl	38
 	.dw	2
-	.dl	_596,499,155
+	.dl	_596,504,160
 	.db	'MotorController_new',0
 	.dl	0
 	; End of section
 
 	.debug		.debug_info, cluster 'MCM_commands_setTorqueDNm'
 _601:
-	.dl	211
+	.dl	216
 	.dw	3
 	.dl	_602
 	.db	4,1
 	.db	'motorController.c',0
 	.db	'TASKING VX-toolset for C166: C compiler',0
-	.db	'C:\\Users\\helix\\Desktop\\SRE\\SRE SDK 2017-18\\VCU\\Environment\\dev\\SRE-3\\',0,12,1
+	.db	'C:\\Users\\Timothy_Le\\Documents\\SRE\\SRE_SDK_2018\\VCU\\Environment\\dev\\sre-3b\\',0,12,1
 	.dl	_604,_603
 	.db	2
 	.dl	_592
@@ -6160,13 +6160,13 @@ _604:
 
 	.debug		.debug_info, cluster 'MCM_commands_setDirection'
 _606:
-	.dl	211
+	.dl	216
 	.dw	3
 	.dl	_607
 	.db	4,1
 	.db	'motorController.c',0
 	.db	'TASKING VX-toolset for C166: C compiler',0
-	.db	'C:\\Users\\helix\\Desktop\\SRE\\SRE SDK 2017-18\\VCU\\Environment\\dev\\SRE-3\\',0,12,1
+	.db	'C:\\Users\\Timothy_Le\\Documents\\SRE\\SRE_SDK_2018\\VCU\\Environment\\dev\\sre-3b\\',0,12,1
 	.dl	_609,_608
 	.db	2
 	.dl	_592
@@ -6242,13 +6242,13 @@ _609:
 
 	.debug		.debug_info, cluster 'MCM_commands_setInverter'
 _611:
-	.dl	211
+	.dl	216
 	.dw	3
 	.dl	_612
 	.db	4,1
 	.db	'motorController.c',0
 	.db	'TASKING VX-toolset for C166: C compiler',0
-	.db	'C:\\Users\\helix\\Desktop\\SRE\\SRE SDK 2017-18\\VCU\\Environment\\dev\\SRE-3\\',0,12,1
+	.db	'C:\\Users\\Timothy_Le\\Documents\\SRE\\SRE_SDK_2018\\VCU\\Environment\\dev\\sre-3b\\',0,12,1
 	.dl	_614,_613
 	.db	2
 	.dl	_592
@@ -6308,13 +6308,13 @@ _614:
 
 	.debug		.debug_info, cluster 'MCM_commands_setDischarge'
 _616:
-	.dl	211
+	.dl	216
 	.dw	3
 	.dl	_617
 	.db	4,1
 	.db	'motorController.c',0
 	.db	'TASKING VX-toolset for C166: C compiler',0
-	.db	'C:\\Users\\helix\\Desktop\\SRE\\SRE SDK 2017-18\\VCU\\Environment\\dev\\SRE-3\\',0,12,1
+	.db	'C:\\Users\\Timothy_Le\\Documents\\SRE\\SRE_SDK_2018\\VCU\\Environment\\dev\\sre-3b\\',0,12,1
 	.dl	_619,_618
 	.db	2
 	.dl	_592
@@ -6374,13 +6374,13 @@ _619:
 
 	.debug		.debug_info, cluster 'MCM_commands_setTorqueLimit'
 _621:
-	.dl	270
+	.dl	275
 	.dw	3
 	.dl	_622
 	.db	4,1
 	.db	'motorController.c',0
 	.db	'TASKING VX-toolset for C166: C compiler',0
-	.db	'C:\\Users\\helix\\Desktop\\SRE\\SRE SDK 2017-18\\VCU\\Environment\\dev\\SRE-3\\',0,12,1
+	.db	'C:\\Users\\Timothy_Le\\Documents\\SRE\\SRE_SDK_2018\\VCU\\Environment\\dev\\sre-3b\\',0,12,1
 	.dl	_624,_623
 	.db	2
 	.dl	_592
@@ -6443,20 +6443,20 @@ _624:
 	.debug		.debug_pubnames
 	.dl	46
 	.dw	2
-	.dl	_621,274,155
+	.dl	_621,279,160
 	.db	'MCM_commands_setTorqueLimit',0
 	.dl	0
 	; End of section
 
 	.debug		.debug_info, cluster 'MCM_commands_getTorque'
 _626:
-	.dl	240
+	.dl	245
 	.dw	3
 	.dl	_627
 	.db	4,1
 	.db	'motorController.c',0
 	.db	'TASKING VX-toolset for C166: C compiler',0
-	.db	'C:\\Users\\helix\\Desktop\\SRE\\SRE SDK 2017-18\\VCU\\Environment\\dev\\SRE-3\\',0,12,1
+	.db	'C:\\Users\\Timothy_Le\\Documents\\SRE\\SRE_SDK_2018\\VCU\\Environment\\dev\\sre-3b\\',0,12,1
 	.dl	_629,_628
 	.db	2
 	.dl	_592
@@ -6508,20 +6508,20 @@ _629:
 	.debug		.debug_pubnames
 	.dl	41
 	.dw	2
-	.dl	_626,244,155
+	.dl	_626,249,160
 	.db	'MCM_commands_getTorque',0
 	.dl	0
 	; End of section
 
 	.debug		.debug_info, cluster 'MCM_commands_getDirection'
 _631:
-	.dl	243
+	.dl	248
 	.dw	3
 	.dl	_632
 	.db	4,1
 	.db	'motorController.c',0
 	.db	'TASKING VX-toolset for C166: C compiler',0
-	.db	'C:\\Users\\helix\\Desktop\\SRE\\SRE SDK 2017-18\\VCU\\Environment\\dev\\SRE-3\\',0,12,1
+	.db	'C:\\Users\\Timothy_Le\\Documents\\SRE\\SRE_SDK_2018\\VCU\\Environment\\dev\\sre-3b\\',0,12,1
 	.dl	_634,_633
 	.db	2
 	.dl	_592
@@ -6573,20 +6573,20 @@ _634:
 	.debug		.debug_pubnames
 	.dl	44
 	.dw	2
-	.dl	_631,247,155
+	.dl	_631,252,160
 	.db	'MCM_commands_getDirection',0
 	.dl	0
 	; End of section
 
 	.debug		.debug_info, cluster 'MCM_commands_getInverter'
 _636:
-	.dl	242
+	.dl	247
 	.dw	3
 	.dl	_637
 	.db	4,1
 	.db	'motorController.c',0
 	.db	'TASKING VX-toolset for C166: C compiler',0
-	.db	'C:\\Users\\helix\\Desktop\\SRE\\SRE SDK 2017-18\\VCU\\Environment\\dev\\SRE-3\\',0,12,1
+	.db	'C:\\Users\\Timothy_Le\\Documents\\SRE\\SRE_SDK_2018\\VCU\\Environment\\dev\\sre-3b\\',0,12,1
 	.dl	_639,_638
 	.db	2
 	.dl	_592
@@ -6638,20 +6638,20 @@ _639:
 	.debug		.debug_pubnames
 	.dl	43
 	.dw	2
-	.dl	_636,246,155
+	.dl	_636,251,160
 	.db	'MCM_commands_getInverter',0
 	.dl	0
 	; End of section
 
 	.debug		.debug_info, cluster 'MCM_commands_getDischarge'
 _641:
-	.dl	243
+	.dl	248
 	.dw	3
 	.dl	_642
 	.db	4,1
 	.db	'motorController.c',0
 	.db	'TASKING VX-toolset for C166: C compiler',0
-	.db	'C:\\Users\\helix\\Desktop\\SRE\\SRE SDK 2017-18\\VCU\\Environment\\dev\\SRE-3\\',0,12,1
+	.db	'C:\\Users\\Timothy_Le\\Documents\\SRE\\SRE_SDK_2018\\VCU\\Environment\\dev\\sre-3b\\',0,12,1
 	.dl	_644,_643
 	.db	2
 	.dl	_592
@@ -6703,20 +6703,20 @@ _644:
 	.debug		.debug_pubnames
 	.dl	44
 	.dw	2
-	.dl	_641,247,155
+	.dl	_641,252,160
 	.db	'MCM_commands_getDischarge',0
 	.dl	0
 	; End of section
 
 	.debug		.debug_info, cluster 'MCM_commands_getTorqueLimit'
 _646:
-	.dl	245
+	.dl	250
 	.dw	3
 	.dl	_647
 	.db	4,1
 	.db	'motorController.c',0
 	.db	'TASKING VX-toolset for C166: C compiler',0
-	.db	'C:\\Users\\helix\\Desktop\\SRE\\SRE SDK 2017-18\\VCU\\Environment\\dev\\SRE-3\\',0,12,1
+	.db	'C:\\Users\\Timothy_Le\\Documents\\SRE\\SRE_SDK_2018\\VCU\\Environment\\dev\\sre-3b\\',0,12,1
 	.dl	_649,_648
 	.db	2
 	.dl	_592
@@ -6768,20 +6768,20 @@ _649:
 	.debug		.debug_pubnames
 	.dl	46
 	.dw	2
-	.dl	_646,249,155
+	.dl	_646,254,160
 	.db	'MCM_commands_getTorqueLimit',0
 	.dl	0
 	; End of section
 
 	.debug		.debug_info, cluster 'MCM_commands_getUpdateCount'
 _651:
-	.dl	245
+	.dl	250
 	.dw	3
 	.dl	_652
 	.db	4,1
 	.db	'motorController.c',0
 	.db	'TASKING VX-toolset for C166: C compiler',0
-	.db	'C:\\Users\\helix\\Desktop\\SRE\\SRE SDK 2017-18\\VCU\\Environment\\dev\\SRE-3\\',0,12,1
+	.db	'C:\\Users\\Timothy_Le\\Documents\\SRE\\SRE_SDK_2018\\VCU\\Environment\\dev\\sre-3b\\',0,12,1
 	.dl	_654,_653
 	.db	2
 	.dl	_592
@@ -6833,20 +6833,20 @@ _654:
 	.debug		.debug_pubnames
 	.dl	46
 	.dw	2
-	.dl	_651,249,155
+	.dl	_651,254,160
 	.db	'MCM_commands_getUpdateCount',0
 	.dl	0
 	; End of section
 
 	.debug		.debug_info, cluster 'MCM_commands_resetUpdateCountAndTime'
 _656:
-	.dl	202
+	.dl	207
 	.dw	3
 	.dl	_657
 	.db	4,1
 	.db	'motorController.c',0
 	.db	'TASKING VX-toolset for C166: C compiler',0
-	.db	'C:\\Users\\helix\\Desktop\\SRE\\SRE SDK 2017-18\\VCU\\Environment\\dev\\SRE-3\\',0,12,1
+	.db	'C:\\Users\\Timothy_Le\\Documents\\SRE\\SRE_SDK_2018\\VCU\\Environment\\dev\\sre-3b\\',0,12,1
 	.dl	_659,_658
 	.db	2
 	.dl	_592
@@ -6898,13 +6898,13 @@ _659:
 
 	.debug		.debug_info, cluster 'MCM_commands_getTimeSinceLastCommandSent'
 _661:
-	.dl	258
+	.dl	263
 	.dw	3
 	.dl	_662
 	.db	4,1
 	.db	'motorController.c',0
 	.db	'TASKING VX-toolset for C166: C compiler',0
-	.db	'C:\\Users\\helix\\Desktop\\SRE\\SRE SDK 2017-18\\VCU\\Environment\\dev\\SRE-3\\',0,12,1
+	.db	'C:\\Users\\Timothy_Le\\Documents\\SRE\\SRE_SDK_2018\\VCU\\Environment\\dev\\sre-3b\\',0,12,1
 	.dl	_664,_663
 	.db	2
 	.dl	_592
@@ -6954,20 +6954,20 @@ _664:
 	.debug		.debug_pubnames
 	.dl	59
 	.dw	2
-	.dl	_661,262,155
+	.dl	_661,267,160
 	.db	'MCM_commands_getTimeSinceLastCommandSent',0
 	.dl	0
 	; End of section
 
 	.debug		.debug_info, cluster 'MCM_updateLockoutStatus'
 _666:
-	.dl	211
+	.dl	216
 	.dw	3
 	.dl	_667
 	.db	4,1
 	.db	'motorController.c',0
 	.db	'TASKING VX-toolset for C166: C compiler',0
-	.db	'C:\\Users\\helix\\Desktop\\SRE\\SRE SDK 2017-18\\VCU\\Environment\\dev\\SRE-3\\',0,12,1
+	.db	'C:\\Users\\Timothy_Le\\Documents\\SRE\\SRE_SDK_2018\\VCU\\Environment\\dev\\sre-3b\\',0,12,1
 	.dl	_669,_668
 	.db	2
 	.dl	_592
@@ -7019,13 +7019,13 @@ _669:
 
 	.debug		.debug_info, cluster 'MCM_updateInverterStatus'
 _671:
-	.dl	211
+	.dl	216
 	.dw	3
 	.dl	_672
 	.db	4,1
 	.db	'motorController.c',0
 	.db	'TASKING VX-toolset for C166: C compiler',0
-	.db	'C:\\Users\\helix\\Desktop\\SRE\\SRE SDK 2017-18\\VCU\\Environment\\dev\\SRE-3\\',0,12,1
+	.db	'C:\\Users\\Timothy_Le\\Documents\\SRE\\SRE_SDK_2018\\VCU\\Environment\\dev\\sre-3b\\',0,12,1
 	.dl	_674,_673
 	.db	2
 	.dl	_592
@@ -7077,13 +7077,13 @@ _674:
 
 	.debug		.debug_info, cluster 'MCM_getLockoutStatus'
 _676:
-	.dl	202
+	.dl	207
 	.dw	3
 	.dl	_677
 	.db	4,1
 	.db	'motorController.c',0
 	.db	'TASKING VX-toolset for C166: C compiler',0
-	.db	'C:\\Users\\helix\\Desktop\\SRE\\SRE SDK 2017-18\\VCU\\Environment\\dev\\SRE-3\\',0,12,1
+	.db	'C:\\Users\\Timothy_Le\\Documents\\SRE\\SRE_SDK_2018\\VCU\\Environment\\dev\\sre-3b\\',0,12,1
 	.dl	_679,_678
 	.db	2
 	.dl	_592
@@ -7131,13 +7131,13 @@ _679:
 
 	.debug		.debug_info, cluster 'MCM_getInverterStatus'
 _681:
-	.dl	202
+	.dl	207
 	.dw	3
 	.dl	_682
 	.db	4,1
 	.db	'motorController.c',0
 	.db	'TASKING VX-toolset for C166: C compiler',0
-	.db	'C:\\Users\\helix\\Desktop\\SRE\\SRE SDK 2017-18\\VCU\\Environment\\dev\\SRE-3\\',0,12,1
+	.db	'C:\\Users\\Timothy_Le\\Documents\\SRE\\SRE_SDK_2018\\VCU\\Environment\\dev\\sre-3b\\',0,12,1
 	.dl	_684,_683
 	.db	2
 	.dl	_592
@@ -7185,13 +7185,13 @@ _684:
 
 	.debug		.debug_info, cluster 'MCM_getPower'
 _686:
-	.dl	230
+	.dl	235
 	.dw	3
 	.dl	_687
 	.db	4,1
 	.db	'motorController.c',0
 	.db	'TASKING VX-toolset for C166: C compiler',0
-	.db	'C:\\Users\\helix\\Desktop\\SRE\\SRE SDK 2017-18\\VCU\\Environment\\dev\\SRE-3\\',0,12,1
+	.db	'C:\\Users\\Timothy_Le\\Documents\\SRE\\SRE_SDK_2018\\VCU\\Environment\\dev\\sre-3b\\',0,12,1
 	.dl	_689,_688
 	.db	2
 	.dl	_592
@@ -7255,20 +7255,20 @@ _689:
 	.debug		.debug_pubnames
 	.dl	31
 	.dw	2
-	.dl	_686,234,155
+	.dl	_686,239,160
 	.db	'MCM_getPower',0
 	.dl	0
 	; End of section
 
 	.debug		.debug_info, cluster 'MCM_getCommandedTorque'
 _691:
-	.dl	240
+	.dl	245
 	.dw	3
 	.dl	_692
 	.db	4,1
 	.db	'motorController.c',0
 	.db	'TASKING VX-toolset for C166: C compiler',0
-	.db	'C:\\Users\\helix\\Desktop\\SRE\\SRE SDK 2017-18\\VCU\\Environment\\dev\\SRE-3\\',0,12,1
+	.db	'C:\\Users\\Timothy_Le\\Documents\\SRE\\SRE_SDK_2018\\VCU\\Environment\\dev\\sre-3b\\',0,12,1
 	.dl	_694,_693
 	.db	2
 	.dl	_592
@@ -7320,20 +7320,20 @@ _694:
 	.debug		.debug_pubnames
 	.dl	41
 	.dw	2
-	.dl	_691,244,155
+	.dl	_691,249,160
 	.db	'MCM_getCommandedTorque',0
 	.dl	0
 	; End of section
 
 	.debug		.debug_info, cluster 'MCM_getHvilOverrideStatus'
 _696:
-	.dl	243
+	.dl	248
 	.dw	3
 	.dl	_697
 	.db	4,1
 	.db	'motorController.c',0
 	.db	'TASKING VX-toolset for C166: C compiler',0
-	.db	'C:\\Users\\helix\\Desktop\\SRE\\SRE SDK 2017-18\\VCU\\Environment\\dev\\SRE-3\\',0,12,1
+	.db	'C:\\Users\\Timothy_Le\\Documents\\SRE\\SRE_SDK_2018\\VCU\\Environment\\dev\\sre-3b\\',0,12,1
 	.dl	_699,_698
 	.db	2
 	.dl	_592
@@ -7385,20 +7385,20 @@ _699:
 	.debug		.debug_pubnames
 	.dl	44
 	.dw	2
-	.dl	_696,247,155
+	.dl	_696,252,160
 	.db	'MCM_getHvilOverrideStatus',0
 	.dl	0
 	; End of section
 
 	.debug		.debug_info, cluster 'MCM_setRTDSFlag'
 _701:
-	.dl	254
+	.dl	259
 	.dw	3
 	.dl	_702
 	.db	4,1
 	.db	'motorController.c',0
 	.db	'TASKING VX-toolset for C166: C compiler',0
-	.db	'C:\\Users\\helix\\Desktop\\SRE\\SRE SDK 2017-18\\VCU\\Environment\\dev\\SRE-3\\',0,12,1
+	.db	'C:\\Users\\Timothy_Le\\Documents\\SRE\\SRE_SDK_2018\\VCU\\Environment\\dev\\sre-3b\\',0,12,1
 	.dl	_704,_703
 	.db	2
 	.dl	_592
@@ -7453,20 +7453,20 @@ _704:
 	.debug		.debug_pubnames
 	.dl	34
 	.dw	2
-	.dl	_701,258,155
+	.dl	_701,263,160
 	.db	'MCM_setRTDSFlag',0
 	.dl	0
 	; End of section
 
 	.debug		.debug_info, cluster 'MCM_getRTDSFlag'
 _706:
-	.dl	233
+	.dl	238
 	.dw	3
 	.dl	_707
 	.db	4,1
 	.db	'motorController.c',0
 	.db	'TASKING VX-toolset for C166: C compiler',0
-	.db	'C:\\Users\\helix\\Desktop\\SRE\\SRE SDK 2017-18\\VCU\\Environment\\dev\\SRE-3\\',0,12,1
+	.db	'C:\\Users\\Timothy_Le\\Documents\\SRE\\SRE_SDK_2018\\VCU\\Environment\\dev\\sre-3b\\',0,12,1
 	.dl	_709,_708
 	.db	2
 	.dl	_592
@@ -7518,20 +7518,20 @@ _709:
 	.debug		.debug_pubnames
 	.dl	34
 	.dw	2
-	.dl	_706,237,155
+	.dl	_706,242,160
 	.db	'MCM_getRTDSFlag',0
 	.dl	0
 	; End of section
 
 	.debug		.debug_info, cluster 'MCM_getTemp'
 _711:
-	.dl	229
+	.dl	234
 	.dw	3
 	.dl	_712
 	.db	4,1
 	.db	'motorController.c',0
 	.db	'TASKING VX-toolset for C166: C compiler',0
-	.db	'C:\\Users\\helix\\Desktop\\SRE\\SRE SDK 2017-18\\VCU\\Environment\\dev\\SRE-3\\',0,12,1
+	.db	'C:\\Users\\Timothy_Le\\Documents\\SRE\\SRE_SDK_2018\\VCU\\Environment\\dev\\sre-3b\\',0,12,1
 	.dl	_714,_713
 	.db	2
 	.dl	_592
@@ -7583,20 +7583,20 @@ _714:
 	.debug		.debug_pubnames
 	.dl	30
 	.dw	2
-	.dl	_711,233,155
+	.dl	_711,238,160
 	.db	'MCM_getTemp',0
 	.dl	0
 	; End of section
 
 	.debug		.debug_info, cluster 'MCM_getMotorTemp'
 _716:
-	.dl	234
+	.dl	239
 	.dw	3
 	.dl	_717
 	.db	4,1
 	.db	'motorController.c',0
 	.db	'TASKING VX-toolset for C166: C compiler',0
-	.db	'C:\\Users\\helix\\Desktop\\SRE\\SRE SDK 2017-18\\VCU\\Environment\\dev\\SRE-3\\',0,12,1
+	.db	'C:\\Users\\Timothy_Le\\Documents\\SRE\\SRE_SDK_2018\\VCU\\Environment\\dev\\sre-3b\\',0,12,1
 	.dl	_719,_718
 	.db	2
 	.dl	_592
@@ -7648,20 +7648,20 @@ _719:
 	.debug		.debug_pubnames
 	.dl	35
 	.dw	2
-	.dl	_716,238,155
+	.dl	_716,243,160
 	.db	'MCM_getMotorTemp',0
 	.dl	0
 	; End of section
 
 	.debug		.debug_info, cluster 'MCM_getGroundSpeedKPH'
 _721:
-	.dl	239
+	.dl	244
 	.dw	3
 	.dl	_722
 	.db	4,1
 	.db	'motorController.c',0
 	.db	'TASKING VX-toolset for C166: C compiler',0
-	.db	'C:\\Users\\helix\\Desktop\\SRE\\SRE SDK 2017-18\\VCU\\Environment\\dev\\SRE-3\\',0,12,1
+	.db	'C:\\Users\\Timothy_Le\\Documents\\SRE\\SRE_SDK_2018\\VCU\\Environment\\dev\\sre-3b\\',0,12,1
 	.dl	_724,_723
 	.db	2
 	.dl	_592
@@ -7729,20 +7729,20 @@ _724:
 	.debug		.debug_pubnames
 	.dl	40
 	.dw	2
-	.dl	_721,243,155
+	.dl	_721,248,160
 	.db	'MCM_getGroundSpeedKPH',0
 	.dl	0
 	; End of section
 
 	.debug		.debug_info, cluster 'MCM_getRegenMinSpeed'
 _726:
-	.dl	238
+	.dl	243
 	.dw	3
 	.dl	_727
 	.db	4,1
 	.db	'motorController.c',0
 	.db	'TASKING VX-toolset for C166: C compiler',0
-	.db	'C:\\Users\\helix\\Desktop\\SRE\\SRE SDK 2017-18\\VCU\\Environment\\dev\\SRE-3\\',0,12,1
+	.db	'C:\\Users\\Timothy_Le\\Documents\\SRE\\SRE_SDK_2018\\VCU\\Environment\\dev\\sre-3b\\',0,12,1
 	.dl	_729,_728
 	.db	2
 	.dl	_592
@@ -7794,20 +7794,20 @@ _729:
 	.debug		.debug_pubnames
 	.dl	39
 	.dw	2
-	.dl	_726,242,155
+	.dl	_726,247,160
 	.db	'MCM_getRegenMinSpeed',0
 	.dl	0
 	; End of section
 
 	.debug		.debug_info, cluster 'MCM_getRegenRampdownStartSpeed'
 _731:
-	.dl	248
+	.dl	253
 	.dw	3
 	.dl	_732
 	.db	4,1
 	.db	'motorController.c',0
 	.db	'TASKING VX-toolset for C166: C compiler',0
-	.db	'C:\\Users\\helix\\Desktop\\SRE\\SRE SDK 2017-18\\VCU\\Environment\\dev\\SRE-3\\',0,12,1
+	.db	'C:\\Users\\Timothy_Le\\Documents\\SRE\\SRE_SDK_2018\\VCU\\Environment\\dev\\sre-3b\\',0,12,1
 	.dl	_734,_733
 	.db	2
 	.dl	_592
@@ -7859,20 +7859,20 @@ _734:
 	.debug		.debug_pubnames
 	.dl	49
 	.dw	2
-	.dl	_731,252,155
+	.dl	_731,257,160
 	.db	'MCM_getRegenRampdownStartSpeed',0
 	.dl	0
 	; End of section
 
 	.debug		.debug_info, cluster 'MCM_getRegenMode'
 _736:
-	.dl	234
+	.dl	239
 	.dw	3
 	.dl	_737
 	.db	4,1
 	.db	'motorController.c',0
 	.db	'TASKING VX-toolset for C166: C compiler',0
-	.db	'C:\\Users\\helix\\Desktop\\SRE\\SRE SDK 2017-18\\VCU\\Environment\\dev\\SRE-3\\',0,12,1
+	.db	'C:\\Users\\Timothy_Le\\Documents\\SRE\\SRE_SDK_2018\\VCU\\Environment\\dev\\sre-3b\\',0,12,1
 	.dl	_739,_738
 	.db	2
 	.dl	_592
@@ -7924,20 +7924,20 @@ _739:
 	.debug		.debug_pubnames
 	.dl	35
 	.dw	2
-	.dl	_736,238,155
+	.dl	_736,243,160
 	.db	'MCM_getRegenMode',0
 	.dl	0
 	; End of section
 
 	.debug		.debug_info, cluster 'MCM_getRegenTorqueLimitDNm'
 _741:
-	.dl	244
+	.dl	249
 	.dw	3
 	.dl	_742
 	.db	4,1
 	.db	'motorController.c',0
 	.db	'TASKING VX-toolset for C166: C compiler',0
-	.db	'C:\\Users\\helix\\Desktop\\SRE\\SRE SDK 2017-18\\VCU\\Environment\\dev\\SRE-3\\',0,12,1
+	.db	'C:\\Users\\Timothy_Le\\Documents\\SRE\\SRE_SDK_2018\\VCU\\Environment\\dev\\sre-3b\\',0,12,1
 	.dl	_744,_743
 	.db	2
 	.dl	_592
@@ -7991,20 +7991,20 @@ _744:
 	.debug		.debug_pubnames
 	.dl	45
 	.dw	2
-	.dl	_741,248,155
+	.dl	_741,253,160
 	.db	'MCM_getRegenTorqueLimitDNm',0
 	.dl	0
 	; End of section
 
 	.debug		.debug_info, cluster 'MCM_getRegenTorqueAtZeroPedalDNm'
 _746:
-	.dl	250
+	.dl	255
 	.dw	3
 	.dl	_747
 	.db	4,1
 	.db	'motorController.c',0
 	.db	'TASKING VX-toolset for C166: C compiler',0
-	.db	'C:\\Users\\helix\\Desktop\\SRE\\SRE SDK 2017-18\\VCU\\Environment\\dev\\SRE-3\\',0,12,1
+	.db	'C:\\Users\\Timothy_Le\\Documents\\SRE\\SRE_SDK_2018\\VCU\\Environment\\dev\\sre-3b\\',0,12,1
 	.dl	_749,_748
 	.db	2
 	.dl	_592
@@ -8056,20 +8056,20 @@ _749:
 	.debug		.debug_pubnames
 	.dl	51
 	.dw	2
-	.dl	_746,254,155
+	.dl	_746,259,160
 	.db	'MCM_getRegenTorqueAtZeroPedalDNm',0
 	.dl	0
 	; End of section
 
 	.debug		.debug_info, cluster 'MCM_getRegenBPSForMaxRegenZeroToFF'
 _751:
-	.dl	252
+	.dl	257
 	.dw	3
 	.dl	_752
 	.db	4,1
 	.db	'motorController.c',0
 	.db	'TASKING VX-toolset for C166: C compiler',0
-	.db	'C:\\Users\\helix\\Desktop\\SRE\\SRE SDK 2017-18\\VCU\\Environment\\dev\\SRE-3\\',0,12,1
+	.db	'C:\\Users\\Timothy_Le\\Documents\\SRE\\SRE_SDK_2018\\VCU\\Environment\\dev\\sre-3b\\',0,12,1
 	.dl	_754,_753
 	.db	2
 	.dl	_592
@@ -8131,20 +8131,20 @@ _754:
 	.debug		.debug_pubnames
 	.dl	53
 	.dw	2
-	.dl	_751,256,155
+	.dl	_751,261,160
 	.db	'MCM_getRegenBPSForMaxRegenZeroToFF',0
 	.dl	0
 	; End of section
 
 	.debug		.debug_info, cluster 'MCM_getRegenAPPSForMaxCoastingZeroToFF'
 _756:
-	.dl	256
+	.dl	261
 	.dw	3
 	.dl	_757
 	.db	4,1
 	.db	'motorController.c',0
 	.db	'TASKING VX-toolset for C166: C compiler',0
-	.db	'C:\\Users\\helix\\Desktop\\SRE\\SRE SDK 2017-18\\VCU\\Environment\\dev\\SRE-3\\',0,12,1
+	.db	'C:\\Users\\Timothy_Le\\Documents\\SRE\\SRE_SDK_2018\\VCU\\Environment\\dev\\sre-3b\\',0,12,1
 	.dl	_759,_758
 	.db	2
 	.dl	_592
@@ -8206,20 +8206,20 @@ _759:
 	.debug		.debug_pubnames
 	.dl	57
 	.dw	2
-	.dl	_756,260,155
+	.dl	_756,265,160
 	.db	'MCM_getRegenAPPSForMaxCoastingZeroToFF',0
 	.dl	0
 	; End of section
 
 	.debug		.debug_info, cluster 'MCM_readTCSSettings'
 _761:
-	.dl	308
+	.dl	313
 	.dw	3
 	.dl	_762
 	.db	4,1
 	.db	'motorController.c',0
 	.db	'TASKING VX-toolset for C166: C compiler',0
-	.db	'C:\\Users\\helix\\Desktop\\SRE\\SRE SDK 2017-18\\VCU\\Environment\\dev\\SRE-3\\',0,12,1
+	.db	'C:\\Users\\Timothy_Le\\Documents\\SRE\\SRE_SDK_2018\\VCU\\Environment\\dev\\sre-3b\\',0,12,1
 	.dl	_764,_763
 	.db	2
 	.dl	_592
@@ -8444,20 +8444,20 @@ _764:
 	.debug		.debug_pubnames
 	.dl	38
 	.dw	2
-	.dl	_761,312,155
+	.dl	_761,317,160
 	.db	'MCM_readTCSSettings',0
 	.dl	0
 	; End of section
 
 	.debug		.debug_info, cluster 'MCM_calculateCommands'
 _766:
-	.dl	550
+	.dl	555
 	.dw	3
 	.dl	_767
 	.db	4,1
 	.db	'motorController.c',0
 	.db	'TASKING VX-toolset for C166: C compiler',0
-	.db	'C:\\Users\\helix\\Desktop\\SRE\\SRE SDK 2017-18\\VCU\\Environment\\dev\\SRE-3\\',0,12,1
+	.db	'C:\\Users\\Timothy_Le\\Documents\\SRE\\SRE_SDK_2018\\VCU\\Environment\\dev\\sre-3b\\',0,12,1
 	.dl	_769,_768
 	.db	2
 	.dl	_592
@@ -8742,20 +8742,20 @@ _918:
 	.debug		.debug_pubnames
 	.dl	40
 	.dw	2
-	.dl	_766,554,155
+	.dl	_766,559,160
 	.db	'MCM_calculateCommands',0
 	.dl	0
 	; End of section
 
 	.debug		.debug_info, cluster 'MCM_relayControl'
 _771:
-	.dl	495
+	.dl	500
 	.dw	3
 	.dl	_772
 	.db	4,1
 	.db	'motorController.c',0
 	.db	'TASKING VX-toolset for C166: C compiler',0
-	.db	'C:\\Users\\helix\\Desktop\\SRE\\SRE SDK 2017-18\\VCU\\Environment\\dev\\SRE-3\\',0,12,1
+	.db	'C:\\Users\\Timothy_Le\\Documents\\SRE\\SRE_SDK_2018\\VCU\\Environment\\dev\\sre-3b\\',0,12,1
 	.dl	_774,_773
 	.db	2
 	.dl	_592
@@ -8955,20 +8955,20 @@ _945:
 	.debug		.debug_pubnames
 	.dl	35
 	.dw	2
-	.dl	_771,499,155
+	.dl	_771,504,160
 	.db	'MCM_relayControl',0
 	.dl	0
 	; End of section
 
 	.debug		.debug_info, cluster 'MCM_inverterControl'
 _776:
-	.dl	584
+	.dl	589
 	.dw	3
 	.dl	_777
 	.db	4,1
 	.db	'motorController.c',0
 	.db	'TASKING VX-toolset for C166: C compiler',0
-	.db	'C:\\Users\\helix\\Desktop\\SRE\\SRE SDK 2017-18\\VCU\\Environment\\dev\\SRE-3\\',0,12,1
+	.db	'C:\\Users\\Timothy_Le\\Documents\\SRE\\SRE_SDK_2018\\VCU\\Environment\\dev\\sre-3b\\',0,12,1
 	.dl	_779,_778
 	.db	2
 	.dl	_592
@@ -9227,20 +9227,20 @@ _779:
 	.debug		.debug_pubnames
 	.dl	38
 	.dw	2
-	.dl	_776,588,155
+	.dl	_776,593,160
 	.db	'MCM_inverterControl',0
 	.dl	0
 	; End of section
 
 	.debug		.debug_info, cluster 'MCM_parseCanMessage'
 _781:
-	.dl	261
+	.dl	266
 	.dw	3
 	.dl	_782
 	.db	4,1
 	.db	'motorController.c',0
 	.db	'TASKING VX-toolset for C166: C compiler',0
-	.db	'C:\\Users\\helix\\Desktop\\SRE\\SRE SDK 2017-18\\VCU\\Environment\\dev\\SRE-3\\',0,12,1
+	.db	'C:\\Users\\Timothy_Le\\Documents\\SRE\\SRE_SDK_2018\\VCU\\Environment\\dev\\sre-3b\\',0,12,1
 	.dl	_784,_783
 	.db	2
 	.dl	_592
@@ -9457,20 +9457,20 @@ _784:
 	.debug		.debug_pubnames
 	.dl	38
 	.dw	2
-	.dl	_781,265,155
+	.dl	_781,270,160
 	.db	'MCM_parseCanMessage',0
 	.dl	0
 	; End of section
 
 	.debug		.debug_info, cluster 'MCM_getStartupStage'
 _786:
-	.dl	202
+	.dl	207
 	.dw	3
 	.dl	_787
 	.db	4,1
 	.db	'motorController.c',0
 	.db	'TASKING VX-toolset for C166: C compiler',0
-	.db	'C:\\Users\\helix\\Desktop\\SRE\\SRE SDK 2017-18\\VCU\\Environment\\dev\\SRE-3\\',0,12,1
+	.db	'C:\\Users\\Timothy_Le\\Documents\\SRE\\SRE_SDK_2018\\VCU\\Environment\\dev\\sre-3b\\',0,12,1
 	.dl	_789,_788
 	.db	2
 	.dl	_592
@@ -9518,13 +9518,13 @@ _789:
 
 	.debug		.debug_info, cluster 'MCM_setStartupStage'
 _791:
-	.dl	211
+	.dl	216
 	.dw	3
 	.dl	_792
 	.db	4,1
 	.db	'motorController.c',0
 	.db	'TASKING VX-toolset for C166: C compiler',0
-	.db	'C:\\Users\\helix\\Desktop\\SRE\\SRE SDK 2017-18\\VCU\\Environment\\dev\\SRE-3\\',0,12,1
+	.db	'C:\\Users\\Timothy_Le\\Documents\\SRE\\SRE_SDK_2018\\VCU\\Environment\\dev\\sre-3b\\',0,12,1
 	.dl	_794,_793
 	.db	2
 	.dl	_592
@@ -9576,13 +9576,13 @@ _794:
 
 	.debug		.debug_info, cluster 'MCM_getTorqueMax'
 _796:
-	.dl	234
+	.dl	239
 	.dw	3
 	.dl	_797
 	.db	4,1
 	.db	'motorController.c',0
 	.db	'TASKING VX-toolset for C166: C compiler',0
-	.db	'C:\\Users\\helix\\Desktop\\SRE\\SRE SDK 2017-18\\VCU\\Environment\\dev\\SRE-3\\',0,12,1
+	.db	'C:\\Users\\Timothy_Le\\Documents\\SRE\\SRE_SDK_2018\\VCU\\Environment\\dev\\sre-3b\\',0,12,1
 	.dl	_799,_798
 	.db	2
 	.dl	_592
@@ -9634,7 +9634,7 @@ _799:
 	.debug		.debug_pubnames
 	.dl	35
 	.dw	2
-	.dl	_796,238,155
+	.dl	_796,243,160
 	.db	'MCM_getTorqueMax',0
 	.dl	0
 	; End of section

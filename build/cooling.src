@@ -1,5 +1,5 @@
 	; TASKING VX-toolset for C166: C compiler v4.0r1 Build 741 SN 07744515
-	; Options: -f cc11272a -c99 -Mh --fp-model=FT -Cxc2287 --core=xc16x -DTASKING_VIPER -D__USIC_MEM_TYPE=__PAGE_080_MEM_TYPE -D__MULTICAN_MEM_TYPE=__PAGE_080_MEM_TYPE -DTTC50 -DRTS_TTC_FLASH_DATE_YEAR=2018 -DRTS_TTC_FLASH_DATE_MONTH=2 -DRTS_TTC_FLASH_DATE_DAY=2 -DRTS_TTC_FLASH_DATE_HOUR=16 -DRTS_TTC_FLASH_DATE_MINUTE=21 -I..\..\..\Environment\inc -I..\..\..\Environment\inc_int -I..\..\..\Environment\bsp -I. --tradeoff=0 --no-tasking-sfr -ga --language=+cmp14,+div32,-gcc,-strings -O3 --source --mac -o build\cooling.src
+	; Options: -f cc11496a -c99 -Mh --fp-model=FT -Cxc2287 --core=xc16x -DTASKING_VIPER -D__USIC_MEM_TYPE=__PAGE_080_MEM_TYPE -D__MULTICAN_MEM_TYPE=__PAGE_080_MEM_TYPE -DTTC50 -DRTS_TTC_FLASH_DATE_YEAR=2018 -DRTS_TTC_FLASH_DATE_MONTH=5 -DRTS_TTC_FLASH_DATE_DAY=19 -DRTS_TTC_FLASH_DATE_HOUR=3 -DRTS_TTC_FLASH_DATE_MINUTE=27 -I..\..\..\Environment\inc -I..\..\..\Environment\inc_int -I..\..\..\Environment\bsp -I. --tradeoff=0 --no-tasking-sfr -ga --language=+cmp14,+div32,-gcc,-strings -O3 --source --mac -o build\cooling.src
 	; Module start
 	.source	'cooling.c'
 code_CoolingSystem_new	.section	code, cluster 'CoolingSystem_new', new
@@ -918,7 +918,7 @@ _$4$str	.label	byte
 	.extern	__s2spf : far
 	.debug		.debug_info
 _58:
-	.dl	1480
+	.dl	1485
 	.dw	3
 	.dl	_59
 	.db	4
@@ -926,36 +926,36 @@ _57:
 	.db	1
 	.db	'cooling.c',0
 	.db	'TASKING VX-toolset for C166: C compiler',0
-	.db	'C:\\Users\\helix\\Desktop\\SRE\\SRE SDK 2017-18\\VCU\\Environment\\dev\\SRE-3\\',0,12,1
+	.db	'C:\\Users\\Timothy_Le\\Documents\\SRE\\SRE_SDK_2018\\VCU\\Environment\\dev\\sre-3b\\',0,12,1
 	.dl	_60
 	.db	2
 	.db	'void',0,3,5
-	.dl	138
+	.dl	143
 	.db	4
 	.db	'unsigned int',0,2,7,5
 	.db	'malloc',0,1,78,33,6
-	.dl	144
+	.dl	149
 	.db	1,1,1,1,6,1,78,44,2
-	.dl	150
+	.dl	155
 	.db	0,7
 	.db	'_SerialManager',0,2,7,16,1
 _77:
 	.db	3,5
-	.dl	196
+	.dl	201
 	.db	4
 	.db	'unsigned char',0,1,8,8
-	.dl	222
+	.dl	227
 	.db	3,5
-	.dl	239
+	.dl	244
 	.db	5
 	.db	'SerialManager_send',0,2,18,14,6
-	.dl	150
+	.dl	155
 	.db	1,1,1,1,9
 	.db	'me',0,2,18,48,2
-	.dl	216
+	.dl	221
 	.db	9
 	.db	'data',0,2,18,66,2
-	.dl	244
+	.dl	249
 	.db	0,10,3,103,9,1,11
 	.db	'Light_dashEco',0,0,11
 	.db	'Light_dashError',0,1,11
@@ -968,160 +968,160 @@ _77:
 	.db	'float',0,4,4,12
 	.db	'Light_set',0,3,203,1,6,6,1,1,1,1,9
 	.db	'light',0,3,203,1,22,2
-	.dl	309
+	.dl	314
 	.db	9
 	.db	'percent',0,3,203,1,36,2
-	.dl	457
+	.dl	462
 	.db	0
 _84:
 	.db	4
 	.db	'char',0,1,6,13
 	.db	'_CoolingSystem',0,4,6,16,20,14
 	.db	'sm',0
-	.dl	216
+	.dl	221
 	.db	4,2,35,0,14
 	.db	'waterPumpMinPercent',0
-	.dl	457
+	.dl	462
 	.db	4,2,35,4,14
 	.db	'waterPumpLow',0
-	.dl	521
+	.dl	526
 	.db	1,2,35,8,14
 	.db	'waterPumpHigh',0
-	.dl	521
+	.dl	526
 	.db	1,2,35,9,14
 	.db	'waterPumpPercent',0
-	.dl	457
+	.dl	462
 	.db	4,2,35,10,14
 	.db	'motorFanLow',0
-	.dl	521
+	.dl	526
 	.db	1,2,35,14,14
 	.db	'motorFanHigh',0
-	.dl	521
+	.dl	526
 	.db	1,2,35,15,14
 	.db	'motorFanState',0
-	.dl	222
+	.dl	227
 	.db	1,2,35,16,14
 	.db	'batteryFanLow',0
-	.dl	521
+	.dl	526
 	.db	1,2,35,17,14
 	.db	'batteryFanHigh',0
-	.dl	521
+	.dl	526
 	.db	1,2,35,18,14
 	.db	'batteryFanState',0
-	.dl	222
+	.dl	227
 	.db	1,2,35,19,0
 _76:
 	.db	3,5
-	.dl	529
+	.dl	534
 _81:
 	.db	4
 	.db	'int',0,2,5,5
 	.db	'getPercent',0,5,15,8,6
-	.dl	457
+	.dl	462
 	.db	1,1,1,1,9
 	.db	'value',0,5,15,26,2
-	.dl	457
+	.dl	462
 	.db	9
 	.db	'start',0,5,15,40,2
-	.dl	457
+	.dl	462
 	.db	9
 	.db	'end',0,5,15,54,2
-	.dl	457
+	.dl	462
 	.db	9
 	.db	'zeroToOneOnly',0,5,15,64,2
-	.dl	222
+	.dl	227
 	.db	0,5
 	.db	'max',0,5,18,8,6
-	.dl	150
+	.dl	155
 	.db	1,1,1,1,9
 	.db	'a',0,5,18,19,2
-	.dl	150
+	.dl	155
 	.db	9
 	.db	'b',0,5,18,29,2
-	.dl	150
+	.dl	155
 	.db	0,4
 	.db	'unsigned short int',0,2,7,15
 	.db	'__wchar_t',0,6,1,1
-	.dl	944
+	.dl	949
 	.db	15
 	.db	'__size_t',0,6,1,1
-	.dl	150
+	.dl	155
 	.db	3,5
-	.dl	138
+	.dl	143
 	.db	15
 	.db	'__prof_adm',0,6,1,1
-	.dl	1001
+	.dl	1006
 	.db	4
 	.db	'unsigned long int',0,4,7,15
 	.db	'__codeptr',0,6,1,1
-	.dl	1026
+	.dl	1031
 	.db	15
 	.db	'size_t',0,1,29,25
-	.dl	150
+	.dl	155
 	.db	15
 	.db	'ubyte1',0,7,21,29
-	.dl	222
+	.dl	227
 	.db	15
 	.db	'ubyte2',0,7,22,29
-	.dl	150
+	.dl	155
 	.db	15
 	.db	'ubyte4',0,7,23,29
-	.dl	1026
+	.dl	1031
 	.db	15
 	.db	'sbyte1',0,7,25,29
-	.dl	521
+	.dl	526
 	.db	15
 	.db	'sbyte2',0,7,26,29
-	.dl	806
+	.dl	811
 	.db	15
 	.db	'float4',0,7,29,29
-	.dl	457
+	.dl	462
 	.db	15
 	.db	'bool',0,7,31,29
-	.dl	222
+	.dl	227
 	.db	15
 	.db	'IO_ErrorType',0,8,150,1,17
-	.dl	150
+	.dl	155
 	.db	15
 	.db	'SerialManager',0,2,7,31
-	.dl	196
+	.dl	201
 	.db	15
 	.db	'Light',0,3,113,3
-	.dl	309
+	.dl	314
 	.db	13
 	.db	'_Sensor',0,3,126,16,22,14
 	.db	'specMin',0
-	.dl	1026
+	.dl	1031
 	.db	4,2,35,0,14
 	.db	'specMax',0
-	.dl	1026
+	.dl	1031
 	.db	4,2,35,4,14
 	.db	'sensorValue',0
-	.dl	1026
+	.dl	1031
 	.db	4,2,35,8,14
 	.db	'fresh',0
-	.dl	222
+	.dl	227
 	.db	1,2,35,12,14
 	.db	'ioErr_powerInit',0
-	.dl	150
+	.dl	155
 	.db	2,2,35,14,14
 	.db	'ioErr_powerSet',0
-	.dl	150
+	.dl	155
 	.db	2,2,35,16,14
 	.db	'ioErr_signalInit',0
-	.dl	150
+	.dl	155
 	.db	2,2,35,18,14
 	.db	'ioErr_signalGet',0
-	.dl	150
+	.dl	155
 	.db	2,2,35,20,0,15
 	.db	'Sensor',0,3,143,1,3
-	.dl	1241
+	.dl	1246
 	.db	15
 	.db	'CoolingSystem',0,4,30,1
-	.dl	529
+	.dl	534
 	.db	15
 	.db	'_iob_flag_t',0,9,82,25
-	.dl	944
+	.dl	949
 	.db	0
 	; End of section
 
@@ -1161,28 +1161,28 @@ _659:
 	.debug		.debug_pubnames
 	.dl	85
 	.dw	2
-	.dl	_58,1484,166
+	.dl	_58,1489,171
 	.db	'malloc',0
-	.dl	250
+	.dl	255
 	.db	'SerialManager_send',0
-	.dl	466
+	.dl	471
 	.db	'Light_set',0
-	.dl	813
+	.dl	818
 	.db	'getPercent',0
-	.dl	904
+	.dl	909
 	.db	'max',0
 	.dl	0
 	; End of section
 
 	.debug		.debug_info, cluster 'CoolingSystem_new'
 _61:
-	.dl	249
+	.dl	254
 	.dw	3
 	.dl	_62
 	.db	4,1
 	.db	'cooling.c',0
 	.db	'TASKING VX-toolset for C166: C compiler',0
-	.db	'C:\\Users\\helix\\Desktop\\SRE\\SRE SDK 2017-18\\VCU\\Environment\\dev\\SRE-3\\',0,12,1
+	.db	'C:\\Users\\Timothy_Le\\Documents\\SRE\\SRE_SDK_2018\\VCU\\Environment\\dev\\sre-3b\\',0,12,1
 	.dl	_64,_63
 	.db	2
 	.dl	_57
@@ -1297,20 +1297,20 @@ _64:
 	.debug		.debug_pubnames
 	.dl	36
 	.dw	2
-	.dl	_61,253,147
+	.dl	_61,258,152
 	.db	'CoolingSystem_new',0
 	.dl	0
 	; End of section
 
 	.debug		.debug_info, cluster 'CoolingSystem_calculations'
 _66:
-	.dl	311
+	.dl	316
 	.dw	3
 	.dl	_67
 	.db	4,1
 	.db	'cooling.c',0
 	.db	'TASKING VX-toolset for C166: C compiler',0
-	.db	'C:\\Users\\helix\\Desktop\\SRE\\SRE SDK 2017-18\\VCU\\Environment\\dev\\SRE-3\\',0,12,1
+	.db	'C:\\Users\\Timothy_Le\\Documents\\SRE\\SRE_SDK_2018\\VCU\\Environment\\dev\\sre-3b\\',0,12,1
 	.dl	_69,_68
 	.db	2
 	.dl	_57
@@ -1523,20 +1523,20 @@ _69:
 	.debug		.debug_pubnames
 	.dl	45
 	.dw	2
-	.dl	_66,315,147
+	.dl	_66,320,152
 	.db	'CoolingSystem_calculations',0
 	.dl	0
 	; End of section
 
 	.debug		.debug_info, cluster 'CoolingSystem_enactCooling'
 _71:
-	.dl	232
+	.dl	237
 	.dw	3
 	.dl	_72
 	.db	4,1
 	.db	'cooling.c',0
 	.db	'TASKING VX-toolset for C166: C compiler',0
-	.db	'C:\\Users\\helix\\Desktop\\SRE\\SRE SDK 2017-18\\VCU\\Environment\\dev\\SRE-3\\',0,12,1
+	.db	'C:\\Users\\Timothy_Le\\Documents\\SRE\\SRE_SDK_2018\\VCU\\Environment\\dev\\sre-3b\\',0,12,1
 	.dl	_74,_73
 	.db	2
 	.dl	_57
@@ -1616,7 +1616,7 @@ _74:
 	.debug		.debug_pubnames
 	.dl	45
 	.dw	2
-	.dl	_71,236,147
+	.dl	_71,241,152
 	.db	'CoolingSystem_enactCooling',0
 	.dl	0
 	; End of section

@@ -1,5 +1,5 @@
 	; TASKING VX-toolset for C166: C compiler v4.0r1 Build 741 SN 07744515
-	; Options: -f cc3980a -c99 -Mh --fp-model=FT -Cxc2287 --core=xc16x -DTASKING_VIPER -D__USIC_MEM_TYPE=__PAGE_080_MEM_TYPE -D__MULTICAN_MEM_TYPE=__PAGE_080_MEM_TYPE -DTTC50 -DRTS_TTC_FLASH_DATE_YEAR=2018 -DRTS_TTC_FLASH_DATE_MONTH=4 -DRTS_TTC_FLASH_DATE_DAY=5 -DRTS_TTC_FLASH_DATE_HOUR=18 -DRTS_TTC_FLASH_DATE_MINUTE=55 -I..\..\..\Environment\inc -I..\..\..\Environment\inc_int -I..\..\..\Environment\bsp -I. --tradeoff=0 --no-tasking-sfr -ga --language=+cmp14,+div32,-gcc,-strings -O3 --source --mac -o build\mathFunctions.src
+	; Options: -f cc6748a -c99 -Mh --fp-model=FT -Cxc2287 --core=xc16x -DTASKING_VIPER -D__USIC_MEM_TYPE=__PAGE_080_MEM_TYPE -D__MULTICAN_MEM_TYPE=__PAGE_080_MEM_TYPE -DTTC50 -DRTS_TTC_FLASH_DATE_YEAR=2018 -DRTS_TTC_FLASH_DATE_MONTH=5 -DRTS_TTC_FLASH_DATE_DAY=19 -DRTS_TTC_FLASH_DATE_HOUR=3 -DRTS_TTC_FLASH_DATE_MINUTE=27 -I..\..\..\Environment\inc -I..\..\..\Environment\inc_int -I..\..\..\Environment\bsp -I. --tradeoff=0 --no-tasking-sfr -ga --language=+cmp14,+div32,-gcc,-strings -O3 --source --mac -o build\mathFunctions.src
 	; Module start
 	.source	'mathFunctions.c'
 code_getPercent	.section	code, cluster 'getPercent', new
@@ -536,7 +536,7 @@ _183:
 	.extern	__udil : far
 	.debug		.debug_info
 _141:
-	.dl	456
+	.dl	461
 	.dw	3
 	.dl	_142
 	.db	4
@@ -544,7 +544,7 @@ _140:
 	.db	1
 	.db	'mathFunctions.c',0
 	.db	'TASKING VX-toolset for C166: C compiler',0
-	.db	'C:\\Users\\helix\\Desktop\\SRE\\SRE SDK 2017-18\\VCU\\Environment\\dev\\SRE-3\\',0,12,1
+	.db	'C:\\Users\\Timothy_Le\\Documents\\SRE\\SRE_SDK_2018\\VCU\\Environment\\dev\\sre-3b\\',0,12,1
 	.dl	_143
 _194:
 	.db	2
@@ -568,47 +568,47 @@ _212:
 	.db	2
 	.db	'long int',0,4,5,3
 	.db	'IO_RTC_GetTimeUS',0,1,143,1,9,6
-	.dl	201
+	.dl	206
 	.db	1,1,1,1,4
 	.db	'timestamp',0,1,143,1,35,2
-	.dl	201
+	.dl	206
 	.db	0
 _216:
 	.db	5,5
-	.dl	201
+	.dl	206
 	.db	6
 	.db	'void',0,5,5
-	.dl	292
+	.dl	297
 	.db	7
 	.db	'__prof_adm',0,2,1,1
-	.dl	298
+	.dl	303
 	.db	7
 	.db	'__codeptr',0,2,1,1
-	.dl	201
+	.dl	206
 	.db	7
 	.db	'ubyte1',0,3,21,29
-	.dl	153
+	.dl	158
 	.db	7
 	.db	'ubyte2',0,3,22,29
-	.dl	170
+	.dl	175
 	.db	7
 	.db	'ubyte4',0,3,23,29
-	.dl	201
+	.dl	206
 	.db	7
 	.db	'sbyte1',0,3,25,29
-	.dl	186
+	.dl	191
 	.db	7
 	.db	'sbyte2',0,3,26,29
-	.dl	194
+	.dl	199
 	.db	7
 	.db	'sbyte4',0,3,27,29
-	.dl	222
+	.dl	227
 	.db	7
 	.db	'float4',0,3,29,29
-	.dl	144
+	.dl	149
 	.db	7
 	.db	'bool',0,3,31,29
-	.dl	153
+	.dl	158
 	.db	0
 	; End of section
 
@@ -638,20 +638,20 @@ _874:
 	.debug		.debug_pubnames
 	.dl	35
 	.dw	2
-	.dl	_141,460,234
+	.dl	_141,465,239
 	.db	'IO_RTC_GetTimeUS',0
 	.dl	0
 	; End of section
 
 	.debug		.debug_info, cluster 'getPercent'
 _144:
-	.dl	311
+	.dl	316
 	.dw	3
 	.dl	_145
 	.db	4,1
 	.db	'mathFunctions.c',0
 	.db	'TASKING VX-toolset for C166: C compiler',0
-	.db	'C:\\Users\\helix\\Desktop\\SRE\\SRE SDK 2017-18\\VCU\\Environment\\dev\\SRE-3\\',0,12,1
+	.db	'C:\\Users\\Timothy_Le\\Documents\\SRE\\SRE_SDK_2018\\VCU\\Environment\\dev\\sre-3b\\',0,12,1
 	.dl	_147,_146
 	.db	2
 	.dl	_140
@@ -741,20 +741,20 @@ _147:
 	.debug		.debug_pubnames
 	.dl	29
 	.dw	2
-	.dl	_144,315,153
+	.dl	_144,320,158
 	.db	'getPercent',0
 	.dl	0
 	; End of section
 
 	.debug		.debug_info, cluster 'max'
 _149:
-	.dl	231
+	.dl	236
 	.dw	3
 	.dl	_150
 	.db	4,1
 	.db	'mathFunctions.c',0
 	.db	'TASKING VX-toolset for C166: C compiler',0
-	.db	'C:\\Users\\helix\\Desktop\\SRE\\SRE SDK 2017-18\\VCU\\Environment\\dev\\SRE-3\\',0,12,1
+	.db	'C:\\Users\\Timothy_Le\\Documents\\SRE\\SRE_SDK_2018\\VCU\\Environment\\dev\\sre-3b\\',0,12,1
 	.dl	_152,_151
 	.db	2
 	.dl	_140
@@ -811,20 +811,20 @@ _152:
 	.debug		.debug_pubnames
 	.dl	22
 	.dw	2
-	.dl	_149,235,153
+	.dl	_149,240,158
 	.db	'max',0
 	.dl	0
 	; End of section
 
 	.debug		.debug_info, cluster 'swap_uint8'
 _154:
-	.dl	225
+	.dl	230
 	.dw	3
 	.dl	_155
 	.db	4,1
 	.db	'mathFunctions.c',0
 	.db	'TASKING VX-toolset for C166: C compiler',0
-	.db	'C:\\Users\\helix\\Desktop\\SRE\\SRE SDK 2017-18\\VCU\\Environment\\dev\\SRE-3\\',0,12,1
+	.db	'C:\\Users\\Timothy_Le\\Documents\\SRE\\SRE_SDK_2018\\VCU\\Environment\\dev\\sre-3b\\',0,12,1
 	.dl	_157,_156
 	.db	2
 	.dl	_140
@@ -882,20 +882,20 @@ _157:
 	.debug		.debug_pubnames
 	.dl	29
 	.dw	2
-	.dl	_154,229,153
+	.dl	_154,234,158
 	.db	'swap_uint8',0
 	.dl	0
 	; End of section
 
 	.debug		.debug_info, cluster 'swap_int8'
 _159:
-	.dl	224
+	.dl	229
 	.dw	3
 	.dl	_160
 	.db	4,1
 	.db	'mathFunctions.c',0
 	.db	'TASKING VX-toolset for C166: C compiler',0
-	.db	'C:\\Users\\helix\\Desktop\\SRE\\SRE SDK 2017-18\\VCU\\Environment\\dev\\SRE-3\\',0,12,1
+	.db	'C:\\Users\\Timothy_Le\\Documents\\SRE\\SRE_SDK_2018\\VCU\\Environment\\dev\\sre-3b\\',0,12,1
 	.dl	_162,_161
 	.db	2
 	.dl	_140
@@ -953,20 +953,20 @@ _162:
 	.debug		.debug_pubnames
 	.dl	28
 	.dw	2
-	.dl	_159,228,153
+	.dl	_159,233,158
 	.db	'swap_int8',0
 	.dl	0
 	; End of section
 
 	.debug		.debug_info, cluster 'swap_uint16'
 _164:
-	.dl	226
+	.dl	231
 	.dw	3
 	.dl	_165
 	.db	4,1
 	.db	'mathFunctions.c',0
 	.db	'TASKING VX-toolset for C166: C compiler',0
-	.db	'C:\\Users\\helix\\Desktop\\SRE\\SRE SDK 2017-18\\VCU\\Environment\\dev\\SRE-3\\',0,12,1
+	.db	'C:\\Users\\Timothy_Le\\Documents\\SRE\\SRE_SDK_2018\\VCU\\Environment\\dev\\sre-3b\\',0,12,1
 	.dl	_167,_166
 	.db	2
 	.dl	_140
@@ -1024,20 +1024,20 @@ _167:
 	.debug		.debug_pubnames
 	.dl	30
 	.dw	2
-	.dl	_164,230,153
+	.dl	_164,235,158
 	.db	'swap_uint16',0
 	.dl	0
 	; End of section
 
 	.debug		.debug_info, cluster 'swap_int16'
 _169:
-	.dl	225
+	.dl	230
 	.dw	3
 	.dl	_170
 	.db	4,1
 	.db	'mathFunctions.c',0
 	.db	'TASKING VX-toolset for C166: C compiler',0
-	.db	'C:\\Users\\helix\\Desktop\\SRE\\SRE SDK 2017-18\\VCU\\Environment\\dev\\SRE-3\\',0,12,1
+	.db	'C:\\Users\\Timothy_Le\\Documents\\SRE\\SRE_SDK_2018\\VCU\\Environment\\dev\\sre-3b\\',0,12,1
 	.dl	_172,_171
 	.db	2
 	.dl	_140
@@ -1097,20 +1097,20 @@ _172:
 	.debug		.debug_pubnames
 	.dl	29
 	.dw	2
-	.dl	_169,229,153
+	.dl	_169,234,158
 	.db	'swap_int16',0
 	.dl	0
 	; End of section
 
 	.debug		.debug_info, cluster 'swap_uint32'
 _174:
-	.dl	226
+	.dl	231
 	.dw	3
 	.dl	_175
 	.db	4,1
 	.db	'mathFunctions.c',0
 	.db	'TASKING VX-toolset for C166: C compiler',0
-	.db	'C:\\Users\\helix\\Desktop\\SRE\\SRE SDK 2017-18\\VCU\\Environment\\dev\\SRE-3\\',0,12,1
+	.db	'C:\\Users\\Timothy_Le\\Documents\\SRE\\SRE_SDK_2018\\VCU\\Environment\\dev\\sre-3b\\',0,12,1
 	.dl	_177,_176
 	.db	2
 	.dl	_140
@@ -1178,20 +1178,20 @@ _177:
 	.debug		.debug_pubnames
 	.dl	30
 	.dw	2
-	.dl	_174,230,153
+	.dl	_174,235,158
 	.db	'swap_uint32',0
 	.dl	0
 	; End of section
 
 	.debug		.debug_info, cluster 'swap_int32'
 _179:
-	.dl	225
+	.dl	230
 	.dw	3
 	.dl	_180
 	.db	4,1
 	.db	'mathFunctions.c',0
 	.db	'TASKING VX-toolset for C166: C compiler',0
-	.db	'C:\\Users\\helix\\Desktop\\SRE\\SRE SDK 2017-18\\VCU\\Environment\\dev\\SRE-3\\',0,12,1
+	.db	'C:\\Users\\Timothy_Le\\Documents\\SRE\\SRE_SDK_2018\\VCU\\Environment\\dev\\sre-3b\\',0,12,1
 	.dl	_182,_181
 	.db	2
 	.dl	_140
@@ -1259,20 +1259,20 @@ _182:
 	.debug		.debug_pubnames
 	.dl	29
 	.dw	2
-	.dl	_179,229,153
+	.dl	_179,234,158
 	.db	'swap_int32',0
 	.dl	0
 	; End of section
 
 	.debug		.debug_info, cluster 'min'
 _184:
-	.dl	231
+	.dl	236
 	.dw	3
 	.dl	_185
 	.db	4,1
 	.db	'mathFunctions.c',0
 	.db	'TASKING VX-toolset for C166: C compiler',0
-	.db	'C:\\Users\\helix\\Desktop\\SRE\\SRE SDK 2017-18\\VCU\\Environment\\dev\\SRE-3\\',0,12,1
+	.db	'C:\\Users\\Timothy_Le\\Documents\\SRE\\SRE_SDK_2018\\VCU\\Environment\\dev\\sre-3b\\',0,12,1
 	.dl	_187,_186
 	.db	2
 	.dl	_140
@@ -1329,20 +1329,20 @@ _187:
 	.debug		.debug_pubnames
 	.dl	22
 	.dw	2
-	.dl	_184,235,153
+	.dl	_184,240,158
 	.db	'min',0
 	.dl	0
 	; End of section
 
 	.debug		.debug_info, cluster 'blink'
 _189:
-	.dl	266
+	.dl	271
 	.dw	3
 	.dl	_190
 	.db	4,1
 	.db	'mathFunctions.c',0
 	.db	'TASKING VX-toolset for C166: C compiler',0
-	.db	'C:\\Users\\helix\\Desktop\\SRE\\SRE SDK 2017-18\\VCU\\Environment\\dev\\SRE-3\\',0,12,1
+	.db	'C:\\Users\\Timothy_Le\\Documents\\SRE\\SRE_SDK_2018\\VCU\\Environment\\dev\\sre-3b\\',0,12,1
 	.dl	_192,_191
 	.db	2
 	.dl	_140
@@ -1416,7 +1416,7 @@ _192:
 	.debug		.debug_pubnames
 	.dl	24
 	.dw	2
-	.dl	_189,270,153
+	.dl	_189,275,158
 	.db	'blink',0
 	.dl	0
 	; End of section

@@ -631,6 +631,22 @@ void canOutput_sendDebugMessage(CanManager* me, TorqueEncoder* tps, BrakePressur
     canMessages[canMessageCount - 1].data[byteNum++] = (ubyte1)MCM_commands_getTorqueLimit(mcm);
     canMessages[canMessageCount - 1].data[byteNum++] = MCM_commands_getTorqueLimit(mcm) >> 8;
     canMessages[canMessageCount - 1].length = byteNum;
+
+    // 520: Torque Encoder
+    canMessageCount++;
+    byteNum = 0;
+    canMessages[canMessageCount - 1].id = 0x520;
+    canMessages[canMessageCount - 1].id_format = IO_CAN_STD_FRAME;
+    canMessages[canMessageCount - 1].data[byteNum++] = Sensor_TCSKnob.sensorValue;
+    canMessages[canMessageCount - 1].data[byteNum++] = Sensor_TCSKnob.sensorValue >> 8;
+    canMessages[canMessageCount - 1].data[byteNum++] = Sensor_EcoButton.sensorValue;
+    canMessages[canMessageCount - 1].data[byteNum++] = Sensor_EcoButton.sensorValue>>8;
+    canMessages[canMessageCount - 1].data[byteNum++] = Sensor_RTDButton.sensorValue;
+    canMessages[canMessageCount - 1].data[byteNum++] = Sensor_RTDButton.sensorValue>>8;
+    canMessages[canMessageCount - 1].data[byteNum++] = 0;
+    canMessages[canMessageCount - 1].data[byteNum++] = 0;
+    canMessages[canMessageCount - 1].length = byteNum;
+
     //----------------------------------------------------------------------------
     //Additional sensors
     //----------------------------------------------------------------------------

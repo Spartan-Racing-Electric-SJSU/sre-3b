@@ -1,5 +1,5 @@
 	; TASKING VX-toolset for C166: C compiler v4.0r1 Build 741 SN 07744515
-	; Options: -f cc14584a -c99 -Mh --fp-model=FT -Cxc2287 --core=xc16x -DTASKING_VIPER -D__USIC_MEM_TYPE=__PAGE_080_MEM_TYPE -D__MULTICAN_MEM_TYPE=__PAGE_080_MEM_TYPE -DTTC50 -DRTS_TTC_FLASH_DATE_YEAR=2018 -DRTS_TTC_FLASH_DATE_MONTH=4 -DRTS_TTC_FLASH_DATE_DAY=5 -DRTS_TTC_FLASH_DATE_HOUR=18 -DRTS_TTC_FLASH_DATE_MINUTE=55 -I..\..\..\Environment\inc -I..\..\..\Environment\inc_int -I..\..\..\Environment\bsp -I. --tradeoff=0 --no-tasking-sfr -ga --language=+cmp14,+div32,-gcc,-strings -O3 --source --mac -o build\readyToDriveSound.src
+	; Options: -f cc4140a -c99 -Mh --fp-model=FT -Cxc2287 --core=xc16x -DTASKING_VIPER -D__USIC_MEM_TYPE=__PAGE_080_MEM_TYPE -D__MULTICAN_MEM_TYPE=__PAGE_080_MEM_TYPE -DTTC50 -DRTS_TTC_FLASH_DATE_YEAR=2018 -DRTS_TTC_FLASH_DATE_MONTH=5 -DRTS_TTC_FLASH_DATE_DAY=19 -DRTS_TTC_FLASH_DATE_HOUR=3 -DRTS_TTC_FLASH_DATE_MINUTE=27 -I..\..\..\Environment\inc -I..\..\..\Environment\inc_int -I..\..\..\Environment\bsp -I. --tradeoff=0 --no-tasking-sfr -ga --language=+cmp14,+div32,-gcc,-strings -O3 --source --mac -o build\readyToDriveSound.src
 	; Module start
 	.source	'readyToDriveSound.c'
 code_RTDS_new	.section	code, cluster 'RTDS_new', new
@@ -303,7 +303,7 @@ _75:
 	.extern	__spf2us : far
 	.debug		.debug_info
 _53:
-	.dl	901
+	.dl	906
 	.dw	3
 	.dl	_54
 	.db	4
@@ -311,24 +311,24 @@ _52:
 	.db	1
 	.db	'readyToDriveSound.c',0
 	.db	'TASKING VX-toolset for C166: C compiler',0
-	.db	'C:\\Users\\helix\\Desktop\\SRE\\SRE SDK 2017-18\\VCU\\Environment\\dev\\SRE-3\\',0,12,1
+	.db	'C:\\Users\\Timothy_Le\\Documents\\SRE\\SRE_SDK_2018\\VCU\\Environment\\dev\\sre-3b\\',0,12,1
 	.dl	_55
 	.db	2
 	.db	'unsigned long int',0,4,7,2
 	.db	'unsigned int',0,2,7,3
 	.db	'_ReadyToDriveSound',0,1,9,8,10,4
 	.db	'timeStamp_soundStarted',0
-	.dl	148
+	.dl	153
 	.db	4,2,35,0,4
 	.db	'timeToSound',0
-	.dl	148
+	.dl	153
 	.db	4,2,35,4,4
 	.db	'volumePercent',0
-	.dl	169
+	.dl	174
 	.db	2,2,35,8,0
 _76:
 	.db	5,5
-	.dl	185
+	.dl	190
 	.db	2
 	.db	'float',0,4,4
 _78:
@@ -337,94 +337,94 @@ _78:
 _81:
 	.db	7
 	.db	'rtds',0,1,31,40,2
-	.dl	286
+	.dl	291
 _83:
 	.db	7
 	.db	'volumePercent',0,1,31,53,2
-	.dl	292
+	.dl	297
 _85:
 	.db	7
 	.db	'timeToPlay',0,1,31,75,2
-	.dl	148
+	.dl	153
 _87:
 	.db	8,0,9
 	.db	'void',0,5,5
-	.dl	383
+	.dl	388
 	.db	10
 	.db	'malloc',0,2,78,33,6
-	.dl	389
+	.dl	394
 	.db	1,1,1,1,11,2,78,44,2
-	.dl	169
+	.dl	174
 	.db	0,12
 	.db	'free',0,2,80,33,6,1,1,1,1,11,2,80,49,2
-	.dl	389
+	.dl	394
 	.db	0,5,5
-	.dl	148
+	.dl	153
 	.db	13
-	.dl	449
+	.dl	454
 	.db	10
 	.db	'IO_RTC_StartTime',0,3,118,15,6
-	.dl	169
+	.dl	174
 	.db	1,1,1,1,7
 	.db	'timestamp',0,3,118,49,2
-	.dl	455
+	.dl	460
 	.db	0,10
 	.db	'IO_RTC_GetTimeUS',0,3,143,1,9,6
-	.dl	148
+	.dl	153
 	.db	1,1,1,1,7
 	.db	'timestamp',0,3,143,1,35,2
-	.dl	148
+	.dl	153
 	.db	0,2
 	.db	'unsigned char',0,1,8,13
-	.dl	449
+	.dl	454
 	.db	10
 	.db	'IO_PWM_SetDuty',0,4,235,2,14,6
-	.dl	169
+	.dl	174
 	.db	1,1,1,1,7
 	.db	'pwm_channel',0,4,235,2,37,2
-	.dl	562
+	.dl	567
 	.db	7
 	.db	'duty_cycle',0,4,236,2,37,2
-	.dl	169
+	.dl	174
 	.db	7
 	.db	'duty_cycle_fb',0,4,237,2,45,2
-	.dl	579
+	.dl	584
 	.db	0,2
 	.db	'unsigned short int',0,2,7,14
 	.db	'__wchar_t',0,1,1,1
-	.dl	681
+	.dl	686
 	.db	14
 	.db	'__size_t',0,1,1,1
-	.dl	169
+	.dl	174
 	.db	5,5
-	.dl	383
+	.dl	388
 	.db	14
 	.db	'__prof_adm',0,1,1,1
-	.dl	738
+	.dl	743
 	.db	14
 	.db	'__codeptr',0,1,1,1
-	.dl	148
+	.dl	153
 	.db	14
 	.db	'size_t',0,2,29,25
-	.dl	169
+	.dl	174
 	.db	14
 	.db	'ubyte1',0,5,21,29
-	.dl	562
+	.dl	567
 	.db	14
 	.db	'ubyte2',0,5,22,29
-	.dl	169
+	.dl	174
 	.db	14
 	.db	'ubyte4',0,5,23,29
-	.dl	148
+	.dl	153
 	.db	14
 	.db	'float4',0,5,29,29
-	.dl	292
+	.dl	297
 	.db	14
 	.db	'IO_ErrorType',0,6,150,1,17
-	.dl	169
+	.dl	174
 	.db	14
 	.db	'ReadyToDriveSound',0,7,7,35
-	.dl	185
+	.dl	190
 	.db	0
 	; End of section
 
@@ -462,28 +462,28 @@ _615:
 	.debug		.debug_pubnames
 	.dl	95
 	.dw	2
-	.dl	_53,905,395
+	.dl	_53,910,400
 	.db	'malloc',0
-	.dl	425
+	.dl	430
 	.db	'free',0
-	.dl	460
+	.dl	465
 	.db	'IO_RTC_StartTime',0
-	.dl	510
+	.dl	515
 	.db	'IO_RTC_GetTimeUS',0
-	.dl	584
+	.dl	589
 	.db	'IO_PWM_SetDuty',0
 	.dl	0
 	; End of section
 
 	.debug		.debug_info, cluster 'RTDS_new'
 _56:
-	.dl	320
+	.dl	325
 	.dw	3
 	.dl	_57
 	.db	4,1
 	.db	'readyToDriveSound.c',0
 	.db	'TASKING VX-toolset for C166: C compiler',0
-	.db	'C:\\Users\\helix\\Desktop\\SRE\\SRE SDK 2017-18\\VCU\\Environment\\dev\\SRE-3\\',0,12,1
+	.db	'C:\\Users\\Timothy_Le\\Documents\\SRE\\SRE_SDK_2018\\VCU\\Environment\\dev\\sre-3b\\',0,12,1
 	.dl	_59,_58
 	.db	2
 	.dl	_52
@@ -575,20 +575,20 @@ _88:
 	.debug		.debug_pubnames
 	.dl	27
 	.dw	2
-	.dl	_56,324,157
+	.dl	_56,329,162
 	.db	'RTDS_new',0
 	.dl	0
 	; End of section
 
 	.debug		.debug_info, cluster 'RTDS_delete'
 _61:
-	.dl	227
+	.dl	232
 	.dw	3
 	.dl	_62
 	.db	4,1
 	.db	'readyToDriveSound.c',0
 	.db	'TASKING VX-toolset for C166: C compiler',0
-	.db	'C:\\Users\\helix\\Desktop\\SRE\\SRE SDK 2017-18\\VCU\\Environment\\dev\\SRE-3\\',0,12,1
+	.db	'C:\\Users\\Timothy_Le\\Documents\\SRE\\SRE_SDK_2018\\VCU\\Environment\\dev\\sre-3b\\',0,12,1
 	.dl	_64,_63
 	.db	2
 	.dl	_52
@@ -636,20 +636,20 @@ _64:
 	.debug		.debug_pubnames
 	.dl	30
 	.dw	2
-	.dl	_61,231,157
+	.dl	_61,236,162
 	.db	'RTDS_delete',0
 	.dl	0
 	; End of section
 
 	.debug		.debug_info, cluster 'RTDS_setVolume'
 _66:
-	.dl	222
+	.dl	227
 	.dw	3
 	.dl	_67
 	.db	4,1
 	.db	'readyToDriveSound.c',0
 	.db	'TASKING VX-toolset for C166: C compiler',0
-	.db	'C:\\Users\\helix\\Desktop\\SRE\\SRE SDK 2017-18\\VCU\\Environment\\dev\\SRE-3\\',0,12,1
+	.db	'C:\\Users\\Timothy_Le\\Documents\\SRE\\SRE_SDK_2018\\VCU\\Environment\\dev\\sre-3b\\',0,12,1
 	.dl	_69,_68
 	.db	2
 	.dl	_52
@@ -723,13 +723,13 @@ _69:
 
 	.debug		.debug_info, cluster 'RTDS_shutdownHelper'
 _71:
-	.dl	290
+	.dl	295
 	.dw	3
 	.dl	_72
 	.db	4,1
 	.db	'readyToDriveSound.c',0
 	.db	'TASKING VX-toolset for C166: C compiler',0
-	.db	'C:\\Users\\helix\\Desktop\\SRE\\SRE SDK 2017-18\\VCU\\Environment\\dev\\SRE-3\\',0,12,1
+	.db	'C:\\Users\\Timothy_Le\\Documents\\SRE\\SRE_SDK_2018\\VCU\\Environment\\dev\\sre-3b\\',0,12,1
 	.dl	_74,_73
 	.db	2
 	.dl	_52
@@ -811,7 +811,7 @@ _74:
 	.debug		.debug_pubnames
 	.dl	38
 	.dw	2
-	.dl	_71,294,157
+	.dl	_71,299,162
 	.db	'RTDS_shutdownHelper',0
 	.dl	0
 	; End of section

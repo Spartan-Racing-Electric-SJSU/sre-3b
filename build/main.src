@@ -1,5 +1,5 @@
 	; TASKING VX-toolset for C166: C compiler v4.0r1 Build 741 SN 07744515
-	; Options: -f cc556a -c99 -Mh --fp-model=FT -Cxc2287 --core=xc16x -DTASKING_VIPER -D__USIC_MEM_TYPE=__PAGE_080_MEM_TYPE -D__MULTICAN_MEM_TYPE=__PAGE_080_MEM_TYPE -DTTC50 -DRTS_TTC_FLASH_DATE_YEAR=2018 -DRTS_TTC_FLASH_DATE_MONTH=2 -DRTS_TTC_FLASH_DATE_DAY=2 -DRTS_TTC_FLASH_DATE_HOUR=16 -DRTS_TTC_FLASH_DATE_MINUTE=21 -I..\..\..\Environment\inc -I..\..\..\Environment\inc_int -I..\..\..\Environment\bsp -I. --tradeoff=0 --no-tasking-sfr -ga --language=+cmp14,+div32,-gcc,-strings -O3 --source --mac -o build\main.src
+	; Options: -f cc11456a -c99 -Mh --fp-model=FT -Cxc2287 --core=xc16x -DTASKING_VIPER -D__USIC_MEM_TYPE=__PAGE_080_MEM_TYPE -D__MULTICAN_MEM_TYPE=__PAGE_080_MEM_TYPE -DTTC50 -DRTS_TTC_FLASH_DATE_YEAR=2018 -DRTS_TTC_FLASH_DATE_MONTH=5 -DRTS_TTC_FLASH_DATE_DAY=19 -DRTS_TTC_FLASH_DATE_HOUR=3 -DRTS_TTC_FLASH_DATE_MINUTE=27 -I..\..\..\Environment\inc -I..\..\..\Environment\inc_int -I..\..\..\Environment\bsp -I. --tradeoff=0 --no-tasking-sfr -ga --language=+cmp14,+div32,-gcc,-strings -O3 --source --mac -o build\main.src
 	; Module start
 	.source	'main.c'
 code_main	.section	code, cluster 'main', new
@@ -945,7 +945,7 @@ _appl_db	.label	word
 	.db	0x0
 	.db	0x0
 	.db	0x0
-	.dl	0x560227e2
+	.dl	0x6c7357e2
 	.db	0x0
 	.db	0x0
 	.db	0x0
@@ -1504,7 +1504,7 @@ _$9$str	.label	byte
 	.extern	__INDIRECT__ : far
 	.debug		.debug_info
 _30:
-	.dl	6660
+	.dl	6665
 	.dw	3
 	.dl	_31
 	.db	4
@@ -1512,97 +1512,97 @@ _29:
 	.db	1
 	.db	'main.c',0
 	.db	'TASKING VX-toolset for C166: C compiler',0
-	.db	'C:\\Users\\helix\\Desktop\\SRE\\SRE SDK 2017-18\\VCU\\Environment\\dev\\SRE-3\\',0,12,1
+	.db	'C:\\Users\\Timothy_Le\\Documents\\SRE\\SRE_SDK_2018\\VCU\\Environment\\dev\\sre-3b\\',0,12,1
 	.dl	_32
 	.db	2
 	.db	'unsigned int',0,2,7,3
 	.db	'IO_UART_Task',0,1,230,1,15,6
-	.dl	135
+	.dl	140
 	.db	1,1,1,1
 _43:
 	.db	2
 	.db	'unsigned char',0,1,8,4
 	.db	'_io_driver_safety_conf',0,2,237,2,17,8,5
 	.db	'glitch_filter_time',0
-	.dl	178
+	.dl	183
 	.db	1,2,35,0,5
 	.db	'command_period',0
-	.dl	135
+	.dl	140
 	.db	2,2,35,2,5
 	.db	'timeout_count',0
-	.dl	178
+	.dl	183
 	.db	1,2,35,4,5
 	.db	'CPU_check_loopcount',0
-	.dl	135
+	.dl	140
 	.db	2,2,35,6,0,6
-	.dl	195
+	.dl	200
 	.db	7,5
-	.dl	329
-	.db	6
 	.dl	334
+	.db	6
+	.dl	339
 	.db	8
 	.db	'IO_Driver_Init',0,2,163,3,15,6
-	.dl	135
+	.dl	140
 	.db	1,1,1,1,9
 	.db	'safety_conf',0,2,163,3,67,2
-	.dl	340
+	.dl	345
 	.db	0,3
 	.db	'IO_Driver_TaskBegin',0,2,192,3,15,6
-	.dl	135
+	.dl	140
 	.db	1,1,1,1,3
 	.db	'IO_Driver_TaskEnd',0,2,207,3,15,6
-	.dl	135
+	.dl	140
 	.db	1,1,1,1,8
 	.db	'IO_DI_Init',0,3,119,14,6
-	.dl	135
+	.dl	140
 	.db	1,1,1,1,9
 	.db	'di_channel',0,3,119,33,2
-	.dl	178
+	.dl	183
 	.db	9
 	.db	'mode',0,3,120,33,2
-	.dl	178
+	.dl	183
 	.db	0,8
 	.db	'IO_DI_DeInit',0,3,173,1,14,6
-	.dl	135
+	.dl	140
 	.db	1,1,1,1,9
 	.db	'di_channel',0,3,173,1,35,2
-	.dl	178
+	.dl	183
 	.db	0,7,5
-	.dl	178
+	.dl	183
 	.db	6
-	.dl	571
+	.dl	576
 	.db	8
 	.db	'IO_DI_Get',0,3,220,1,14,6
-	.dl	135
+	.dl	140
 	.db	1,1,1,1,9
 	.db	'di_channel',0,3,220,1,32,2
-	.dl	178
+	.dl	183
 	.db	9
 	.db	'di_value',0,3,221,1,38,2
-	.dl	577
+	.dl	582
 	.db	0
 _40:
 	.db	2
 	.db	'unsigned long int',0,4,7,7,5
-	.dl	647
+	.dl	652
 	.db	6
-	.dl	668
+	.dl	673
 	.db	8
 	.db	'IO_RTC_StartTime',0,4,118,15,6
-	.dl	135
+	.dl	140
 	.db	1,1,1,1,9
 	.db	'timestamp',0,4,118,49,2
-	.dl	674
+	.dl	679
 	.db	0,8
 	.db	'IO_RTC_GetTimeUS',0,4,143,1,9,6
-	.dl	647
+	.dl	652
 	.db	1,1,1,1,9
 	.db	'timestamp',0,4,143,1,35,2
-	.dl	647
+	.dl	652
 	.db	0,10
 	.db	'vcu_initializeADC',0,5,22,6,6,1,1,1,1,9
 	.db	'benchMode',0,5,22,29,2
-	.dl	178
+	.dl	183
 	.db	0,11
 	.db	'vcu_ADCWasteLoop',0,5,25,6,6,1,1,1,1,11
 	.db	'sensors_updateSensors',0,6,194,1,6,6,1,1,1,1,12,6,103,9,1,13
@@ -1617,231 +1617,231 @@ _40:
 	.db	'float',0,4,4,10
 	.db	'Light_set',0,6,203,1,6,6,1,1,1,1,9
 	.db	'light',0,6,203,1,22,2
-	.dl	886
+	.dl	891
 	.db	9
 	.db	'percent',0,6,203,1,36,2
-	.dl	1034
+	.dl	1039
 	.db	0,4
 	.db	'_Sensor',0,6,126,16,22,5
 	.db	'specMin',0
-	.dl	647
+	.dl	652
 	.db	4,2,35,0,5
 	.db	'specMax',0
-	.dl	647
+	.dl	652
 	.db	4,2,35,4,5
 	.db	'sensorValue',0
-	.dl	647
+	.dl	652
 	.db	4,2,35,8,5
 	.db	'fresh',0
-	.dl	178
+	.dl	183
 	.db	1,2,35,12,5
 	.db	'ioErr_powerInit',0
-	.dl	135
+	.dl	140
 	.db	2,2,35,14,5
 	.db	'ioErr_powerSet',0
-	.dl	135
+	.dl	140
 	.db	2,2,35,16,5
 	.db	'ioErr_signalInit',0
-	.dl	135
+	.dl	140
 	.db	2,2,35,18,5
 	.db	'ioErr_signalGet',0
-	.dl	135
+	.dl	140
 	.db	2,2,35,20,0,7,5
-	.dl	1098
+	.dl	1103
 	.db	4
 	.db	'_TorqueEncoder',0,7,10,16,60,5
 	.db	'bench',0
-	.dl	178
+	.dl	183
 	.db	1,2,35,0,5
 	.db	'tps0',0
-	.dl	1282
+	.dl	1287
 	.db	4,2,35,2,5
 	.db	'tps1',0
-	.dl	1282
+	.dl	1287
 	.db	4,2,35,6,5
 	.db	'tps0_calibMin',0
-	.dl	647
+	.dl	652
 	.db	4,2,35,10,5
 	.db	'tps0_calibMax',0
-	.dl	647
+	.dl	652
 	.db	4,2,35,14,5
 	.db	'tps0_reverse',0
-	.dl	178
+	.dl	183
 	.db	1,2,35,18,5
 	.db	'tps0_value',0
-	.dl	647
+	.dl	652
 	.db	4,2,35,20,5
 	.db	'tps0_percent',0
-	.dl	1034
+	.dl	1039
 	.db	4,2,35,24,5
 	.db	'tps1_calibMin',0
-	.dl	647
+	.dl	652
 	.db	4,2,35,28,5
 	.db	'tps1_calibMax',0
-	.dl	647
+	.dl	652
 	.db	4,2,35,32,5
 	.db	'tps1_reverse',0
-	.dl	178
+	.dl	183
 	.db	1,2,35,36,5
 	.db	'tps1_value',0
-	.dl	647
+	.dl	652
 	.db	4,2,35,38,5
 	.db	'tps1_percent',0
-	.dl	1034
+	.dl	1039
 	.db	4,2,35,42,5
 	.db	'runCalibration',0
-	.dl	178
+	.dl	183
 	.db	1,2,35,46,5
 	.db	'timestamp_calibrationStart',0
-	.dl	647
+	.dl	652
 	.db	4,2,35,48,5
 	.db	'calibrationRunTime',0
-	.dl	178
+	.dl	183
 	.db	1,2,35,52,5
 	.db	'calibrated',0
-	.dl	178
+	.dl	183
 	.db	1,2,35,53,5
 	.db	'percent',0
-	.dl	1034
+	.dl	1039
 	.db	4,2,35,54,5
 	.db	'implausibility',0
-	.dl	178
+	.dl	183
 	.db	1,2,35,58,0
 _57:
 	.db	7,5
-	.dl	1288
+	.dl	1293
 	.db	8
 	.db	'TorqueEncoder_new',0,7,38,16,6
-	.dl	1721
+	.dl	1726
 	.db	1,1,1,1,9
 	.db	'benchMode',0,7,38,39,2
-	.dl	178
+	.dl	183
 	.db	0,10
 	.db	'TorqueEncoder_update',0,7,39,6,6,1,1,1,1,9
 	.db	'me',0,7,39,42,2
-	.dl	1721
+	.dl	1726
 	.db	0,10
 	.db	'TorqueEncoder_startCalibration',0,7,44,6,6,1,1,1,1,9
 	.db	'me',0,7,44,52,2
-	.dl	1721
+	.dl	1726
 	.db	9
 	.db	'secondsToRun',0,7,44,63,2
-	.dl	178
+	.dl	183
 	.db	0,7,5
-	.dl	178
+	.dl	183
 	.db	10
 	.db	'TorqueEncoder_calibrationCycle',0,7,45,6,6,1,1,1,1,9
 	.db	'me',0,7,45,52,2
-	.dl	1721
+	.dl	1726
 	.db	9
 	.db	'errorCount',0,7,45,64,2
-	.dl	1896
+	.dl	1901
 	.db	0,4
 	.db	'_BrakePressureSensor',0,8,10,16,32,5
 	.db	'bench',0
-	.dl	178
+	.dl	183
 	.db	1,2,35,0,5
 	.db	'bps0',0
-	.dl	1282
+	.dl	1287
 	.db	4,2,35,2,5
 	.db	'bps0_calibMin',0
-	.dl	135
+	.dl	140
 	.db	2,2,35,6,5
 	.db	'bps0_calibMax',0
-	.dl	135
+	.dl	140
 	.db	2,2,35,8,5
 	.db	'bps0_reverse',0
-	.dl	178
+	.dl	183
 	.db	1,2,35,10,5
 	.db	'bps0_value',0
-	.dl	135
+	.dl	140
 	.db	2,2,35,12,5
 	.db	'bps0_percent',0
-	.dl	1034
+	.dl	1039
 	.db	4,2,35,14,5
 	.db	'runCalibration',0
-	.dl	178
+	.dl	183
 	.db	1,2,35,18,5
 	.db	'timestamp_calibrationStart',0
-	.dl	647
+	.dl	652
 	.db	4,2,35,20,5
 	.db	'calibrationRunTime',0
-	.dl	178
+	.dl	183
 	.db	1,2,35,24,5
 	.db	'calibrated',0
-	.dl	178
+	.dl	183
 	.db	1,2,35,25,5
 	.db	'percent',0
-	.dl	1034
+	.dl	1039
 	.db	4,2,35,26,5
 	.db	'implausibility',0
-	.dl	178
+	.dl	183
 	.db	1,2,35,30,0
 _59:
 	.db	7,5
-	.dl	1975
+	.dl	1980
 	.db	3
 	.db	'BrakePressureSensor_new',0,8,39,22,6
-	.dl	2290
+	.dl	2295
 	.db	1,1,1,1,10
 	.db	'BrakePressureSensor_update',0,8,40,6,6,1,1,1,1,9
 	.db	'me',0,8,40,54,2
-	.dl	2290
+	.dl	2295
 	.db	9
 	.db	'bench',0,8,40,63,2
-	.dl	178
+	.dl	183
 	.db	0,10
 	.db	'BrakePressureSensor_startCalibration',0,8,45,6,6,1,1,1,1,9
 	.db	'me',0,8,45,64,2
-	.dl	2290
+	.dl	2295
 	.db	9
 	.db	'secondsToRun',0,8,45,75,2
-	.dl	178
+	.dl	183
 	.db	0,10
 	.db	'BrakePressureSensor_calibrationCycle',0,8,46,6,6,1,1,1,1,9
 	.db	'me',0,8,46,64,2
-	.dl	2290
+	.dl	2295
 	.db	9
 	.db	'errorCount',0,8,46,76,2
-	.dl	1896
+	.dl	1901
 	.db	0,14
 	.db	'_ReadyToDriveSound',0,9,7,16,1
 _53:
 	.db	7,5
-	.dl	2557
+	.dl	2562
 	.db	3
 	.db	'RTDS_new',0,9,9,20,6
-	.dl	2581
+	.dl	2586
 	.db	1,1,1,1,10
 	.db	'RTDS_shutdownHelper',0,9,15,6,6,1,1,1,1,9
 	.db	'rtds',0,9,15,45,2
-	.dl	2581
+	.dl	2586
 	.db	0,14
 	.db	'_SerialManager',0,10,7,16,1
 _46:
 	.db	7,5
-	.dl	2653
+	.dl	2658
 	.db	3
 	.db	'SerialManager_new',0,10,13,16,6
-	.dl	2673
+	.dl	2678
 	.db	1,1,1,1,6
-	.dl	178
+	.dl	183
 	.db	7,5
-	.dl	2710
+	.dl	2715
 	.db	8
 	.db	'SerialManager_send',0,10,18,14,6
-	.dl	135
+	.dl	140
 	.db	1,1,1,1,9
 	.db	'me',0,10,18,48,2
-	.dl	2673
+	.dl	2678
 	.db	9
 	.db	'data',0,10,18,66,2
-	.dl	2715
+	.dl	2720
 	.db	0,14
 	.db	'_MotorController',0,11,21,16,1
 _55:
 	.db	7,5
-	.dl	2780
+	.dl	2785
 	.db	12,11,19,9,1,13
 	.db	'CLOCKWISE',0,0,13
 	.db	'COUNTERCLOCKWISE',0,1,13
@@ -1852,521 +1852,521 @@ _55:
 	.db	'int',0,2,5,2
 	.db	'char',0,1,6,8
 	.db	'MotorController_new',0,11,23,18,6
-	.dl	2802
+	.dl	2807
 	.db	1,1,1,1,9
 	.db	'sm',0,11,23,53,2
-	.dl	2673
+	.dl	2678
 	.db	9
 	.db	'canMessageBaseID',0,11,23,64,2
-	.dl	135
+	.dl	140
 	.db	9
 	.db	'initialDirection',0,11,23,92,2
-	.dl	2808
+	.dl	2813
 	.db	9
 	.db	'torqueMaxInDNm',0,11,23,117,2
-	.dl	2875
+	.dl	2880
 	.db	9
 	.db	'minRegenSpeedKPH',0,11,23,140,1,2
-	.dl	2882
+	.dl	2887
 	.db	9
 	.db	'regenRampdownStartSpeed',0,11,23,165,1,2
-	.dl	2882
+	.dl	2887
 	.db	0,8
 	.db	'MCM_getTemp',0,11,74,8,6
-	.dl	2875
+	.dl	2880
 	.db	1,1,1,1,9
 	.db	'me',0,11,74,37,2
-	.dl	2802
+	.dl	2807
 	.db	0,8
 	.db	'MCM_getMotorTemp',0,11,75,8,6
-	.dl	2875
+	.dl	2880
 	.db	1,1,1,1,9
 	.db	'me',0,11,75,42,2
-	.dl	2802
+	.dl	2807
 	.db	0,10
 	.db	'MCM_readTCSSettings',0,11,90,6,6,1,1,1,1,9
 	.db	'me',0,11,90,43,2
-	.dl	2802
+	.dl	2807
 	.db	9
 	.db	'TCSSwitchUp',0,11,90,55,2
-	.dl	1282
+	.dl	1287
 	.db	9
 	.db	'TCSSwitchDown',0,11,90,76,2
-	.dl	1282
+	.dl	1287
 	.db	9
 	.db	'TCSPot',0,11,90,99,2
-	.dl	1282
+	.dl	1287
 	.db	0,10
 	.db	'MCM_calculateCommands',0,11,91,6,6,1,1,1,1,9
 	.db	'mcm',0,11,91,45,2
-	.dl	2802
+	.dl	2807
 	.db	9
 	.db	'tps',0,11,91,65,2
-	.dl	1721
+	.dl	1726
 	.db	9
 	.db	'bps',0,11,91,91,2
-	.dl	2290
+	.dl	2295
 	.db	0,10
 	.db	'MCM_relayControl',0,11,93,6,6,1,1,1,1,9
 	.db	'mcm',0,11,93,40,2
-	.dl	2802
+	.dl	2807
 	.db	9
 	.db	'HVILTermSense',0,11,93,53,2
-	.dl	1282
+	.dl	1287
 	.db	0,10
 	.db	'MCM_inverterControl',0,11,94,6,6,1,1,1,1,9
 	.db	'mcm',0,11,94,43,2
-	.dl	2802
+	.dl	2807
 	.db	9
 	.db	'tps',0,11,94,63,2
-	.dl	1721
+	.dl	1726
 	.db	9
 	.db	'bps',0,11,94,89,2
-	.dl	2290
+	.dl	2295
 	.db	9
 	.db	'rtds',0,11,94,113,2
-	.dl	2581
+	.dl	2586
 	.db	0,14
 	.db	'_BatteryManagementSystem',0,12,29,16,1
 _65:
 	.db	7,5
-	.dl	3473
+	.dl	3478
 	.db	8
 	.db	'BMS_new',0,12,31,26,6
-	.dl	3503
+	.dl	3508
 	.db	1,1,1,1,9
 	.db	'serialMan',0,12,31,49,2
-	.dl	2673
+	.dl	2678
 	.db	9
 	.db	'canMessageBaseID',0,12,31,67,2
-	.dl	135
+	.dl	140
 	.db	0,8
 	.db	'BMS_getMaxTemp',0,12,40,8,6
-	.dl	2882
+	.dl	2887
 	.db	1,1,1,1,9
 	.db	'me',0,12,40,48,2
-	.dl	3503
+	.dl	3508
 	.db	0,14
 	.db	'_WheelSpeeds',0,13,12,16,1
 _61:
 	.db	7,5
-	.dl	3617
+	.dl	3622
 	.db	8
 	.db	'WheelSpeeds_new',0,13,14,14,6
-	.dl	3635
+	.dl	3640
 	.db	1,1,1,1,9
 	.db	'tireDiameterInches_F',0,13,14,37,2
-	.dl	1034
+	.dl	1039
 	.db	9
 	.db	'tireDiameterInches_R',0,13,14,66,2
-	.dl	1034
+	.dl	1039
 	.db	9
 	.db	'pulsesPerRotation_F',0,13,14,95,2
-	.dl	178
+	.dl	183
 	.db	9
 	.db	'pulsesPerRotation_R',0,13,14,123,2
-	.dl	178
+	.dl	183
 	.db	0,10
 	.db	'WheelSpeeds_update',0,13,15,6,6,1,1,1,1,9
 	.db	'me',0,13,15,38,2
-	.dl	3635
+	.dl	3640
 	.db	0,14
 	.db	'_SafetyChecker',0,14,21,16,1
 _63:
 	.db	7,5
-	.dl	3830
+	.dl	3835
 	.db	8
 	.db	'SafetyChecker_new',0,14,23,16,6
-	.dl	3850
+	.dl	3855
 	.db	1,1,1,1,9
 	.db	'sm',0,14,23,49,2
-	.dl	2673
+	.dl	2678
 	.db	9
 	.db	'maxChargeAmps',0,14,23,60,2
-	.dl	135
+	.dl	140
 	.db	9
 	.db	'maxDischargeAmps',0,14,23,82,2
-	.dl	135
+	.dl	140
 	.db	0,10
 	.db	'SafetyChecker_update',0,14,24,6,6,1,1,1,1,9
 	.db	'me',0,14,24,42,2
-	.dl	3850
+	.dl	3855
 	.db	9
 	.db	'mcm',0,14,24,63,2
-	.dl	2802
+	.dl	2807
 	.db	9
 	.db	'bms',0,14,24,93,2
-	.dl	3503
+	.dl	3508
 	.db	9
 	.db	'tps',0,14,24,113,2
-	.dl	1721
+	.dl	1726
 	.db	9
 	.db	'bps',0,14,24,139,1,2
-	.dl	2290
+	.dl	2295
 	.db	9
 	.db	'HVILTermSense',0,14,24,152,1,2
-	.dl	1282
+	.dl	1287
 	.db	9
 	.db	'LVBattery',0,14,24,175,1,2
-	.dl	1282
+	.dl	1287
 	.db	0,8
 	.db	'SafetyChecker_getFaults',0,14,27,8,6
-	.dl	647
+	.dl	652
 	.db	1,1,1,1,9
 	.db	'me',0,14,27,47,2
-	.dl	3850
+	.dl	3855
 	.db	0,10
 	.db	'SafetyChecker_reduceTorque',0,14,30,6,6,1,1,1,1,9
 	.db	'me',0,14,30,48,2
-	.dl	3850
+	.dl	3855
 	.db	9
 	.db	'mcm',0,14,30,69,2
-	.dl	2802
+	.dl	2807
 	.db	9
 	.db	'bms',0,14,30,99,2
-	.dl	3503
+	.dl	3508
 	.db	0,14
 	.db	'_CanManager',0,15,17,16,1
 _51:
 	.db	7,5
-	.dl	4214
+	.dl	4219
 	.db	8
 	.db	'CanManager_new',0,15,22,13,6
-	.dl	4231
+	.dl	4236
 	.db	1,1,1,1,9
 	.db	'can0_busSpeed',0,15,22,35,2
-	.dl	135
+	.dl	140
 	.db	9
 	.db	'can0_read_messageLimit',0,15,22,57,2
-	.dl	178
+	.dl	183
 	.db	9
 	.db	'can0_write_messageLimit',0,15,22,88,2
-	.dl	178
+	.dl	183
 	.db	9
 	.db	'can1_busSpeed',0,15,23,35,2
-	.dl	135
+	.dl	140
 	.db	9
 	.db	'can1_read_messageLimit',0,15,23,57,2
-	.dl	178
+	.dl	183
 	.db	9
 	.db	'can1_write_messageLimit',0,15,23,88,2
-	.dl	178
+	.dl	183
 	.db	9
 	.db	'defaultSendDelayus',0,15,24,35,2
-	.dl	647
+	.dl	652
 	.db	9
 	.db	'sm',0,15,24,70,2
-	.dl	2673
+	.dl	2678
 	.db	0,12,15,13,9,1,13
 	.db	'CAN0_HIPRI',0,0,13
 	.db	'CAN1_LOPRI',0,1,0,10
 	.db	'CanManager_read',0,15,28,6,6,1,1,1,1,9
 	.db	'me',0,15,28,34,2
-	.dl	4231
+	.dl	4236
 	.db	9
 	.db	'channel',0,15,28,49,2
-	.dl	4482
+	.dl	4487
 	.db	9
 	.db	'mcm',0,15,28,75,2
-	.dl	2802
+	.dl	2807
 	.db	9
 	.db	'bms',0,15,28,105,2
-	.dl	3503
+	.dl	3508
 	.db	9
 	.db	'sc',0,15,28,125,2
-	.dl	3850
+	.dl	3855
 	.db	0,10
 	.db	'canOutput_sendDebugMessage',0,15,32,6,6,1,1,1,1,9
 	.db	'me',0,15,32,45,2
-	.dl	4231
+	.dl	4236
 	.db	9
 	.db	'tps',0,15,32,64,2
-	.dl	1721
+	.dl	1726
 	.db	9
 	.db	'bps',0,15,32,90,2
-	.dl	2290
+	.dl	2295
 	.db	9
 	.db	'mcm',0,15,32,112,2
-	.dl	2802
+	.dl	2807
 	.db	9
 	.db	'wss',0,15,32,130,1,2
-	.dl	3635
+	.dl	3640
 	.db	9
 	.db	'sc',0,15,32,150,1,2
-	.dl	3850
+	.dl	3855
 	.db	0,4
 	.db	'_CoolingSystem',0,16,6,16,20,5
 	.db	'sm',0
-	.dl	2673
+	.dl	2678
 	.db	4,2,35,0,5
 	.db	'waterPumpMinPercent',0
-	.dl	1034
+	.dl	1039
 	.db	4,2,35,4,5
 	.db	'waterPumpLow',0
-	.dl	2882
+	.dl	2887
 	.db	1,2,35,8,5
 	.db	'waterPumpHigh',0
-	.dl	2882
+	.dl	2887
 	.db	1,2,35,9,5
 	.db	'waterPumpPercent',0
-	.dl	1034
+	.dl	1039
 	.db	4,2,35,10,5
 	.db	'motorFanLow',0
-	.dl	2882
+	.dl	2887
 	.db	1,2,35,14,5
 	.db	'motorFanHigh',0
-	.dl	2882
+	.dl	2887
 	.db	1,2,35,15,5
 	.db	'motorFanState',0
-	.dl	178
+	.dl	183
 	.db	1,2,35,16,5
 	.db	'batteryFanLow',0
-	.dl	2882
+	.dl	2887
 	.db	1,2,35,17,5
 	.db	'batteryFanHigh',0
-	.dl	2882
+	.dl	2887
 	.db	1,2,35,18,5
 	.db	'batteryFanState',0
-	.dl	178
+	.dl	183
 	.db	1,2,35,19,0
 _67:
 	.db	7,5
-	.dl	4722
+	.dl	4727
 	.db	8
 	.db	'CoolingSystem_new',0,16,32,16,6
-	.dl	4993
+	.dl	4998
 	.db	1,1,1,1,9
 	.db	'sm',0,16,32,49,2
-	.dl	2673
+	.dl	2678
 	.db	0,10
 	.db	'CoolingSystem_calculations',0,16,33,6,6,1,1,1,1,9
 	.db	'me',0,16,33,48,2
-	.dl	4993
+	.dl	4998
 	.db	9
 	.db	'motorControllerTemp',0,16,33,59,2
-	.dl	2875
+	.dl	2880
 	.db	9
 	.db	'motorTemp',0,16,33,87,2
-	.dl	2875
+	.dl	2880
 	.db	9
 	.db	'batteryTemp',0,16,33,105,2
-	.dl	2882
+	.dl	2887
 	.db	0,10
 	.db	'CoolingSystem_enactCooling',0,16,34,6,6,1,1,1,1,9
 	.db	'me',0,16,34,48,2
-	.dl	4993
+	.dl	4998
 	.db	0,15
 	.db	'_INDIRECT__',0,17,1,1,6,1,1,1,16
 	.db	'__size_t',0,17,1,1
-	.dl	135
+	.dl	140
 	.db	17
 	.db	'void',0,7,5
-	.dl	5247
+	.dl	5252
 	.db	16
 	.db	'__prof_adm',0,17,1,1
-	.dl	5253
+	.dl	5258
 	.db	16
 	.db	'__codeptr',0,17,1,1
-	.dl	647
+	.dl	652
 	.db	2
 	.db	'unsigned short int',0,2,7,16
 	.db	'_iob_flag_t',0,18,82,25
-	.dl	5296
+	.dl	5301
 	.db	16
 	.db	'ubyte1',0,19,21,29
-	.dl	178
+	.dl	183
 	.db	16
 	.db	'ubyte2',0,19,22,29
-	.dl	135
+	.dl	140
 	.db	16
 	.db	'ubyte4',0,19,23,29
-	.dl	647
+	.dl	652
 	.db	16
 	.db	'sbyte1',0,19,25,29
-	.dl	2882
+	.dl	2887
 	.db	16
 	.db	'sbyte2',0,19,26,29
-	.dl	2875
+	.dl	2880
 	.db	16
 	.db	'float4',0,19,29,29
-	.dl	1034
+	.dl	1039
 	.db	16
 	.db	'bool',0,19,31,29
-	.dl	178
+	.dl	183
 	.db	16
 	.db	'IO_ErrorType',0,20,150,1,17
-	.dl	135
+	.dl	140
 	.db	16
 	.db	'IO_DRIVER_SAFETY_CONF',0,2,252,2,4
-	.dl	195
+	.dl	200
 	.db	4
 	.db	'_bl_t_date',0,21,90,16,4,5
 	.db	'date',0
-	.dl	647
+	.dl	652
 	.db	4,2,35,0,0,16
 	.db	'BL_T_DATE',0,21,93,2
-	.dl	5494
+	.dl	5499
 	.db	4
 	.db	'_bl_t_can_id',0,21,102,16,8,5
 	.db	'extended',0
-	.dl	647
+	.dl	652
 	.db	4,2,35,0,5
 	.db	'ID',0
-	.dl	647
+	.dl	652
 	.db	4,2,35,4,0,16
 	.db	'BL_T_CAN_ID',0,21,106,2
-	.dl	5543
+	.dl	5548
 	.db	18,24
-	.dl	178
+	.dl	183
 	.db	19,23,0,4
 	.db	'_bl_apdb',0,21,116,16,128,1,5
 	.db	'versionAPDB',0
-	.dl	647
+	.dl	652
 	.db	4,2,35,0,5
 	.db	'flashDate',0
-	.dl	5494
+	.dl	5499
 	.db	4,2,35,4,5
 	.db	'buildDate',0
-	.dl	5494
+	.dl	5499
 	.db	4,2,35,8,5
 	.db	'nodeType',0
-	.dl	647
+	.dl	652
 	.db	4,2,35,12,5
 	.db	'startAddress',0
-	.dl	647
+	.dl	652
 	.db	4,2,35,16,5
 	.db	'codeSize',0
-	.dl	647
+	.dl	652
 	.db	4,2,35,20,5
 	.db	'legacyAppCRC',0
-	.dl	647
+	.dl	652
 	.db	4,2,35,24,5
 	.db	'appCRC',0
-	.dl	647
+	.dl	652
 	.db	4,2,35,28,5
 	.db	'nodeNr',0
-	.dl	647
+	.dl	652
 	.db	4,2,35,32,5
 	.db	'CRCInit',0
-	.dl	647
+	.dl	652
 	.db	4,2,35,36,5
 	.db	'flags',0
-	.dl	647
+	.dl	652
 	.db	4,2,35,40,5
 	.db	'hook1',0
-	.dl	647
+	.dl	652
 	.db	4,2,35,44,5
 	.db	'hook2',0
-	.dl	647
+	.dl	652
 	.db	4,2,35,48,5
 	.db	'hook3',0
-	.dl	647
+	.dl	652
 	.db	4,2,35,52,5
 	.db	'mainAddress',0
-	.dl	647
+	.dl	652
 	.db	4,2,35,56,5
 	.db	'canDownloadID',0
-	.dl	5543
+	.dl	5548
 	.db	8,2,35,60,5
 	.db	'canUploadID',0
-	.dl	5543
+	.dl	5548
 	.db	8,2,35,68,5
 	.db	'legacyHeaderCRC',0
-	.dl	647
+	.dl	652
 	.db	4,2,35,76,5
 	.db	'version',0
-	.dl	647
+	.dl	652
 	.db	4,2,35,80,5
 	.db	'canBaudrate',0
-	.dl	647
+	.dl	652
 	.db	4,2,35,84,5
 	.db	'canChannel',0
-	.dl	647
+	.dl	652
 	.db	4,2,35,88,5
 	.db	'password',0
-	.dl	647
+	.dl	652
 	.db	4,2,35,92,5
 	.db	'magicSeed',0
-	.dl	647
+	.dl	652
 	.db	4,2,35,96,5
 	.db	'reserved',0
-	.dl	5612
+	.dl	5617
 	.db	24,2,35,100,5
 	.db	'headerCRC',0
-	.dl	647
+	.dl	652
 	.db	4,2,35,124,0,16
 	.db	'BL_APDB',0,21,150,1,2
-	.dl	5621
+	.dl	5626
 	.db	16
 	.db	'Light',0,6,113,3
-	.dl	886
+	.dl	891
 	.db	16
 	.db	'Sensor',0,6,143,1,3
-	.dl	1098
+	.dl	1103
 	.db	20
 	.db	'Sensor_EcoButton',0,6,177,1,15,5
-	.dl	1098
+	.dl	1103
 	.db	1,1,20
 	.db	'Sensor_TCSSwitchUp',0,6,178,1,15,5
-	.dl	1098
+	.dl	1103
 	.db	1,1,20
 	.db	'Sensor_TCSSwitchDown',0,6,179,1,15,5
-	.dl	1098
+	.dl	1103
 	.db	1,1,20
 	.db	'Sensor_TCSKnob',0,6,180,1,15,5
-	.dl	1098
+	.dl	1103
 	.db	1,1,20
 	.db	'Sensor_HVILTerminationSense',0,6,184,1,15,5
-	.dl	1098
+	.dl	1103
 	.db	1,1,20
 	.db	'Sensor_LVBattery',0,6,188,1,15,5
-	.dl	1098
+	.dl	1103
 	.db	1,1,16
 	.db	'TorqueEncoder',0,7,36,3
-	.dl	1288
+	.dl	1293
 	.db	16
 	.db	'BrakePressureSensor',0,8,37,3
-	.dl	1975
+	.dl	1980
 	.db	16
 	.db	'ReadyToDriveSound',0,9,7,35
-	.dl	2557
+	.dl	2562
 	.db	16
 	.db	'SerialManager',0,10,7,31
-	.dl	2653
+	.dl	2658
 	.db	16
 	.db	'Direction',0,11,19,72
-	.dl	2808
+	.dl	2813
 	.db	16
 	.db	'MotorController',0,11,21,33
-	.dl	2780
+	.dl	2785
 	.db	16
 	.db	'BatteryManagementSystem',0,12,29,41
-	.dl	3473
+	.dl	3478
 	.db	16
 	.db	'WheelSpeeds',0,13,12,29
-	.dl	3617
+	.dl	3622
 	.db	16
 	.db	'SafetyChecker',0,14,21,31
-	.dl	3830
+	.dl	3835
 	.db	16
 	.db	'CanChannel',0,15,13,41
-	.dl	4482
+	.dl	4487
 	.db	16
 	.db	'CanManager',0,15,17,28
-	.dl	4214
+	.dl	4219
 	.db	16
 	.db	'CoolingSystem',0,16,30,1
-	.dl	4722
+	.dl	4727
 	.db	21
-	.dl	5621
+	.dl	5626
 _70:
 	.db	6
-	.dl	6617
+	.dl	6622
 	.db	22
-	.dl	178
+	.dl	183
 	.db	23,0,20
 	.db	'_lc_ub_user_stack',0,17,1,1,2
-	.dl	6627
+	.dl	6632
 	.db	1,1,0
 	; End of section
 
@@ -2421,112 +2421,112 @@ _567:
 	.debug		.debug_pubnames
 	.dl	1113
 	.dw	2
-	.dl	_30,6664,151
+	.dl	_30,6669,156
 	.db	'IO_UART_Task',0
-	.dl	345
+	.dl	350
 	.db	'IO_Driver_Init',0
-	.dl	397
+	.dl	402
 	.db	'IO_Driver_TaskBegin',0
-	.dl	431
+	.dl	436
 	.db	'IO_Driver_TaskEnd',0
-	.dl	463
+	.dl	468
 	.db	'IO_DI_Init',0
-	.dl	522
+	.dl	527
 	.db	'IO_DI_DeInit',0
-	.dl	582
+	.dl	587
 	.db	'IO_DI_Get',0
-	.dl	679
+	.dl	684
 	.db	'IO_RTC_StartTime',0
-	.dl	729
+	.dl	734
 	.db	'IO_RTC_GetTimeUS',0
-	.dl	781
+	.dl	786
 	.db	'vcu_initializeADC',0
-	.dl	828
+	.dl	833
 	.db	'vcu_ADCWasteLoop',0
-	.dl	854
+	.dl	859
 	.db	'sensors_updateSensors',0
-	.dl	1043
+	.dl	1048
 	.db	'Light_set',0
-	.dl	1727
+	.dl	1732
 	.db	'TorqueEncoder_new',0
-	.dl	1778
+	.dl	1783
 	.db	'TorqueEncoder_update',0
-	.dl	1821
+	.dl	1826
 	.db	'TorqueEncoder_startCalibration',0
-	.dl	1902
+	.dl	1907
 	.db	'TorqueEncoder_calibrationCycle',0
-	.dl	2296
+	.dl	2301
 	.db	'BrakePressureSensor_new',0
-	.dl	2333
+	.dl	2338
 	.db	'BrakePressureSensor_update',0
-	.dl	2397
+	.dl	2402
 	.db	'BrakePressureSensor_startCalibration',0
-	.dl	2478
+	.dl	2483
 	.db	'BrakePressureSensor_calibrationCycle',0
-	.dl	2587
+	.dl	2592
 	.db	'RTDS_new',0
-	.dl	2609
+	.dl	2614
 	.db	'RTDS_shutdownHelper',0
-	.dl	2679
+	.dl	2684
 	.db	'SerialManager_new',0
-	.dl	2721
+	.dl	2726
 	.db	'SerialManager_send',0
-	.dl	2890
+	.dl	2895
 	.db	'MotorController_new',0
-	.dl	3073
+	.dl	3078
 	.db	'MCM_getTemp',0
-	.dl	3111
+	.dl	3116
 	.db	'MCM_getMotorTemp',0
-	.dl	3154
+	.dl	3159
 	.db	'MCM_readTCSSettings',0
-	.dl	3256
+	.dl	3261
 	.db	'MCM_calculateCommands',0
-	.dl	3327
+	.dl	3332
 	.db	'MCM_relayControl',0
-	.dl	3390
+	.dl	3395
 	.db	'MCM_inverterControl',0
-	.dl	3509
+	.dl	3514
 	.db	'BMS_new',0
-	.dl	3576
+	.dl	3581
 	.db	'BMS_getMaxTemp',0
-	.dl	3641
+	.dl	3646
 	.db	'WheelSpeeds_new',0
-	.dl	3789
+	.dl	3794
 	.db	'WheelSpeeds_update',0
-	.dl	3856
+	.dl	3861
 	.db	'SafetyChecker_new',0
-	.dl	3949
+	.dl	3954
 	.db	'SafetyChecker_update',0
-	.dl	4089
+	.dl	4094
 	.db	'SafetyChecker_getFaults',0
-	.dl	4139
+	.dl	4144
 	.db	'SafetyChecker_reduceTorque',0
-	.dl	4237
+	.dl	4242
 	.db	'CanManager_new',0
-	.dl	4514
+	.dl	4519
 	.db	'CanManager_read',0
-	.dl	4607
+	.dl	4612
 	.db	'canOutput_sendDebugMessage',0
-	.dl	4999
+	.dl	5004
 	.db	'CoolingSystem_new',0
-	.dl	5043
+	.dl	5048
 	.db	'CoolingSystem_calculations',0
-	.dl	5161
+	.dl	5166
 	.db	'CoolingSystem_enactCooling',0
-	.dl	5210
+	.dl	5215
 	.db	'_INDIRECT__',0
 	.dl	0
 	; End of section
 
 	.debug		.debug_info, cluster 'main'
 _33:
-	.dl	563
+	.dl	568
 	.dw	3
 	.dl	_34
 	.db	4,1
 	.db	'main.c',0
 	.db	'TASKING VX-toolset for C166: C compiler',0
-	.db	'C:\\Users\\helix\\Desktop\\SRE\\SRE SDK 2017-18\\VCU\\Environment\\dev\\SRE-3\\',0,12,1
+	.db	'C:\\Users\\Timothy_Le\\Documents\\SRE\\SRE_SDK_2018\\VCU\\Environment\\dev\\sre-3b\\',0,12,1
 	.dl	_36,_35
 	.db	2
 	.dl	_29
@@ -2884,20 +2884,20 @@ _36:
 	.debug		.debug_pubnames
 	.dl	23
 	.dw	2
-	.dl	_33,567,144
+	.dl	_33,572,149
 	.db	'main',0
 	.dl	0
 	; End of section
 
 	.debug		.debug_info, cluster 'appl_db'
 _38:
-	.dl	157
+	.dl	162
 	.dw	3
 	.dl	_39
 	.db	4,1
 	.db	'main.c',0
 	.db	'TASKING VX-toolset for C166: C compiler',0
-	.db	'C:\\Users\\helix\\Desktop\\SRE\\SRE SDK 2017-18\\VCU\\Environment\\dev\\SRE-3\\',0,12,1,2
+	.db	'C:\\Users\\Timothy_Le\\Documents\\SRE\\SRE_SDK_2018\\VCU\\Environment\\dev\\sre-3b\\',0,12,1,2
 	.dl	_29
 	.db	3
 	.db	'appl_db',0,17,51,6,5

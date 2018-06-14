@@ -1,5 +1,5 @@
 	; TASKING VX-toolset for C166: C compiler v4.0r1 Build 741 SN 07744515
-	; Options: -f cc12020a -c99 -Mh --fp-model=FT -Cxc2287 --core=xc16x -DTASKING_VIPER -D__USIC_MEM_TYPE=__PAGE_080_MEM_TYPE -D__MULTICAN_MEM_TYPE=__PAGE_080_MEM_TYPE -DTTC50 -DRTS_TTC_FLASH_DATE_YEAR=2018 -DRTS_TTC_FLASH_DATE_MONTH=4 -DRTS_TTC_FLASH_DATE_DAY=5 -DRTS_TTC_FLASH_DATE_HOUR=18 -DRTS_TTC_FLASH_DATE_MINUTE=55 -I..\..\..\Environment\inc -I..\..\..\Environment\inc_int -I..\..\..\Environment\bsp -I. --tradeoff=0 --no-tasking-sfr -ga --language=+cmp14,+div32,-gcc,-strings -O3 --source --mac -o build\serial.src
+	; Options: -f cc9540a -c99 -Mh --fp-model=FT -Cxc2287 --core=xc16x -DTASKING_VIPER -D__USIC_MEM_TYPE=__PAGE_080_MEM_TYPE -D__MULTICAN_MEM_TYPE=__PAGE_080_MEM_TYPE -DTTC50 -DRTS_TTC_FLASH_DATE_YEAR=2018 -DRTS_TTC_FLASH_DATE_MONTH=5 -DRTS_TTC_FLASH_DATE_DAY=19 -DRTS_TTC_FLASH_DATE_HOUR=3 -DRTS_TTC_FLASH_DATE_MINUTE=27 -I..\..\..\Environment\inc -I..\..\..\Environment\inc_int -I..\..\..\Environment\bsp -I. --tradeoff=0 --no-tasking-sfr -ga --language=+cmp14,+div32,-gcc,-strings -O3 --source --mac -o build\serial.src
 	; Module start
 	.source	'serial.c'
 code_SerialManager_new	.section	code, cluster 'SerialManager_new', new
@@ -220,7 +220,7 @@ _59:
 	.extern	__lc_ub_user_stack : nearbyte
 	.debug		.debug_info
 _42:
-	.dl	892
+	.dl	897
 	.dw	3
 	.dl	_43
 	.db	4
@@ -228,142 +228,142 @@ _41:
 	.db	1
 	.db	'serial.c',0
 	.db	'TASKING VX-toolset for C166: C compiler',0
-	.db	'C:\\Users\\helix\\Desktop\\SRE\\SRE SDK 2017-18\\VCU\\Environment\\dev\\SRE-3\\',0,12,1
+	.db	'C:\\Users\\Timothy_Le\\Documents\\SRE\\SRE_SDK_2018\\VCU\\Environment\\dev\\sre-3b\\',0,12,1
 	.dl	_44
 	.db	2
 	.db	'void',0
 _69:
 	.db	3,5
-	.dl	137
+	.dl	142
 _62:
 	.db	4
 	.db	'unsigned int',0,2,7,5
 	.db	'malloc',0,1,78,33,6
-	.dl	143
+	.dl	148
 	.db	1,1,1,1,6,1,78,44,2
-	.dl	149
+	.dl	154
 	.db	0,4
 	.db	'int',0,2,5,4
 	.db	'char',0,1,6,3,5
-	.dl	202
+	.dl	207
 	.db	7
-	.dl	210
+	.dl	215
 	.db	8
-	.dl	202
+	.dl	207
 	.db	3,5
-	.dl	221
-	.db	7
 	.dl	226
+	.db	7
+	.dl	231
 	.db	5
 	.db	'sprintf',0,2,150,1,16,6
-	.dl	195
+	.dl	200
 	.db	1,1,1,1,6,2,150,1,32,2
-	.dl	216
+	.dl	221
 	.db	6,2,150,1,55,2
-	.dl	232
+	.dl	237
 	.db	9,2,150,1,67,0,5
 	.db	'strlen',0,3,52,17,6
-	.dl	149
+	.dl	154
 	.db	1,1,1,1,6,3,52,39,2
-	.dl	226
+	.dl	231
 	.db	0,4
 	.db	'unsigned char',0,1,8,4
 	.db	'unsigned long int',0,4,7,5
 	.db	'IO_UART_Init',0,4,187,1,15,6
-	.dl	149
+	.dl	154
 	.db	1,1,1,1,10
 	.db	'channel',0,4,187,1,36,2
-	.dl	315
+	.dl	320
 	.db	10
 	.db	'baudrate',0,4,188,1,36,2
-	.dl	332
+	.dl	337
 	.db	10
 	.db	'dbits',0,4,189,1,36,2
-	.dl	315
+	.dl	320
 	.db	10
 	.db	'par',0,4,190,1,36,2
-	.dl	315
+	.dl	320
 	.db	10
 	.db	'sbits',0,4,191,1,36,2
-	.dl	315
+	.dl	320
 	.db	0,8
-	.dl	315
+	.dl	320
 _64:
 	.db	3,5
-	.dl	464
-	.db	8
 	.dl	469
-	.db	3,5
-	.dl	315
 	.db	8
-	.dl	480
+	.dl	474
+	.db	3,5
+	.dl	320
+	.db	8
+	.dl	485
 	.db	5
 	.db	'IO_UART_Write',0,4,181,2,15,6
-	.dl	149
+	.dl	154
 	.db	1,1,1,1,10
 	.db	'channel',0,4,181,2,37,2
-	.dl	315
+	.dl	320
 	.db	10
 	.db	'data',0,4,182,2,51,2
-	.dl	475
+	.dl	480
 	.db	10
 	.db	'len',0,4,183,2,37,2
-	.dl	315
+	.dl	320
 	.db	10
 	.db	'tx_len',0,4,184,2,45,2
-	.dl	486
+	.dl	491
 	.db	0,11
 	.db	'_SerialManager',0,5,8,8,2,12
 	.db	'size',0
-	.dl	315
+	.dl	320
 	.db	1,2,35,0,0
 _60:
 	.db	3,5
-	.dl	584
+	.dl	589
 _71:
 	.db	13,128,2
-	.dl	480
+	.dl	485
 	.db	14,63,0,4
 	.db	'unsigned short int',0,2,7,15
 	.db	'__wchar_t',0,5,1,1
-	.dl	635
+	.dl	640
 	.db	15
 	.db	'__size_t',0,5,1,1
-	.dl	149
+	.dl	154
 	.db	3,5
-	.dl	137
+	.dl	142
 	.db	15
 	.db	'__prof_adm',0,5,1,1
-	.dl	692
+	.dl	697
 	.db	15
 	.db	'__codeptr',0,5,1,1
-	.dl	332
+	.dl	337
 	.db	15
 	.db	'size_t',0,1,29,25
-	.dl	149
+	.dl	154
 	.db	15
 	.db	'_iob_flag_t',0,2,82,25
-	.dl	635
+	.dl	640
 	.db	15
 	.db	'ubyte1',0,6,21,29
-	.dl	315
+	.dl	320
 	.db	15
 	.db	'ubyte2',0,6,22,29
-	.dl	149
+	.dl	154
 	.db	15
 	.db	'ubyte4',0,6,23,29
-	.dl	332
+	.dl	337
 	.db	15
 	.db	'IO_ErrorType',0,7,150,1,17
-	.dl	149
+	.dl	154
 	.db	15
 	.db	'SerialManager',0,8,7,31
-	.dl	584
+	.dl	589
 	.db	16
-	.dl	315
+	.dl	320
 	.db	17,0,18
 	.db	'_lc_ub_user_stack',0,5,1,1,2
-	.dl	859
+	.dl	864
 	.db	1,1,0
 	; End of section
 
@@ -402,28 +402,28 @@ _524:
 	.debug		.debug_pubnames
 	.dl	83
 	.dw	2
-	.dl	_42,896,165
+	.dl	_42,901,170
 	.db	'malloc',0
-	.dl	237
+	.dl	242
 	.db	'sprintf',0
-	.dl	285
+	.dl	290
 	.db	'strlen',0
-	.dl	353
+	.dl	358
 	.db	'IO_UART_Init',0
-	.dl	491
+	.dl	496
 	.db	'IO_UART_Write',0
 	.dl	0
 	; End of section
 
 	.debug		.debug_info, cluster 'SerialManager_new'
 _45:
-	.dl	225
+	.dl	230
 	.dw	3
 	.dl	_46
 	.db	4,1
 	.db	'serial.c',0
 	.db	'TASKING VX-toolset for C166: C compiler',0
-	.db	'C:\\Users\\helix\\Desktop\\SRE\\SRE SDK 2017-18\\VCU\\Environment\\dev\\SRE-3\\',0,12,1
+	.db	'C:\\Users\\Timothy_Le\\Documents\\SRE\\SRE_SDK_2018\\VCU\\Environment\\dev\\sre-3b\\',0,12,1
 	.dl	_48,_47
 	.db	2
 	.dl	_41
@@ -487,20 +487,20 @@ _48:
 	.debug		.debug_pubnames
 	.dl	36
 	.dw	2
-	.dl	_45,229,146
+	.dl	_45,234,151
 	.db	'SerialManager_new',0
 	.dl	0
 	; End of section
 
 	.debug		.debug_info, cluster 'SerialManager_send'
 _50:
-	.dl	261
+	.dl	266
 	.dw	3
 	.dl	_51
 	.db	4,1
 	.db	'serial.c',0
 	.db	'TASKING VX-toolset for C166: C compiler',0
-	.db	'C:\\Users\\helix\\Desktop\\SRE\\SRE SDK 2017-18\\VCU\\Environment\\dev\\SRE-3\\',0,12,1
+	.db	'C:\\Users\\Timothy_Le\\Documents\\SRE\\SRE_SDK_2018\\VCU\\Environment\\dev\\sre-3b\\',0,12,1
 	.dl	_53,_52
 	.db	2
 	.dl	_41
@@ -566,20 +566,20 @@ _53:
 	.debug		.debug_pubnames
 	.dl	37
 	.dw	2
-	.dl	_50,265,146
+	.dl	_50,270,151
 	.db	'SerialManager_send',0
 	.dl	0
 	; End of section
 
 	.debug		.debug_info, cluster 'SerialManager_sprintf'
 _55:
-	.dl	318
+	.dl	323
 	.dw	3
 	.dl	_56
 	.db	4,1
 	.db	'serial.c',0
 	.db	'TASKING VX-toolset for C166: C compiler',0
-	.db	'C:\\Users\\helix\\Desktop\\SRE\\SRE SDK 2017-18\\VCU\\Environment\\dev\\SRE-3\\',0,12,1
+	.db	'C:\\Users\\Timothy_Le\\Documents\\SRE\\SRE_SDK_2018\\VCU\\Environment\\dev\\sre-3b\\',0,12,1
 	.dl	_58,_57
 	.db	2
 	.dl	_41
@@ -661,7 +661,7 @@ _58:
 	.debug		.debug_pubnames
 	.dl	40
 	.dw	2
-	.dl	_55,322,146
+	.dl	_55,327,151
 	.db	'SerialManager_sprintf',0
 	.dl	0
 	; End of section

@@ -1,5 +1,5 @@
 	; TASKING VX-toolset for C166: C compiler v4.0r1 Build 741 SN 07744515
-	; Options: -f cc12680a -c99 -Mh --fp-model=FT -Cxc2287 --core=xc16x -DTASKING_VIPER -D__USIC_MEM_TYPE=__PAGE_080_MEM_TYPE -D__MULTICAN_MEM_TYPE=__PAGE_080_MEM_TYPE -DTTC50 -DRTS_TTC_FLASH_DATE_YEAR=2018 -DRTS_TTC_FLASH_DATE_MONTH=2 -DRTS_TTC_FLASH_DATE_DAY=2 -DRTS_TTC_FLASH_DATE_HOUR=16 -DRTS_TTC_FLASH_DATE_MINUTE=21 -I..\..\..\Environment\inc -I..\..\..\Environment\inc_int -I..\..\..\Environment\bsp -I. --tradeoff=0 --no-tasking-sfr -ga --language=+cmp14,+div32,-gcc,-strings -O3 --source --mac -o build\canManager.src
+	; Options: -f cc10776a -c99 -Mh --fp-model=FT -Cxc2287 --core=xc16x -DTASKING_VIPER -D__USIC_MEM_TYPE=__PAGE_080_MEM_TYPE -D__MULTICAN_MEM_TYPE=__PAGE_080_MEM_TYPE -DTTC50 -DRTS_TTC_FLASH_DATE_YEAR=2018 -DRTS_TTC_FLASH_DATE_MONTH=5 -DRTS_TTC_FLASH_DATE_DAY=19 -DRTS_TTC_FLASH_DATE_HOUR=4 -DRTS_TTC_FLASH_DATE_MINUTE=37 -I..\..\..\Environment\inc -I..\..\..\Environment\inc_int -I..\..\..\Environment\bsp -I. --tradeoff=0 --no-tasking-sfr -ga --language=+cmp14,+div32,-gcc,-strings -O3 --source --mac -o build\canManager.src
 	; Module start
 	.source	'canManager.c'
 code_CanManager_new	.section	code, cluster 'CanManager_new', new
@@ -3621,9 +3621,9 @@ _CanManager_getReadStatus	.proc	far
 ; canManager.c	   399      return (channel == CAN0_HIPRI) ? me->ioErr_can0_read : me->ioErr_can1_read;
 	cmpb	rl4,#0x0
 	jmp	cc_ne,_80
-_2972:
+_2998:
 	addw	r2,#0x1c
-_2973:
+_2999:
 	jmp	_81
 _80:
 	addw	r2,#0x20
@@ -3632,7 +3632,7 @@ _81:
 _1429:
 	exts	r3,#0x1
 	movw	r2,[r2]
-_2974:
+_3000:
 
 ; canManager.c	   400  }
 	ret
@@ -5411,15 +5411,100 @@ _2965:
 	movb	[r11+#0x94],rh4
 _2966:
 
-; canManager.c	   634      //----------------------------------------------------------------------------
-; canManager.c	   635      //Additional sensors
-; canManager.c	   636      //----------------------------------------------------------------------------
-; canManager.c	   637  
-; canManager.c	   638      //Place the can messsages into the FIFO queue ---------------------------------------------------
-; canManager.c	   639      //IO_CAN_WriteFIFO(canFifoHandle_HiPri_Write, canMessages, canMessageCount);  //Important: Only transmit one message (the MCU message)
-; canManager.c	   640      CanManager_send(me, CAN0_HIPRI, canMessages, canMessageCount);  //Important: Only transmit one message (the MCU message)
-	movb	rl4,#0x0
+; canManager.c	   634  
+; canManager.c	   635      // 520: Torque Encoder
+; canManager.c	   636      canMessageCount++;
+; canManager.c	   637      byteNum = 0;
+; canManager.c	   638      canMessages[canMessageCount - 1].id = 0x520;
+	movw	r12,#0x520
 _2967:
+	movw	[r11+#0xa4],r12
+_2968:
+	movw	r13,#0x0
+_2969:
+	movw	[r11+#0xa6],r13
+_2970:
+
+; canManager.c	   639      canMessages[canMessageCount - 1].id_format = IO_CAN_STD_FRAME;
+	movb	rl4,#0x0
+_2971:
+	movb	[r11+#0xa3],rl4
+_2972:
+
+; canManager.c	   640      canMessages[canMessageCount - 1].data[byteNum++] = Sensor_TCSKnob.sensorValue;
+	exts	#@seg(_Sensor_TCSKnob+0x8),#0x1
+	movw	r5,@sof(_Sensor_TCSKnob+0x8)
+_2973:
+	movb	[r11+#0x9a],rl5
+_2974:
+
+; canManager.c	   641      canMessages[canMessageCount - 1].data[byteNum++] = Sensor_TCSKnob.sensorValue >> 8;
+	movw	r11,[r8+#0x6]
+_2975:
+	exts	#@seg(_Sensor_TCSKnob+0x8),#0x1
+	movw	r5,@sof(_Sensor_TCSKnob+0x8)
+_2976:
+	movb	rl5,rh5
+_2977:
+	movb	[r11+#0x9b],rl5
+_2978:
+
+; canManager.c	   642      canMessages[canMessageCount - 1].data[byteNum++] = Sensor_EcoButton.sensorValue;
+	exts	#@seg(_Sensor_EcoButton+0x8),#0x1
+	movw	r5,@sof(_Sensor_EcoButton+0x8)
+_2979:
+	movb	[r11+#0x9c],rl5
+_2980:
+
+; canManager.c	   643      canMessages[canMessageCount - 1].data[byteNum++] = Sensor_EcoButton.sensorValue>>8;
+	movw	r11,[r8+#0x6]
+_2981:
+	exts	#@seg(_Sensor_EcoButton+0x8),#0x1
+	movw	r5,@sof(_Sensor_EcoButton+0x8)
+_2982:
+	movb	rl5,rh5
+_2983:
+	movb	[r11+#0x9d],rl5
+_2984:
+
+; canManager.c	   644      canMessages[canMessageCount - 1].data[byteNum++] = Sensor_RTDButton.sensorValue;
+	exts	#@seg(_Sensor_RTDButton+0x8),#0x1
+	movw	r5,@sof(_Sensor_RTDButton+0x8)
+_2985:
+	movb	[r11+#0x9e],rl5
+_2986:
+
+; canManager.c	   645      canMessages[canMessageCount - 1].data[byteNum++] = Sensor_RTDButton.sensorValue>>8;
+	movw	r11,[r8+#0x6]
+_2987:
+	exts	#@seg(_Sensor_RTDButton+0x8),#0x1
+	movw	r5,@sof(_Sensor_RTDButton+0x8)
+_2988:
+	movb	rl5,rh5
+_2989:
+	movb	[r11+#0x9f],rl5
+_2990:
+
+; canManager.c	   646      canMessages[canMessageCount - 1].data[byteNum++] = 0;
+	movb	[r11+#0xa0],rl4
+_2991:
+
+; canManager.c	   647      canMessages[canMessageCount - 1].data[byteNum++] = 0;
+	movb	[r11+#0xa1],rl4
+_2992:
+
+; canManager.c	   648      canMessages[canMessageCount - 1].length = byteNum;
+	movb	[r11+#0xa2],rh4
+_2993:
+
+; canManager.c	   649  
+; canManager.c	   650      //----------------------------------------------------------------------------
+; canManager.c	   651      //Additional sensors
+; canManager.c	   652      //----------------------------------------------------------------------------
+; canManager.c	   653  
+; canManager.c	   654      //Place the can messsages into the FIFO queue ---------------------------------------------------
+; canManager.c	   655      //IO_CAN_WriteFIFO(canFifoHandle_HiPri_Write, canMessages, canMessageCount);  //Important: Only transmit one message (the MCU message)
+; canManager.c	   656      CanManager_send(me, CAN0_HIPRI, canMessages, canMessageCount);  //Important: Only transmit one message (the MCU message)
 	movw	r12,r11
 	jmp	cc_z,_102
 	shr	r12,#0xe
@@ -5433,13 +5518,13 @@ _102:
 	movw	r2,[r8+#0x22]
 	movw	r3,[r8+#0x20]
 _2317:
-	movb	rh4,#0xb
+	movb	rh4,#0xc
 	call	_CanManager_send
 _320:
 
-; canManager.c	   641      //IO_CAN_WriteFIFO(canFifoHandle_LoPri_Write, canMessages, canMessageCount);  
-; canManager.c	   642  
-; canManager.c	   643  }
+; canManager.c	   657      //IO_CAN_WriteFIFO(canFifoHandle_LoPri_Write, canMessages, canMessageCount);  
+; canManager.c	   658  
+; canManager.c	   659  }
 	movw	r11,[r8+#0x6]
 _2318:
 	movw	r15,[r11+#0xfffe]
@@ -5586,6 +5671,9 @@ _$1$str	.label	byte
 	.extern	_Sensor_WSS_FR : word
 	.extern	_Sensor_WSS_RL : word
 	.extern	_Sensor_WSS_RR : word
+	.extern	_Sensor_RTDButton : word
+	.extern	_Sensor_EcoButton : word
+	.extern	_Sensor_TCSKnob : word
 	.extern	_Sensor_HVILTerminationSense : word
 	.extern	_Sensor_LVBattery : word
 	.extern	_TorqueEncoder_getIndividualSensorPercent : far
@@ -5622,7 +5710,7 @@ _$1$str	.label	byte
 	.extern	__spf2c : far
 	.debug		.debug_info
 _176:
-	.dl	5382
+	.dl	5472
 	.dw	3
 	.dl	_177
 	.db	4
@@ -5630,368 +5718,368 @@ _175:
 	.db	1
 	.db	'canManager.c',0
 	.db	'TASKING VX-toolset for C166: C compiler',0
-	.db	'C:\\Users\\helix\\Desktop\\SRE\\SRE SDK 2017-18\\VCU\\Environment\\dev\\SRE-3\\',0,12,1
+	.db	'C:\\Users\\Timothy_Le\\Documents\\SRE\\SRE_SDK_2018\\VCU\\Environment\\dev\\sre-3b\\',0,12,1
 	.dl	_178
 	.db	2
 	.db	'void',0,3
-	.dl	141
+	.dl	146
 	.db	4,2
-	.dl	147
+	.dl	152
 	.db	5
 	.db	'__free',0,6,1,1,1,1,6
 	.db	'buffer',0,2
-	.dl	152
+	.dl	157
 	.db	0,4,2
-	.dl	141
+	.dl	146
 	.db	7
 	.db	'__alloc_t',0,1,1,1
-	.dl	185
+	.dl	190
 	.db	8
-	.dl	191
+	.dl	196
 _210:
 	.db	9
 	.db	'unsigned int',0,2,7,10
 	.db	'__alloc',0,6
-	.dl	209
+	.dl	214
 	.db	1,1,1,1,6
 	.db	'size',0,2
-	.dl	214
+	.dl	219
 	.db	0,4,2
-	.dl	141
+	.dl	146
 	.db	4,5
-	.dl	141
+	.dl	146
 	.db	11
 	.db	'malloc',0,2,78,33,6
-	.dl	266
+	.dl	271
 	.db	1,1,1,1,12,2,78,44,2
-	.dl	214
+	.dl	219
 	.db	0,13
 	.db	'IO_UART_Task',0,3,230,1,15,6
-	.dl	214
+	.dl	219
 	.db	1,1,1,1
 _212:
 	.db	9
 	.db	'unsigned char',0,1,8,11
 	.db	'IO_CAN_Init',0,4,143,3,15,6
-	.dl	214
+	.dl	219
 	.db	1,1,1,1,14
 	.db	'channel',0,4,143,3,35,2
-	.dl	329
+	.dl	334
 	.db	14
 	.db	'baudrate',0,4,144,3,35,2
-	.dl	214
+	.dl	219
 	.db	14
 	.db	'tseg1',0,4,145,3,35,2
-	.dl	329
+	.dl	334
 	.db	14
 	.db	'tseg2',0,4,146,3,35,2
-	.dl	329
+	.dl	334
 	.db	14
 	.db	'sjw',0,4,147,3,35,2
-	.dl	329
+	.dl	334
 	.db	0,4,5
-	.dl	329
+	.dl	334
 	.db	15
-	.dl	456
+	.dl	461
 _218:
 	.db	9
 	.db	'unsigned long int',0,4,7,11
 	.db	'IO_CAN_ConfigFIFO',0,4,225,4,15,6
-	.dl	214
+	.dl	219
 	.db	1,1,1,1,14
 	.db	'handle',0,4,225,4,49,2
-	.dl	462
+	.dl	467
 	.db	14
 	.db	'channel',0,4,226,4,41,2
-	.dl	329
+	.dl	334
 	.db	14
 	.db	'size',0,4,227,4,41,2
-	.dl	329
+	.dl	334
 	.db	14
 	.db	'mode',0,4,228,4,41,2
-	.dl	329
+	.dl	334
 	.db	14
 	.db	'id_format',0,4,229,4,41,2
-	.dl	329
+	.dl	334
 	.db	14
 	.db	'id',0,4,230,4,41,2
-	.dl	467
+	.dl	472
 	.db	14
 	.db	'ac_mask',0,4,231,4,41,2
-	.dl	467
+	.dl	472
 	.db	0,16,8
-	.dl	329
+	.dl	334
 	.db	17,7,0,18
 	.db	'_io_can_data_frame',0,4,209,2,16,14,19
 	.db	'data',0
-	.dl	637
+	.dl	642
 	.db	8,2,35,0,19
 	.db	'length',0
-	.dl	329
+	.dl	334
 	.db	1,2,35,8,19
 	.db	'id_format',0
-	.dl	329
+	.dl	334
 	.db	1,2,35,9,19
 	.db	'id',0
-	.dl	467
+	.dl	472
 	.db	4,2,35,10,0
 _264:
 	.db	4,5
-	.dl	646
+	.dl	651
 	.db	15
-	.dl	733
+	.dl	738
 	.db	15
-	.dl	456
+	.dl	461
 	.db	11
 	.db	'IO_CAN_ReadFIFO',0,4,129,5,15,6
-	.dl	214
+	.dl	219
 	.db	1,1,1,1,14
 	.db	'handle',0,4,129,5,39,2
-	.dl	329
+	.dl	334
 	.db	14
 	.db	'buffer',0,4,130,5,58,2
-	.dl	739
+	.dl	744
 	.db	14
 	.db	'buffer_size',0,4,131,5,39,2
-	.dl	329
+	.dl	334
 	.db	14
 	.db	'rx_frames',0,4,132,5,47,2
-	.dl	744
+	.dl	749
 	.db	0,15
-	.dl	646
+	.dl	651
 	.db	4,5
-	.dl	856
-	.db	15
 	.dl	861
+	.db	15
+	.dl	866
 	.db	11
 	.db	'IO_CAN_WriteFIFO',0,4,156,5,15,6
-	.dl	214
+	.dl	219
 	.db	1,1,1,1,14
 	.db	'handle',0,4,156,5,40,2
-	.dl	329
+	.dl	334
 	.db	14
 	.db	'data',0,4,157,5,65,2
-	.dl	867
+	.dl	872
 	.db	14
 	.db	'tx_length',0,4,158,5,40,2
-	.dl	329
+	.dl	334
 	.db	0,4,5
-	.dl	467
+	.dl	472
 	.db	15
-	.dl	956
+	.dl	961
 	.db	11
 	.db	'IO_RTC_StartTime',0,5,118,15,6
-	.dl	214
+	.dl	219
 	.db	1,1,1,1,14
 	.db	'timestamp',0,5,118,49,2
-	.dl	962
+	.dl	967
 	.db	0,11
 	.db	'IO_RTC_GetTimeUS',0,5,143,1,9,6
-	.dl	467
+	.dl	472
 	.db	1,1,1,1,14
 	.db	'timestamp',0,5,143,1,35,2
-	.dl	467
+	.dl	472
 	.db	0
 _314:
 	.db	9
 	.db	'float',0,4,4,11
 	.db	'getPercent',0,6,15,8,6
-	.dl	1069
+	.dl	1074
 	.db	1,1,1,1,14
 	.db	'value',0,6,15,26,2
-	.dl	1069
+	.dl	1074
 	.db	14
 	.db	'start',0,6,15,40,2
-	.dl	1069
+	.dl	1074
 	.db	14
 	.db	'end',0,6,15,54,2
-	.dl	1069
+	.dl	1074
 	.db	14
 	.db	'zeroToOneOnly',0,6,15,64,2
-	.dl	329
+	.dl	334
 	.db	0,18
 	.db	'_Sensor',0,8,126,16,22,19
 	.db	'specMin',0
-	.dl	467
+	.dl	472
 	.db	4,2,35,0,19
 	.db	'specMax',0
-	.dl	467
+	.dl	472
 	.db	4,2,35,4,19
 	.db	'sensorValue',0
-	.dl	467
+	.dl	472
 	.db	4,2,35,8,19
 	.db	'fresh',0
-	.dl	329
+	.dl	334
 	.db	1,2,35,12,19
 	.db	'ioErr_powerInit',0
-	.dl	214
+	.dl	219
 	.db	2,2,35,14,19
 	.db	'ioErr_powerSet',0
-	.dl	214
+	.dl	219
 	.db	2,2,35,16,19
 	.db	'ioErr_signalInit',0
-	.dl	214
+	.dl	219
 	.db	2,2,35,18,19
 	.db	'ioErr_signalGet',0
-	.dl	214
+	.dl	219
 	.db	2,2,35,20,0,4,5
-	.dl	1169
+	.dl	1174
 	.db	18
 	.db	'_TorqueEncoder',0,7,10,16,60,19
 	.db	'bench',0
-	.dl	329
+	.dl	334
 	.db	1,2,35,0,19
 	.db	'tps0',0
-	.dl	1353
+	.dl	1358
 	.db	4,2,35,2,19
 	.db	'tps1',0
-	.dl	1353
+	.dl	1358
 	.db	4,2,35,6,19
 	.db	'tps0_calibMin',0
-	.dl	467
+	.dl	472
 	.db	4,2,35,10,19
 	.db	'tps0_calibMax',0
-	.dl	467
+	.dl	472
 	.db	4,2,35,14,19
 	.db	'tps0_reverse',0
-	.dl	329
+	.dl	334
 	.db	1,2,35,18,19
 	.db	'tps0_value',0
-	.dl	467
+	.dl	472
 	.db	4,2,35,20,19
 	.db	'tps0_percent',0
-	.dl	1069
+	.dl	1074
 	.db	4,2,35,24,19
 	.db	'tps1_calibMin',0
-	.dl	467
+	.dl	472
 	.db	4,2,35,28,19
 	.db	'tps1_calibMax',0
-	.dl	467
+	.dl	472
 	.db	4,2,35,32,19
 	.db	'tps1_reverse',0
-	.dl	329
+	.dl	334
 	.db	1,2,35,36,19
 	.db	'tps1_value',0
-	.dl	467
+	.dl	472
 	.db	4,2,35,38,19
 	.db	'tps1_percent',0
-	.dl	1069
+	.dl	1074
 	.db	4,2,35,42,19
 	.db	'runCalibration',0
-	.dl	329
+	.dl	334
 	.db	1,2,35,46,19
 	.db	'timestamp_calibrationStart',0
-	.dl	467
+	.dl	472
 	.db	4,2,35,48,19
 	.db	'calibrationRunTime',0
-	.dl	329
+	.dl	334
 	.db	1,2,35,52,19
 	.db	'calibrated',0
-	.dl	329
+	.dl	334
 	.db	1,2,35,53,19
 	.db	'percent',0
-	.dl	1069
+	.dl	1074
 	.db	4,2,35,54,19
 	.db	'implausibility',0
-	.dl	329
+	.dl	334
 	.db	1,2,35,58,0
 _304:
 	.db	4,5
-	.dl	1359
+	.dl	1364
 	.db	4,5
-	.dl	1069
+	.dl	1074
 	.db	20
 	.db	'TorqueEncoder_getIndividualSensorPercent',0,7,40,6,6,1,1,1,1,14
 	.db	'me',0,7,40,62,2
-	.dl	1792
+	.dl	1797
 	.db	14
 	.db	'sensorNumber',0,7,40,73,2
-	.dl	329
+	.dl	334
 	.db	14
 	.db	'percent',0,7,40,95,2
-	.dl	1798
+	.dl	1803
 	.db	0,20
 	.db	'TorqueEncoder_getPedalTravel',0,7,47,6,6,1,1,1,1,14
 	.db	'me',0,7,47,50,2
-	.dl	1792
+	.dl	1797
 	.db	14
 	.db	'errorCount',0,7,47,62,2
-	.dl	456
+	.dl	461
 	.db	14
 	.db	'pedalPercent',0,7,47,82,2
-	.dl	1798
+	.dl	1803
 	.db	0,18
 	.db	'_BrakePressureSensor',0,9,10,16,32,19
 	.db	'bench',0
-	.dl	329
+	.dl	334
 	.db	1,2,35,0,19
 	.db	'bps0',0
-	.dl	1353
+	.dl	1358
 	.db	4,2,35,2,19
 	.db	'bps0_calibMin',0
-	.dl	214
+	.dl	219
 	.db	2,2,35,6,19
 	.db	'bps0_calibMax',0
-	.dl	214
+	.dl	219
 	.db	2,2,35,8,19
 	.db	'bps0_reverse',0
-	.dl	329
+	.dl	334
 	.db	1,2,35,10,19
 	.db	'bps0_value',0
-	.dl	214
+	.dl	219
 	.db	2,2,35,12,19
 	.db	'bps0_percent',0
-	.dl	1069
+	.dl	1074
 	.db	4,2,35,14,19
 	.db	'runCalibration',0
-	.dl	329
+	.dl	334
 	.db	1,2,35,18,19
 	.db	'timestamp_calibrationStart',0
-	.dl	467
+	.dl	472
 	.db	4,2,35,20,19
 	.db	'calibrationRunTime',0
-	.dl	329
+	.dl	334
 	.db	1,2,35,24,19
 	.db	'calibrated',0
-	.dl	329
+	.dl	334
 	.db	1,2,35,25,19
 	.db	'percent',0
-	.dl	1069
+	.dl	1074
 	.db	4,2,35,26,19
 	.db	'implausibility',0
-	.dl	329
+	.dl	334
 	.db	1,2,35,30,0
 _306:
 	.db	4,5
-	.dl	1999
+	.dl	2004
 	.db	20
 	.db	'BrakePressureSensor_getPedalTravel',0,9,47,6,6,1,1,1,1,14
 	.db	'me',0,9,47,62,2
-	.dl	2314
+	.dl	2319
 	.db	14
 	.db	'errorCount',0,9,47,74,2
-	.dl	456
+	.dl	461
 	.db	14
 	.db	'pedalPercent',0,9,47,94,2
-	.dl	1798
+	.dl	1803
 	.db	0,21
 	.db	'_SerialManager',0,10,7,16,1
 _220:
 	.db	4,5
-	.dl	2419
+	.dl	2424
 	.db	15
-	.dl	329
+	.dl	334
 	.db	4,5
-	.dl	2445
+	.dl	2450
 	.db	11
 	.db	'SerialManager_send',0,10,18,14,6
-	.dl	214
+	.dl	219
 	.db	1,1,1,1,14
 	.db	'me',0,10,18,48,2
-	.dl	2439
+	.dl	2444
 	.db	14
 	.db	'data',0,10,18,66,2
-	.dl	2450
+	.dl	2455
 	.db	0
 _300:
 	.db	9
@@ -5999,13 +6087,13 @@ _300:
 	.db	'_MotorController',0,11,21,16,1
 _291:
 	.db	4,5
-	.dl	2522
+	.dl	2527
 	.db	11
 	.db	'MCM_commands_getTorque',0,11,38,8,6
-	.dl	2515
+	.dl	2520
 	.db	1,1,1,1,14
 	.db	'me',0,11,38,48,2
-	.dl	2544
+	.dl	2549
 	.db	0,22,11,19,9,1,23
 	.db	'CLOCKWISE',0,0,23
 	.db	'COUNTERCLOCKWISE',0,1,23
@@ -6014,345 +6102,354 @@ _291:
 	.db	'_0',0,4,23
 	.db	'_1',0,5,0,11
 	.db	'MCM_commands_getDirection',0,11,39,11,6
-	.dl	2599
+	.dl	2604
 	.db	1,1,1,1,14
 	.db	'me',0,11,39,54,2
-	.dl	2544
+	.dl	2549
 	.db	0,22,11,14,9,1,23
 	.db	'ENABLED',0,0,23
 	.db	'DISABLED',0,1,23
 	.db	'UNKNOWN',0,2,0,11
 	.db	'MCM_commands_getInverter',0,11,40,8,6
-	.dl	2718
+	.dl	2723
 	.db	1,1,1,1,14
 	.db	'me',0,11,40,50,2
-	.dl	2544
+	.dl	2549
 	.db	0,11
 	.db	'MCM_commands_getTorqueLimit',0,11,42,8,6
-	.dl	2515
+	.dl	2520
 	.db	1,1,1,1,14
 	.db	'me',0,11,42,53,2
-	.dl	2544
+	.dl	2549
 	.db	0,11
 	.db	'MCM_getHvilOverrideStatus',0,11,64,6,6
-	.dl	329
+	.dl	334
 	.db	1,1,1,1,14
 	.db	'me',0,11,64,49,2
-	.dl	2544
+	.dl	2549
 	.db	0,11
 	.db	'MCM_getRegenMode',0,11,81,8,6
-	.dl	329
+	.dl	334
 	.db	1,1,1,1,14
 	.db	'me',0,11,81,42,2
-	.dl	2544
+	.dl	2549
 	.db	0,11
 	.db	'MCM_getRegenTorqueLimitDNm',0,11,82,8,6
-	.dl	2515
+	.dl	2520
 	.db	1,1,1,1,14
 	.db	'me',0,11,82,52,2
-	.dl	2544
+	.dl	2549
 	.db	0,11
 	.db	'MCM_getRegenTorqueAtZeroPedalDNm',0,11,83,8,6
-	.dl	2515
+	.dl	2520
 	.db	1,1,1,1,14
 	.db	'me',0,11,83,58,2
-	.dl	2544
+	.dl	2549
 	.db	0,11
 	.db	'MCM_getRegenBPSForMaxRegenZeroToFF',0,11,84,8,6
-	.dl	2515
+	.dl	2520
 	.db	1,1,1,1,14
 	.db	'me',0,11,84,60,2
-	.dl	2544
+	.dl	2549
 	.db	0,11
 	.db	'MCM_getRegenAPPSForMaxCoastingZeroToFF',0,11,85,8,6
-	.dl	2515
+	.dl	2520
 	.db	1,1,1,1,14
 	.db	'me',0,11,85,64,2
-	.dl	2544
+	.dl	2549
 	.db	0,20
 	.db	'MCM_parseCanMessage',0,11,96,6,6,1,1,1,1,14
 	.db	'mcm',0,11,96,43,2
-	.dl	2544
+	.dl	2549
 	.db	14
 	.db	'mcmCanMessage',0,11,96,67,2
-	.dl	733
+	.dl	738
 	.db	0,21
 	.db	'_BatteryManagementSystem',0,12,29,16,1
 _293:
 	.db	4,5
-	.dl	3259
+	.dl	3264
 	.db	20
 	.db	'BMS_parseCanMessage',0,12,32,6,6,1,1,1,1,14
 	.db	'bms',0,12,32,51,2
-	.dl	3289
+	.dl	3294
 	.db	14
 	.db	'bmsCanMessage',0,12,32,75,2
-	.dl	733
+	.dl	738
 	.db	0,21
 	.db	'_WheelSpeeds',0,13,12,16,1
 _309:
 	.db	4,5
-	.dl	3361
+	.dl	3366
 	.db	22,13,7,9,1,23
 	.db	'FL',0,0,23
 	.db	'FR',0,1,23
 	.db	'RL',0,2,23
 	.db	'RR',0,3,0,11
 	.db	'WheelSpeeds_getWheelSpeed',0,13,16,8,6
-	.dl	1069
+	.dl	1074
 	.db	1,1,1,1,14
 	.db	'me',0,13,16,47,2
-	.dl	3379
+	.dl	3384
 	.db	14
 	.db	'corner',0,13,16,57,2
-	.dl	3385
+	.dl	3390
 	.db	0,21
 	.db	'_SafetyChecker',0,14,21,16,1
 _295:
 	.db	4,5
-	.dl	3479
+	.dl	3484
 	.db	20
 	.db	'SafetyChecker_parseCanMessage',0,14,25,6,6,1,1,1,1,14
 	.db	'me',0,14,25,51,2
-	.dl	3499
+	.dl	3504
 	.db	14
 	.db	'canMessage',0,14,25,74,2
-	.dl	733
+	.dl	738
 	.db	0,11
 	.db	'SafetyChecker_getFaults',0,14,27,8,6
-	.dl	467
+	.dl	472
 	.db	1,1,1,1,14
 	.db	'me',0,14,27,47,2
-	.dl	3499
+	.dl	3504
 	.db	0,11
 	.db	'SafetyChecker_getWarnings',0,14,28,8,6
-	.dl	467
+	.dl	472
 	.db	1,1,1,1,14
 	.db	'me',0,14,28,49,2
-	.dl	3499
+	.dl	3504
 	.db	0,11
 	.db	'SafetyChecker_getNotices',0,14,29,8,6
-	.dl	467
+	.dl	472
 	.db	1,1,1,1,14
 	.db	'me',0,14,29,48,2
-	.dl	3499
+	.dl	3504
 	.db	0,18
 	.db	'AVLNode',0,15,9,16,22,19
 	.db	'data',0
-	.dl	637
+	.dl	642
 	.db	8,2,35,0,19
 	.db	'timeBetweenMessages_Min',0
-	.dl	467
+	.dl	472
 	.db	4,2,35,8,19
 	.db	'lastMessage_timeStamp',0
-	.dl	467
+	.dl	472
 	.db	4,2,35,12,19
 	.db	'required',0
-	.dl	329
+	.dl	334
 	.db	1,2,35,16,19
 	.db	'timeBetweenMessages_Max',0
-	.dl	467
+	.dl	472
 	.db	4,2,35,18,0,4,5
-	.dl	3730
+	.dl	3735
 	.db	16,252,63
-	.dl	3873
+	.dl	3878
 	.db	17,254,15,0,18
 	.db	'_CanManager',0,1,19,8,164,64,19
 	.db	'sm',0
-	.dl	2439
+	.dl	2444
 	.db	4,2,35,0,19
 	.db	'canMessageLimit',0
-	.dl	329
+	.dl	334
 	.db	1,2,35,4,19
 	.db	'can0_busSpeed',0
-	.dl	329
+	.dl	334
 	.db	1,2,35,5,19
 	.db	'can0_readHandle',0
-	.dl	329
+	.dl	334
 	.db	1,2,35,6,19
 	.db	'can0_read_messageLimit',0
-	.dl	329
+	.dl	334
 	.db	1,2,35,7,19
 	.db	'can0_writeHandle',0
-	.dl	329
+	.dl	334
 	.db	1,2,35,8,19
 	.db	'can0_write_messageLimit',0
-	.dl	329
+	.dl	334
 	.db	1,2,35,9,19
 	.db	'can1_busSpeed',0
-	.dl	329
+	.dl	334
 	.db	1,2,35,10,19
 	.db	'can1_readHandle',0
-	.dl	329
+	.dl	334
 	.db	1,2,35,11,19
 	.db	'can1_read_messageLimit',0
-	.dl	329
+	.dl	334
 	.db	1,2,35,12,19
 	.db	'can1_writeHandle',0
-	.dl	329
+	.dl	334
 	.db	1,2,35,13,19
 	.db	'can1_write_messageLimit',0
-	.dl	329
+	.dl	334
 	.db	1,2,35,14,19
 	.db	'ioErr_can0_Init',0
-	.dl	214
+	.dl	219
 	.db	2,2,35,16,19
 	.db	'ioErr_can1_Init',0
-	.dl	214
+	.dl	219
 	.db	2,2,35,18,19
 	.db	'ioErr_can0_fifoInit_R',0
-	.dl	214
+	.dl	219
 	.db	2,2,35,20,19
 	.db	'ioErr_can0_fifoInit_W',0
-	.dl	214
+	.dl	219
 	.db	2,2,35,22,19
 	.db	'ioErr_can1_fifoInit_R',0
-	.dl	214
+	.dl	219
 	.db	2,2,35,24,19
 	.db	'ioErr_can1_fifoInit_W',0
-	.dl	214
+	.dl	219
 	.db	2,2,35,26,19
 	.db	'ioErr_can0_read',0
-	.dl	214
+	.dl	219
 	.db	2,2,35,28,19
 	.db	'ioErr_can0_write',0
-	.dl	214
+	.dl	219
 	.db	2,2,35,30,19
 	.db	'ioErr_can1_read',0
-	.dl	214
+	.dl	219
 	.db	2,2,35,32,19
 	.db	'ioErr_can1_write',0
-	.dl	214
+	.dl	219
 	.db	2,2,35,34,19
 	.db	'sendDelayus',0
-	.dl	467
+	.dl	472
 	.db	4,2,35,36,19
 	.db	'canMessageHistory',0
-	.dl	3879
+	.dl	3884
 	.db	252,63,2,35,40,0
 _209:
 	.db	4,5
-	.dl	3890
+	.dl	3895
 _262:
 	.db	22,16,13,9,1,23
 	.db	'CAN0_HIPRI',0,0,23
 	.db	'CAN1_LOPRI',0,1,0
 _269:
 	.db	4,2
-	.dl	646
+	.dl	651
 	.db	9
 	.db	'unsigned short int',0,2,7,7
 	.db	'__wchar_t',0,1,1,1
-	.dl	4593
+	.dl	4598
 	.db	7
 	.db	'__size_t',0,1,1,1
-	.dl	214
+	.dl	219
 	.db	4,5
-	.dl	141
+	.dl	146
 	.db	7
 	.db	'__prof_adm',0,1,1,1
-	.dl	4650
+	.dl	4655
 	.db	7
 	.db	'__codeptr',0,1,1,1
-	.dl	467
+	.dl	472
 	.db	7
 	.db	'size_t',0,2,29,25
-	.dl	214
+	.dl	219
 	.db	7
 	.db	'ubyte1',0,17,21,29
-	.dl	329
+	.dl	334
 	.db	7
 	.db	'ubyte2',0,17,22,29
-	.dl	214
+	.dl	219
 	.db	7
 	.db	'ubyte4',0,17,23,29
-	.dl	467
+	.dl	472
 	.db	7
 	.db	'sbyte2',0,17,26,29
-	.dl	2515
+	.dl	2520
 	.db	7
 	.db	'float4',0,17,29,29
-	.dl	1069
+	.dl	1074
 	.db	7
 	.db	'bool',0,17,31,29
-	.dl	329
+	.dl	334
 	.db	7
 	.db	'IO_ErrorType',0,18,150,1,17
-	.dl	214
+	.dl	219
 	.db	7
 	.db	'IO_CAN_DATA_FRAME',0,4,215,2,3
-	.dl	646
+	.dl	651
 	.db	7
 	.db	'Sensor',0,8,143,1,3
-	.dl	1169
+	.dl	1174
 	.db	24
 	.db	'Sensor_TPS0',0,8,152,1,15,5
-	.dl	1169
+	.dl	1174
 	.db	1,1,24
 	.db	'Sensor_WSS_FL',0,8,160,1,15,5
-	.dl	1169
+	.dl	1174
 	.db	1,1,24
 	.db	'Sensor_WSS_FR',0,8,161,1,15,5
-	.dl	1169
+	.dl	1174
 	.db	1,1,24
 	.db	'Sensor_WSS_RL',0,8,162,1,15,5
-	.dl	1169
+	.dl	1174
 	.db	1,1,24
 	.db	'Sensor_WSS_RR',0,8,163,1,15,5
-	.dl	1169
+	.dl	1174
+	.db	1,1,24
+	.db	'Sensor_RTDButton',0,8,176,1,15,5
+	.dl	1174
+	.db	1,1,24
+	.db	'Sensor_EcoButton',0,8,177,1,15,5
+	.dl	1174
+	.db	1,1,24
+	.db	'Sensor_TCSKnob',0,8,180,1,15,5
+	.dl	1174
 	.db	1,1,24
 	.db	'Sensor_HVILTerminationSense',0,8,184,1,15,5
-	.dl	1169
+	.dl	1174
 	.db	1,1,24
 	.db	'Sensor_LVBattery',0,8,188,1,15,5
-	.dl	1169
+	.dl	1174
 	.db	1,1,7
 	.db	'AVLNode',0,15,26,3
-	.dl	3730
+	.dl	3735
 	.db	7
 	.db	'TorqueEncoder',0,7,36,3
-	.dl	1359
+	.dl	1364
 	.db	7
 	.db	'BrakePressureSensor',0,9,37,3
-	.dl	1999
+	.dl	2004
 	.db	7
 	.db	'SerialManager',0,10,7,31
-	.dl	2419
+	.dl	2424
 	.db	7
 	.db	'Status',0,11,14,45
-	.dl	2718
+	.dl	2723
 	.db	7
 	.db	'Direction',0,11,19,72
-	.dl	2599
+	.dl	2604
 	.db	7
 	.db	'MotorController',0,11,21,33
-	.dl	2522
+	.dl	2527
 	.db	7
 	.db	'_iob_flag_t',0,19,82,25
-	.dl	4593
+	.dl	4598
 	.db	7
 	.db	'BatteryManagementSystem',0,12,29,41
-	.dl	3259
+	.dl	3264
 	.db	7
 	.db	'Wheel',0,13,7,30
-	.dl	3385
+	.dl	3390
 	.db	7
 	.db	'WheelSpeeds',0,13,12,29
-	.dl	3361
+	.dl	3366
 	.db	7
 	.db	'SafetyChecker',0,14,21,31
-	.dl	3479
+	.dl	3484
 	.db	7
 	.db	'CanChannel',0,16,13,41
-	.dl	4555
+	.dl	4560
 	.db	7
 	.db	'CanManager',0,16,17,28
-	.dl	3890
+	.dl	3895
 	.db	25
-	.dl	329
+	.dl	334
 	.db	26,0,24
 	.db	'_lc_ub_user_stack',0,1,1,1,2
-	.dl	5349
+	.dl	5439
 	.db	1,1,0
 	; End of section
 
@@ -6405,82 +6502,82 @@ _2320:
 	.debug		.debug_pubnames
 	.dl	859
 	.dw	2
-	.dl	_176,5386,158
+	.dl	_176,5476,163
 	.db	'__free',0
-	.dl	230
+	.dl	235
 	.db	'__alloc',0
-	.dl	272
+	.dl	277
 	.db	'malloc',0
-	.dl	302
+	.dl	307
 	.db	'IO_UART_Task',0
-	.dl	346
+	.dl	351
 	.db	'IO_CAN_Init',0
-	.dl	488
+	.dl	493
 	.db	'IO_CAN_ConfigFIFO',0
-	.dl	749
+	.dl	754
 	.db	'IO_CAN_ReadFIFO',0
-	.dl	872
+	.dl	877
 	.db	'IO_CAN_WriteFIFO',0
-	.dl	967
+	.dl	972
 	.db	'IO_RTC_StartTime',0
-	.dl	1017
+	.dl	1022
 	.db	'IO_RTC_GetTimeUS',0
-	.dl	1078
+	.dl	1083
 	.db	'getPercent',0
-	.dl	1804
+	.dl	1809
 	.db	'TorqueEncoder_getIndividualSensorPercent',0
-	.dl	1906
+	.dl	1911
 	.db	'TorqueEncoder_getPedalTravel',0
-	.dl	2320
+	.dl	2325
 	.db	'BrakePressureSensor_getPedalTravel',0
-	.dl	2456
+	.dl	2461
 	.db	'SerialManager_send',0
-	.dl	2550
+	.dl	2555
 	.db	'MCM_commands_getTorque',0
-	.dl	2666
+	.dl	2671
 	.db	'MCM_commands_getDirection',0
-	.dl	2755
+	.dl	2760
 	.db	'MCM_commands_getInverter',0
-	.dl	2806
+	.dl	2811
 	.db	'MCM_commands_getTorqueLimit',0
-	.dl	2860
+	.dl	2865
 	.db	'MCM_getHvilOverrideStatus',0
-	.dl	2912
+	.dl	2917
 	.db	'MCM_getRegenMode',0
-	.dl	2955
+	.dl	2960
 	.db	'MCM_getRegenTorqueLimitDNm',0
-	.dl	3008
+	.dl	3013
 	.db	'MCM_getRegenTorqueAtZeroPedalDNm',0
-	.dl	3067
+	.dl	3072
 	.db	'MCM_getRegenBPSForMaxRegenZeroToFF',0
-	.dl	3128
+	.dl	3133
 	.db	'MCM_getRegenAPPSForMaxCoastingZeroToFF',0
-	.dl	3193
+	.dl	3198
 	.db	'MCM_parseCanMessage',0
-	.dl	3295
+	.dl	3300
 	.db	'BMS_parseCanMessage',0
-	.dl	3411
+	.dl	3416
 	.db	'WheelSpeeds_getWheelSpeed',0
-	.dl	3505
+	.dl	3510
 	.db	'SafetyChecker_parseCanMessage',0
-	.dl	3577
+	.dl	3582
 	.db	'SafetyChecker_getFaults',0
-	.dl	3627
+	.dl	3632
 	.db	'SafetyChecker_getWarnings',0
-	.dl	3679
+	.dl	3684
 	.db	'SafetyChecker_getNotices',0
 	.dl	0
 	; End of section
 
 	.debug		.debug_info, cluster 'CanManager_new'
 _179:
-	.dl	672
+	.dl	677
 	.dw	3
 	.dl	_180
 	.db	4,1
 	.db	'canManager.c',0
 	.db	'TASKING VX-toolset for C166: C compiler',0
-	.db	'C:\\Users\\helix\\Desktop\\SRE\\SRE SDK 2017-18\\VCU\\Environment\\dev\\SRE-3\\',0,12,1
+	.db	'C:\\Users\\Timothy_Le\\Documents\\SRE\\SRE_SDK_2018\\VCU\\Environment\\dev\\sre-3b\\',0,12,1
 	.dl	_182,_181
 	.db	2
 	.dl	_175
@@ -7062,20 +7159,20 @@ _256:
 	.debug		.debug_pubnames
 	.dl	33
 	.dw	2
-	.dl	_179,676,150
+	.dl	_179,681,155
 	.db	'CanManager_new',0
 	.dl	0
 	; End of section
 
 	.debug		.debug_info, cluster 'CanManager_send'
 _184:
-	.dl	684
+	.dl	689
 	.dw	3
 	.dl	_185
 	.db	4,1
 	.db	'canManager.c',0
 	.db	'TASKING VX-toolset for C166: C compiler',0
-	.db	'C:\\Users\\helix\\Desktop\\SRE\\SRE SDK 2017-18\\VCU\\Environment\\dev\\SRE-3\\',0,12,1
+	.db	'C:\\Users\\Timothy_Le\\Documents\\SRE\\SRE_SDK_2018\\VCU\\Environment\\dev\\sre-3b\\',0,12,1
 	.dl	_187,_186
 	.db	2
 	.dl	_175
@@ -7404,20 +7501,20 @@ _286:
 	.debug		.debug_pubnames
 	.dl	34
 	.dw	2
-	.dl	_184,688,150
+	.dl	_184,693,155
 	.db	'CanManager_send',0
 	.dl	0
 	; End of section
 
 	.debug		.debug_info, cluster 'CanManager_read'
 _189:
-	.dl	392
+	.dl	397
 	.dw	3
 	.dl	_190
 	.db	4,1
 	.db	'canManager.c',0
 	.db	'TASKING VX-toolset for C166: C compiler',0
-	.db	'C:\\Users\\helix\\Desktop\\SRE\\SRE SDK 2017-18\\VCU\\Environment\\dev\\SRE-3\\',0,12,1
+	.db	'C:\\Users\\Timothy_Le\\Documents\\SRE\\SRE_SDK_2018\\VCU\\Environment\\dev\\sre-3b\\',0,12,1
 	.dl	_192,_191
 	.db	2
 	.dl	_175
@@ -7558,20 +7655,20 @@ _192:
 	.debug		.debug_pubnames
 	.dl	34
 	.dw	2
-	.dl	_189,396,150
+	.dl	_189,401,155
 	.db	'CanManager_read',0
 	.dl	0
 	; End of section
 
 	.debug		.debug_info, cluster 'canOutput_sendSensorMessages'
 _194:
-	.dl	237
+	.dl	242
 	.dw	3
 	.dl	_195
 	.db	4,1
 	.db	'canManager.c',0
 	.db	'TASKING VX-toolset for C166: C compiler',0
-	.db	'C:\\Users\\helix\\Desktop\\SRE\\SRE SDK 2017-18\\VCU\\Environment\\dev\\SRE-3\\',0,12,1
+	.db	'C:\\Users\\Timothy_Le\\Documents\\SRE\\SRE_SDK_2018\\VCU\\Environment\\dev\\sre-3b\\',0,12,1
 	.dl	_197,_196
 	.db	2
 	.dl	_175
@@ -7619,20 +7716,20 @@ _197:
 	.debug		.debug_pubnames
 	.dl	47
 	.dw	2
-	.dl	_194,241,150
+	.dl	_194,246,155
 	.db	'canOutput_sendSensorMessages',0
 	.dl	0
 	; End of section
 
 	.debug		.debug_info, cluster 'canOutput_sendDebugMessage'
 _199:
-	.dl	536
+	.dl	541
 	.dw	3
 	.dl	_200
 	.db	4,1
 	.db	'canManager.c',0
 	.db	'TASKING VX-toolset for C166: C compiler',0
-	.db	'C:\\Users\\helix\\Desktop\\SRE\\SRE SDK 2017-18\\VCU\\Environment\\dev\\SRE-3\\',0,12,1
+	.db	'C:\\Users\\Timothy_Le\\Documents\\SRE\\SRE_SDK_2018\\VCU\\Environment\\dev\\sre-3b\\',0,12,1
 	.dl	_202,_201
 	.db	2
 	.dl	_175
@@ -8668,12 +8765,64 @@ _2610:
 	.dw	_2964-_2963
 	.db	3,127,1,5,45,9
 	.dw	_2965-_2964
-	.db	3,1,1,5,25,9
+	.db	3,1,1,5,43,9
 	.dw	_2966-_2965
-	.db	3,7,1,5,37,9
+	.db	3,5,1,5,41,9
 	.dw	_2967-_2966
+	.db	1,5,43,9
+	.dw	_2968-_2967
+	.db	1,5,41,9
+	.dw	_2969-_2968
 	.db	1,5,50,9
-	.dw	_102-_2967
+	.dw	_2970-_2969
+	.db	3,1,1,5,48,9
+	.dw	_2971-_2970
+	.db	1,5,70,9
+	.dw	_2972-_2971
+	.db	3,1,1,5,54,9
+	.dw	_2973-_2972
+	.db	1,9
+	.dw	_2974-_2973
+	.db	3,1,1,5,70,9
+	.dw	_2975-_2974
+	.db	1,5,83,9
+	.dw	_2976-_2975
+	.db	1,5,54,9
+	.dw	_2977-_2976
+	.db	1,5,72,9
+	.dw	_2978-_2977
+	.db	3,1,1,5,54,9
+	.dw	_2979-_2978
+	.db	1,9
+	.dw	_2980-_2979
+	.db	3,1,1,5,72,9
+	.dw	_2981-_2980
+	.db	1,5,84,9
+	.dw	_2982-_2981
+	.db	1,5,54,9
+	.dw	_2983-_2982
+	.db	1,5,72,9
+	.dw	_2984-_2983
+	.db	3,1,1,5,54,9
+	.dw	_2985-_2984
+	.db	1,9
+	.dw	_2986-_2985
+	.db	3,1,1,5,72,9
+	.dw	_2987-_2986
+	.db	1,5,84,9
+	.dw	_2988-_2987
+	.db	1,5,54,9
+	.dw	_2989-_2988
+	.db	1,9
+	.dw	_2990-_2989
+	.db	3,1,1,9
+	.dw	_2991-_2990
+	.db	3,1,1,5,45,9
+	.dw	_2992-_2991
+	.db	3,1,1,5,37,9
+	.dw	_2993-_2992
+	.db	3,8,1,5,50,9
+	.dw	_102-_2993
 	.db	1,5,1,9
 	.dw	_320-_102
 	.db	3,3,1,9
@@ -8696,20 +8845,20 @@ _325:
 	.debug		.debug_pubnames
 	.dl	45
 	.dw	2
-	.dl	_199,540,150
+	.dl	_199,545,155
 	.db	'canOutput_sendDebugMessage',0
 	.dl	0
 	; End of section
 
 	.debug		.debug_info, cluster 'CanManager_getReadStatus'
 _204:
-	.dl	259
+	.dl	264
 	.dw	3
 	.dl	_205
 	.db	4,1
 	.db	'canManager.c',0
 	.db	'TASKING VX-toolset for C166: C compiler',0
-	.db	'C:\\Users\\helix\\Desktop\\SRE\\SRE SDK 2017-18\\VCU\\Environment\\dev\\SRE-3\\',0,12,1
+	.db	'C:\\Users\\Timothy_Le\\Documents\\SRE\\SRE_SDK_2018\\VCU\\Environment\\dev\\sre-3b\\',0,12,1
 	.dl	_207,_206
 	.db	2
 	.dl	_175
@@ -8738,30 +8887,30 @@ _205:
 
 	.debug		.debug_line, cluster 'CanManager_getReadStatus'
 _206:
-	.dl	_2969-_2968
-_2968:
+	.dl	_2995-_2994
+_2994:
 	.dw	3
-	.dl	_2971-_2970
-_2970:
+	.dl	_2997-_2996
+_2996:
 	.db	2,1,-4,9,10,0,1,1,1,1,0,0,0,1,0
 	.db	'canManager.c',0,0,0,0,0
-_2971:
+_2997:
 	.db	5,12,7,0,5,2
 	.dl	_140
 	.db	3,142,3,1,5,40,9
-	.dw	_2972-_140
+	.dw	_2998-_140
 	.db	1,5,58,9
-	.dw	_2973-_2972
+	.dw	_2999-_2998
 	.db	1,5,62,9
-	.dw	_80-_2973
+	.dw	_80-_2999
 	.db	1,5,36,9
 	.dw	_1429-_80
 	.db	1,5,1,9
-	.dw	_2974-_1429
+	.dw	_3000-_1429
 	.db	3,1,1,7,9
-	.dw	_208-_2974
+	.dw	_208-_3000
 	.db	0,1,1
-_2969:
+_2995:
 	; End of section
 
 	.debug		.debug_ranges, cluster 'CanManager_getReadStatus'
@@ -8772,7 +8921,7 @@ _207:
 	.debug		.debug_pubnames
 	.dl	43
 	.dw	2
-	.dl	_204,263,150
+	.dl	_204,268,155
 	.db	'CanManager_getReadStatus',0
 	.dl	0
 	; End of section
@@ -11976,34 +12125,34 @@ _302:
 	; End of section
 
 	.debug		.debug_frame
-_2975:
+_3001:
 	.dl	184
 	.dl	-1
 	.db	3,0,2,2,173,2,15,60,127,0,18,10
 	.dw	16383
 	.db	26,22,62,37,18,48,46,40
-	.dw	_2976-_2980
-_2980:
+	.dw	_3002-_3006
+_3006:
 	.db	146,177,2,0,47
-	.dw	_2979-_2981
-_2981:
-_2976:
+	.dw	_3005-_3007
+_3007:
+_3002:
 	.db	18,49,46,40
-	.dw	_2977-_2982
-_2982:
+	.dw	_3003-_3008
+_3008:
 	.db	146,178,2,0,47
-	.dw	_2979-_2983
-_2983:
-_2977:
+	.dw	_3005-_3009
+_3009:
+_3003:
 	.db	18,50,46,40
-	.dw	_2978-_2984
-_2984:
+	.dw	_3004-_3010
+_3010:
 	.db	146,179,2,0,47
-	.dw	_2979-_2985
-_2985:
-_2978:
+	.dw	_3005-_3011
+_3011:
+_3004:
 	.db	146,180,2,0
-_2979:
+_3005:
 	.db	22,19,62,36,33,48,34,16,173,2,12,19,146,176,2,0,64,36,146,161,2,0,33,8,15,22,161,2,5,19,146,161,2,4,8
 	.db	162,2,8,166,2,8,177,2,8,178,2,8,179,2,8,180,2,8,0,8,1,8,6,8,7,8,8,8,9,8,10,8,167,2,8,168,2,8,169,2,8,170
 	.db	2,8,171,2,8,172,2,16,174,2,12,19,146,176,2,0,64,36,146,161,2,0,33,16,175,2,12,19,146,176,2,0,64,36,146
@@ -12012,7 +12161,7 @@ _2979:
 
 	.debug		.debug_frame, cluster 'CanManager_new'
 	.dl	1204
-	.dl	_2975,_104,_183-_104
+	.dl	_3001,_104,_183-_104
 	.db	4
 	.dl	(_330-_104)/2
 	.db	15,60,127,0,18,10
@@ -12450,7 +12599,7 @@ _659:
 
 	.debug		.debug_frame, cluster 'CanManager_send'
 	.dl	1208
-	.dl	_2975,_116,_188-_116
+	.dl	_3001,_116,_188-_116
 	.db	4
 	.dl	(_693-_116)/2
 	.db	15,60,127,0,18,10
@@ -12888,7 +13037,7 @@ _1022:
 
 	.debug		.debug_frame, cluster 'CanManager_read'
 	.dl	1204
-	.dl	_2975,_128,_193-_128
+	.dl	_3001,_128,_193-_128
 	.db	4
 	.dl	(_1071-_128)/2
 	.db	15,60,127,0,18,10
@@ -13326,19 +13475,19 @@ _1400:
 
 	.debug		.debug_frame, cluster 'CanManager_getReadStatus'
 	.dl	28
-	.dl	_2975,_140,_208-_140
+	.dl	_3001,_140,_208-_140
 	.db	8,160,2,8,5,8,11,8,12,8,13,8,14,0,0,0
 	; End of section
 
 	.debug		.debug_frame, cluster 'canOutput_sendSensorMessages'
 	.dl	32
-	.dl	_2975,_152,_198-_152
+	.dl	_3001,_152,_198-_152
 	.db	8,160,2,8,2,8,3,8,4,8,5,8,11,8,12,8,13,8,14,0
 	; End of section
 
 	.debug		.debug_frame, cluster 'canOutput_sendDebugMessage'
 	.dl	2688
-	.dl	_2975,_164,_203-_164
+	.dl	_3001,_164,_203-_164
 	.db	4
 	.dl	(_1430-_164)/2
 	.db	15,60,127,0,18,10

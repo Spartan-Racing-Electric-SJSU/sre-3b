@@ -163,14 +163,14 @@ MotorController* MotorController_new(SerialManager* sm, ubyte2 canMessageBaseID,
 
     me->motor_temp = 99;
 	/*
-me->setTorque = &setTorque;
-me->setInverter = &setInverter;
-me->setDischarge = &setDischarge;
-me->setTorqueLimit = &setTorqueLimit;
-me->updateLockoutStatus = &updateLockoutStatus;
-me->updateInverterStatus = &updateInverterStatus;
-me->getLockoutStatus = &getLockoutStatus;
-me->getInverterStatus = &getInverterStatus;
+    me->setTorque = &setTorque;
+    me->setInverter = &setInverter;
+    me->setDischarge = &setDischarge;
+    me->setTorqueLimit = &setTorqueLimit;
+    me->updateLockoutStatus = &updateLockoutStatus;
+    me->updateInverterStatus = &updateInverterStatus;
+    me->getLockoutStatus = &getLockoutStatus;
+    me->getInverterStatus = &getInverterStatus;
 		*/
 	return me;
 }

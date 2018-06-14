@@ -1,5 +1,5 @@
 	; TASKING VX-toolset for C166: C compiler v4.0r1 Build 741 SN 07744515
-	; Options: -f cc11940a -c99 -Mh --fp-model=FT -Cxc2287 --core=xc16x -DTASKING_VIPER -D__USIC_MEM_TYPE=__PAGE_080_MEM_TYPE -D__MULTICAN_MEM_TYPE=__PAGE_080_MEM_TYPE -DTTC50 -DRTS_TTC_FLASH_DATE_YEAR=2018 -DRTS_TTC_FLASH_DATE_MONTH=4 -DRTS_TTC_FLASH_DATE_DAY=5 -DRTS_TTC_FLASH_DATE_HOUR=18 -DRTS_TTC_FLASH_DATE_MINUTE=55 -I..\..\..\Environment\inc -I..\..\..\Environment\inc_int -I..\..\..\Environment\bsp -I. --tradeoff=0 --no-tasking-sfr -ga --language=+cmp14,+div32,-gcc,-strings -O3 --source --mac -o build\safety.src
+	; Options: -f cc2180a -c99 -Mh --fp-model=FT -Cxc2287 --core=xc16x -DTASKING_VIPER -D__USIC_MEM_TYPE=__PAGE_080_MEM_TYPE -D__MULTICAN_MEM_TYPE=__PAGE_080_MEM_TYPE -DTTC50 -DRTS_TTC_FLASH_DATE_YEAR=2018 -DRTS_TTC_FLASH_DATE_MONTH=5 -DRTS_TTC_FLASH_DATE_DAY=19 -DRTS_TTC_FLASH_DATE_HOUR=3 -DRTS_TTC_FLASH_DATE_MINUTE=27 -I..\..\..\Environment\inc -I..\..\..\Environment\inc_int -I..\..\..\Environment\bsp -I. --tradeoff=0 --no-tasking-sfr -ga --language=+cmp14,+div32,-gcc,-strings -O3 --source --mac -o build\safety.src
 	; Module start
 	.source	'safety.c'
 code_SafetyChecker_new	.section	code, cluster 'SafetyChecker_new', new
@@ -2486,7 +2486,7 @@ _$6$str	.label	byte
 	.extern	__spf2s : far
 	.debug		.debug_info
 _157:
-	.dl	2835
+	.dl	2840
 	.dw	3
 	.dl	_158
 	.db	4
@@ -2494,407 +2494,407 @@ _156:
 	.db	1
 	.db	'safety.c',0
 	.db	'TASKING VX-toolset for C166: C compiler',0
-	.db	'C:\\Users\\helix\\Desktop\\SRE\\SRE SDK 2017-18\\VCU\\Environment\\dev\\SRE-3\\',0,12,1
+	.db	'C:\\Users\\Timothy_Le\\Documents\\SRE\\SRE_SDK_2018\\VCU\\Environment\\dev\\sre-3b\\',0,12,1
 	.dl	_159
 	.db	2
 	.db	'void',0,3,5
-	.dl	137
+	.dl	142
 _203:
 	.db	4
 	.db	'unsigned int',0,2,7,5
 	.db	'malloc',0,1,78,33,6
-	.dl	143
+	.dl	148
 	.db	1,1,1,1,6,1,78,44,2
-	.dl	149
+	.dl	154
 	.db	0
 _235:
 	.db	4
 	.db	'unsigned long int',0,4,7,3,5
-	.dl	195
+	.dl	200
 	.db	7
-	.dl	216
+	.dl	221
 	.db	5
 	.db	'IO_RTC_StartTime',0,2,118,15,6
-	.dl	149
+	.dl	154
 	.db	1,1,1,1,8
 	.db	'timestamp',0,2,118,49,2
-	.dl	222
+	.dl	227
 	.db	0,5
 	.db	'IO_RTC_GetTimeUS',0,2,143,1,9,6
-	.dl	195
+	.dl	200
 	.db	1,1,1,1,8
 	.db	'timestamp',0,2,143,1,35,2
-	.dl	195
+	.dl	200
 	.db	0
 _229:
 	.db	4
 	.db	'unsigned char',0,1,8,9
 	.db	'_Sensor',0,4,126,16,22,10
 	.db	'specMin',0
-	.dl	195
+	.dl	200
 	.db	4,2,35,0,10
 	.db	'specMax',0
-	.dl	195
+	.dl	200
 	.db	4,2,35,4,10
 	.db	'sensorValue',0
-	.dl	195
+	.dl	200
 	.db	4,2,35,8,10
 	.db	'fresh',0
-	.dl	329
+	.dl	334
 	.db	1,2,35,12,10
 	.db	'ioErr_powerInit',0
-	.dl	149
+	.dl	154
 	.db	2,2,35,14,10
 	.db	'ioErr_powerSet',0
-	.dl	149
+	.dl	154
 	.db	2,2,35,16,10
 	.db	'ioErr_signalInit',0
-	.dl	149
+	.dl	154
 	.db	2,2,35,18,10
 	.db	'ioErr_signalGet',0
-	.dl	149
+	.dl	154
 	.db	2,2,35,20,0
 _216:
 	.db	3,5
-	.dl	346
+	.dl	351
 _225:
 	.db	4
 	.db	'float',0,4,4,9
 	.db	'_TorqueEncoder',0,3,10,16,60,10
 	.db	'bench',0
-	.dl	329
+	.dl	334
 	.db	1,2,35,0,10
 	.db	'tps0',0
-	.dl	530
+	.dl	535
 	.db	4,2,35,2,10
 	.db	'tps1',0
-	.dl	530
+	.dl	535
 	.db	4,2,35,6,10
 	.db	'tps0_calibMin',0
-	.dl	195
+	.dl	200
 	.db	4,2,35,10,10
 	.db	'tps0_calibMax',0
-	.dl	195
+	.dl	200
 	.db	4,2,35,14,10
 	.db	'tps0_reverse',0
-	.dl	329
+	.dl	334
 	.db	1,2,35,18,10
 	.db	'tps0_value',0
-	.dl	195
+	.dl	200
 	.db	4,2,35,20,10
 	.db	'tps0_percent',0
-	.dl	536
+	.dl	541
 	.db	4,2,35,24,10
 	.db	'tps1_calibMin',0
-	.dl	195
+	.dl	200
 	.db	4,2,35,28,10
 	.db	'tps1_calibMax',0
-	.dl	195
+	.dl	200
 	.db	4,2,35,32,10
 	.db	'tps1_reverse',0
-	.dl	329
+	.dl	334
 	.db	1,2,35,36,10
 	.db	'tps1_value',0
-	.dl	195
+	.dl	200
 	.db	4,2,35,38,10
 	.db	'tps1_percent',0
-	.dl	536
+	.dl	541
 	.db	4,2,35,42,10
 	.db	'runCalibration',0
-	.dl	329
+	.dl	334
 	.db	1,2,35,46,10
 	.db	'timestamp_calibrationStart',0
-	.dl	195
+	.dl	200
 	.db	4,2,35,48,10
 	.db	'calibrationRunTime',0
-	.dl	329
+	.dl	334
 	.db	1,2,35,52,10
 	.db	'calibrated',0
-	.dl	329
+	.dl	334
 	.db	1,2,35,53,10
 	.db	'percent',0
-	.dl	536
+	.dl	541
 	.db	4,2,35,54,10
 	.db	'implausibility',0
-	.dl	329
+	.dl	334
 	.db	1,2,35,58,0
 _212:
 	.db	3,5
-	.dl	545
+	.dl	550
 	.db	3,5
-	.dl	536
+	.dl	541
 	.db	11
 	.db	'TorqueEncoder_getIndividualSensorPercent',0,3,40,6,6,1,1,1,1,8
 	.db	'me',0,3,40,62,2
-	.dl	978
+	.dl	983
 	.db	8
 	.db	'sensorNumber',0,3,40,73,2
-	.dl	329
+	.dl	334
 	.db	8
 	.db	'percent',0,3,40,95,2
-	.dl	984
+	.dl	989
 	.db	0,12
 	.db	'_SerialManager',0,5,7,16,1
 _201:
 	.db	3,5
-	.dl	1092
+	.dl	1097
 	.db	7
-	.dl	329
+	.dl	334
 	.db	3,5
-	.dl	1118
+	.dl	1123
 	.db	5
 	.db	'SerialManager_send',0,5,18,14,6
-	.dl	149
+	.dl	154
 	.db	1,1,1,1,8
 	.db	'me',0,5,18,48,2
-	.dl	1112
+	.dl	1117
 	.db	8
 	.db	'data',0,5,18,66,2
-	.dl	1123
+	.dl	1128
 	.db	0,12
 	.db	'_MotorController',0,6,21,16,1
 _208:
 	.db	3,5
-	.dl	1188
+	.dl	1193
 	.db	4
 	.db	'int',0,2,5,11
 	.db	'MCM_commands_setTorqueDNm',0,6,30,6,6,1,1,1,1,8
 	.db	'me',0,6,30,49,2
-	.dl	1210
+	.dl	1215
 	.db	8
 	.db	'torque',0,6,30,60,2
-	.dl	1216
+	.dl	1221
 	.db	0,5
 	.db	'MCM_commands_getTorque',0,6,38,8,6
-	.dl	1216
+	.dl	1221
 	.db	1,1,1,1,8
 	.db	'me',0,6,38,48,2
-	.dl	1210
+	.dl	1215
 	.db	0,4
 	.db	'long int',0,4,5,5
 	.db	'MCM_getPower',0,6,61,8,6
-	.dl	1336
+	.dl	1341
 	.db	1,1,1,1,8
 	.db	'me',0,6,61,38,2
-	.dl	1210
+	.dl	1215
 	.db	0,5
 	.db	'MCM_getHvilOverrideStatus',0,6,64,6,6
-	.dl	329
+	.dl	334
 	.db	1,1,1,1,8
 	.db	'me',0,6,64,49,2
-	.dl	1210
+	.dl	1215
 	.db	0,5
 	.db	'MCM_getGroundSpeedKPH',0,6,77,8,6
-	.dl	1216
+	.dl	1221
 	.db	1,1,1,1,8
 	.db	'me',0,6,77,47,2
-	.dl	1210
+	.dl	1215
 	.db	0,4
 	.db	'char',0,1,6,3,5
-	.dl	1487
+	.dl	1492
 	.db	13
-	.dl	1495
+	.dl	1500
 	.db	7
-	.dl	1487
+	.dl	1492
 	.db	3,5
-	.dl	1506
-	.db	13
 	.dl	1511
+	.db	13
+	.dl	1516
 	.db	5
 	.db	'sprintf',0,7,150,1,16,6
-	.dl	1216
+	.dl	1221
 	.db	1,1,1,1,6,7,150,1,32,2
-	.dl	1501
+	.dl	1506
 	.db	6,7,150,1,55,2
-	.dl	1517
+	.dl	1522
 	.db	14,7,150,1,67,0,12
 	.db	'_BatteryManagementSystem',0,8,29,16,1
 _210:
 	.db	3,5
-	.dl	1570
+	.dl	1575
 	.db	5
 	.db	'BMS_getPower',0,8,37,8,6
-	.dl	1336
+	.dl	1341
 	.db	1,1,1,1,8
 	.db	'me',0,8,37,46,2
-	.dl	1600
+	.dl	1605
 	.db	0,9
 	.db	'_SafetyChecker',0,9,79,8,24,10
 	.db	'serialMan',0
-	.dl	1112
+	.dl	1117
 	.db	4,2,35,0,10
 	.db	'faults',0
-	.dl	195
+	.dl	200
 	.db	4,2,35,4,10
 	.db	'warnings',0
-	.dl	149
+	.dl	154
 	.db	2,2,35,8,10
 	.db	'notices',0
-	.dl	149
+	.dl	154
 	.db	2,2,35,10,10
 	.db	'maxAmpsCharge',0
-	.dl	329
+	.dl	334
 	.db	1,2,35,12,10
 	.db	'maxAmpsDischarge',0
-	.dl	329
+	.dl	334
 	.db	1,2,35,13,10
 	.db	'tpsbpsImplausible',0
-	.dl	329
+	.dl	334
 	.db	1,2,35,14,10
 	.db	'bypass',0
-	.dl	329
+	.dl	334
 	.db	1,2,35,15,10
 	.db	'timestamp_bypassSafetyChecks',0
-	.dl	195
+	.dl	200
 	.db	4,2,35,16,10
 	.db	'bypassSafetyChecksTimeout_us',0
-	.dl	195
+	.dl	200
 	.db	4,2,35,20,0
 _200:
 	.db	3,5
-	.dl	1645
+	.dl	1650
 	.db	9
 	.db	'_BrakePressureSensor',0,10,10,16,32,10
 	.db	'bench',0
-	.dl	329
+	.dl	334
 	.db	1,2,35,0,10
 	.db	'bps0',0
-	.dl	530
+	.dl	535
 	.db	4,2,35,2,10
 	.db	'bps0_calibMin',0
-	.dl	149
+	.dl	154
 	.db	2,2,35,6,10
 	.db	'bps0_calibMax',0
-	.dl	149
+	.dl	154
 	.db	2,2,35,8,10
 	.db	'bps0_reverse',0
-	.dl	329
+	.dl	334
 	.db	1,2,35,10,10
 	.db	'bps0_value',0
-	.dl	149
+	.dl	154
 	.db	2,2,35,12,10
 	.db	'bps0_percent',0
-	.dl	536
+	.dl	541
 	.db	4,2,35,14,10
 	.db	'runCalibration',0
-	.dl	329
+	.dl	334
 	.db	1,2,35,18,10
 	.db	'timestamp_calibrationStart',0
-	.dl	195
+	.dl	200
 	.db	4,2,35,20,10
 	.db	'calibrationRunTime',0
-	.dl	329
+	.dl	334
 	.db	1,2,35,24,10
 	.db	'calibrated',0
-	.dl	329
+	.dl	334
 	.db	1,2,35,25,10
 	.db	'percent',0
-	.dl	536
+	.dl	541
 	.db	4,2,35,26,10
 	.db	'implausibility',0
-	.dl	329
+	.dl	334
 	.db	1,2,35,30,0
 _214:
 	.db	3,5
-	.dl	1910
+	.dl	1915
 	.db	3,5
-	.dl	329
+	.dl	334
 _219:
 	.db	15,200,1
-	.dl	2231
+	.dl	2236
 	.db	16,49,0,15,8
-	.dl	329
+	.dl	334
 	.db	16,7,0,9
 	.db	'_io_can_data_frame',0,11,209,2,16,14,10
 	.db	'data',0
-	.dl	2247
+	.dl	2252
 	.db	8,2,35,0,10
 	.db	'length',0
-	.dl	329
+	.dl	334
 	.db	1,2,35,8,10
 	.db	'id_format',0
-	.dl	329
+	.dl	334
 	.db	1,2,35,9,10
 	.db	'id',0
-	.dl	195
+	.dl	200
 	.db	4,2,35,10,0
 _232:
 	.db	3,5
-	.dl	2256
+	.dl	2261
 	.db	4
 	.db	'unsigned short int',0,2,7,17
 	.db	'__wchar_t',0,9,1,1
-	.dl	2349
+	.dl	2354
 	.db	17
 	.db	'__size_t',0,9,1,1
-	.dl	149
+	.dl	154
 	.db	3,5
-	.dl	137
+	.dl	142
 	.db	17
 	.db	'__prof_adm',0,9,1,1
-	.dl	2406
+	.dl	2411
 	.db	17
 	.db	'__codeptr',0,9,1,1
-	.dl	195
+	.dl	200
 	.db	17
 	.db	'size_t',0,1,29,25
-	.dl	149
+	.dl	154
 	.db	17
 	.db	'ubyte1',0,12,21,29
-	.dl	329
+	.dl	334
 	.db	17
 	.db	'ubyte2',0,12,22,29
-	.dl	149
+	.dl	154
 	.db	17
 	.db	'ubyte4',0,12,23,29
-	.dl	195
+	.dl	200
 	.db	17
 	.db	'sbyte2',0,12,26,29
-	.dl	1216
+	.dl	1221
 	.db	17
 	.db	'sbyte4',0,12,27,29
-	.dl	1336
+	.dl	1341
 	.db	17
 	.db	'float4',0,12,29,29
-	.dl	536
+	.dl	541
 	.db	17
 	.db	'bool',0,12,31,29
-	.dl	329
+	.dl	334
 	.db	17
 	.db	'IO_ErrorType',0,13,150,1,17
-	.dl	149
+	.dl	154
 	.db	17
 	.db	'IO_CAN_DATA_FRAME',0,11,215,2,3
-	.dl	2256
+	.dl	2261
 	.db	17
 	.db	'Sensor',0,4,143,1,3
-	.dl	346
+	.dl	351
 	.db	17
 	.db	'TorqueEncoder',0,3,36,3
-	.dl	545
+	.dl	550
 	.db	17
 	.db	'BrakePressureSensor',0,10,37,3
-	.dl	1910
+	.dl	1915
 	.db	17
 	.db	'SerialManager',0,5,7,31
-	.dl	1092
+	.dl	1097
 	.db	17
 	.db	'MotorController',0,6,21,33
-	.dl	1188
+	.dl	1193
 	.db	17
 	.db	'_iob_flag_t',0,7,82,25
-	.dl	2349
+	.dl	2354
 	.db	17
 	.db	'BatteryManagementSystem',0,8,29,41
-	.dl	1570
+	.dl	1575
 	.db	17
 	.db	'SafetyChecker',0,14,21,31
-	.dl	1645
+	.dl	1650
 	.db	18
-	.dl	329
+	.dl	334
 	.db	19,0,20
 	.db	'_lc_ub_user_stack',0,9,1,1,2
-	.dl	2802
+	.dl	2807
 	.db	1,1,0
 	; End of section
 
@@ -2940,42 +2940,42 @@ _1290:
 	.debug		.debug_pubnames
 	.dl	294
 	.dw	2
-	.dl	_157,2839,165
+	.dl	_157,2844,170
 	.db	'malloc',0
-	.dl	227
+	.dl	232
 	.db	'IO_RTC_StartTime',0
-	.dl	277
+	.dl	282
 	.db	'IO_RTC_GetTimeUS',0
-	.dl	990
+	.dl	995
 	.db	'TorqueEncoder_getIndividualSensorPercent',0
-	.dl	1129
+	.dl	1134
 	.db	'SerialManager_send',0
-	.dl	1223
+	.dl	1228
 	.db	'MCM_commands_setTorqueDNm',0
-	.dl	1287
+	.dl	1292
 	.db	'MCM_commands_getTorque',0
-	.dl	1348
+	.dl	1353
 	.db	'MCM_getPower',0
-	.dl	1387
+	.dl	1392
 	.db	'MCM_getHvilOverrideStatus',0
-	.dl	1439
+	.dl	1444
 	.db	'MCM_getGroundSpeedKPH',0
-	.dl	1522
+	.dl	1527
 	.db	'sprintf',0
-	.dl	1606
+	.dl	1611
 	.db	'BMS_getPower',0
 	.dl	0
 	; End of section
 
 	.debug		.debug_info, cluster 'SafetyChecker_new'
 _160:
-	.dl	298
+	.dl	303
 	.dw	3
 	.dl	_161
 	.db	4,1
 	.db	'safety.c',0
 	.db	'TASKING VX-toolset for C166: C compiler',0
-	.db	'C:\\Users\\helix\\Desktop\\SRE\\SRE SDK 2017-18\\VCU\\Environment\\dev\\SRE-3\\',0,12,1
+	.db	'C:\\Users\\Timothy_Le\\Documents\\SRE\\SRE_SDK_2018\\VCU\\Environment\\dev\\sre-3b\\',0,12,1
 	.dl	_163,_162
 	.db	2
 	.dl	_156
@@ -3094,20 +3094,20 @@ _163:
 	.debug		.debug_pubnames
 	.dl	36
 	.dw	2
-	.dl	_160,302,146
+	.dl	_160,307,151
 	.db	'SafetyChecker_new',0
 	.dl	0
 	; End of section
 
 	.debug		.debug_info, cluster 'SafetyChecker_update'
 _165:
-	.dl	465
+	.dl	470
 	.dw	3
 	.dl	_166
 	.db	4,1
 	.db	'safety.c',0
 	.db	'TASKING VX-toolset for C166: C compiler',0
-	.db	'C:\\Users\\helix\\Desktop\\SRE\\SRE SDK 2017-18\\VCU\\Environment\\dev\\SRE-3\\',0,12,1
+	.db	'C:\\Users\\Timothy_Le\\Documents\\SRE\\SRE_SDK_2018\\VCU\\Environment\\dev\\sre-3b\\',0,12,1
 	.dl	_168,_167
 	.db	2
 	.dl	_156
@@ -3699,20 +3699,20 @@ _221:
 	.debug		.debug_pubnames
 	.dl	39
 	.dw	2
-	.dl	_165,469,146
+	.dl	_165,474,151
 	.db	'SafetyChecker_update',0
 	.dl	0
 	; End of section
 
 	.debug		.debug_info, cluster 'SafetyChecker_parseCanMessage'
 _170:
-	.dl	256
+	.dl	261
 	.dw	3
 	.dl	_171
 	.db	4,1
 	.db	'safety.c',0
 	.db	'TASKING VX-toolset for C166: C compiler',0
-	.db	'C:\\Users\\helix\\Desktop\\SRE\\SRE SDK 2017-18\\VCU\\Environment\\dev\\SRE-3\\',0,12,1
+	.db	'C:\\Users\\Timothy_Le\\Documents\\SRE\\SRE_SDK_2018\\VCU\\Environment\\dev\\sre-3b\\',0,12,1
 	.dl	_173,_172
 	.db	2
 	.dl	_156
@@ -3775,20 +3775,20 @@ _173:
 	.debug		.debug_pubnames
 	.dl	48
 	.dw	2
-	.dl	_170,260,146
+	.dl	_170,265,151
 	.db	'SafetyChecker_parseCanMessage',0
 	.dl	0
 	; End of section
 
 	.debug		.debug_info, cluster 'SafetyChecker_allSafe'
 _175:
-	.dl	230
+	.dl	235
 	.dw	3
 	.dl	_176
 	.db	4,1
 	.db	'safety.c',0
 	.db	'TASKING VX-toolset for C166: C compiler',0
-	.db	'C:\\Users\\helix\\Desktop\\SRE\\SRE SDK 2017-18\\VCU\\Environment\\dev\\SRE-3\\',0,12,1
+	.db	'C:\\Users\\Timothy_Le\\Documents\\SRE\\SRE_SDK_2018\\VCU\\Environment\\dev\\sre-3b\\',0,12,1
 	.dl	_178,_177
 	.db	2
 	.dl	_156
@@ -3842,20 +3842,20 @@ _178:
 	.debug		.debug_pubnames
 	.dl	40
 	.dw	2
-	.dl	_175,234,146
+	.dl	_175,239,151
 	.db	'SafetyChecker_allSafe',0
 	.dl	0
 	; End of section
 
 	.debug		.debug_info, cluster 'SafetyChecker_getFaults'
 _180:
-	.dl	232
+	.dl	237
 	.dw	3
 	.dl	_181
 	.db	4,1
 	.db	'safety.c',0
 	.db	'TASKING VX-toolset for C166: C compiler',0
-	.db	'C:\\Users\\helix\\Desktop\\SRE\\SRE SDK 2017-18\\VCU\\Environment\\dev\\SRE-3\\',0,12,1
+	.db	'C:\\Users\\Timothy_Le\\Documents\\SRE\\SRE_SDK_2018\\VCU\\Environment\\dev\\sre-3b\\',0,12,1
 	.dl	_183,_182
 	.db	2
 	.dl	_156
@@ -3907,20 +3907,20 @@ _183:
 	.debug		.debug_pubnames
 	.dl	42
 	.dw	2
-	.dl	_180,236,146
+	.dl	_180,241,151
 	.db	'SafetyChecker_getFaults',0
 	.dl	0
 	; End of section
 
 	.debug		.debug_info, cluster 'SafetyChecker_getWarnings'
 _185:
-	.dl	234
+	.dl	239
 	.dw	3
 	.dl	_186
 	.db	4,1
 	.db	'safety.c',0
 	.db	'TASKING VX-toolset for C166: C compiler',0
-	.db	'C:\\Users\\helix\\Desktop\\SRE\\SRE SDK 2017-18\\VCU\\Environment\\dev\\SRE-3\\',0,12,1
+	.db	'C:\\Users\\Timothy_Le\\Documents\\SRE\\SRE_SDK_2018\\VCU\\Environment\\dev\\sre-3b\\',0,12,1
 	.dl	_188,_187
 	.db	2
 	.dl	_156
@@ -3974,20 +3974,20 @@ _188:
 	.debug		.debug_pubnames
 	.dl	44
 	.dw	2
-	.dl	_185,238,146
+	.dl	_185,243,151
 	.db	'SafetyChecker_getWarnings',0
 	.dl	0
 	; End of section
 
 	.debug		.debug_info, cluster 'SafetyChecker_getNotices'
 _190:
-	.dl	233
+	.dl	238
 	.dw	3
 	.dl	_191
 	.db	4,1
 	.db	'safety.c',0
 	.db	'TASKING VX-toolset for C166: C compiler',0
-	.db	'C:\\Users\\helix\\Desktop\\SRE\\SRE SDK 2017-18\\VCU\\Environment\\dev\\SRE-3\\',0,12,1
+	.db	'C:\\Users\\Timothy_Le\\Documents\\SRE\\SRE_SDK_2018\\VCU\\Environment\\dev\\sre-3b\\',0,12,1
 	.dl	_193,_192
 	.db	2
 	.dl	_156
@@ -4041,20 +4041,20 @@ _193:
 	.debug		.debug_pubnames
 	.dl	43
 	.dw	2
-	.dl	_190,237,146
+	.dl	_190,242,151
 	.db	'SafetyChecker_getNotices',0
 	.dl	0
 	; End of section
 
 	.debug		.debug_info, cluster 'SafetyChecker_reduceTorque'
 _195:
-	.dl	293
+	.dl	298
 	.dw	3
 	.dl	_196
 	.db	4,1
 	.db	'safety.c',0
 	.db	'TASKING VX-toolset for C166: C compiler',0
-	.db	'C:\\Users\\helix\\Desktop\\SRE\\SRE SDK 2017-18\\VCU\\Environment\\dev\\SRE-3\\',0,12,1
+	.db	'C:\\Users\\Timothy_Le\\Documents\\SRE\\SRE_SDK_2018\\VCU\\Environment\\dev\\sre-3b\\',0,12,1
 	.dl	_198,_197
 	.db	2
 	.dl	_156
@@ -4145,7 +4145,7 @@ _198:
 	.debug		.debug_pubnames
 	.dl	45
 	.dw	2
-	.dl	_195,297,146
+	.dl	_195,302,151
 	.db	'SafetyChecker_reduceTorque',0
 	.dl	0
 	; End of section
