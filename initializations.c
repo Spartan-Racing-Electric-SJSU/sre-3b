@@ -38,11 +38,11 @@ void vcu_initializeADC(bool benchMode)
     IO_DO_Init(IO_DO_04); IO_DO_Set(IO_DO_04, FALSE); //Battery fan relay
     IO_DO_Init(IO_DO_05); IO_DO_Set(IO_DO_05, benchMode); //power output for switches - only used on bench
     IO_DO_Init(IO_DO_08); //Brake light initialize (Pin 120)
-    IO_DO_Init(IO_DO_09); //Eco light initialize (Pin 108, 22 on round dash connector)
     IO_DO_Init(IO_DO_13); //RTDS Initialize (Pin 106)
 
     //Lowside outputs (connects to ground when on)
     IO_DO_Init(IO_ADC_CUR_00); IO_DO_Set(IO_ADC_CUR_00, FALSE); //TCS
+    IO_DO_Init(IO_ADC_CUR_00); IO_DO_Set(IO_ADC_CUR_00, FALSE); //Eco
     IO_DO_Init(IO_ADC_CUR_02); IO_DO_Set(IO_ADC_CUR_02, FALSE); //Err
     IO_DO_Init(IO_ADC_CUR_03); IO_DO_Set(IO_ADC_CUR_03, FALSE); //RTD
 
