@@ -34,7 +34,7 @@ extern Sensor Sensor_HVILTerminationSense;
  ****************************************************************************/
 
 struct _MotorController {
-    SerialManager* serialMan;
+	SerialManager* serialMan;
 	//----------------------------------------------------------------------------
 	// Controller statuses/properties
 	//----------------------------------------------------------------------------
@@ -44,9 +44,9 @@ struct _MotorController {
 	ubyte2 canMessageBaseId;  //Starting message ID for messages that will come in from this controller
 	ubyte4 timeStamp_inverterEnabled;
 
-    //Motor controller torque units are in 10ths (500 = 50.0 Nm)
-    //Positive = accel, negative = regen
-    //Reverse not allowed
+	//Motor controller torque units are in 10ths (500 = 50.0 Nm)
+	//Positive = accel, negative = regen
+	//Reverse not allowed
 	ubyte2 torqueMaximumDNm;  //Max torque that can be commanded in deciNewton*meters ("100" = 10.0 Nm)
 	
 	//Regen torque calculations in whole Nm..?
@@ -55,28 +55,28 @@ struct _MotorController {
 	ubyte2 regen_torqueAtZeroPedalDNm;    //Tuneable value.  Amount of regen torque (in Nm) to apply when both pedals at 0% travel.  Positive value.
 	float4 regen_percentBPSForMaxRegen;   //Tuneable value.  Amount of brake pedal required for full regen. Value between zero and one.
 	float4 regen_percentAPPSForCoasting;  //Tuneable value.  Amount of accel pedal required to exit regen.  Value between zero and one.
-    sbyte1 regen_minimumSpeedKPH;  //Assigned by main
-    sbyte1 regen_SpeedRampStart;
+	sbyte1 regen_minimumSpeedKPH;  //Assigned by main
+	sbyte1 regen_SpeedRampStart;
 
-    bool relayState;
-    bool previousHVILState;
-    ubyte4 timeStamp_HVILLost;
+	bool relayState;
+	bool previousHVILState;
+	ubyte4 timeStamp_HVILLost;
 
-    ubyte4 timeStamp_HVILOverrideCommandReceived;
-    bool HVILOverride;
+	ubyte4 timeStamp_HVILOverrideCommandReceived;
+	bool HVILOverride;
 
-    ubyte1 startupStage;
-    Status lockoutStatus;
+	ubyte1 startupStage;
+	Status lockoutStatus;
 	Status inverterStatus;
 	bool startRTDS;
 	/*ubyte4 vsmStatus0;      //0xAA Byte 0,1
-    ubyte4 vsmStatus1;      //0xAA Byte 0,1
-    ubyte4 vsmStatus2;      //0xAA Byte 0,1
-    ubyte4 vsmStatus3;      //0xAA Byte 0,1
-    ubyte4 faultCodesPOST; //0xAB Byte 0-3
-    ubyte4 faultCodesRUN;  //0xAB Byte 4-7*/
+	ubyte4 vsmStatus1;      //0xAA Byte 0,1
+	ubyte4 vsmStatus2;      //0xAA Byte 0,1
+	ubyte4 vsmStatus3;      //0xAA Byte 0,1
+	ubyte4 faultCodesPOST; //0xAB Byte 0-3
+	ubyte4 faultCodesRUN;  //0xAB Byte 4-7*/
 
-    ubyte1 faultHistory[8];
+	ubyte1 faultHistory[8];
 
 	sbyte2 motor_temp;
 	sbyte4 DC_Voltage;
@@ -102,35 +102,35 @@ struct _MotorController {
 	Status commands_discharge;
 	Status commands_inverter;
 	//ubyte1 controlSwitches; // example: 0b00000001 = inverter is enabled, discharge is disabled
-    
-    /*
-    //----------------------------------------------------------------------------
-    // Control functions - for functions nested within struct
-    //----------------------------------------------------------------------------
-    void(*setTorque)(MotorController* me, ubyte2 torque); //Will be divided by 10 e.g. pass in 100 for 10.0 Nm
-    void(*setDirection)(MotorController* me, Direction rotation);
-    void(*setInverter)(MotorController* me, Status inverterState);
-    void(*setDischarge)(MotorController* me, Status dischargeState);
-    void(*setTorqueLimit)(MotorController* me, ubyte2 torqueLimit);
-    //        void(*motorController_setTorque)(MotorController* me, ubyte2 torque); //Will be divided by 10 e.g. pass in 100 for 10.0 Nm
-    //        void(*motorController_setDirection)(MotorController* me, Direction rotation);
-    //        void(*motorController_setInverter)(MotorController* me, Status inverterState);
-    //        void(*motorController_setDischarge)(MotorController* me, Status dischargeState);
-    //        void(*motorController_setTorqueLimit)(MotorController* me, ubyte2 torqueLimit);
-    void(*updateLockoutStatus)(MotorController* me, Status newState);
-    void(*updateInverterStatus)(MotorController* me, Status newState);
-    void(*getLockoutStatus)(MotorController* me);
-    void(*getInverterStatus)(MotorController* me);
-    }
-    */
-    //_commands commands;
-    //};
+
+	/*
+	//----------------------------------------------------------------------------
+	// Control functions - for functions nested within struct
+	//----------------------------------------------------------------------------
+	void(*setTorque)(MotorController* me, ubyte2 torque); //Will be divided by 10 e.g. pass in 100 for 10.0 Nm
+	void(*setDirection)(MotorController* me, Direction rotation);
+	void(*setInverter)(MotorController* me, Status inverterState);
+	void(*setDischarge)(MotorController* me, Status dischargeState);
+	void(*setTorqueLimit)(MotorController* me, ubyte2 torqueLimit);
+	//        void(*motorController_setTorque)(MotorController* me, ubyte2 torque); //Will be divided by 10 e.g. pass in 100 for 10.0 Nm
+	//        void(*motorController_setDirection)(MotorController* me, Direction rotation);
+	//        void(*motorController_setInverter)(MotorController* me, Status inverterState);
+	//        void(*motorController_setDischarge)(MotorController* me, Status dischargeState);
+	//        void(*motorController_setTorqueLimit)(MotorController* me, ubyte2 torqueLimit);
+	void(*updateLockoutStatus)(MotorController* me, Status newState);
+	void(*updateInverterStatus)(MotorController* me, Status newState);
+	void(*getLockoutStatus)(MotorController* me);
+	void(*getInverterStatus)(MotorController* me);
+	}
+	*/
+	//_commands commands;
+	//};
 };
 
 MotorController* MotorController_new(SerialManager* sm, ubyte2 canMessageBaseID, Direction initialDirection, sbyte2 torqueMaxInDNm, sbyte1 minRegenSpeedKPH, sbyte1 regenRampdownStartSpeed)
 {
 	MotorController* me = (MotorController*)malloc(sizeof(struct _MotorController));
-    me->serialMan = sm;
+	me->serialMan = sm;
 
 	me->canMessageBaseId = canMessageBaseID;
 	//Dummy timestamp for last MCU message
@@ -140,9 +140,9 @@ MotorController* MotorController_new(SerialManager* sm, ubyte2 canMessageBaseID,
 	me->inverterStatus = UNKNOWN;
 	//me->startRTDS = FALSE;
 
-    me->motorRPM = 0;
-    me->DC_Voltage = 0;
-    me->DC_Current = 0;
+	me->motorRPM = 0;
+	me->DC_Voltage = 0;
+	me->DC_Current = 0;
 
 	me->commands_direction = initialDirection;
 	me->commands_torqueLimit = me->torqueMaximumDNm = torqueMaxInDNm;
@@ -150,27 +150,27 @@ MotorController* MotorController_new(SerialManager* sm, ubyte2 canMessageBaseID,
 	me->regen_mode = 0xFF;
 	me->regen_torqueLimitDNm = 0;
 	me->regen_torqueAtZeroPedalDNm = 0;
-    me->regen_percentBPSForMaxRegen = 1; //zero to one.. 1 = 100%
+	me->regen_percentBPSForMaxRegen = 1; //zero to one.. 1 = 100%
 	me->regen_percentAPPSForCoasting = 0;
-    me->regen_minimumSpeedKPH = minRegenSpeedKPH;  //Assigned by main
-    me->regen_SpeedRampStart = regenRampdownStartSpeed;  //Assigned by main
+	me->regen_minimumSpeedKPH = minRegenSpeedKPH;  //Assigned by main
+	me->regen_SpeedRampStart = regenRampdownStartSpeed;  //Assigned by main
 
-    //me->faultHistory = { 0,0,0,0,0,0,0,0 };  //Todo: read from eeprom instead of defaulting to 0
+	//me->faultHistory = { 0,0,0,0,0,0,0,0 };  //Todo: read from eeprom instead of defaulting to 0
 
 	me->startupStage = 0; //Off
-    
-    me->relayState = FALSE; //Low
 
-    me->motor_temp = 99;
+	me->relayState = FALSE; //Low
+
+	me->motor_temp = 99;
 	/*
-    me->setTorque = &setTorque;
-    me->setInverter = &setInverter;
-    me->setDischarge = &setDischarge;
-    me->setTorqueLimit = &setTorqueLimit;
-    me->updateLockoutStatus = &updateLockoutStatus;
-    me->updateInverterStatus = &updateInverterStatus;
-    me->getLockoutStatus = &getLockoutStatus;
-    me->getInverterStatus = &getInverterStatus;
+	me->setTorque = &setTorque;
+	me->setInverter = &setInverter;
+	me->setDischarge = &setDischarge;
+	me->setTorqueLimit = &setTorqueLimit;
+	me->updateLockoutStatus = &updateLockoutStatus;
+	me->updateInverterStatus = &updateInverterStatus;
+	me->getLockoutStatus = &getLockoutStatus;
+	me->getInverterStatus = &getInverterStatus;
 		*/
 	return me;
 }
@@ -192,11 +192,9 @@ MotorController* MotorController_new(SerialManager* sm, ubyte2 canMessageBaseID,
 
 void MCM_readTCSSettings(MotorController* me, Sensor* TCSSwitchUp, Sensor* TCSSwitchDown, Sensor* TCSPot)
 {	
-	 
-
 	//If the pot is clicked off (resistance goes to FFFF)
 	if (TCSPot->sensorValue > 5000)  //Position 0 = Regen Off
-    {
+	{
 		me->regen_mode = 0;  
 
 		me->regen_torqueLimitDNm = 0;
@@ -271,75 +269,79 @@ void MCM_calculateCommands(MotorController* me, TorqueEncoder* tps, BrakePressur
 {
 	//----------------------------------------------------------------------------
 	// Control commands
-    //Note: Safety checks (torque command limiting) are done EXTERNALLY.  This is a preliminary calculation
-    //which should return the intended torque based on pedals
-    //Note: All stored torque values should be positive / unsigned
-    //----------------------------------------------------------------------------
+	//Note: Safety checks (torque command limiting) are done EXTERNALLY.  This is a preliminary calculation
+	//which should return the intended torque based on pedals
+	//Note: All stored torque values should be positive / unsigned
+	//----------------------------------------------------------------------------
 	MCM_commands_setDischarge(me, DISABLED);
 	MCM_commands_setDirection(me, FORWARD); //1 = forwards for our car, 0 = reverse
-    
+
 	sbyte2 torqueOutput = 0;
 	sbyte2 appsTorque = 0;
 	sbyte2 bpsTorque = 0;
 
 	appsTorque = me->torqueMaximumDNm * getPercent(tps->percent, me->regen_percentAPPSForCoasting, 1, TRUE) - me->regen_torqueAtZeroPedalDNm * getPercent(tps->percent, me->regen_percentAPPSForCoasting, 0, TRUE);
 	bpsTorque = 0 - (me->regen_torqueLimitDNm - me->regen_torqueAtZeroPedalDNm) * getPercent(bps->percent, 0, me->regen_percentBPSForMaxRegen, TRUE);
-	
-	torqueOutput = appsTorque + bpsTorque;
-    //torqueOutput = me->torqueMaximumDNm * tps->percent;  //REMOVE THIS LINE TO ENABLE REGEN
-    MCM_commands_setTorqueDNm(me, torqueOutput);
 
-    me->HVILOverride = (IO_RTC_GetTimeUS(me->timeStamp_HVILOverrideCommandReceived) < 1000000);
+	torqueOutput = appsTorque + bpsTorque;
+	//torqueOutput = me->torqueMaximumDNm * tps->percent;  //REMOVE THIS LINE TO ENABLE REGEN
+	MCM_commands_setTorqueDNm(me, torqueOutput);
+
+	me->HVILOverride = (IO_RTC_GetTimeUS(me->timeStamp_HVILOverrideCommandReceived) < 1000000);
 }
 
 void MCM_relayControl(MotorController* me, Sensor* HVILTermSense)
 {    
-    //If HVIL Term Sense is low (HV is down)
-    if (HVILTermSense->sensorValue == FALSE && me->HVILOverride == FALSE)
-    {
-        //If we just noticed the HVIL went low
-        if (me->previousHVILState == TRUE)
-        {
-            SerialManager_send(me->serialMan, "Term sense went low\n");
-            IO_RTC_StartTime(&me->timeStamp_HVILLost);
-        }
+	//If HVIL Term Sense is low (HV is down)
+	if (HVILTermSense->sensorValue == FALSE && me->HVILOverride == FALSE)
+	{
+		//If we just noticed the HVIL went low
+		if (me->previousHVILState == TRUE)
+		{
+			SerialManager_send(me->serialMan, "Term sense went low\n");
+			IO_RTC_StartTime(&me->timeStamp_HVILLost);
+		}
 
-        //If the MCM is on (and we lost HV)
-        if (me->relayState == TRUE)
-        {
-            //Okay to turn MCM off once 0 torque is commanded, or after 2 sec
-            //TODO: SIMILAR CODE SHOULD BE EMPLOYED AT HVIL SHUTDOWN CONTROL PIN
-            if (me->commandedTorque == 0 || IO_RTC_GetTimeUS(me->timeStamp_HVILLost) > 2000000)  //EXTRA 0
-            {
-                IO_DO_Set(IO_DO_00, FALSE);  //Need MCM relay object
-                me->relayState = FALSE;
-            }
-            else
-            {
-                //Safety.c will command zero torque
-                //For now do nothing
-            }
-        }
-        MCM_setStartupStage(me, 0);
-        MCM_updateInverterStatus(me, UNKNOWN);
-        MCM_updateLockoutStatus(me, UNKNOWN);
+		//If the MCM is on (and we lost HV)
+		if (me->relayState == TRUE)
+		{
+			//Okay to turn MCM off once 0 torque is commanded, or after 2 sec
+			//TODO: SIMILAR CODE SHOULD BE EMPLOYED AT HVIL SHUTDOWN CONTROL PIN
+			if (me->commandedTorque == 0 || IO_RTC_GetTimeUS(me->timeStamp_HVILLost) > 2000000)  //EXTRA 0
+			{
+				IO_DO_Set(IO_DO_00, FALSE);  //Need MCM relay object
+				me->relayState = FALSE;
+			}
+			else
+			{
+				//Safety.c will command zero torque
+				//For now do nothing
+			}
+		}
+		MCM_setStartupStage(me, 0);
+		MCM_updateInverterStatus(me, UNKNOWN);
+		MCM_updateLockoutStatus(me, UNKNOWN);
 
-        me->previousHVILState = FALSE;
-    }
-    else  // HVILTermSense->sensorValue == TRUE || me->HVILOverride == TRUE
-    {
-        //If HVIL just changed, send a message
-        if (me->previousHVILState == FALSE)
-        {
-            SerialManager_send(me->serialMan, "Term sense went high\n");
-            if (MCM_getStartupStage(me) == 0) { MCM_setStartupStage(me, 1); }  //Reset the startup procedure because HV just went high and we are now turning on the MCM
-        }
-        me->previousHVILState = TRUE;
+		me->previousHVILState = FALSE;
+	}
+	else  // HVILTermSense->sensorValue == TRUE || me->HVILOverride == TRUE
+	{
+		//If HVIL just changed, send a message
+		if (me->previousHVILState == FALSE)
+		{
+			SerialManager_send(me->serialMan, "Term sense went high\n");
+			if (MCM_getStartupStage(me) == 0) 
+			{
+				MCM_updateLockoutStatus(me, DISABLED);
+				MCM_setStartupStage(me, 1);
+			}  //Reset the startup procedure because HV just went high and we are now turning on the MCM
+		}
+		me->previousHVILState = TRUE;
 
-        //Turn on the MCM relay
-        IO_DO_Set(IO_DO_00, TRUE);
-        me->relayState = TRUE;
-    }
+		//Turn on the MCM relay
+		IO_DO_Set(IO_DO_00, TRUE);
+		me->relayState = TRUE;
+	}
 }
 
 //See diagram at https://onedrive.live.com/redir?resid=F9BB8F0F8FDB5CF8!30410&authkey=!ABSF-uVH-VxQRAs&ithint=file%2chtml
@@ -356,7 +358,10 @@ void MCM_inverterControl(MotorController* me, TorqueEncoder* tps, BrakePressureS
     {
     case 0: //MCM relay is off --> stay until lockout is enabled;
         //It shouldn't be necessary to check mcm relayState or inverter status <> UNKNOWN
-        //but if we have trouble we can add that here.
+        //but if we have trouble we can add that here
+	//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+	//notice that in this function the intent(comments right next to case #) is different from what is implemented
+    	//MCM_relayControl(), the function above, has done the job this one can do
 
     case 1: //MCM relay is on, lockout=enabled, inverter=disabled --> stay until lockout is disabled
         //Actions to perform upon entering this state ------------------------------------------------
@@ -395,11 +400,11 @@ void MCM_inverterControl(MotorController* me, TorqueEncoder* tps, BrakePressureS
         //Nothing: wait for mcm to say it's enabled
 
         //How to transition to next state ------------------------------------------------
-        if (MCM_getInverterStatus(me) == ENABLED)
+        if (MCM_getInverterStatus(me) == ENABLED)//(MCM_getInverterStatus(me) == ENABLED)
         {
             RTDPercent = 1; //Doesn't matter if button is no longer pressed - RTD light should be on if car is driveable
             SerialManager_send(me->serialMan, "Inverter has been enabled.  Starting RTDS.  Car is ready to drive.\n");
-            RTDS_setVolume(rtds, 1, 1500000);
+            RTDS_setVolume(rtds, 1, 1500000);//sounds for 1.5s
             MCM_setStartupStage(me, 4); //MCM_getStartupStage(me) + 1);  //leave this stage since we've already kicked off the RTDS
         }
         break;
@@ -407,7 +412,7 @@ void MCM_inverterControl(MotorController* me, TorqueEncoder* tps, BrakePressureS
     case 4: //inverter=disabled, rtds=already started
         //Actions to perform upon entering this state ------------------------------------------------
         SerialManager_send(me->serialMan, "RTD procedure complete.\n");  //Just send a message
-        RTDPercent = 1; //This line is redundant
+        RTDPercent = 1; //This line is redundant, except not. RTD light is going to be on if car is driveable
 
         //How to transition to next state ------------------------------------------------
         //Always do, since we sent a message.
