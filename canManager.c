@@ -612,7 +612,7 @@ void canOutput_sendDebugMessage(CanManager* me, TorqueEncoder* tps, BrakePressur
     canMessages[canMessageCount - 1].data[byteNum++] = 0;
     canMessages[canMessageCount - 1].data[byteNum++] = 0;
     canMessages[canMessageCount - 1].data[byteNum++] = 0;
-    canMessages[canMessageCount - 1].data[byteNum++] = 0;
+    canMessages[canMessageCount - 1].data[byteNum++] = MCM_getStartupStage(mcm); //check which state the RTD state machine is in
     canMessages[canMessageCount - 1].length = byteNum;
 
     // 50A: Reserved for LV testing
