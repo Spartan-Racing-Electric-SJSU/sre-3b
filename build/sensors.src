@@ -1,5 +1,5 @@
 	; TASKING VX-toolset for C166: C compiler v4.0r1 Build 741 SN 07744515
-	; Options: -f cc5804a -c99 -Mh --fp-model=FT -Cxc2287 --core=xc16x -DTASKING_VIPER -D__USIC_MEM_TYPE=__PAGE_080_MEM_TYPE -D__MULTICAN_MEM_TYPE=__PAGE_080_MEM_TYPE -DTTC50 -DRTS_TTC_FLASH_DATE_YEAR=2018 -DRTS_TTC_FLASH_DATE_MONTH=5 -DRTS_TTC_FLASH_DATE_DAY=19 -DRTS_TTC_FLASH_DATE_HOUR=3 -DRTS_TTC_FLASH_DATE_MINUTE=27 -I..\..\..\Environment\inc -I..\..\..\Environment\inc_int -I..\..\..\Environment\bsp -I. --tradeoff=0 --no-tasking-sfr -ga --language=+cmp14,+div32,-gcc,-strings -O3 --source --mac -o build\sensors.src
+	; Options: -f cc12764a -c99 -Mh --fp-model=FT -Cxc2287 --core=xc16x -DTASKING_VIPER -D__USIC_MEM_TYPE=__PAGE_080_MEM_TYPE -D__MULTICAN_MEM_TYPE=__PAGE_080_MEM_TYPE -DTTC50 -DRTS_TTC_FLASH_DATE_YEAR=2018 -DRTS_TTC_FLASH_DATE_MONTH=6 -DRTS_TTC_FLASH_DATE_DAY=20 -DRTS_TTC_FLASH_DATE_HOUR=9 -DRTS_TTC_FLASH_DATE_MINUTE=34 -I..\..\..\Environment\inc -I..\..\..\Environment\inc_int -I..\..\..\Environment\bsp -I. --tradeoff=0 --no-tasking-sfr -ga --language=+cmp14,+div32,-gcc,-strings -O3 --source --mac -o build\sensors.src
 	; Module start
 	.source	'sensors.c'
 code_sensors_updateSensors	.section	code, cluster 'sensors_updateSensors', new
@@ -64,7 +64,7 @@ code_sensors_updateSensors	.section	code, cluster 'sensors_updateSensors', new
 ; sensors.c	    57  //----------------------------------------------------------------------------
 ; sensors.c	    58  void sensors_updateSensors(void)
 ; Function _sensors_updateSensors
-_20:
+_18:
 _sensors_updateSensors	.proc	far
 
 ; sensors.c	    59  {
@@ -77,29 +77,29 @@ _sensors_updateSensors	.proc	far
 ; sensors.c	    66      //Sensor_BenchTPS1.ioErr_signalGet = IO_ADC_Get(IO_ADC_5V_01, &Sensor_BenchTPS1.sensorValue, &Sensor_BenchTPS1.fresh);
 ; sensors.c	    67      Sensor_TPS0.ioErr_signalGet = IO_ADC_Get(IO_ADC_5V_00, &Sensor_TPS0.sensorValue, &Sensor_TPS0.fresh);
 	movw	r4,#@sof(_Sensor_TPS0+0x8)
-_213:
+_209:
 	movw	r11,#@sof(_Sensor_TPS0+0xc)
 	movb	rl2,#0x8
 	movw	r5,#@seg(_Sensor_TPS0+0x8)
 	movw	r12,#@seg(_Sensor_TPS0+0xc)
 	call	_IO_ADC_Get
-_214:
+_210:
 	extp	#@pag(_Sensor_TPS0+0x14),#0x1
 	movw	@pof(_Sensor_TPS0+0x14),r2
-_215:
+_211:
 
 ; sensors.c	    68      Sensor_TPS1.ioErr_signalGet = IO_ADC_Get(IO_ADC_5V_01, &Sensor_TPS1.sensorValue, &Sensor_TPS1.fresh);
 	movw	r4,#@sof(_Sensor_TPS1+0x8)
-_216:
+_212:
 	movw	r11,#@sof(_Sensor_TPS1+0xc)
 	movb	rl2,#0x9
 	movw	r5,#@seg(_Sensor_TPS1+0x8)
 	movw	r12,#@seg(_Sensor_TPS1+0xc)
 	call	_IO_ADC_Get
-_217:
+_213:
 	extp	#@pag(_Sensor_TPS1+0x14),#0x1
 	movw	@pof(_Sensor_TPS1+0x14),r2
-_218:
+_214:
 
 ; sensors.c	    69      //Sensor_TPS0.ioErr_signalGet = IO_PWD_PulseGet(IO_PWM_00, &Sensor_TPS0.sensorValue);
 ; sensors.c	    70  	//Sensor_TPS1.ioErr_signalGet = IO_PWD_PulseGet(IO_PWM_01, &Sensor_TPS1.sensorValue);
@@ -108,31 +108,31 @@ _218:
 ; sensors.c	    73  	//Brake Position Sensor ---------------------------------------------------
 ; sensors.c	    74  	Sensor_BPS0.ioErr_signalGet = IO_ADC_Get(IO_ADC_5V_02, &Sensor_BPS0.sensorValue, &Sensor_BPS0.fresh);
 	movw	r4,#@sof(_Sensor_BPS0+0x8)
-_219:
+_215:
 	movw	r11,#@sof(_Sensor_BPS0+0xc)
 	movb	rl2,#0xa
 	movw	r5,#@seg(_Sensor_BPS0+0x8)
 	movw	r12,#@seg(_Sensor_BPS0+0xc)
 	call	_IO_ADC_Get
-_220:
+_216:
 	extp	#@pag(_Sensor_BPS0+0x14),#0x1
 	movw	@pof(_Sensor_BPS0+0x14),r2
-_221:
+_217:
 
 ; sensors.c	    75  
 ; sensors.c	    76  	//TCS Knob
 ; sensors.c	    77  	Sensor_TCSKnob.ioErr_signalGet = IO_ADC_Get(IO_ADC_5V_04, &Sensor_TCSKnob.sensorValue, &Sensor_TCSKnob.fresh);
 	movw	r4,#@sof(_Sensor_TCSKnob+0x8)
-_222:
+_218:
 	movw	r11,#@sof(_Sensor_TCSKnob+0xc)
 	movb	rl2,#0xc
 	movw	r5,#@seg(_Sensor_TCSKnob+0x8)
 	movw	r12,#@seg(_Sensor_TCSKnob+0xc)
 	call	_IO_ADC_Get
-_223:
+_219:
 	extp	#@pag(_Sensor_TCSKnob+0x14),#0x1
 	movw	@pof(_Sensor_TCSKnob+0x14),r2
-_224:
+_220:
 
 ; sensors.c	    78      
 ; sensors.c	    79  	//?? - For future use ---------------------------------------------------
@@ -148,127 +148,117 @@ _224:
 ; sensors.c	    89      //Wheel speed sensors ---------------------------------------------------
 ; sensors.c	    90  	Sensor_WSS_FL.ioErr_signalGet = IO_PWD_FreqGet(IO_PWD_10, &Sensor_WSS_FL.sensorValue);
 	movb	rl2,#0x22
-_225:
+_221:
 	movw	r4,#@sof(_Sensor_WSS_FL+0x8)
 	movw	r5,#@seg(_Sensor_WSS_FL+0x8)
 	call	_IO_PWD_FreqGet
-_226:
+_222:
 	extp	#@pag(_Sensor_WSS_FL+0x14),#0x1
 	movw	@pof(_Sensor_WSS_FL+0x14),r2
-_227:
+_223:
 
 ; sensors.c	    91  	Sensor_WSS_FR.ioErr_signalGet = IO_PWD_FreqGet(IO_PWD_08, &Sensor_WSS_FR.sensorValue);
 	movb	rl2,#0x20
-_228:
+_224:
 	movw	r4,#@sof(_Sensor_WSS_FR+0x8)
 	movw	r5,#@seg(_Sensor_WSS_FR+0x8)
 	call	_IO_PWD_FreqGet
-_229:
+_225:
 	extp	#@pag(_Sensor_WSS_FR+0x14),#0x1
 	movw	@pof(_Sensor_WSS_FR+0x14),r2
-_230:
+_226:
 
 ; sensors.c	    92  	Sensor_WSS_RL.ioErr_signalGet = IO_PWD_FreqGet(IO_PWD_11, &Sensor_WSS_RL.sensorValue);
 	movb	rl2,#0x23
-_231:
+_227:
 	movw	r4,#@sof(_Sensor_WSS_RL+0x8)
 	movw	r5,#@seg(_Sensor_WSS_RL+0x8)
 	call	_IO_PWD_FreqGet
-_232:
+_228:
 	extp	#@pag(_Sensor_WSS_RL+0x14),#0x1
 	movw	@pof(_Sensor_WSS_RL+0x14),r2
-_233:
+_229:
 
-; sensors.c	    93  	Sensor_WSS_RR.ioErr_signalGet = IO_PWD_FreqGet(IO_PWD_09, &Sensor_WSS_RR.sensorValue);
-	movb	rl2,#0x21
-_234:
-	movw	r4,#@sof(_Sensor_WSS_RR+0x8)
-	movw	r5,#@seg(_Sensor_WSS_RR+0x8)
-	call	_IO_PWD_FreqGet
-_235:
-	extp	#@pag(_Sensor_WSS_RR+0x14),#0x1
-	movw	@pof(_Sensor_WSS_RR+0x14),r2
-_236:
-
+; sensors.c	    93  	// Sensor_WSS_RR.ioErr_signalGet = IO_PWD_FreqGet(IO_PWD_09, &Sensor_WSS_RR.sensorValue);
 ; sensors.c	    94  
 ; sensors.c	    95      //Switches / Digital ---------------------------------------------------
-; sensors.c	    96  	Sensor_RTDButton.ioErr_signalGet = IO_DI_Get(IO_DI_00, &Sensor_RTDButton.sensorValue);
+; sensors.c	    96  	Sensor_RTDButton.ioErr_signalGet = IO_DI_Get(IO_PIN_263, &Sensor_RTDButton.sensorValue);
 	movb	rl2,#0x26
-_237:
+_230:
 	movw	r4,#@sof(_Sensor_RTDButton+0x8)
 	movw	r5,#@seg(_Sensor_RTDButton+0x8)
 	call	_IO_DI_Get
-_238:
+_231:
 	extp	#@pag(_Sensor_RTDButton+0x14),#0x1
 	movw	@pof(_Sensor_RTDButton+0x14),r2
-_239:
+_232:
 
 ; sensors.c	    97  	Sensor_EcoButton.ioErr_signalGet = IO_DI_Get(IO_DI_01, &Sensor_EcoButton.sensorValue);
 	movb	rl2,#0x27
-_240:
+_233:
 	movw	r4,#@sof(_Sensor_EcoButton+0x8)
 	movw	r5,#@seg(_Sensor_EcoButton+0x8)
 	call	_IO_DI_Get
-_241:
+_234:
 	extp	#@pag(_Sensor_EcoButton+0x14),#0x1
 	movw	@pof(_Sensor_EcoButton+0x14),r2
-_242:
+_235:
 
 ; sensors.c	    98  	Sensor_TCSSwitchUp.ioErr_signalGet = IO_DI_Get(IO_DI_02, &Sensor_TCSSwitchUp.sensorValue);
 	movb	rl2,#0x28
-_243:
+_236:
 	movw	r4,#@sof(_Sensor_TCSSwitchUp+0x8)
 	movw	r5,#@seg(_Sensor_TCSSwitchUp+0x8)
 	call	_IO_DI_Get
-_244:
+_237:
 	extp	#@pag(_Sensor_TCSSwitchUp+0x14),#0x1
 	movw	@pof(_Sensor_TCSSwitchUp+0x14),r2
-_245:
+_238:
 
 ; sensors.c	    99  	Sensor_TCSSwitchDown.ioErr_signalGet = IO_DI_Get(IO_DI_03, &Sensor_TCSSwitchDown.sensorValue);
 	movb	rl2,#0x29
-_246:
+_239:
 	movw	r4,#@sof(_Sensor_TCSSwitchDown+0x8)
 	movw	r5,#@seg(_Sensor_TCSSwitchDown+0x8)
 	call	_IO_DI_Get
-_247:
+_240:
 	extp	#@pag(_Sensor_TCSSwitchDown+0x14),#0x1
 	movw	@pof(_Sensor_TCSSwitchDown+0x14),r2
-_248:
+_241:
 
-; sensors.c	   100  	Sensor_HVILTerminationSense.ioErr_signalGet = IO_DI_Get(IO_DI_07, &Sensor_HVILTerminationSense.sensorValue);
+; sensors.c	   100  	Sensor_HVILTerminationSense.ioErr_signalGet = IO_DI_Get(IO_PIN_253, &Sensor_HVILTerminationSense.sensorValue);
 	movb	rl2,#0x2d
-_249:
+_242:
 	movw	r4,#@sof(_Sensor_HVILTerminationSense+0x8)
 	movw	r5,#@seg(_Sensor_HVILTerminationSense+0x8)
 	call	_IO_DI_Get
-_250:
+_243:
 	extp	#@pag(_Sensor_HVILTerminationSense+0x14),#0x1
 	movw	@pof(_Sensor_HVILTerminationSense+0x14),r2
-_251:
+_244:
 
 ; sensors.c	   101  
 ; sensors.c	   102      //Other stuff ---------------------------------------------------
 ; sensors.c	   103      //Battery voltage (at VCU internal electronics supply input)
 ; sensors.c	   104  	Sensor_LVBattery.ioErr_signalGet = IO_ADC_Get(IO_ADC_UBAT, &Sensor_LVBattery.sensorValue, &Sensor_LVBattery.fresh);
 	movb	rl2,#0x35
-_252:
+_245:
 	movw	r4,#@sof(_Sensor_LVBattery+0x8)
-_253:
+_246:
 	movw	r11,#@sof(_Sensor_LVBattery+0xc)
 	movw	r12,#@seg(_Sensor_LVBattery+0xc)
 	movw	r5,#@seg(_Sensor_LVBattery+0x8)
 	call	_IO_ADC_Get
-_254:
+_247:
 	extp	#@pag(_Sensor_LVBattery+0x14),#0x1
 	movw	@pof(_Sensor_LVBattery+0x14),r2
-_255:
+_248:
 
 ; sensors.c	   105  
 ; sensors.c	   106  
 ; sensors.c	   107  }
 	ret
-_51:
+_49:
 	; End of function
 	; End of section
 
@@ -278,33 +268,33 @@ code_Light_set	.section	code, cluster 'Light_set', new
 ; sensors.c	   108  
 ; sensors.c	   109  void Light_set(Light light, float4 percent)
 ; Function _Light_set
-_32:
+_30:
 _Light_set	.proc	far
 	movw	[-r15],r1
-_65:
+_63:
 	movw	[-r15],r6
-_76:
+_74:
 	movw	[-r15],r7
-_87:
+_85:
 	movb	rh7,rl2
-_193:
+_191:
 
 ; sensors.c	   110  {
 ; sensors.c	   111      ubyte2 duty = 65535 * percent;
 	movw	r2,#0xff00
-_191:
+_189:
 	movw	r3,#0x477f
-_260:
+_253:
 	call	__mul_spf
-_192:
+_190:
 	call	__spf2us
-_195:
+_193:
 	movw	r3,r2
-_196:
+_194:
 
 ; sensors.c	   112      bool power = duty > 5000 ? TRUE : FALSE; //Even though it's a lowside output, TRUE = on
 	movw	r4,#0x0
-_198:
+_196:
 	cmpw	r3,#0x1388
 	jmp	cc_ule,_2
 	movw	r4,#0x1
@@ -313,15 +303,15 @@ _2:
 ; sensors.c	   113  
 ; sensors.c	   114      switch (light)
 	movbs	r11,rh7
-_199:
+_197:
 	cmpw	r11,#0x7
 	jmp	cc_ugt,_3
 	shl	r11,#0x1
-_194:
+_192:
 	exts	#@seg(_$1$swt),#0x1
 	movw	r11,[r11+#@sof(_$1$swt)]
 	jmpi	[r11]
-_197:
+_195:
 	; End of section
 
 shuge__1_swt	.section	shuge, romdata, new
@@ -330,10 +320,10 @@ _$1$swt	.label	word
 	.dw	@sof(_5)
 	.dw	@sof(_6)
 	.dw	@sof(_7)
+	.dw	@sof(_3)
 	.dw	@sof(_8)
 	.dw	@sof(_9)
 	.dw	@sof(_10)
-	.dw	@sof(_11)
 	; End of section
 
 code_Light_set	.section	code, cluster 'Light_set'
@@ -341,55 +331,44 @@ code_Light_set	.section	code, cluster 'Light_set'
 ; sensors.c	   115      {
 ; sensors.c	   116      //PWM devices
 ; sensors.c	   117  	case Light_brake:
-_8:
-
-; sensors.c	   118  		IO_PWM_SetDuty(IO_PWM_02, duty, NULL);  //Pin 116
-	movb	rl2,#0x2
-	movw	r4,#0x0
-_201:
-	movw	r5,#0x0
-	call	_IO_PWM_SetDuty
-_200:
-
+; sensors.c	   118  		// IO_PWM_SetDuty(IO_PWM_02, duty, NULL);  //Pin 116
 ; sensors.c	   119  		break;
-	jmp	_12
-
 ; sensors.c	   120  
 ; sensors.c	   121      case Cooling_waterPump:
-_9:
+_8:
 
 ; sensors.c	   122          IO_PWM_SetDuty(IO_PWM_05, duty, NULL);
 	movb	rl2,#0x5
 	movw	r4,#0x0
-_203:
+_199:
 	movw	r5,#0x0
 	call	_IO_PWM_SetDuty
-_202:
+_198:
 
 ; sensors.c	   123          break;
-	jmp	_13
+	jmp	_11
 
 ; sensors.c	   124  
 ; sensors.c	   125      case Cooling_motorFans:
-_10:
+_9:
 
 ; sensors.c	   126          IO_DO_Set(IO_DO_03, power);
 	movb	rl2,#0x1b
-_261:
+_254:
 
 ; sensors.c	   127          break;
-	jmp	_14
+	jmp	_12
 
 ; sensors.c	   128  
 ; sensors.c	   129      case Cooling_batteryFans:
-_11:
+_10:
 
 ; sensors.c	   130          IO_DO_Set(IO_DO_04, power);
 	movb	rl2,#0x1c
-_262:
+_255:
 
 ; sensors.c	   131          break;
-	jmp	_15
+	jmp	_13
 
 ; sensors.c	   132  
 ; sensors.c	   133          //--------------------------------------------
@@ -401,10 +380,10 @@ _7:
 ; sensors.c	   137          //IO_PWM_SetDuty(IO_PWM_03, duty, NULL);  //Pin 105
 ; sensors.c	   138          IO_DO_Set(IO_ADC_CUR_00, power);
 	movb	rl2,#0x2e
-_263:
+_256:
 
 ; sensors.c	   139          break;
-	jmp	_16
+	jmp	_14
 
 ; sensors.c	   140  
 ; sensors.c	   141  	case Light_dashEco:
@@ -413,10 +392,10 @@ _4:
 ; sensors.c	   142  		//IO_PWM_SetDuty(IO_PWM_04, duty, NULL);  //Pin 116
 ; sensors.c	   143          IO_DO_Set(IO_ADC_CUR_01, power);
 	movb	rl2,#0x2f
-_264:
+_257:
 
 ; sensors.c	   144  		break;
-	jmp	_17
+	jmp	_15
 
 ; sensors.c	   145  
 ; sensors.c	   146  	case Light_dashError:
@@ -425,10 +404,10 @@ _5:
 ; sensors.c	   147          //IO_PWM_SetDuty(IO_PWM_05, duty *.6, NULL);  //Pin 104
 ; sensors.c	   148          IO_DO_Set(IO_ADC_CUR_02, power);
 	movb	rl2,#0x30
-_265:
+_258:
 
 ; sensors.c	   149          break;
-	jmp	_18
+	jmp	_16
 
 ; sensors.c	   150  
 ; sensors.c	   151      case Light_dashRTD:
@@ -442,25 +421,24 @@ _6:
 ; sensors.c	   155      }
 ; sensors.c	   156  
 ; sensors.c	   157  }
+_12:
+_13:
 _14:
 _15:
 _16:
-_17:
-_18:
 	movb	rh2,rl4
-_204:
+_200:
 	call	_IO_DO_Set
-_13:
-_12:
+_11:
 _3:
 	movw	r7,[r15+]
-_98:
+_96:
 	movw	r6,[r15+]
-_109:
+_107:
 	movw	r1,[r15+]
-_120:
+_118:
 	ret
-_56:
+_54:
 	; End of function
 	; End of section
 
@@ -484,7 +462,6 @@ _56:
 	.extern	_Sensor_WSS_FL : word
 	.extern	_Sensor_WSS_FR : word
 	.extern	_Sensor_WSS_RL : word
-	.extern	_Sensor_WSS_RR : word
 	.extern	_Sensor_RTDButton : word
 	.extern	_Sensor_EcoButton : word
 	.extern	_Sensor_TCSSwitchUp : word
@@ -495,21 +472,21 @@ _56:
 	.extern	__mul_spf : far
 	.extern	__spf2us : far
 	.debug		.debug_info
-_44:
-	.dl	1531
+_42:
+	.dl	1505
 	.dw	3
-	.dl	_45
+	.dl	_43
 	.db	4
-_43:
+_41:
 	.db	1
 	.db	'sensors.c',0
 	.db	'TASKING VX-toolset for C166: C compiler',0
 	.db	'C:\\Users\\Timothy_Le\\Documents\\SRE\\SRE_SDK_2018\\VCU\\Environment\\dev\\sre-3b\\',0,12,1
-	.dl	_46
-_61:
+	.dl	_44
+_59:
 	.db	2
 	.db	'unsigned int',0,2,7
-_63:
+_61:
 	.db	2
 	.db	'unsigned char',0,1,8,3,5
 	.dl	143
@@ -580,7 +557,7 @@ _63:
 	.db	'do_value',0,4,142,2,30,2
 	.dl	159
 	.db	0
-_57:
+_55:
 	.db	7,5,103,9,1,8
 	.db	'Light_dashEco',0,0,8
 	.db	'Light_dashError',0,1,8
@@ -590,7 +567,7 @@ _57:
 	.db	'Cooling_waterPump',0,5,8
 	.db	'Cooling_motorFans',0,6,8
 	.db	'Cooling_batteryFans',0,7,0
-_59:
+_57:
 	.db	2
 	.db	'float',0,4,4,9
 	.db	'void',0,3,5
@@ -669,9 +646,6 @@ _59:
 	.db	'Sensor_WSS_RL',0,5,162,1,15,5
 	.dl	940
 	.db	1,1,13
-	.db	'Sensor_WSS_RR',0,5,163,1,15,5
-	.dl	940
-	.db	1,1,13
 	.db	'Sensor_RTDButton',0,5,176,1,15,5
 	.dl	940
 	.db	1,1,13
@@ -696,7 +670,7 @@ _59:
 	; End of section
 
 	.debug		.debug_abbrev
-_45:
+_43:
 	.db	1,17,1,3,8,37,8,27,8,19,15,128,70,12,16,6,0,0,2,36,0,3,8,11,15,62,15,0,0,3,15,0,51,15,73,19,0,0,4,38,0
 	.db	73,19,0,0,5,46,1,3,8,58,15,59,15,57,15,51,15,73,19,54,15,39,12,63,12,60,12,0,0,6,5,0,3,8,58,15,59,15,57
 	.db	15,51,15,73,19,0,0,7,4,1,58,15,59,15,57,15,11,15,0,0,8,40,0,3,8,28,13,0,0,9,59,0,3,8,0,0,10,22,0,3,8,58
@@ -705,12 +679,12 @@ _45:
 	; End of section
 
 	.debug		.debug_line
-_46:
-	.dl	_206-_205
-_205:
+_44:
+	.dl	_202-_201
+_201:
 	.dw	3
-	.dl	_208-_207
-_207:
+	.dl	_204-_203
+_203:
 	.db	2,1,-4,9,10,0,1,1,1,1,0,0,0,1
 	.db	'..\\..\\..\\Environment\\inc',0,0
 	.db	'IO_PWD.h',0,1,0,0
@@ -721,14 +695,14 @@ _207:
 	.db	'sensors.c',0,0,0,0
 	.db	'ptypes_xe167.h',0,1,0,0
 	.db	'IO_Constants.h',0,1,0,0,0
-_208:
-_206:
+_204:
+_202:
 	; End of section
 
 	.debug		.debug_pubnames
 	.dl	95
 	.dw	2
-	.dl	_44,1535,187
+	.dl	_42,1509,187
 	.db	'IO_PWD_FreqGet',0
 	.dl	277
 	.db	'IO_ADC_Get',0
@@ -742,584 +716,565 @@ _206:
 	; End of section
 
 	.debug		.debug_info, cluster 'sensors_updateSensors'
-_47:
+_45:
 	.dl	214
 	.dw	3
-	.dl	_48
+	.dl	_46
 	.db	4,1
 	.db	'sensors.c',0
 	.db	'TASKING VX-toolset for C166: C compiler',0
 	.db	'C:\\Users\\Timothy_Le\\Documents\\SRE\\SRE_SDK_2018\\VCU\\Environment\\dev\\sre-3b\\',0,12,1
-	.dl	_50,_49
+	.dl	_48,_47
 	.db	2
-	.dl	_43
+	.dl	_41
 	.db	3
 	.db	'sensors_updateSensors',0,1,58,6,6,1,1,1
-	.dl	_20,_51,_19
+	.dl	_18,_49,_17
 	.db	12,19,146,176,2,0,64,36,146,161,2,0,33,4
-	.dl	_20,_51
+	.dl	_18,_49
 	.db	0,0
 	; End of section
 
 	.debug		.debug_abbrev, cluster 'sensors_updateSensors'
-_48:
+_46:
 	.db	1,17,1,3,8,37,8,27,8,19,15,128,70,12,85,6,16,6,0,0,2,61,0,24,16,0,0,3,46,1,3,8,58,15,59,15,57,15,51,15
 	.db	54,15,39,12,63,12,17,1,18,1,64,6,42,9,0,0,4,11,0,17,1,18,1,0,0,0
 	; End of section
 
 	.debug		.debug_line, cluster 'sensors_updateSensors'
-_49:
-	.dl	_210-_209
-_209:
+_47:
+	.dl	_206-_205
+_205:
 	.dw	3
-	.dl	_212-_211
-_211:
+	.dl	_208-_207
+_207:
 	.db	2,1,-4,9,10,0,1,1,1,1,0,0,0,1,0
 	.db	'sensors.c',0,0,0,0,0
-_212:
+_208:
 	.db	5,72,7,0,5,2
-	.dl	_20
+	.dl	_18
 	.db	3,194,0,1,5,98,9
-	.dw	_213-_20
+	.dw	_209-_18
 	.db	1,5,33,9
-	.dw	_214-_213
+	.dw	_210-_209
 	.db	1,5,72,9
-	.dw	_215-_214
+	.dw	_211-_210
 	.db	3,1,1,5,98,9
-	.dw	_216-_215
+	.dw	_212-_211
 	.db	1,5,33,9
-	.dw	_217-_216
+	.dw	_213-_212
 	.db	1,5,69,9
-	.dw	_218-_217
+	.dw	_214-_213
 	.db	3,6,1,5,95,9
-	.dw	_219-_218
+	.dw	_215-_214
 	.db	1,5,30,9
-	.dw	_220-_219
+	.dw	_216-_215
 	.db	1,5,75,9
-	.dw	_221-_220
+	.dw	_217-_216
 	.db	3,3,1,5,104,9
-	.dw	_222-_221
+	.dw	_218-_217
 	.db	1,5,33,9
-	.dw	_223-_222
+	.dw	_219-_218
 	.db	1,5,49,9
-	.dw	_224-_223
+	.dw	_220-_219
 	.db	3,13,1,5,74,9
+	.dw	_221-_220
+	.db	1,5,32,9
+	.dw	_222-_221
+	.db	1,5,49,9
+	.dw	_223-_222
+	.db	3,1,1,5,74,9
+	.dw	_224-_223
+	.db	1,5,32,9
 	.dw	_225-_224
-	.db	1,5,32,9
+	.db	1,5,49,9
 	.dw	_226-_225
-	.db	1,5,49,9
+	.db	3,1,1,5,74,9
 	.dw	_227-_226
-	.db	3,1,1,5,74,9
+	.db	1,5,32,9
 	.dw	_228-_227
-	.db	1,5,32,9
+	.db	1,5,47,9
 	.dw	_229-_228
-	.db	1,5,49,9
+	.db	3,4,1,5,76,9
 	.dw	_230-_229
-	.db	3,1,1,5,74,9
+	.db	1,5,35,9
 	.dw	_231-_230
-	.db	1,5,32,9
+	.db	1,5,47,9
 	.dw	_232-_231
-	.db	1,5,49,9
+	.db	3,1,1,5,74,9
 	.dw	_233-_232
-	.db	3,1,1,5,74,9
+	.db	1,5,35,9
 	.dw	_234-_233
-	.db	1,5,32,9
-	.dw	_235-_234
-	.db	1,5,47,9
-	.dw	_236-_235
-	.db	3,3,1,5,74,9
-	.dw	_237-_236
-	.db	1,5,35,9
-	.dw	_238-_237
-	.db	1,5,47,9
-	.dw	_239-_238
-	.db	3,1,1,5,74,9
-	.dw	_240-_239
-	.db	1,5,35,9
-	.dw	_241-_240
 	.db	1,5,49,9
-	.dw	_242-_241
+	.dw	_235-_234
 	.db	3,1,1,5,78,9
-	.dw	_243-_242
+	.dw	_236-_235
 	.db	1,5,37,9
-	.dw	_244-_243
+	.dw	_237-_236
 	.db	1,5,51,9
-	.dw	_245-_244
+	.dw	_238-_237
 	.db	3,1,1,5,82,9
-	.dw	_246-_245
+	.dw	_239-_238
 	.db	1,5,39,9
-	.dw	_247-_246
+	.dw	_240-_239
 	.db	1,5,58,9
-	.dw	_248-_247
-	.db	3,1,1,5,96,9
-	.dw	_249-_248
+	.dw	_241-_240
+	.db	3,1,1,5,98,9
+	.dw	_242-_241
 	.db	1,5,46,9
-	.dw	_250-_249
+	.dw	_243-_242
 	.db	1,5,48,9
-	.dw	_251-_250
+	.dw	_244-_243
 	.db	3,4,1,5,78,9
-	.dw	_252-_251
+	.dw	_245-_244
 	.db	1,5,109,9
-	.dw	_253-_252
+	.dw	_246-_245
 	.db	1,5,35,9
-	.dw	_254-_253
+	.dw	_247-_246
 	.db	1,5,1,9
-	.dw	_255-_254
+	.dw	_248-_247
 	.db	3,3,1,7,9
-	.dw	_51-_255
+	.dw	_49-_248
 	.db	0,1,1
-_210:
+_206:
 	; End of section
 
 	.debug		.debug_ranges, cluster 'sensors_updateSensors'
-_50:
-	.dl	-1,_20,0,_51-_20,0,0
+_48:
+	.dl	-1,_18,0,_49-_18,0,0
 	; End of section
 
 	.debug		.debug_pubnames
 	.dl	40
 	.dw	2
-	.dl	_47,218,152
+	.dl	_45,218,152
 	.db	'sensors_updateSensors',0
 	.dl	0
 	; End of section
 
 	.debug		.debug_info, cluster 'Light_set'
-_52:
+_50:
 	.dl	280
 	.dw	3
-	.dl	_53
+	.dl	_51
 	.db	4,1
 	.db	'sensors.c',0
 	.db	'TASKING VX-toolset for C166: C compiler',0
 	.db	'C:\\Users\\Timothy_Le\\Documents\\SRE\\SRE_SDK_2018\\VCU\\Environment\\dev\\sre-3b\\',0,12,1
-	.dl	_55,_54
+	.dl	_53,_52
 	.db	2
-	.dl	_43
+	.dl	_41
 	.db	3
 	.db	'Light_set',0,1,109,6,6,1,1,1
-	.dl	_32,_56,_31
+	.dl	_30,_54,_29
 	.db	12,19,146,176,2,0,64,36,146,161,2,0,33,4
 	.db	'light',0,1,109,22,2
-	.dl	_57,_58
+	.dl	_55,_56
 	.db	4
 	.db	'percent',0,1,109,36,2
-	.dl	_59,_60
+	.dl	_57,_58
 	.db	5
-	.dl	_32,_56
+	.dl	_30,_54
 	.db	6
 	.db	'duty',0,1,111,12,2
-	.dl	_61,_62
+	.dl	_59,_60
 	.db	6
 	.db	'power',0,1,112,10,2
-	.dl	_63,_64
+	.dl	_61,_62
 	.db	0,0,0
 	; End of section
 
 	.debug		.debug_abbrev, cluster 'Light_set'
-_53:
+_51:
 	.db	1,17,1,3,8,37,8,27,8,19,15,128,70,12,85,6,16,6,0,0,2,61,0,24,16,0,0,3,46,1,3,8,58,15,59,15,57,15,51,15
 	.db	54,15,39,12,63,12,17,1,18,1,64,6,42,9,0,0,4,5,0,3,8,58,15,59,15,57,15,51,15,73,16,2,6,0,0,5,11,1,17,1
 	.db	18,1,0,0,6,52,0,3,8,58,15,59,15,57,15,51,15,73,16,2,6,0,0,0
 	; End of section
 
 	.debug		.debug_line, cluster 'Light_set'
-_54:
-	.dl	_257-_256
-_256:
+_52:
+	.dl	_250-_249
+_249:
 	.dw	3
-	.dl	_259-_258
-_258:
+	.dl	_252-_251
+_251:
 	.db	2,1,-4,9,10,0,1,1,1,1,0,0,0,1,0
 	.db	'sensors.c',0,0,0,0,0
-_259:
+_252:
 	.db	5,6,7,0,5,2
-	.dl	_32
+	.dl	_30
 	.db	3,236,0,1,5,19,9
-	.dw	_193-_32
+	.dw	_191-_30
 	.db	3,2,1,5,25,9
-	.dw	_260-_193
+	.dw	_253-_191
 	.db	1,5,17,9
-	.dw	_195-_260
+	.dw	_193-_253
 	.db	1,5,23,9
-	.dw	_196-_195
+	.dw	_194-_193
 	.db	3,1,1,5,5,9
-	.dw	_2-_196
-	.db	3,2,1,5,35,9
+	.dw	_2-_194
+	.db	3,2,1,5,41,9
 	.dw	_8-_2
-	.db	3,4,1,5,3,9
-	.dw	_200-_8
-	.db	3,1,1,5,41,9
-	.dw	_9-_200
-	.db	3,3,1,5,9,9
-	.dw	_202-_9
+	.db	3,8,1,5,9,9
+	.dw	_198-_8
 	.db	3,1,1,5,19,9
-	.dw	_10-_202
+	.dw	_9-_198
 	.db	3,3,1,5,9,9
-	.dw	_261-_10
+	.dw	_254-_9
 	.db	3,1,1,5,19,9
-	.dw	_11-_261
+	.dw	_10-_254
 	.db	3,3,1,5,9,9
-	.dw	_262-_11
+	.dw	_255-_10
 	.db	3,1,1,5,19,9
-	.dw	_7-_262
+	.dw	_7-_255
 	.db	3,7,1,5,9,9
-	.dw	_263-_7
+	.dw	_256-_7
 	.db	3,1,1,5,19,9
-	.dw	_4-_263
+	.dw	_4-_256
 	.db	3,4,1,5,3,9
-	.dw	_264-_4
+	.dw	_257-_4
 	.db	3,1,1,5,19,9
-	.dw	_5-_264
+	.dw	_5-_257
 	.db	3,4,1,5,9,9
-	.dw	_265-_5
+	.dw	_258-_5
 	.db	3,1,1,5,19,9
-	.dw	_6-_265
+	.dw	_6-_258
 	.db	3,4,1,5,34,9
-	.dw	_18-_6
+	.dw	_16-_6
 	.db	1,5,1,9
-	.dw	_3-_18
+	.dw	_3-_16
 	.db	3,4,1,9
-	.dw	_56-_3
+	.dw	_54-_3
 	.db	0,1,1
-_257:
+_250:
 	; End of section
 
 	.debug		.debug_ranges, cluster 'Light_set'
-_55:
-	.dl	-1,_32,0,_56-_32,0,0
+_53:
+	.dl	-1,_30,0,_54-_30,0,0
 	; End of section
 
 	.debug		.debug_pubnames
 	.dl	28
 	.dw	2
-	.dl	_52,284,152
+	.dl	_50,284,152
 	.db	'Light_set',0
 	.dl	0
 	; End of section
 
 	.debug		.debug_loc, cluster 'Light_set'
-_31:
-	.dl	-1,_32,0,_65-_32
+_29:
+	.dl	-1,_30,0,_63-_30
 	.dw	58
 	.db	127,0,18,10
 	.dw	16383
 	.db	26,22,62,37,18,48,46,40
-	.dw	_33-_37
-_37:
-	.db	146,177,2,0,47
-	.dw	_36-_38
-_38:
-_33:
-	.db	18,49,46,40
-	.dw	_34-_39
-_39:
-	.db	146,178,2,0,47
-	.dw	_36-_40
-_40:
-_34:
-	.db	18,50,46,40
-	.dw	_35-_41
-_41:
-	.db	146,179,2,0,47
-	.dw	_36-_42
-_42:
+	.dw	_31-_35
 _35:
-	.db	146,180,2,0
+	.db	146,177,2,0,47
+	.dw	_34-_36
 _36:
+_31:
+	.db	18,49,46,40
+	.dw	_32-_37
+_37:
+	.db	146,178,2,0,47
+	.dw	_34-_38
+_38:
+_32:
+	.db	18,50,46,40
+	.dw	_33-_39
+_39:
+	.db	146,179,2,0,47
+	.dw	_34-_40
+_40:
+_33:
+	.db	146,180,2,0
+_34:
 	.db	22,19,62,36,33
-	.dl	_65-_32,_76-_32
+	.dl	_63-_30,_74-_30
 	.dw	60
 	.db	127,0,18,10
 	.dw	16383
 	.db	26,22,62,37,18,48,46,40
-	.dw	_66-_70
-_70:
-	.db	146,177,2,0,47
-	.dw	_69-_71
-_71:
-_66:
-	.db	18,49,46,40
-	.dw	_67-_72
-_72:
-	.db	146,178,2,0,47
-	.dw	_69-_73
-_73:
-_67:
-	.db	18,50,46,40
-	.dw	_68-_74
-_74:
-	.db	146,179,2,0,47
-	.dw	_69-_75
-_75:
+	.dw	_64-_68
 _68:
-	.db	146,180,2,0
+	.db	146,177,2,0,47
+	.dw	_67-_69
 _69:
+_64:
+	.db	18,49,46,40
+	.dw	_65-_70
+_70:
+	.db	146,178,2,0,47
+	.dw	_67-_71
+_71:
+_65:
+	.db	18,50,46,40
+	.dw	_66-_72
+_72:
+	.db	146,179,2,0,47
+	.dw	_67-_73
+_73:
+_66:
+	.db	146,180,2,0
+_67:
 	.db	22,19,62,36,33,50,34
-	.dl	_76-_32,_87-_32
+	.dl	_74-_30,_85-_30
 	.dw	60
 	.db	127,0,18,10
 	.dw	16383
 	.db	26,22,62,37,18,48,46,40
-	.dw	_77-_81
-_81:
-	.db	146,177,2,0,47
-	.dw	_80-_82
-_82:
-_77:
-	.db	18,49,46,40
-	.dw	_78-_83
-_83:
-	.db	146,178,2,0,47
-	.dw	_80-_84
-_84:
-_78:
-	.db	18,50,46,40
-	.dw	_79-_85
-_85:
-	.db	146,179,2,0,47
-	.dw	_80-_86
-_86:
+	.dw	_75-_79
 _79:
-	.db	146,180,2,0
+	.db	146,177,2,0,47
+	.dw	_78-_80
 _80:
+_75:
+	.db	18,49,46,40
+	.dw	_76-_81
+_81:
+	.db	146,178,2,0,47
+	.dw	_78-_82
+_82:
+_76:
+	.db	18,50,46,40
+	.dw	_77-_83
+_83:
+	.db	146,179,2,0,47
+	.dw	_78-_84
+_84:
+_77:
+	.db	146,180,2,0
+_78:
 	.db	22,19,62,36,33,52,34
-	.dl	_87-_32,_98-_32
+	.dl	_85-_30,_96-_30
 	.dw	60
 	.db	127,0,18,10
 	.dw	16383
 	.db	26,22,62,37,18,48,46,40
-	.dw	_88-_92
-_92:
-	.db	146,177,2,0,47
-	.dw	_91-_93
-_93:
-_88:
-	.db	18,49,46,40
-	.dw	_89-_94
-_94:
-	.db	146,178,2,0,47
-	.dw	_91-_95
-_95:
-_89:
-	.db	18,50,46,40
-	.dw	_90-_96
-_96:
-	.db	146,179,2,0,47
-	.dw	_91-_97
-_97:
+	.dw	_86-_90
 _90:
-	.db	146,180,2,0
+	.db	146,177,2,0,47
+	.dw	_89-_91
 _91:
+_86:
+	.db	18,49,46,40
+	.dw	_87-_92
+_92:
+	.db	146,178,2,0,47
+	.dw	_89-_93
+_93:
+_87:
+	.db	18,50,46,40
+	.dw	_88-_94
+_94:
+	.db	146,179,2,0,47
+	.dw	_89-_95
+_95:
+_88:
+	.db	146,180,2,0
+_89:
 	.db	22,19,62,36,33,54,34
-	.dl	_98-_32,_109-_32
+	.dl	_96-_30,_107-_30
 	.dw	60
 	.db	127,0,18,10
 	.dw	16383
 	.db	26,22,62,37,18,48,46,40
-	.dw	_99-_103
-_103:
-	.db	146,177,2,0,47
-	.dw	_102-_104
-_104:
-_99:
-	.db	18,49,46,40
-	.dw	_100-_105
-_105:
-	.db	146,178,2,0,47
-	.dw	_102-_106
-_106:
-_100:
-	.db	18,50,46,40
-	.dw	_101-_107
-_107:
-	.db	146,179,2,0,47
-	.dw	_102-_108
-_108:
+	.dw	_97-_101
 _101:
-	.db	146,180,2,0
+	.db	146,177,2,0,47
+	.dw	_100-_102
 _102:
+_97:
+	.db	18,49,46,40
+	.dw	_98-_103
+_103:
+	.db	146,178,2,0,47
+	.dw	_100-_104
+_104:
+_98:
+	.db	18,50,46,40
+	.dw	_99-_105
+_105:
+	.db	146,179,2,0,47
+	.dw	_100-_106
+_106:
+_99:
+	.db	146,180,2,0
+_100:
 	.db	22,19,62,36,33,52,34
-	.dl	_109-_32,_120-_32
+	.dl	_107-_30,_118-_30
 	.dw	60
 	.db	127,0,18,10
 	.dw	16383
 	.db	26,22,62,37,18,48,46,40
-	.dw	_110-_114
-_114:
-	.db	146,177,2,0,47
-	.dw	_113-_115
-_115:
-_110:
-	.db	18,49,46,40
-	.dw	_111-_116
-_116:
-	.db	146,178,2,0,47
-	.dw	_113-_117
-_117:
-_111:
-	.db	18,50,46,40
-	.dw	_112-_118
-_118:
-	.db	146,179,2,0,47
-	.dw	_113-_119
-_119:
+	.dw	_108-_112
 _112:
-	.db	146,180,2,0
+	.db	146,177,2,0,47
+	.dw	_111-_113
 _113:
+_108:
+	.db	18,49,46,40
+	.dw	_109-_114
+_114:
+	.db	146,178,2,0,47
+	.dw	_111-_115
+_115:
+_109:
+	.db	18,50,46,40
+	.dw	_110-_116
+_116:
+	.db	146,179,2,0,47
+	.dw	_111-_117
+_117:
+_110:
+	.db	146,180,2,0
+_111:
 	.db	22,19,62,36,33,50,34
-	.dl	_120-_32,_56-_32
+	.dl	_118-_30,_54-_30
 	.dw	58
 	.db	127,0,18,10
 	.dw	16383
 	.db	26,22,62,37,18,48,46,40
-	.dw	_121-_125
-_125:
-	.db	146,177,2,0,47
-	.dw	_124-_126
-_126:
-_121:
-	.db	18,49,46,40
-	.dw	_122-_127
-_127:
-	.db	146,178,2,0,47
-	.dw	_124-_128
-_128:
-_122:
-	.db	18,50,46,40
-	.dw	_123-_129
-_129:
-	.db	146,179,2,0,47
-	.dw	_124-_130
-_130:
+	.dw	_119-_123
 _123:
-	.db	146,180,2,0
+	.db	146,177,2,0,47
+	.dw	_122-_124
 _124:
+_119:
+	.db	18,49,46,40
+	.dw	_120-_125
+_125:
+	.db	146,178,2,0,47
+	.dw	_122-_126
+_126:
+_120:
+	.db	18,50,46,40
+	.dw	_121-_127
+_127:
+	.db	146,179,2,0,47
+	.dw	_122-_128
+_128:
+_121:
+	.db	146,180,2,0
+_122:
 	.db	22,19,62,36,33
-	.dl	0,0
-_62:
-	.dl	-1,_32,_195-_32,_196-_32
-	.dw	1
-	.db	82
-	.dl	_196-_32,_197-_32
-	.dw	1
-	.db	83
-	.dl	_8-_32,_200-_32
-	.dw	1
-	.db	83
-	.dl	_9-_32,_202-_32
-	.dw	1
-	.db	83
-	.dl	_10-_32,_3-_32
-	.dw	1
-	.db	83
-	.dl	0,0
-_58:
-	.dl	-1,_32,0,_191-_32
-	.dw	4
-	.db	82,157,8,0
-	.dl	_193-_32,_194-_32
-	.dw	4
-	.db	87,157,8,8
-	.dl	_199-_32,_197-_32
-	.dw	1
-	.db	91
-	.dl	_8-_32,_200-_32
-	.dw	1
-	.db	91
-	.dl	_9-_32,_202-_32
-	.dw	1
-	.db	91
-	.dl	_10-_32,_3-_32
-	.dw	1
-	.db	91
 	.dl	0,0
 _60:
-	.dl	-1,_32,0,_192-_32
+	.dl	-1,_30,_193-_30,_194-_30
+	.dw	1
+	.db	82
+	.dl	_194-_30,_195-_30
+	.dw	1
+	.db	83
+	.dl	_8-_30,_198-_30
+	.dw	1
+	.db	83
+	.dl	_9-_30,_3-_30
+	.dw	1
+	.db	83
+	.dl	0,0
+_56:
+	.dl	-1,_30,0,_189-_30
+	.dw	4
+	.db	82,157,8,0
+	.dl	_191-_30,_192-_30
+	.dw	4
+	.db	87,157,8,8
+	.dl	_197-_30,_195-_30
+	.dw	1
+	.db	91
+	.dl	_8-_30,_198-_30
+	.dw	1
+	.db	91
+	.dl	_9-_30,_3-_30
+	.dw	1
+	.db	91
+	.dl	0,0
+_58:
+	.dl	-1,_30,0,_190-_30
 	.dw	6
 	.db	84,147,2,85,147,2
 	.dl	0,0
-_64:
-	.dl	-1,_32,_198-_32,_197-_32
+_62:
+	.dl	-1,_30,_196-_30,_195-_30
 	.dw	4
 	.db	84,157,8,0
-	.dl	_8-_32,_201-_32
+	.dl	_8-_30,_199-_30
 	.dw	4
 	.db	84,157,8,0
-	.dl	_9-_32,_203-_32
+	.dl	_9-_30,_3-_30
 	.dw	4
 	.db	84,157,8,0
-	.dl	_10-_32,_3-_32
-	.dw	4
-	.db	84,157,8,0
-	.dl	_204-_32,_3-_32
+	.dl	_200-_30,_3-_30
 	.dw	4
 	.db	82,157,8,8
 	.dl	0,0
 	; End of section
 
 	.debug		.debug_loc, cluster 'sensors_updateSensors'
-_19:
-	.dl	-1,_20,0,_51-_20
+_17:
+	.dl	-1,_18,0,_49-_18
 	.dw	58
 	.db	127,0,18,10
 	.dw	16383
 	.db	26,22,62,37,18,48,46,40
-	.dw	_21-_25
-_25:
-	.db	146,177,2,0,47
-	.dw	_24-_26
-_26:
-_21:
-	.db	18,49,46,40
-	.dw	_22-_27
-_27:
-	.db	146,178,2,0,47
-	.dw	_24-_28
-_28:
-_22:
-	.db	18,50,46,40
-	.dw	_23-_29
-_29:
-	.db	146,179,2,0,47
-	.dw	_24-_30
-_30:
+	.dw	_19-_23
 _23:
-	.db	146,180,2,0
+	.db	146,177,2,0,47
+	.dw	_22-_24
 _24:
+_19:
+	.db	18,49,46,40
+	.dw	_20-_25
+_25:
+	.db	146,178,2,0,47
+	.dw	_22-_26
+_26:
+_20:
+	.db	18,50,46,40
+	.dw	_21-_27
+_27:
+	.db	146,179,2,0,47
+	.dw	_22-_28
+_28:
+_21:
+	.db	146,180,2,0
+_22:
 	.db	22,19,62,36,33
 	.dl	0,0
 	; End of section
 
 	.debug		.debug_frame
-_266:
+_259:
 	.dl	184
 	.dl	-1
 	.db	3,0,2,2,173,2,15,60,127,0,18,10
 	.dw	16383
 	.db	26,22,62,37,18,48,46,40
-	.dw	_267-_271
-_271:
+	.dw	_260-_264
+_264:
 	.db	146,177,2,0,47
-	.dw	_270-_272
-_272:
-_267:
+	.dw	_263-_265
+_265:
+_260:
 	.db	18,49,46,40
-	.dw	_268-_273
-_273:
+	.dw	_261-_266
+_266:
 	.db	146,178,2,0,47
-	.dw	_270-_274
-_274:
-_268:
+	.dw	_263-_267
+_267:
+_261:
 	.db	18,50,46,40
-	.dw	_269-_275
-_275:
+	.dw	_262-_268
+_268:
 	.db	146,179,2,0,47
-	.dw	_270-_276
-_276:
+	.dw	_263-_269
 _269:
+_262:
 	.db	146,180,2,0
-_270:
+_263:
 	.db	22,19,62,36,33,48,34,16,173,2,12,19,146,176,2,0,64,36,146,161,2,0,33,8,15,22,161,2,5,19,146,161,2,4,8
 	.db	162,2,8,166,2,8,177,2,8,178,2,8,179,2,8,180,2,8,0,8,1,8,6,8,7,8,8,8,9,8,10,8,167,2,8,168,2,8,169,2,8,170
 	.db	2,8,171,2,8,172,2,16,174,2,12,19,146,176,2,0,64,36,146,161,2,0,33,16,175,2,12,19,146,176,2,0,64,36,146
@@ -1328,174 +1283,174 @@ _270:
 
 	.debug		.debug_frame, cluster 'sensors_updateSensors'
 	.dl	12
-	.dl	_266,_20,_51-_20
+	.dl	_259,_18,_49-_18
 	; End of section
 
 	.debug		.debug_frame, cluster 'Light_set'
 	.dl	460
-	.dl	_266,_32,_56-_32
+	.dl	_259,_30,_54-_30
 	.db	4
-	.dl	(_65-_32)/2
+	.dl	(_63-_30)/2
 	.db	15,60,127,0,18,10
 	.dw	16383
 	.db	26,22,62,37,18,48,46,40
-	.dw	_131-_135
-_135:
-	.db	146,177,2,0,47
-	.dw	_134-_136
-_136:
-_131:
-	.db	18,49,46,40
-	.dw	_132-_137
-_137:
-	.db	146,178,2,0,47
-	.dw	_134-_138
-_138:
-_132:
-	.db	18,50,46,40
-	.dw	_133-_139
-_139:
-	.db	146,179,2,0,47
-	.dw	_134-_140
-_140:
+	.dw	_129-_133
 _133:
-	.db	146,180,2,0
+	.db	146,177,2,0,47
+	.dw	_132-_134
 _134:
+_129:
+	.db	18,49,46,40
+	.dw	_130-_135
+_135:
+	.db	146,178,2,0,47
+	.dw	_132-_136
+_136:
+_130:
+	.db	18,50,46,40
+	.dw	_131-_137
+_137:
+	.db	146,179,2,0,47
+	.dw	_132-_138
+_138:
+_131:
+	.db	146,180,2,0
+_132:
 	.db	22,19,62,36,33,50,34,22,15,3,19,127,2,17,1,127,4
-	.dl	(_76-_65)/2
+	.dl	(_74-_63)/2
 	.db	15,60,127,0,18,10
 	.dw	16383
 	.db	26,22,62,37,18,48,46,40
-	.dw	_141-_145
-_145:
-	.db	146,177,2,0,47
-	.dw	_144-_146
-_146:
-_141:
-	.db	18,49,46,40
-	.dw	_142-_147
-_147:
-	.db	146,178,2,0,47
-	.dw	_144-_148
-_148:
-_142:
-	.db	18,50,46,40
-	.dw	_143-_149
-_149:
-	.db	146,179,2,0,47
-	.dw	_144-_150
-_150:
+	.dw	_139-_143
 _143:
-	.db	146,180,2,0
+	.db	146,177,2,0,47
+	.dw	_142-_144
 _144:
+_139:
+	.db	18,49,46,40
+	.dw	_140-_145
+_145:
+	.db	146,178,2,0,47
+	.dw	_142-_146
+_146:
+_140:
+	.db	18,50,46,40
+	.dw	_141-_147
+_147:
+	.db	146,179,2,0,47
+	.dw	_142-_148
+_148:
+_141:
+	.db	146,180,2,0
+_142:
 	.db	22,19,62,36,33,52,34,22,15,3,19,127,4,17,6,126,4
-	.dl	(_87-_76)/2
+	.dl	(_85-_74)/2
 	.db	15,60,127,0,18,10
 	.dw	16383
 	.db	26,22,62,37,18,48,46,40
-	.dw	_151-_155
-_155:
-	.db	146,177,2,0,47
-	.dw	_154-_156
-_156:
-_151:
-	.db	18,49,46,40
-	.dw	_152-_157
-_157:
-	.db	146,178,2,0,47
-	.dw	_154-_158
-_158:
-_152:
-	.db	18,50,46,40
-	.dw	_153-_159
-_159:
-	.db	146,179,2,0,47
-	.dw	_154-_160
-_160:
+	.dw	_149-_153
 _153:
-	.db	146,180,2,0
+	.db	146,177,2,0,47
+	.dw	_152-_154
 _154:
+_149:
+	.db	18,49,46,40
+	.dw	_150-_155
+_155:
+	.db	146,178,2,0,47
+	.dw	_152-_156
+_156:
+_150:
+	.db	18,50,46,40
+	.dw	_151-_157
+_157:
+	.db	146,179,2,0,47
+	.dw	_152-_158
+_158:
+_151:
+	.db	146,180,2,0
+_152:
 	.db	22,19,62,36,33,54,34,22,15,3,19,127,6,17,7,125,4
-	.dl	(_98-_87)/2
+	.dl	(_96-_85)/2
 	.db	15,60,127,0,18,10
 	.dw	16383
 	.db	26,22,62,37,18,48,46,40
-	.dw	_161-_165
-_165:
-	.db	146,177,2,0,47
-	.dw	_164-_166
-_166:
-_161:
-	.db	18,49,46,40
-	.dw	_162-_167
-_167:
-	.db	146,178,2,0,47
-	.dw	_164-_168
-_168:
-_162:
-	.db	18,50,46,40
-	.dw	_163-_169
-_169:
-	.db	146,179,2,0,47
-	.dw	_164-_170
-_170:
+	.dw	_159-_163
 _163:
-	.db	146,180,2,0
+	.db	146,177,2,0,47
+	.dw	_162-_164
 _164:
+_159:
+	.db	18,49,46,40
+	.dw	_160-_165
+_165:
+	.db	146,178,2,0,47
+	.dw	_162-_166
+_166:
+_160:
+	.db	18,50,46,40
+	.dw	_161-_167
+_167:
+	.db	146,179,2,0,47
+	.dw	_162-_168
+_168:
+_161:
+	.db	146,180,2,0
+_162:
 	.db	22,19,62,36,33,52,34,22,15,3,19,127,4,199,4
-	.dl	(_109-_98)/2
+	.dl	(_107-_96)/2
 	.db	15,60,127,0,18,10
 	.dw	16383
 	.db	26,22,62,37,18,48,46,40
-	.dw	_171-_175
-_175:
-	.db	146,177,2,0,47
-	.dw	_174-_176
-_176:
-_171:
-	.db	18,49,46,40
-	.dw	_172-_177
-_177:
-	.db	146,178,2,0,47
-	.dw	_174-_178
-_178:
-_172:
-	.db	18,50,46,40
-	.dw	_173-_179
-_179:
-	.db	146,179,2,0,47
-	.dw	_174-_180
-_180:
+	.dw	_169-_173
 _173:
-	.db	146,180,2,0
+	.db	146,177,2,0,47
+	.dw	_172-_174
 _174:
+_169:
+	.db	18,49,46,40
+	.dw	_170-_175
+_175:
+	.db	146,178,2,0,47
+	.dw	_172-_176
+_176:
+_170:
+	.db	18,50,46,40
+	.dw	_171-_177
+_177:
+	.db	146,179,2,0,47
+	.dw	_172-_178
+_178:
+_171:
+	.db	146,180,2,0
+_172:
 	.db	22,19,62,36,33,50,34,22,15,3,19,127,2,198,4
-	.dl	(_120-_109)/2
+	.dl	(_118-_107)/2
 	.db	15,60,127,0,18,10
 	.dw	16383
 	.db	26,22,62,37,18,48,46,40
-	.dw	_181-_185
-_185:
-	.db	146,177,2,0,47
-	.dw	_184-_186
-_186:
-_181:
-	.db	18,49,46,40
-	.dw	_182-_187
-_187:
-	.db	146,178,2,0,47
-	.dw	_184-_188
-_188:
-_182:
-	.db	18,50,46,40
-	.dw	_183-_189
-_189:
-	.db	146,179,2,0,47
-	.dw	_184-_190
-_190:
+	.dw	_179-_183
 _183:
-	.db	146,180,2,0
+	.db	146,177,2,0,47
+	.dw	_182-_184
 _184:
+_179:
+	.db	18,49,46,40
+	.dw	_180-_185
+_185:
+	.db	146,178,2,0,47
+	.dw	_182-_186
+_186:
+_180:
+	.db	18,50,46,40
+	.dw	_181-_187
+_187:
+	.db	146,179,2,0,47
+	.dw	_182-_188
+_188:
+_181:
+	.db	146,180,2,0
+_182:
 	.db	22,19,62,36,33,48,34,8,15,193,0,0
 	; End of section
 

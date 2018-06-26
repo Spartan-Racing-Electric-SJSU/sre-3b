@@ -1,5 +1,5 @@
 	; TASKING VX-toolset for C166: C compiler v4.0r1 Build 741 SN 07744515
-	; Options: -f cc11456a -c99 -Mh --fp-model=FT -Cxc2287 --core=xc16x -DTASKING_VIPER -D__USIC_MEM_TYPE=__PAGE_080_MEM_TYPE -D__MULTICAN_MEM_TYPE=__PAGE_080_MEM_TYPE -DTTC50 -DRTS_TTC_FLASH_DATE_YEAR=2018 -DRTS_TTC_FLASH_DATE_MONTH=5 -DRTS_TTC_FLASH_DATE_DAY=19 -DRTS_TTC_FLASH_DATE_HOUR=3 -DRTS_TTC_FLASH_DATE_MINUTE=27 -I..\..\..\Environment\inc -I..\..\..\Environment\inc_int -I..\..\..\Environment\bsp -I. --tradeoff=0 --no-tasking-sfr -ga --language=+cmp14,+div32,-gcc,-strings -O3 --source --mac -o build\main.src
+	; Options: -f cc13452a -c99 -Mh --fp-model=FT -Cxc2287 --core=xc16x -DTASKING_VIPER -D__USIC_MEM_TYPE=__PAGE_080_MEM_TYPE -D__MULTICAN_MEM_TYPE=__PAGE_080_MEM_TYPE -DTTC50 -DRTS_TTC_FLASH_DATE_YEAR=2018 -DRTS_TTC_FLASH_DATE_MONTH=6 -DRTS_TTC_FLASH_DATE_DAY=21 -DRTS_TTC_FLASH_DATE_HOUR=16 -DRTS_TTC_FLASH_DATE_MINUTE=11 -I..\..\..\Environment\inc -I..\..\..\Environment\inc_int -I..\..\..\Environment\bsp -I. --tradeoff=0 --no-tasking-sfr -ga --language=+cmp14,+div32,-gcc,-strings -O3 --source --mac -o build\main.src
 	; Module start
 	.source	'main.c'
 code_main	.section	code, cluster 'main', new
@@ -43,7 +43,7 @@ code_main	.section	code, cluster 'main', new
 ; main.c	    36  //Our code
 ; main.c	    37  #include "initializations.h"
 ; main.c	    38  #include "sensors.h"
-; main.c	    39  #include "canManager.h"
+; main.c	    39  #include "canManager.h" 
 ; main.c	    40  #include "motorController.h"
 ; main.c	    41  #include "readyToDriveSound.h"
 ; main.c	    42  #include "torqueEncoder.h"
@@ -85,7 +85,7 @@ code_main	.section	code, cluster 'main', new
 ; main.c	    78      ,{ 0 }                    /* ubyte1 reserved[8*4]      */
 ; main.c	    79      , 0                      /* ubyte4 headerCRC          */
 ; main.c	    80  };
-; main.c	    81  
+; main.c	    81   
 ; main.c	    82  
 ; main.c	    83  extern Sensor Sensor_TPS0;
 ; main.c	    84  extern Sensor Sensor_TPS1;
@@ -113,15 +113,15 @@ code_main	.section	code, cluster 'main', new
 ; main.c	   106  ****************************************************************************/
 ; main.c	   107  void main(void)
 ; Function _main
-_18:
+_20:
 _main	.proc	far
-	subw	r15,#0x36
-_71:
+	subw	r15,#0x3a
+_73:
 
 ; main.c	   108  {
 ; main.c	   109      ubyte4 timestamp_startTime = 0;
 	movw	r11,#0x0
-_574:
+_576:
 
 ; main.c	   110      ubyte4 timestamp_EcoButton = 0;
 ; main.c	   111      ubyte1 calibrationErrors;  //NOT USED
@@ -131,25 +131,25 @@ _574:
 ; main.c	   115      /*******************************************/
 ; main.c	   116      IO_Driver_Init(NULL); //Handles basic startup for all VCU subsystems
 	movw	r2,#0x0
-_575:
+_577:
 	movw	[r15+#0x4],r11
 	movw	[r15+#0x6],r11
-_576:
+_578:
 	movw	[r15],r11
 	movw	[r15+#0x2],r11
-_577:
+_579:
 	movw	r3,#0x0
 	call	_IO_Driver_Init
-_45:
+_47:
 
 ; main.c	   117  
 ; main.c	   118      //Initialize serial first so we can use it to debug init of other subsystems
 ; main.c	   119      SerialManager* serialMan = SerialManager_new();
 	call	_SerialManager_new
-_578:
+_580:
 	movw	[r15+#0x24],r2
 	movw	[r15+#0x22],r3
-_579:
+_581:
 
 ; main.c	   120      IO_RTC_StartTime(&timestamp_startTime);
 	movw	r8,#0x4
@@ -160,7 +160,7 @@ _579:
 	movw	r2,r8
 	movw	r3,r9
 	call	_IO_RTC_StartTime
-_580:
+_582:
 
 ; main.c	   121      SerialManager_send(serialMan, "\n\n\n\n\n\n\n\n\n\n----------------------------------------------------\n");
 	movw	r2,[r15+#0x24]
@@ -168,7 +168,7 @@ _580:
 	movw	r4,#@sof(_$1$str)
 	movw	r5,#@seg(_$1$str)
 	call	_SerialManager_send
-_581:
+_583:
 
 ; main.c	   122      SerialManager_send(serialMan, "VCU serial is online.\n");
 	movw	r2,[r15+#0x24]
@@ -176,7 +176,7 @@ _581:
 	movw	r4,#@sof(_$2$str)
 	movw	r5,#@seg(_$2$str)
 	call	_SerialManager_send
-_48:
+_50:
 
 ; main.c	   123  
 ; main.c	   124      //Read initial values from EEPROM
@@ -191,25 +191,31 @@ _48:
 ; main.c	   133      //----------------------------------------------------------------------------
 ; main.c	   134      // Check if we're on the bench or not
 ; main.c	   135      //----------------------------------------------------------------------------
-; main.c	   136      bool bench;
-; main.c	   137      IO_DI_Init(IO_DI_06, IO_DI_PD_10K);
-	movb	rl2,#0x2c
-_582:
-	movb	rh2,#0x0
-	call	_IO_DI_Init
-_583:
+; main.c	   136      bool bench; 
+; main.c	   137      IO_PWM_Init(IO_PWM_02, 50, TRUE, TRUE, IO_ADC_CUR_00, FALSE, NULL ); 
+	movw	r3,#0x32
+_584:
+	movw	r11,#0x2e
+_585:
+	movw	r2,#0x2
+	movw	r4,#0x1
+	movw	r5,#0x1
+	movw	r12,#0x0
+	movw	r13,#0x0
+	call	_IO_PWM_Init
+_586:
 
 ; main.c	   138      IO_RTC_StartTime(&timestamp_startTime);
 	movw	r2,r8
 	movw	r3,r9
 	call	_IO_RTC_StartTime
-_584:
+_587:
 
 ; main.c	   139      while (IO_RTC_GetTimeUS(timestamp_startTime) < 55555)
 	movw	r3,[r15+#0x6]
 	movw	r2,[r15+#0x4]
 	call	_IO_RTC_GetTimeUS
-_585:
+_588:
 	cmpw	r2,#0xd903
 	subcw	r3,#0x0
 	jmp+	cc_uge,_2
@@ -218,20 +224,20 @@ _3:
 ; main.c	   140      {
 ; main.c	   141          IO_Driver_TaskBegin();
 	call	_IO_Driver_TaskBegin
-_586:
+_589:
 
 ; main.c	   142  
 ; main.c	   143          //IO_DI (digital inputs) supposed to take 2 cycles before they return valid data
 ; main.c	   144          IO_DI_Get(IO_DI_06, &bench);
 	movb	rl2,#0x2c
-_587:
+_590:
 	movw	r4,#0x9
 	addw	r4,r15
 	andw	r4,#0x3fff
 	orw	r4,#@sof(__lc_ub_user_stack+0xffff) & 0xc000
 	movw	r5,#@seg(__lc_ub_user_stack+0xffff)
 	call	_IO_DI_Get
-_588:
+_591:
 
 ; main.c	   145  
 ; main.c	   146          IO_Driver_TaskEnd();
@@ -243,15 +249,15 @@ _4:
 	movw	r3,[r15+#0x6]
 	movw	r2,[r15+#0x4]
 	call	_IO_RTC_GetTimeUS
-_589:
+_592:
 	cmpw	r2,#0x2710
 	subcw	r3,#0x0
 	jmp+	cc_ult,_4
-_590:
+_593:
 	movw	r3,[r15+#0x6]
 	movw	r2,[r15+#0x4]
 	call	_IO_RTC_GetTimeUS
-_591:
+_594:
 	cmpw	r2,#0xd903
 	subcw	r3,#0x0
 	jmp+	cc_ult,_3
@@ -261,15 +267,21 @@ _2:
 ; main.c	   150      IO_DI_DeInit(IO_DI_06);
 	movb	rl2,#0x2c
 	call	_IO_DI_DeInit
-_592:
+_595:
 
-; main.c	   151      SerialManager_send(serialMan, bench == TRUE ? "VCU is in bench mode.\n" : "VCU is NOT in bench mode.\n");
+; main.c	   151      IO_PWM_DeInit(IO_PWM_02);
+	movw	r2,#0x2
+	call	_IO_PWM_DeInit
+_596:
+
+; main.c	   152  
+; main.c	   153      SerialManager_send(serialMan, bench == TRUE ? "VCU is in bench mode.\n" : "VCU is NOT in bench mode.\n");
 	movb	rh5,[r15+#0x9]
 	movw	r4,#@sof(_$4$str)
 	movw	r11,#@seg(_$4$str)
 	cmpb	rh5,#0x1
 	jmp	cc_ne,_5
-_593:
+_597:
 	movw	r4,#@sof(_$3$str)
 	movw	r11,#@seg(_$3$str)
 _5:
@@ -277,46 +289,46 @@ _5:
 	movw	r3,[r15+#0x22]
 	movw	r5,r11
 	call	_SerialManager_send
-_594:
+_598:
 
-; main.c	   152      
-; main.c	   153      //----------------------------------------------------------------------------
-; main.c	   154      // VCU Subsystem Initializations
-; main.c	   155      // Eventually, all of these functions should be made obsolete by creating
-; main.c	   156      // objects instead, like the RTDS/MCM/TPS objects below
-; main.c	   157      //----------------------------------------------------------------------------
-; main.c	   158      SerialManager_send(serialMan, "VCU objects/subsystems initializing.\n");
+; main.c	   154      
+; main.c	   155      //----------------------------------------------------------------------------
+; main.c	   156      // VCU Subsystem Initializations
+; main.c	   157      // Eventually, all of these functions should be made obsolete by creating
+; main.c	   158      // objects instead, like the RTDS/MCM/TPS objects below
+; main.c	   159      //----------------------------------------------------------------------------
+; main.c	   160      SerialManager_send(serialMan, "VCU objects/subsystems initializing.\n");
 	movw	r2,[r15+#0x24]
 	movw	r3,[r15+#0x22]
 	movw	r4,#@sof(_$5$str)
 	movw	r5,#@seg(_$5$str)
 	call	_SerialManager_send
-_595:
+_599:
 
-; main.c	   159      vcu_initializeADC(bench);  //Configure and activate all I/O pins on the VCU
+; main.c	   161      vcu_initializeADC(bench);  //Configure and activate all I/O pins on the VCU
 	movb	rl2,[r15+#0x9]
 	call	_vcu_initializeADC
-_596:
-
-; main.c	   160      //vcu_initializeCAN();
-; main.c	   161      //vcu_initializeMCU();
-; main.c	   162  
-; main.c	   163      //Do some loops until the ADC stops outputting garbage values
-; main.c	   164      vcu_ADCWasteLoop();
-	call	_vcu_ADCWasteLoop
-_50:
-
-; main.c	   165  
-; main.c	   166      //vcu_init functions may have to be performed BEFORE creating CAN Manager object
-; main.c	   167      CanManager* canMan = CanManager_new(500, 40, 40, 500, 20, 20, 200000, serialMan);  //3rd param = messages per node (can0/can1; read/write)
-	movw	r2,#0x1f4
-_597:
-	movb	rl3,#0x28
-_598:
-	movb	rl5,#0x14
-_599:
-	movw	r11,#0xd40
 _600:
+
+; main.c	   162      //vcu_initializeCAN();
+; main.c	   163      //vcu_initializeMCU();
+; main.c	   164  
+; main.c	   165      //Do some loops until the ADC stops outputting garbage values
+; main.c	   166      vcu_ADCWasteLoop();
+	call	_vcu_ADCWasteLoop
+_52:
+
+; main.c	   167  
+; main.c	   168      //vcu_init functions may have to be performed BEFORE creating CAN Manager object
+; main.c	   169      CanManager* canMan = CanManager_new(500, 40, 40, 500, 20, 20, 200000, serialMan);  //3rd param = messages per node (can0/can1; read/write)
+	movw	r2,#0x1f4
+_601:
+	movb	rl3,#0x28
+_602:
+	movb	rl5,#0x14
+_603:
+	movw	r11,#0xd40
+_604:
 	movb	rh3,rl3
 	movw	r4,r2
 	movb	rh5,rl5
@@ -324,319 +336,336 @@ _600:
 	movw	r13,[r15+#0x24]
 	movw	r14,[r15+#0x22]
 	call	_CanManager_new
-_601:
+_605:
 	movw	[r15+#0x34],r2
 	movw	[r15+#0x32],r3
-_602:
+_606:
 
-; main.c	   168      //can0_busSpeed ---------------------^    ^   ^   ^    ^   ^     ^         ^
-; main.c	   169      //can0_read_messageLimit -----------------|   |   |    |   |     |         |
-; main.c	   170      //can0_write_messageLimit---------------------+   |    |   |     |         |
-; main.c	   171      //can1_busSpeed-----------------------------------+    |   |     |         |
-; main.c	   172      //can1_read_messageLimit-------------------------------+   |     |         |
-; main.c	   173      //can1_write_messageLimit----------------------------------+     |         |
-; main.c	   174      //defaultSendDelayus---------------------------------------------+         |
-; main.c	   175      //SerialManager* sm--------------------------------------------------------+
-; main.c	   176  
-; main.c	   177      //----------------------------------------------------------------------------
-; main.c	   178      // Object representations of external devices
-; main.c	   179      // Most default values for things should be specified here
-; main.c	   180      //----------------------------------------------------------------------------    
-; main.c	   181      ReadyToDriveSound* rtds = RTDS_new();
+; main.c	   170      //can0_busSpeed ---------------------^    ^   ^   ^    ^   ^     ^         ^
+; main.c	   171      //can0_read_messageLimit -----------------|   |   |    |   |     |         |
+; main.c	   172      //can0_write_messageLimit---------------------+   |    |   |     |         |
+; main.c	   173      //can1_busSpeed-----------------------------------+    |   |     |         |
+; main.c	   174      //can1_read_messageLimit-------------------------------+   |     |         |
+; main.c	   175      //can1_write_messageLimit----------------------------------+     |         |
+; main.c	   176      //defaultSendDelayus---------------------------------------------+         |
+; main.c	   177      //SerialManager* sm--------------------------------------------------------+
+; main.c	   178  
+; main.c	   179      //----------------------------------------------------------------------------
+; main.c	   180      // Object representations of external devices
+; main.c	   181      // Most default values for things should be specified here
+; main.c	   182      //----------------------------------------------------------------------------    
+; main.c	   183      ReadyToDriveSound* rtds = RTDS_new();
 	call	_RTDS_new
-_603:
+_607:
 	movw	[r15+#0x30],r2
 	movw	[r15+#0x2e],r3
-_604:
-
-; main.c	   182  	//BatteryManagementSystem* bms = BMS_new();
-; main.c	   183      MotorController* mcm0 = MotorController_new(serialMan, 0xA0, FORWARD, 1000, 5, 15); //CAN addr, direction, torque limit x10 (100 = 10Nm)
-	subw	r15,#0x2
-_82:
-	movb	rh4,#0xf
-_605:
-	movw	r11,#0x3e8
-_606:
-	movb	[r15],rh4
-_607:
-	movw	r4,#0xa0
 _608:
+
+; main.c	   184      //BatteryManagementSystem* bms = BMS_new();
+; main.c	   185      MotorController* mcm0 = MotorController_new(serialMan, 0xA0, FORWARD, 50, 5, 15); //CAN addr, direction, torque limit x10 (100 = 10Nm)
+	subw	r15,#0x2
+_84:
+	movb	rh4,#0xf
+_609:
+	movw	r11,#0x32
+_610:
+	movb	[r15],rh4
+_611:
+	movw	r4,#0xa0
+_612:
 	movw	r2,[r15+#0x26]
 	movw	r3,[r15+#0x24]
 	movb	rl5,#0x2
 	movb	rh5,#0x5
 	call	_MotorController_new
 	addw	r15,#0x2
-_93:
+_95:
 	movw	[r15+#0x10],r2
 	movw	[r15+#0xe],r3
-_609:
-
-; main.c	   184  	TorqueEncoder* tps = TorqueEncoder_new(bench);
-	movb	rl2,[r15+#0x9]
-	call	_TorqueEncoder_new
-_610:
-	movw	[r15+#0x18],r2
-	movw	[r15+#0x16],r3
-_611:
-
-; main.c	   185  	BrakePressureSensor* bps = BrakePressureSensor_new();
-	call	_BrakePressureSensor_new
-_612:
-	movw	[r15+#0x14],r2
-	movw	[r15+#0x12],r3
 _613:
 
-; main.c	   186  	WheelSpeeds* wss = WheelSpeeds_new(18, 18, 16, 16);
-	subw	r15,#0x2
-_104:
-	movb	rh4,#0x10
+; main.c	   186      TorqueEncoder* tps = TorqueEncoder_new(bench);
+	movb	rl2,[r15+#0x9]
+	call	_TorqueEncoder_new
 _614:
-	movw	r3,#0x4190
+	movw	[r15+#0x18],r2
+	movw	[r15+#0x16],r3
 _615:
-	movb	[r15],rh4
+
+; main.c	   187      BrakePressureSensor* bps = BrakePressureSensor_new();
+	call	_BrakePressureSensor_new
 _616:
+	movw	[r15+#0x14],r2
+	movw	[r15+#0x12],r3
+_617:
+
+; main.c	   188      WheelSpeeds* wss = WheelSpeeds_new(18, 18, 16, 16);
 	subw	r15,#0x2
-_115:
+_106:
+	movb	rh4,#0x10
+_618:
+	movw	r3,#0x4190
+_619:
+	movb	[r15],rh4
+_620:
+	subw	r15,#0x2
+_117:
 	movw	r2,#0x0
 	movw	r5,r3
-_617:
+_621:
 	movb	[r15],rh4
-_618:
+_622:
 	movw	r4,#0x0
 	call	_WheelSpeeds_new
 	addw	r15,#0x4
-_126:
+_128:
 
-; main.c	   187  	SafetyChecker* sc = SafetyChecker_new(serialMan, 320, 32);  //Must match amp limits 
+; main.c	   189      SafetyChecker* sc = SafetyChecker_new(serialMan, 320, 32);  //Must match amp limits 
 	movw	r4,#0x140
-_619:
+_623:
 	movw	r5,#0x20
-_620:
+_624:
 
-; main.c	   188  	BatteryManagementSystem* bms = BMS_new(serialMan, 0x620);
-; main.c	   189      CoolingSystem* cs = CoolingSystem_new(serialMan);
-; main.c	   190  
-; main.c	   191      //----------------------------------------------------------------------------
-; main.c	   192      // TODO: Additional Initial Power-up functions
+; main.c	   190      BatteryManagementSystem* bms = BMS_new(serialMan, 0x620);
+; main.c	   191      CoolingSystem* cs = CoolingSystem_new(serialMan);
+; main.c	   192  
 ; main.c	   193      //----------------------------------------------------------------------------
-; main.c	   194      //TODO: Read calibration data from EEPROM?
-; main.c	   195      //TODO: Run calibration functions?
-; main.c	   196      //TODO: Power-on error checking?
-; main.c	   197  
-; main.c	   198      /*******************************************/
-; main.c	   199      /*       PERIODIC APPLICATION CODE         */
+; main.c	   194      // TODO: Additional Initial Power-up functions
+; main.c	   195      //----------------------------------------------------------------------------
+; main.c	   196      //TODO: Read calibration data from EEPROM?
+; main.c	   197      //TODO: Run calibration functions?
+; main.c	   198      //TODO: Power-on error checking?
+; main.c	   199  
 ; main.c	   200      /*******************************************/
-; main.c	   201      /* main loop, executed periodically with a defined cycle time (here: 5 ms) */
-; main.c	   202      ubyte4 timestamp_mainLoopStart = 0;
-; main.c	   203      //IO_RTC_StartTime(&timestamp_calibStart);
-; main.c	   204      SerialManager_send(serialMan, "VCU initializations complete.  Entering main loop.\n");
-; main.c	   205      while (1)
-; main.c	   206      {
-; main.c	   207          //----------------------------------------------------------------------------
-; main.c	   208          // Task management stuff (start)
+; main.c	   201      /*       PERIODIC APPLICATION CODE         */
+; main.c	   202      /*******************************************/
+; main.c	   203      /* main loop, executed periodically with a defined cycle time (here: 5 ms) */
+; main.c	   204      ubyte4 timestamp_mainLoopStart = 0;
+; main.c	   205      //IO_RTC_StartTime(&timestamp_calibStart);
+; main.c	   206      SerialManager_send(serialMan, "VCU initializations complete.  Entering main loop.\n");
+; main.c	   207      while (1)
+; main.c	   208      {
 ; main.c	   209          //----------------------------------------------------------------------------
-; main.c	   210          //Get a timestamp of when this task started from the Real Time Clock
-; main.c	   211          IO_RTC_StartTime(&timestamp_mainLoopStart);
+; main.c	   210          // Task management stuff (start)
+; main.c	   211          //----------------------------------------------------------------------------
+; main.c	   212          //Get a timestamp of when this task started from the Real Time Clock
+; main.c	   213          IO_RTC_StartTime(&timestamp_mainLoopStart);
 	movw	r8,#0xa
-_621:
+_625:
 	movw	[r15+#0x2c],r2
 	movw	[r15+#0x2a],r3
-_622:
+_626:
 	movw	r2,[r15+#0x24]
 	movw	r3,[r15+#0x22]
 	call	_SafetyChecker_new
-_623:
+_627:
 	movw	[r15+#0x1c],r2
 	movw	[r15+#0x1a],r3
-_624:
+_628:
 	movw	r4,#0x620
 	movw	r2,[r15+#0x24]
 	movw	r3,[r15+#0x22]
 	call	_BMS_new
-_625:
+_629:
 	movw	[r15+#0x20],r2
 	movw	[r15+#0x1e],r3
-_626:
+_630:
 	movw	r2,[r15+#0x24]
 	movw	r3,[r15+#0x22]
 	call	_CoolingSystem_new
-_627:
+_631:
 	movw	[r15+#0x28],r2
 	movw	[r15+#0x26],r3
-_628:
+_632:
 	movw	r11,#0x0
-_629:
+_633:
 	movw	[r15+#0xa],r11
 	movw	[r15+#0xc],r11
-_630:
+_634:
 	movw	r2,[r15+#0x24]
 	movw	r3,[r15+#0x22]
 	movw	r4,#@sof(_$6$str)
 	movw	r5,#@seg(_$6$str)
 	call	_SerialManager_send
-_631:
+_635:
 	addw	r8,r15
 	andw	r8,#0x3fff
 	orw	r8,#@sof(__lc_ub_user_stack+0xffff) & 0xc000
 	movw	r9,#@seg(__lc_ub_user_stack+0xffff)
-_632:
+_636:
 
-; main.c	   212          //Mark the beginning of a task - what does this actually do?
-; main.c	   213          IO_Driver_TaskBegin();
-; main.c	   214  
-; main.c	   215          //SerialManager_send(serialMan, "VCU has entered main loop.");
+; main.c	   214          //Mark the beginning of a task - what does this actually do?
+; main.c	   215          IO_Driver_TaskBegin();
 ; main.c	   216  
-; main.c	   217          
-; main.c	   218          /*******************************************/
-; main.c	   219          /*              Read Inputs                */
+; main.c	   217          //SerialManager_send(serialMan, "VCU has entered main loop.");
+; main.c	   218  
+; main.c	   219          
 ; main.c	   220          /*******************************************/
-; main.c	   221          //----------------------------------------------------------------------------
-; main.c	   222          // Handle data input streams
+; main.c	   221          /*              Read Inputs                */
+; main.c	   222          /*******************************************/
 ; main.c	   223          //----------------------------------------------------------------------------
-; main.c	   224          //Get readings from our sensors and other local devices (buttons, 12v battery, etc)
-; main.c	   225  		sensors_updateSensors();
-; main.c	   226  
-; main.c	   227          //Pull messages from CAN FIFO and update our object representations.
-; main.c	   228          //Also echoes can0 messages to can1 for DAQ.
-; main.c	   229          CanManager_read(canMan, CAN0_HIPRI, mcm0, bms, sc);
-; main.c	   230          /*switch (CanManager_getReadStatus(canMan, CAN0_HIPRI))
-; main.c	   231          {
-; main.c	   232              case IO_E_OK: SerialManager_send(serialMan, "IO_E_OK: everything fine\n"); break;
-; main.c	   233              case IO_E_NULL_POINTER: SerialManager_send(serialMan, "IO_E_NULL_POINTER: null pointer has been passed to function\n"); break;
-; main.c	   234              case IO_E_CAN_FIFO_FULL: SerialManager_send(serialMan, "IO_E_CAN_FIFO_FULL: overflow of FIFO buffer\n"); break;
-; main.c	   235              case IO_E_CAN_WRONG_HANDLE: SerialManager_send(serialMan, "IO_E_CAN_WRONG_HANDLE: invalid handle has been passed\n"); break;
-; main.c	   236              case IO_E_CHANNEL_NOT_CONFIGURED: SerialManager_send(serialMan, "IO_E_CHANNEL_NOT_CONFIGURED: the given handle has not been configured\n"); break;
-; main.c	   237              case IO_E_CAN_OLD_DATA: SerialManager_send(serialMan, "IO_E_CAN_OLD_DATA: no data has been received\n"); break;
-; main.c	   238              default: SerialManager_send(serialMan, "Warning: Unknown CAN read status\n"); break;
-; main.c	   239          }*/
-; main.c	   240  
-; main.c	   241  
-; main.c	   242          /*******************************************/
-; main.c	   243          /*          Perform Calculations           */
+; main.c	   224          // Handle data input streams
+; main.c	   225          //----------------------------------------------------------------------------
+; main.c	   226          //Get readings from our sensors and other local devices (buttons, 12v battery, etc)
+; main.c	   227          sensors_updateSensors();
+; main.c	   228  
+; main.c	   229          //Pull messages from CAN FIFO and update our object representations.
+; main.c	   230          //Also echoes can0 messages to can1 for DAQ.
+; main.c	   231          CanManager_read(canMan, CAN0_HIPRI, mcm0, bms, sc);
+; main.c	   232          /*switch (CanManager_getReadStatus(canMan, CAN0_HIPRI))
+; main.c	   233          {
+; main.c	   234              case IO_E_OK: SerialManager_send(serialMan, "IO_E_OK: everything fine\n"); break;
+; main.c	   235              case IO_E_NULL_POINTER: SerialManager_send(serialMan, "IO_E_NULL_POINTER: null pointer has been passed to function\n"); break;
+; main.c	   236              case IO_E_CAN_FIFO_FULL: SerialManager_send(serialMan, "IO_E_CAN_FIFO_FULL: overflow of FIFO buffer\n"); break;
+; main.c	   237              case IO_E_CAN_WRONG_HANDLE: SerialManager_send(serialMan, "IO_E_CAN_WRONG_HANDLE: invalid handle has been passed\n"); break;
+; main.c	   238              case IO_E_CHANNEL_NOT_CONFIGURED: SerialManager_send(serialMan, "IO_E_CHANNEL_NOT_CONFIGURED: the given handle has not been configured\n"); break;
+; main.c	   239              case IO_E_CAN_OLD_DATA: SerialManager_send(serialMan, "IO_E_CAN_OLD_DATA: no data has been received\n"); break;
+; main.c	   240              default: SerialManager_send(serialMan, "Warning: Unknown CAN read status\n"); break;
+; main.c	   241          }*/
+; main.c	   242  
+; main.c	   243  
 ; main.c	   244          /*******************************************/
-; main.c	   245          //calculations - Now that we have local sensor data and external data from CAN, we can
-; main.c	   246          //do actual processing work, from pedal travel calcs to traction control
-; main.c	   247          //calculations_calculateStuff();
-; main.c	   248  
-; main.c	   249          //Run calibration if commanded
-; main.c	   250  		//if (IO_RTC_GetTimeUS(timestamp_calibStart) < (ubyte4)5000000)
-; main.c	   251  		if (Sensor_EcoButton.sensorValue == TRUE)
-; main.c	   252  		{
-; main.c	   253              if (timestamp_EcoButton == 0)
-; main.c	   254              {
-; main.c	   255                  SerialManager_send(serialMan, "Eco button detected\n");
-; main.c	   256                  IO_RTC_StartTime(&timestamp_EcoButton);
+; main.c	   245          /*          Perform Calculations           */
+; main.c	   246          /*******************************************/
+; main.c	   247          //calculations - Now that we have local sensor data and external data from CAN, we can
+; main.c	   248          //do actual processing work, from pedal travel calcs to traction control
+; main.c	   249          //calculations_calculateStuff();
+; main.c	   250  
+; main.c	   251          //Run calibration if commanded
+; main.c	   252          //if (IO_RTC_GetTimeUS(timestamp_calibStart) < (ubyte4)5000000)
+; main.c	   253          if (Sensor_EcoButton.sensorValue == TRUE)
+; main.c	   254          {
+; main.c	   255              if (timestamp_EcoButton == 0)
+; main.c	   256              {
+; main.c	   257                  SerialManager_send(serialMan, "Eco button detected\n");
+; main.c	   258                  IO_RTC_StartTime(&timestamp_EcoButton);
 	movw	r10,r15
 	andw	r10,#0x3fff
 	orw	r10,#@sof(__lc_ub_user_stack+0xffff) & 0xc000
-_633:
+_637:
 
-; main.c	   257              }
-; main.c	   258              else if (IO_RTC_GetTimeUS(timestamp_EcoButton) >= 3000000)
-; main.c	   259              {
-; main.c	   260                  SerialManager_send(serialMan, "Eco button held 3s - starting calibrations\n");
-; main.c	   261                  //calibrateTPS(TRUE, 5);
-; main.c	   262                  TorqueEncoder_startCalibration(tps, 5);
-; main.c	   263                  BrakePressureSensor_startCalibration(bps, 5);
-; main.c	   264                  Light_set(Light_dashTCS, 1);
-; main.c	   265                  //DIGITAL OUTPUT 4 for STATUS LED
-; main.c	   266              }
-; main.c	   267  		}
-; main.c	   268          else
-; main.c	   269          {
-; main.c	   270              if (IO_RTC_GetTimeUS(timestamp_EcoButton) > 10000 && IO_RTC_GetTimeUS(timestamp_EcoButton) < 1000000)
-; main.c	   271              {
-; main.c	   272                  SerialManager_send(serialMan, "Eco mode requested\n");
-; main.c	   273              }
-; main.c	   274              timestamp_EcoButton = 0;
-; main.c	   275          }
-; main.c	   276  		TorqueEncoder_update(tps);
-; main.c	   277          //Every cycle: if the calibration was started and hasn't finished, check the values again
-; main.c	   278          TorqueEncoder_calibrationCycle(tps, &calibrationErrors); //Todo: deal with calibration errors
+; main.c	   259              }
+; main.c	   260              else if (IO_RTC_GetTimeUS(timestamp_EcoButton) >= 3000000)
+; main.c	   261              {
+; main.c	   262                  SerialManager_send(serialMan, "Eco button held 3s - starting calibrations\n");
+; main.c	   263                  //calibrateTPS(TRUE, 5);
+; main.c	   264                  TorqueEncoder_startCalibration(tps, 5);
+; main.c	   265                  BrakePressureSensor_startCalibration(bps, 5);
+; main.c	   266                  Light_set(Light_dashEco, 1);
+; main.c	   267                  //DIGITAL OUTPUT 4 for STATUS LED
+; main.c	   268              }
+; main.c	   269          }
+; main.c	   270          else
+; main.c	   271          {
+; main.c	   272              if (IO_RTC_GetTimeUS(timestamp_EcoButton) > 10000 && IO_RTC_GetTimeUS(timestamp_EcoButton) < 1000000)
+; main.c	   273              {
+; main.c	   274                  SerialManager_send(serialMan, "Eco mode requested\n");
+; main.c	   275              }
+; main.c	   276              timestamp_EcoButton = 0;
+; main.c	   277          }
+; main.c	   278  
+; main.c	   279          TorqueEncoder_update(tps);
+; main.c	   280          //Every cycle: if the calibration was started and hasn't finished, check the values again
+; main.c	   281          TorqueEncoder_calibrationCycle(tps, &calibrationErrors); //Todo: deal with calibration errors
 	movw	r7,#0x8
 	addw	r7,r15
 	andw	r7,#0x3fff
 	orw	r7,#@sof(__lc_ub_user_stack+0xffff) & 0xc000
+_638:
+
+; main.c	   282          BrakePressureSensor_update(bps, bench);
+; main.c	   283          BrakePressureSensor_calibrationCycle(bps, &calibrationErrors);
+; main.c	   284          
+; main.c	   285          //Brake Light
+; main.c	   286          if (bps->brakePercentage > 10)
+	movw	r11,[r15+#0x14]
+	movw	r12,[r15+#0x12]
+	addw	r11,#0x1f
+	addcw	r12,#0x0
+	movw	[r15+#0x38],r11
+	movw	[r15+#0x36],r12
 _7:
 
-; main.c	   279  		BrakePressureSensor_update(bps, bench);
-; main.c	   280  		BrakePressureSensor_calibrationCycle(bps, &calibrationErrors);
-; main.c	   281  
-; main.c	   282  		//TractionControl_update(tps, mcm0, wss, daq);
-; main.c	   283  
-; main.c	   284  		WheelSpeeds_update(wss);
-; main.c	   285  		//DataAquisition_update(); //includes accelerometer
-; main.c	   286  		//TireModel_update()
-; main.c	   287  		//ControlLaw_update();
-; main.c	   288  		/*
-; main.c	   289  		ControlLaw //Tq command
-; main.c	   290  			TireModel //used by control law -> read from WSS, accelerometer
-; main.c	   291  			StateObserver //choose driver command or ctrl law
-; main.c	   292  		*/	
-; main.c	   293  
-; main.c	   294          CoolingSystem_calculations(cs, MCM_getTemp(mcm0), MCM_getMotorTemp(mcm0), BMS_getMaxTemp(bms));
-; main.c	   295          //CoolingSystem_calculations(cs, 20, 20, 20);
-; main.c	   296          CoolingSystem_enactCooling(cs); //This belongs under outputs but it doesn't really matter for cooling
-; main.c	   297  
-; main.c	   298          //Assign motor controls to MCM command message
-; main.c	   299          //motorController_setCommands(rtds);
-; main.c	   300          //DOES NOT set inverter command or rtds flag
-; main.c	   301          MCM_readTCSSettings(mcm0, &Sensor_TCSSwitchUp, &Sensor_TCSSwitchDown, &Sensor_TCSKnob);
-; main.c	   302          MCM_calculateCommands(mcm0, tps, bps);
-; main.c	   303  
-; main.c	   304          SafetyChecker_update(sc, mcm0, bms, tps, bps, &Sensor_HVILTerminationSense, &Sensor_LVBattery);
+; main.c	   287          {   
+; main.c	   288              IO_DO_Set(IO_DO_08, TRUE); //Turn on if brake is pressed
+; main.c	   289          }
+; main.c	   290          else 
+; main.c	   291          {
+; main.c	   292              IO_DO_Set(IO_DO_08, FALSE); //Turn off if brake is not pressed
+; main.c	   293          }
+; main.c	   294          //TractionControl_update(tps, mcm0, wss, daq);
+; main.c	   295  
+; main.c	   296          WheelSpeeds_update(wss);
+; main.c	   297          //DataAquisition_update(); //includes accelerometer
+; main.c	   298          //TireModel_update()
+; main.c	   299          //ControlLaw_update();
+; main.c	   300          /*
+; main.c	   301          ControlLaw //Tq command
+; main.c	   302              TireModel //used by control law -> read from WSS, accelerometer
+; main.c	   303              StateObserver //choose driver command or ctrl law
+; main.c	   304          */  
 ; main.c	   305  
-; main.c	   306          /*******************************************/
-; main.c	   307          /*  Output Adjustments by Safety Checker   */
-; main.c	   308          /*******************************************/
-; main.c	   309          SafetyChecker_reduceTorque(sc, mcm0, bms);
-; main.c	   310  
-; main.c	   311          /*******************************************/
-; main.c	   312          /*              Enact Outputs              */
-; main.c	   313          /*******************************************/
-; main.c	   314          //MOVE INTO SAFETYCHECKER
-; main.c	   315          //SafetyChecker_setErrorLight(sc);
-; main.c	   316          Light_set(Light_dashError, (SafetyChecker_getFaults(sc) == 0) ? 0 : 1);
-; main.c	   317          //Handle motor controller startup procedures
-; main.c	   318          MCM_relayControl(mcm0, &Sensor_HVILTerminationSense);
-; main.c	   319          MCM_inverterControl(mcm0, tps, bps, rtds);
-; main.c	   320          //CanManager_sendMCMCommandMessage(mcm0, canMan, FALSE);
-; main.c	   321  
-; main.c	   322          //Drop the sensor readings into CAN (just raw data, not calculated stuff)
-; main.c	   323          //canOutput_sendMCUControl(mcm0, FALSE);
-; main.c	   324  
-; main.c	   325          //Send debug data
-; main.c	   326          canOutput_sendDebugMessage(canMan, tps, bps, mcm0, wss, sc);
-; main.c	   327          //canOutput_sendSensorMessages();
-; main.c	   328          //canOutput_sendStatusMessages(mcm0);
-; main.c	   329  
-; main.c	   330          
-; main.c	   331  
-; main.c	   332          //----------------------------------------------------------------------------
-; main.c	   333          // Task management stuff (end)
-; main.c	   334          //----------------------------------------------------------------------------
-; main.c	   335          RTDS_shutdownHelper(rtds); //Stops the RTDS from playing if the set time has elapsed
+; main.c	   306          CoolingSystem_calculations(cs, MCM_getTemp(mcm0), MCM_getMotorTemp(mcm0), BMS_getMaxTemp(bms));
+; main.c	   307          //CoolingSystem_calculations(cs, 20, 20, 20);
+; main.c	   308          CoolingSystem_enactCooling(cs); //This belongs under outputs but it doesn't really matter for cooling
+; main.c	   309  
+; main.c	   310          //Assign motor controls to MCM command message
+; main.c	   311          //motorController_setCommands(rtds);
+; main.c	   312          //DOES NOT set inverter command or rtds flag
+; main.c	   313          MCM_readTCSSettings(mcm0, &Sensor_TCSSwitchUp, &Sensor_TCSSwitchDown, &Sensor_TCSKnob);
+; main.c	   314          MCM_calculateCommands(mcm0, tps, bps);
+; main.c	   315  
+; main.c	   316          SafetyChecker_update(sc, mcm0, bms, tps, bps, &Sensor_HVILTerminationSense, &Sensor_LVBattery);
+; main.c	   317  
+; main.c	   318          /*******************************************/
+; main.c	   319          /*  Output Adjustments by Safety Checker   */
+; main.c	   320          /*******************************************/
+; main.c	   321          SafetyChecker_reduceTorque(sc, mcm0, bms);
+; main.c	   322  
+; main.c	   323          /*******************************************/
+; main.c	   324          /*              Enact Outputs              */
+; main.c	   325          /*******************************************/
+; main.c	   326          //MOVE INTO SAFETYCHECKER
+; main.c	   327          //SafetyChecker_setErrorLight(sc);
+; main.c	   328          Light_set(Light_dashError, (SafetyChecker_getFaults(sc) == 0) ? 0 : 1);
+; main.c	   329          //Handle motor controller startup procedures
+; main.c	   330          MCM_relayControl(mcm0, &Sensor_HVILTerminationSense);
+; main.c	   331          MCM_inverterControl(mcm0, tps, bps, rtds);
+; main.c	   332          //CanManager_sendMCMCommandMessage(mcm0, canMan, FALSE);
+; main.c	   333  
+; main.c	   334          //Drop the sensor readings into CAN (just raw data, not calculated stuff)
+; main.c	   335          //canOutput_sendMCUControl(mcm0, FALSE);
 ; main.c	   336  
-; main.c	   337          //Task end function for IO Driver - This function needs to be called at the end of every SW cycle
-; main.c	   338          IO_Driver_TaskEnd();
-; main.c	   339          //wait until the cycle time is over
-; main.c	   340          while (IO_RTC_GetTimeUS(timestamp_mainLoopStart) < 33000) // 1000 = 1ms
+; main.c	   337          //Send debug data
+; main.c	   338          canOutput_sendDebugMessage(canMan, tps, bps, mcm0, wss, sc);
+; main.c	   339          //canOutput_sendSensorMessages();
+; main.c	   340          //canOutput_sendStatusMessages(mcm0);
+; main.c	   341         
+; main.c	   342  
+; main.c	   343          //----------------------------------------------------------------------------
+; main.c	   344          // Task management stuff (end)
+; main.c	   345          //----------------------------------------------------------------------------
+; main.c	   346          RTDS_shutdownHelper(rtds); //Stops the RTDS from playing if the set time has elapsed
+; main.c	   347  
+; main.c	   348          //Task end function for IO Driver - This function needs to be called at the end of every SW cycle
+; main.c	   349          IO_Driver_TaskEnd();
+; main.c	   350          //wait until the cycle time is over
+; main.c	   351          while (IO_RTC_GetTimeUS(timestamp_mainLoopStart) < 33000) // 1000 = 1ms
 _8:
 	movw	r2,r8
 	movw	r3,r9
 	call	_IO_RTC_StartTime
-_634:
+_639:
 	call	_IO_Driver_TaskBegin
-_635:
+_640:
 	call	_sensors_updateSensors
-_636:
+_641:
 	movw	r11,[r15+#0x1a]
 	movw	[-r15],r11
-_137:
+_139:
 	movw	r11,[r15+#0x1e]
 	movw	[-r15],r11
-_148:
+_150:
 	movw	r2,[r15+#0x38]
 	movw	r3,[r15+#0x36]
 	movb	rl4,#0x0
@@ -646,85 +675,85 @@ _148:
 	movw	r14,[r15+#0x22]
 	call	_CanManager_read
 	addw	r15,#0x4
-_159:
+_161:
 	movw	r11,#0x1
-_637:
+_642:
 	movw	r12,#0x0
 	exts	#@seg(_Sensor_EcoButton+0x8),#0x1
 	cmpw	r11,@sof(_Sensor_EcoButton+0x8)
 	exts	#@seg(_Sensor_EcoButton+0xa),#0x1
 	subcw	r12,@sof(_Sensor_EcoButton+0xa)
 	jmp	cc_ne,_9
-_638:
+_643:
 	movw	r11,[r15+#0x2]
 	movw	r12,[r15]
-_639:
+_644:
 	orw	r11,r12
 	jmp	cc_ne,_10
-_640:
+_645:
 	movw	r2,[r15+#0x24]
 	movw	r3,[r15+#0x22]
 	movw	r4,#@sof(_$7$str)
 	movw	r5,#@seg(_$7$str)
 	call	_SerialManager_send
-_641:
+_646:
 	movw	r2,r10
 	movw	r3,r9
 	call	_IO_RTC_StartTime
-_642:
+_647:
 	jmp	_11
 _10:
 	movw	r3,[r15+#0x2]
 	movw	r2,[r15]
 	call	_IO_RTC_GetTimeUS
-_643:
+_648:
 	cmpw	r2,#0xc6c0
 	subcw	r3,#0x2d
 	jmp	cc_ult,_12
-_644:
+_649:
 	movw	r2,[r15+#0x24]
 	movw	r3,[r15+#0x22]
 	movw	r4,#@sof(_$8$str)
 	movw	r5,#@seg(_$8$str)
 	call	_SerialManager_send
-_645:
+_650:
 	movw	r2,[r15+#0x18]
 	movw	r3,[r15+#0x16]
 	movb	rl4,#0x5
 	call	_TorqueEncoder_startCalibration
-_646:
+_651:
 	movw	r2,[r15+#0x14]
 	movw	r3,[r15+#0x12]
 	movb	rl4,#0x5
 	call	_BrakePressureSensor_startCalibration
-_647:
+_652:
 	movw	r5,#0x3f80
-	movb	rl2,#0x3
+	movb	rl2,#0x0
 	movw	r4,#0x0
 	call	_Light_set
-_648:
+_653:
 	jmp	_13
 _9:
 	movw	r3,[r15+#0x2]
 	movw	r2,[r15]
 	call	_IO_RTC_GetTimeUS
-_649:
+_654:
 	subw	r2,#0x2711
 	subcw	r3,#0x0
-_650:
+_655:
 	cmpw	r2,#0x1b2f
 	subcw	r3,#0xf
 	jmp	cc_uge,_14
-_651:
+_656:
 	movw	r2,[r15+#0x24]
 	movw	r3,[r15+#0x22]
-_554:
+_556:
 	movw	r4,#@sof(_$9$str)
 	movw	r5,#@seg(_$9$str)
 	call	_SerialManager_send
 _14:
 	movw	r11,#0x0
-_652:
+_657:
 	movw	[r15],r11
 	movw	[r15+#0x2],r11
 _13:
@@ -733,58 +762,78 @@ _11:
 	movw	r2,[r15+#0x18]
 	movw	r3,[r15+#0x16]
 	call	_TorqueEncoder_update
-_653:
+_658:
 	movw	r2,[r15+#0x18]
 	movw	r3,[r15+#0x16]
 	movw	r4,r7
 	movw	r5,r9
 	call	_TorqueEncoder_calibrationCycle
-_654:
+_659:
 	movb	rl4,[r15+#0x9]
 	movw	r2,[r15+#0x14]
 	movw	r3,[r15+#0x12]
 	call	_BrakePressureSensor_update
-_655:
+_660:
 	movw	r2,[r15+#0x14]
 	movw	r3,[r15+#0x12]
 	movw	r4,r7
 	movw	r5,r9
 	call	_BrakePressureSensor_calibrationCycle
-_656:
+_661:
+	movw	r11,[r15+#0x38]
+	movw	r12,[r15+#0x36]
+	exts	r12,#0x1
+	movb	rh4,[r11]
+_662:
+	cmpb	rh4,#0xa
+	jmp	cc_ule,_15
+_663:
+	movb	rl2,#0x2e
+_664:
+	movb	rh2,#0x1
+_665:
+	jmp	_16
+_15:
+	movb	rl2,#0x2e
+_666:
+	movb	rh2,#0x0
+_16:
+	call	_IO_DO_Set
+_667:
 	movw	r2,[r15+#0x2c]
 	movw	r3,[r15+#0x2a]
 	call	_WheelSpeeds_update
-_657:
+_668:
 	movw	r2,[r15+#0x10]
 	movw	r3,[r15+#0xe]
 	call	_MCM_getTemp
-_658:
+_669:
 	movw	r6,r2
-_659:
+_670:
 	movw	r2,[r15+#0x10]
 	movw	r3,[r15+#0xe]
 	call	_MCM_getMotorTemp
-_660:
+_671:
 	movw	r0,r2
-_661:
+_672:
 	movw	r2,[r15+#0x20]
 	movw	r3,[r15+#0x1e]
 	call	_BMS_getMaxTemp
-_662:
+_673:
 	movw	[-r15],r2
-_170:
+_172:
 	movw	r2,[r15+#0x2a]
 	movw	r3,[r15+#0x28]
 	movw	r4,r6
 	movw	r5,r0
 	call	_CoolingSystem_calculations
 	addw	r15,#0x2
-_181:
+_183:
 	movw	r2,[r15+#0x28]
 	movw	r3,[r15+#0x26]
-_555:
+_557:
 	call	_CoolingSystem_enactCooling
-_556:
+_558:
 	movw	r2,[r15+#0x10]
 	movw	r3,[r15+#0xe]
 	movw	r4,#@sof(_Sensor_TCSSwitchUp)
@@ -794,7 +843,7 @@ _556:
 	movw	r13,#@sof(_Sensor_TCSKnob)
 	movw	r14,#@seg(_Sensor_TCSKnob)
 	call	_MCM_readTCSSettings
-_663:
+_674:
 	movw	r2,[r15+#0x10]
 	movw	r3,[r15+#0xe]
 	movw	r4,[r15+#0x18]
@@ -802,25 +851,25 @@ _663:
 	movw	r11,[r15+#0x14]
 	movw	r12,[r15+#0x12]
 	call	_MCM_calculateCommands
-_664:
+_675:
 	movw	r11,#@sof(_Sensor_LVBattery)
 	movw	r12,#@seg(_Sensor_LVBattery)
 	movw	[-r15],r12
-_192:
+_194:
 	movw	[-r15],r11
-_203:
+_205:
 	movw	r11,#@sof(_Sensor_HVILTerminationSense)
 	movw	r12,#@seg(_Sensor_HVILTerminationSense)
 	movw	[-r15],r12
-_214:
+_216:
 	movw	[-r15],r11
-_225:
+_227:
 	movw	r11,[r15+#0x1a]
 	movw	[-r15],r11
-_236:
+_238:
 	movw	r11,[r15+#0x1e]
 	movw	[-r15],r11
-_247:
+_249:
 	movw	r2,[r15+#0x28]
 	movw	r3,[r15+#0x26]
 	movw	r4,[r15+#0x1c]
@@ -831,38 +880,38 @@ _247:
 	movw	r14,[r15+#0x22]
 	call	_SafetyChecker_update
 	addw	r15,#0xc
-_258:
+_260:
 	movw	r2,[r15+#0x1c]
 	movw	r3,[r15+#0x1a]
 	movw	r4,[r15+#0x10]
 	movw	r5,[r15+#0xe]
 	movw	r11,[r15+#0x20]
 	movw	r12,[r15+#0x1e]
-_557:
+_559:
 	call	_SafetyChecker_reduceTorque
-_558:
+_560:
 	movw	r2,[r15+#0x1c]
 	movw	r3,[r15+#0x1a]
 	call	_SafetyChecker_getFaults
-_665:
+_676:
 	movw	r11,#0x0
 	orw	r3,r2
-	jmp	cc_eq,_15
+	jmp	cc_eq,_17
 	movw	r11,#0x1
-_15:
+_17:
 	movw	r2,r11
 	call	__s2spf
 	movw	r4,r2
 	movb	rl2,#0x1
 	movw	r5,r3
 	call	_Light_set
-_666:
+_677:
 	movw	r2,[r15+#0x10]
 	movw	r3,[r15+#0xe]
 	movw	r4,#@sof(_Sensor_HVILTerminationSense)
 	movw	r5,#@seg(_Sensor_HVILTerminationSense)
 	call	_MCM_relayControl
-_667:
+_678:
 	movw	r2,[r15+#0x10]
 	movw	r3,[r15+#0xe]
 	movw	r4,[r15+#0x18]
@@ -872,65 +921,65 @@ _667:
 	movw	r13,[r15+#0x30]
 	movw	r14,[r15+#0x2e]
 	call	_MCM_inverterControl
-_668:
+_679:
 	movw	r11,[r15+#0x1a]
 	movw	[-r15],r11
-_269:
+_271:
 	movw	r11,[r15+#0x1e]
 	movw	[-r15],r11
-_280:
+_282:
 	movw	r11,[r15+#0x2e]
 	movw	[-r15],r11
-_291:
+_293:
 	movw	r11,[r15+#0x32]
 	movw	[-r15],r11
-_302:
+_304:
 	movw	r2,[r15+#0x3c]
 	movw	r3,[r15+#0x3a]
-_559:
+_561:
 	movw	r4,[r15+#0x20]
 	movw	r5,[r15+#0x1e]
-_561:
+_563:
 	movw	r11,[r15+#0x1c]
 	movw	r12,[r15+#0x1a]
-_562:
+_564:
 	movw	r13,[r15+#0x18]
 	movw	r14,[r15+#0x16]
-_563:
+_565:
 	call	_canOutput_sendDebugMessage
-_560:
+_562:
 	addw	r15,#0x8
-_313:
+_315:
 	movw	r2,[r15+#0x30]
 	movw	r3,[r15+#0x2e]
-_564:
+_566:
 	call	_RTDS_shutdownHelper
-_565:
+_567:
 	call	_IO_Driver_TaskEnd
-_669:
+_680:
 	movw	r3,[r15+#0xc]
 	movw	r2,[r15+#0xa]
 	call	_IO_RTC_GetTimeUS
-_670:
+_681:
 	cmpw	r2,#0x80e8
 	subcw	r3,#0x0
 	jmp+	cc_uge,_8
-_16:
+_18:
 
-; main.c	   341          {
-; main.c	   342              IO_UART_Task();  //The task function shall be called every SW cycle.
+; main.c	   352          {
+; main.c	   353              IO_UART_Task();  //The task function shall be called every SW cycle.
 	call	_IO_UART_Task
-_671:
+_682:
 	movw	r3,[r15+#0xc]
 	movw	r2,[r15+#0xa]
 	call	_IO_RTC_GetTimeUS
-_672:
+_683:
 	cmpw	r2,#0x80e8
 	subcw	r3,#0x0
-	jmp+	cc_ult,_16
-_673:
+	jmp+	cc_ult,_18
+_684:
 	jmp	_7
-_37:
+_39:
 	; End of function
 	; End of section
 
@@ -945,7 +994,7 @@ _appl_db	.label	word
 	.db	0x0
 	.db	0x0
 	.db	0x0
-	.dl	0x6c7357e2
+	.dl	0x2e1567e2
 	.db	0x0
 	.db	0x0
 	.db	0x0
@@ -1403,12 +1452,13 @@ _$9$str	.label	byte
 	.calls	'_main','_SerialManager_new'
 	.calls	'_main','_IO_RTC_StartTime'
 	.calls	'_main','_SerialManager_send'
-	.calls	'_main','_IO_DI_Init'
+	.calls	'_main','_IO_PWM_Init'
 	.calls	'_main','_IO_RTC_GetTimeUS'
 	.calls	'_main','_IO_Driver_TaskBegin'
 	.calls	'_main','_IO_DI_Get'
 	.calls	'_main','_IO_Driver_TaskEnd'
 	.calls	'_main','_IO_DI_DeInit'
+	.calls	'_main','_IO_PWM_DeInit'
 	.calls	'_main','_vcu_initializeADC'
 	.calls	'_main','_vcu_ADCWasteLoop'
 	.calls	'_main','_CanManager_new'
@@ -1429,6 +1479,7 @@ _$9$str	.label	byte
 	.calls	'_main','_TorqueEncoder_calibrationCycle'
 	.calls	'_main','_BrakePressureSensor_update'
 	.calls	'_main','_BrakePressureSensor_calibrationCycle'
+	.calls	'_main','_IO_DO_Set'
 	.calls	'_main','_WheelSpeeds_update'
 	.calls	'_main','_MCM_getTemp'
 	.calls	'_main','_MCM_getMotorTemp'
@@ -1445,15 +1496,15 @@ _$9$str	.label	byte
 	.calls	'_main','_canOutput_sendDebugMessage'
 	.calls	'_main','_RTDS_shutdownHelper'
 	.calls	'_main','_IO_UART_Task'
-	.calls	'_main','',4,66
+	.calls	'_main','',4,70
 	.extern	_IO_UART_Task : far
 	.extern	_IO_Driver_Init : far
 	.extern	_IO_Driver_TaskBegin : far
 	.extern	_IO_Driver_TaskEnd : far
 	.extern	__cstart : far
-	.extern	_IO_DI_Init : far
 	.extern	_IO_DI_DeInit : far
 	.extern	_IO_DI_Get : far
+	.extern	_IO_DO_Set : far
 	.extern	_IO_RTC_StartTime : far
 	.extern	_IO_RTC_GetTimeUS : far
 	.extern	_vcu_initializeADC : far
@@ -1499,27 +1550,29 @@ _$9$str	.label	byte
 	.extern	_CoolingSystem_new : far
 	.extern	_CoolingSystem_calculations : far
 	.extern	_CoolingSystem_enactCooling : far
+	.extern	_IO_PWM_Init : far
+	.extern	_IO_PWM_DeInit : far
 	.extern	__lc_ub_user_stack : nearbyte
 	.extern	__s2spf : far
 	.extern	__INDIRECT__ : far
 	.debug		.debug_info
-_30:
-	.dl	6665
+_32:
+	.dl	6748
 	.dw	3
-	.dl	_31
+	.dl	_33
 	.db	4
-_29:
+_31:
 	.db	1
 	.db	'main.c',0
 	.db	'TASKING VX-toolset for C166: C compiler',0
 	.db	'C:\\Users\\Timothy_Le\\Documents\\SRE\\SRE_SDK_2018\\VCU\\Environment\\dev\\sre-3b\\',0,12,1
-	.dl	_32
+	.dl	_34
 	.db	2
 	.db	'unsigned int',0,2,7,3
 	.db	'IO_UART_Task',0,1,230,1,15,6
 	.dl	140
 	.db	1,1,1,1
-_43:
+_45:
 	.db	2
 	.db	'unsigned char',0,1,8,4
 	.db	'_io_driver_safety_conf',0,2,237,2,17,8,5
@@ -1553,15 +1606,6 @@ _43:
 	.db	'IO_Driver_TaskEnd',0,2,207,3,15,6
 	.dl	140
 	.db	1,1,1,1,8
-	.db	'IO_DI_Init',0,3,119,14,6
-	.dl	140
-	.db	1,1,1,1,9
-	.db	'di_channel',0,3,119,33,2
-	.dl	183
-	.db	9
-	.db	'mode',0,3,120,33,2
-	.dl	183
-	.db	0,8
 	.db	'IO_DI_DeInit',0,3,173,1,14,6
 	.dl	140
 	.db	1,1,1,1,9
@@ -1570,7 +1614,7 @@ _43:
 	.db	0,7,5
 	.dl	183
 	.db	6
-	.dl	576
+	.dl	517
 	.db	8
 	.db	'IO_DI_Get',0,3,220,1,14,6
 	.dl	140
@@ -1579,26 +1623,35 @@ _43:
 	.dl	183
 	.db	9
 	.db	'di_value',0,3,221,1,38,2
-	.dl	582
+	.dl	523
+	.db	0,8
+	.db	'IO_DO_Set',0,3,141,2,14,6
+	.dl	140
+	.db	1,1,1,1,9
+	.db	'do_channel',0,3,141,2,32,2
+	.dl	183
+	.db	9
+	.db	'do_value',0,3,142,2,30,2
+	.dl	183
 	.db	0
-_40:
+_42:
 	.db	2
 	.db	'unsigned long int',0,4,7,7,5
-	.dl	652
+	.dl	658
 	.db	6
-	.dl	673
+	.dl	679
 	.db	8
 	.db	'IO_RTC_StartTime',0,4,118,15,6
 	.dl	140
 	.db	1,1,1,1,9
 	.db	'timestamp',0,4,118,49,2
-	.dl	679
+	.dl	685
 	.db	0,8
 	.db	'IO_RTC_GetTimeUS',0,4,143,1,9,6
-	.dl	652
+	.dl	658
 	.db	1,1,1,1,9
 	.db	'timestamp',0,4,143,1,35,2
-	.dl	652
+	.dl	658
 	.db	0,10
 	.db	'vcu_initializeADC',0,5,22,6,6,1,1,1,1,9
 	.db	'benchMode',0,5,22,29,2
@@ -1617,20 +1670,20 @@ _40:
 	.db	'float',0,4,4,10
 	.db	'Light_set',0,6,203,1,6,6,1,1,1,1,9
 	.db	'light',0,6,203,1,22,2
-	.dl	891
+	.dl	897
 	.db	9
 	.db	'percent',0,6,203,1,36,2
-	.dl	1039
+	.dl	1045
 	.db	0,4
 	.db	'_Sensor',0,6,126,16,22,5
 	.db	'specMin',0
-	.dl	652
+	.dl	658
 	.db	4,2,35,0,5
 	.db	'specMax',0
-	.dl	652
+	.dl	658
 	.db	4,2,35,4,5
 	.db	'sensorValue',0
-	.dl	652
+	.dl	658
 	.db	4,2,35,8,5
 	.db	'fresh',0
 	.dl	183
@@ -1647,53 +1700,53 @@ _40:
 	.db	'ioErr_signalGet',0
 	.dl	140
 	.db	2,2,35,20,0,7,5
-	.dl	1103
+	.dl	1109
 	.db	4
 	.db	'_TorqueEncoder',0,7,10,16,60,5
 	.db	'bench',0
 	.dl	183
 	.db	1,2,35,0,5
 	.db	'tps0',0
-	.dl	1287
+	.dl	1293
 	.db	4,2,35,2,5
 	.db	'tps1',0
-	.dl	1287
+	.dl	1293
 	.db	4,2,35,6,5
 	.db	'tps0_calibMin',0
-	.dl	652
+	.dl	658
 	.db	4,2,35,10,5
 	.db	'tps0_calibMax',0
-	.dl	652
+	.dl	658
 	.db	4,2,35,14,5
 	.db	'tps0_reverse',0
 	.dl	183
 	.db	1,2,35,18,5
 	.db	'tps0_value',0
-	.dl	652
+	.dl	658
 	.db	4,2,35,20,5
 	.db	'tps0_percent',0
-	.dl	1039
+	.dl	1045
 	.db	4,2,35,24,5
 	.db	'tps1_calibMin',0
-	.dl	652
+	.dl	658
 	.db	4,2,35,28,5
 	.db	'tps1_calibMax',0
-	.dl	652
+	.dl	658
 	.db	4,2,35,32,5
 	.db	'tps1_reverse',0
 	.dl	183
 	.db	1,2,35,36,5
 	.db	'tps1_value',0
-	.dl	652
+	.dl	658
 	.db	4,2,35,38,5
 	.db	'tps1_percent',0
-	.dl	1039
+	.dl	1045
 	.db	4,2,35,42,5
 	.db	'runCalibration',0
 	.dl	183
 	.db	1,2,35,46,5
 	.db	'timestamp_calibrationStart',0
-	.dl	652
+	.dl	658
 	.db	4,2,35,48,5
 	.db	'calibrationRunTime',0
 	.dl	183
@@ -1702,28 +1755,28 @@ _40:
 	.dl	183
 	.db	1,2,35,53,5
 	.db	'percent',0
-	.dl	1039
+	.dl	1045
 	.db	4,2,35,54,5
 	.db	'implausibility',0
 	.dl	183
 	.db	1,2,35,58,0
-_57:
+_59:
 	.db	7,5
-	.dl	1293
+	.dl	1299
 	.db	8
 	.db	'TorqueEncoder_new',0,7,38,16,6
-	.dl	1726
+	.dl	1732
 	.db	1,1,1,1,9
 	.db	'benchMode',0,7,38,39,2
 	.dl	183
 	.db	0,10
 	.db	'TorqueEncoder_update',0,7,39,6,6,1,1,1,1,9
 	.db	'me',0,7,39,42,2
-	.dl	1726
+	.dl	1732
 	.db	0,10
 	.db	'TorqueEncoder_startCalibration',0,7,44,6,6,1,1,1,1,9
 	.db	'me',0,7,44,52,2
-	.dl	1726
+	.dl	1732
 	.db	9
 	.db	'secondsToRun',0,7,44,63,2
 	.dl	183
@@ -1732,17 +1785,17 @@ _57:
 	.db	10
 	.db	'TorqueEncoder_calibrationCycle',0,7,45,6,6,1,1,1,1,9
 	.db	'me',0,7,45,52,2
-	.dl	1726
+	.dl	1732
 	.db	9
 	.db	'errorCount',0,7,45,64,2
-	.dl	1901
+	.dl	1907
 	.db	0,4
 	.db	'_BrakePressureSensor',0,8,10,16,32,5
 	.db	'bench',0
 	.dl	183
 	.db	1,2,35,0,5
 	.db	'bps0',0
-	.dl	1287
+	.dl	1293
 	.db	4,2,35,2,5
 	.db	'bps0_calibMin',0
 	.dl	140
@@ -1757,13 +1810,13 @@ _57:
 	.dl	140
 	.db	2,2,35,12,5
 	.db	'bps0_percent',0
-	.dl	1039
+	.dl	1045
 	.db	4,2,35,14,5
 	.db	'runCalibration',0
 	.dl	183
 	.db	1,2,35,18,5
 	.db	'timestamp_calibrationStart',0
-	.dl	652
+	.dl	658
 	.db	4,2,35,20,5
 	.db	'calibrationRunTime',0
 	.dl	183
@@ -1772,76 +1825,79 @@ _57:
 	.dl	183
 	.db	1,2,35,25,5
 	.db	'percent',0
-	.dl	1039
+	.dl	1045
 	.db	4,2,35,26,5
 	.db	'implausibility',0
 	.dl	183
-	.db	1,2,35,30,0
-_59:
+	.db	1,2,35,30,5
+	.db	'brakePercentage',0
+	.dl	183
+	.db	1,2,35,31,0
+_61:
 	.db	7,5
-	.dl	1980
+	.dl	1986
 	.db	3
-	.db	'BrakePressureSensor_new',0,8,39,22,6
-	.dl	2295
+	.db	'BrakePressureSensor_new',0,8,40,22,6
+	.dl	2326
 	.db	1,1,1,1,10
-	.db	'BrakePressureSensor_update',0,8,40,6,6,1,1,1,1,9
-	.db	'me',0,8,40,54,2
-	.dl	2295
+	.db	'BrakePressureSensor_update',0,8,41,6,6,1,1,1,1,9
+	.db	'me',0,8,41,54,2
+	.dl	2326
 	.db	9
-	.db	'bench',0,8,40,63,2
+	.db	'bench',0,8,41,63,2
 	.dl	183
 	.db	0,10
-	.db	'BrakePressureSensor_startCalibration',0,8,45,6,6,1,1,1,1,9
-	.db	'me',0,8,45,64,2
-	.dl	2295
-	.db	9
-	.db	'secondsToRun',0,8,45,75,2
-	.dl	183
-	.db	0,10
-	.db	'BrakePressureSensor_calibrationCycle',0,8,46,6,6,1,1,1,1,9
+	.db	'BrakePressureSensor_startCalibration',0,8,46,6,6,1,1,1,1,9
 	.db	'me',0,8,46,64,2
-	.dl	2295
+	.dl	2326
 	.db	9
-	.db	'errorCount',0,8,46,76,2
-	.dl	1901
+	.db	'secondsToRun',0,8,46,75,2
+	.dl	183
+	.db	0,10
+	.db	'BrakePressureSensor_calibrationCycle',0,8,47,6,6,1,1,1,1,9
+	.db	'me',0,8,47,64,2
+	.dl	2326
+	.db	9
+	.db	'errorCount',0,8,47,76,2
+	.dl	1907
 	.db	0,14
 	.db	'_ReadyToDriveSound',0,9,7,16,1
-_53:
+_55:
 	.db	7,5
-	.dl	2562
+	.dl	2593
 	.db	3
 	.db	'RTDS_new',0,9,9,20,6
-	.dl	2586
+	.dl	2617
 	.db	1,1,1,1,10
 	.db	'RTDS_shutdownHelper',0,9,15,6,6,1,1,1,1,9
 	.db	'rtds',0,9,15,45,2
-	.dl	2586
+	.dl	2617
 	.db	0,14
 	.db	'_SerialManager',0,10,7,16,1
-_46:
+_48:
 	.db	7,5
-	.dl	2658
+	.dl	2689
 	.db	3
 	.db	'SerialManager_new',0,10,13,16,6
-	.dl	2678
+	.dl	2709
 	.db	1,1,1,1,6
 	.dl	183
 	.db	7,5
-	.dl	2715
+	.dl	2746
 	.db	8
 	.db	'SerialManager_send',0,10,18,14,6
 	.dl	140
 	.db	1,1,1,1,9
 	.db	'me',0,10,18,48,2
-	.dl	2678
+	.dl	2709
 	.db	9
 	.db	'data',0,10,18,66,2
-	.dl	2720
+	.dl	2751
 	.db	0,14
 	.db	'_MotorController',0,11,21,16,1
-_55:
+_57:
 	.db	7,5
-	.dl	2785
+	.dl	2816
 	.db	12,11,19,9,1,13
 	.db	'CLOCKWISE',0,0,13
 	.db	'COUNTERCLOCKWISE',0,1,13
@@ -1852,114 +1908,114 @@ _55:
 	.db	'int',0,2,5,2
 	.db	'char',0,1,6,8
 	.db	'MotorController_new',0,11,23,18,6
-	.dl	2807
+	.dl	2838
 	.db	1,1,1,1,9
 	.db	'sm',0,11,23,53,2
-	.dl	2678
+	.dl	2709
 	.db	9
 	.db	'canMessageBaseID',0,11,23,64,2
 	.dl	140
 	.db	9
 	.db	'initialDirection',0,11,23,92,2
-	.dl	2813
+	.dl	2844
 	.db	9
 	.db	'torqueMaxInDNm',0,11,23,117,2
-	.dl	2880
+	.dl	2911
 	.db	9
 	.db	'minRegenSpeedKPH',0,11,23,140,1,2
-	.dl	2887
+	.dl	2918
 	.db	9
 	.db	'regenRampdownStartSpeed',0,11,23,165,1,2
-	.dl	2887
+	.dl	2918
 	.db	0,8
 	.db	'MCM_getTemp',0,11,74,8,6
-	.dl	2880
+	.dl	2911
 	.db	1,1,1,1,9
 	.db	'me',0,11,74,37,2
-	.dl	2807
+	.dl	2838
 	.db	0,8
 	.db	'MCM_getMotorTemp',0,11,75,8,6
-	.dl	2880
+	.dl	2911
 	.db	1,1,1,1,9
 	.db	'me',0,11,75,42,2
-	.dl	2807
+	.dl	2838
 	.db	0,10
 	.db	'MCM_readTCSSettings',0,11,90,6,6,1,1,1,1,9
 	.db	'me',0,11,90,43,2
-	.dl	2807
+	.dl	2838
 	.db	9
 	.db	'TCSSwitchUp',0,11,90,55,2
-	.dl	1287
+	.dl	1293
 	.db	9
 	.db	'TCSSwitchDown',0,11,90,76,2
-	.dl	1287
+	.dl	1293
 	.db	9
 	.db	'TCSPot',0,11,90,99,2
-	.dl	1287
+	.dl	1293
 	.db	0,10
 	.db	'MCM_calculateCommands',0,11,91,6,6,1,1,1,1,9
 	.db	'mcm',0,11,91,45,2
-	.dl	2807
+	.dl	2838
 	.db	9
 	.db	'tps',0,11,91,65,2
-	.dl	1726
+	.dl	1732
 	.db	9
 	.db	'bps',0,11,91,91,2
-	.dl	2295
+	.dl	2326
 	.db	0,10
 	.db	'MCM_relayControl',0,11,93,6,6,1,1,1,1,9
 	.db	'mcm',0,11,93,40,2
-	.dl	2807
+	.dl	2838
 	.db	9
 	.db	'HVILTermSense',0,11,93,53,2
-	.dl	1287
+	.dl	1293
 	.db	0,10
 	.db	'MCM_inverterControl',0,11,94,6,6,1,1,1,1,9
 	.db	'mcm',0,11,94,43,2
-	.dl	2807
+	.dl	2838
 	.db	9
 	.db	'tps',0,11,94,63,2
-	.dl	1726
+	.dl	1732
 	.db	9
 	.db	'bps',0,11,94,89,2
-	.dl	2295
+	.dl	2326
 	.db	9
 	.db	'rtds',0,11,94,113,2
-	.dl	2586
+	.dl	2617
 	.db	0,14
 	.db	'_BatteryManagementSystem',0,12,29,16,1
-_65:
+_67:
 	.db	7,5
-	.dl	3478
+	.dl	3509
 	.db	8
 	.db	'BMS_new',0,12,31,26,6
-	.dl	3508
+	.dl	3539
 	.db	1,1,1,1,9
 	.db	'serialMan',0,12,31,49,2
-	.dl	2678
+	.dl	2709
 	.db	9
 	.db	'canMessageBaseID',0,12,31,67,2
 	.dl	140
 	.db	0,8
 	.db	'BMS_getMaxTemp',0,12,40,8,6
-	.dl	2887
+	.dl	2918
 	.db	1,1,1,1,9
 	.db	'me',0,12,40,48,2
-	.dl	3508
+	.dl	3539
 	.db	0,14
 	.db	'_WheelSpeeds',0,13,12,16,1
-_61:
+_63:
 	.db	7,5
-	.dl	3622
+	.dl	3653
 	.db	8
 	.db	'WheelSpeeds_new',0,13,14,14,6
-	.dl	3640
+	.dl	3671
 	.db	1,1,1,1,9
 	.db	'tireDiameterInches_F',0,13,14,37,2
-	.dl	1039
+	.dl	1045
 	.db	9
 	.db	'tireDiameterInches_R',0,13,14,66,2
-	.dl	1039
+	.dl	1045
 	.db	9
 	.db	'pulsesPerRotation_F',0,13,14,95,2
 	.dl	183
@@ -1969,18 +2025,18 @@ _61:
 	.db	0,10
 	.db	'WheelSpeeds_update',0,13,15,6,6,1,1,1,1,9
 	.db	'me',0,13,15,38,2
-	.dl	3640
+	.dl	3671
 	.db	0,14
 	.db	'_SafetyChecker',0,14,21,16,1
-_63:
+_65:
 	.db	7,5
-	.dl	3835
+	.dl	3866
 	.db	8
 	.db	'SafetyChecker_new',0,14,23,16,6
-	.dl	3855
+	.dl	3886
 	.db	1,1,1,1,9
 	.db	'sm',0,14,23,49,2
-	.dl	2678
+	.dl	2709
 	.db	9
 	.db	'maxChargeAmps',0,14,23,60,2
 	.dl	140
@@ -1990,49 +2046,49 @@ _63:
 	.db	0,10
 	.db	'SafetyChecker_update',0,14,24,6,6,1,1,1,1,9
 	.db	'me',0,14,24,42,2
-	.dl	3855
+	.dl	3886
 	.db	9
 	.db	'mcm',0,14,24,63,2
-	.dl	2807
+	.dl	2838
 	.db	9
 	.db	'bms',0,14,24,93,2
-	.dl	3508
+	.dl	3539
 	.db	9
 	.db	'tps',0,14,24,113,2
-	.dl	1726
+	.dl	1732
 	.db	9
 	.db	'bps',0,14,24,139,1,2
-	.dl	2295
+	.dl	2326
 	.db	9
 	.db	'HVILTermSense',0,14,24,152,1,2
-	.dl	1287
+	.dl	1293
 	.db	9
 	.db	'LVBattery',0,14,24,175,1,2
-	.dl	1287
+	.dl	1293
 	.db	0,8
 	.db	'SafetyChecker_getFaults',0,14,27,8,6
-	.dl	652
+	.dl	658
 	.db	1,1,1,1,9
 	.db	'me',0,14,27,47,2
-	.dl	3855
+	.dl	3886
 	.db	0,10
 	.db	'SafetyChecker_reduceTorque',0,14,30,6,6,1,1,1,1,9
 	.db	'me',0,14,30,48,2
-	.dl	3855
+	.dl	3886
 	.db	9
 	.db	'mcm',0,14,30,69,2
-	.dl	2807
+	.dl	2838
 	.db	9
 	.db	'bms',0,14,30,99,2
-	.dl	3508
+	.dl	3539
 	.db	0,14
 	.db	'_CanManager',0,15,17,16,1
-_51:
+_53:
 	.db	7,5
-	.dl	4219
+	.dl	4250
 	.db	8
 	.db	'CanManager_new',0,15,22,13,6
-	.dl	4236
+	.dl	4267
 	.db	1,1,1,1,9
 	.db	'can0_busSpeed',0,15,22,35,2
 	.dl	140
@@ -2053,343 +2109,349 @@ _51:
 	.dl	183
 	.db	9
 	.db	'defaultSendDelayus',0,15,24,35,2
-	.dl	652
+	.dl	658
 	.db	9
 	.db	'sm',0,15,24,70,2
-	.dl	2678
+	.dl	2709
 	.db	0,12,15,13,9,1,13
 	.db	'CAN0_HIPRI',0,0,13
 	.db	'CAN1_LOPRI',0,1,0,10
 	.db	'CanManager_read',0,15,28,6,6,1,1,1,1,9
 	.db	'me',0,15,28,34,2
-	.dl	4236
+	.dl	4267
 	.db	9
 	.db	'channel',0,15,28,49,2
-	.dl	4487
+	.dl	4518
 	.db	9
 	.db	'mcm',0,15,28,75,2
-	.dl	2807
+	.dl	2838
 	.db	9
 	.db	'bms',0,15,28,105,2
-	.dl	3508
+	.dl	3539
 	.db	9
 	.db	'sc',0,15,28,125,2
-	.dl	3855
+	.dl	3886
 	.db	0,10
 	.db	'canOutput_sendDebugMessage',0,15,32,6,6,1,1,1,1,9
 	.db	'me',0,15,32,45,2
-	.dl	4236
+	.dl	4267
 	.db	9
 	.db	'tps',0,15,32,64,2
-	.dl	1726
+	.dl	1732
 	.db	9
 	.db	'bps',0,15,32,90,2
-	.dl	2295
+	.dl	2326
 	.db	9
 	.db	'mcm',0,15,32,112,2
-	.dl	2807
+	.dl	2838
 	.db	9
 	.db	'wss',0,15,32,130,1,2
-	.dl	3640
+	.dl	3671
 	.db	9
 	.db	'sc',0,15,32,150,1,2
-	.dl	3855
+	.dl	3886
 	.db	0,4
 	.db	'_CoolingSystem',0,16,6,16,20,5
 	.db	'sm',0
-	.dl	2678
+	.dl	2709
 	.db	4,2,35,0,5
 	.db	'waterPumpMinPercent',0
-	.dl	1039
+	.dl	1045
 	.db	4,2,35,4,5
 	.db	'waterPumpLow',0
-	.dl	2887
+	.dl	2918
 	.db	1,2,35,8,5
 	.db	'waterPumpHigh',0
-	.dl	2887
+	.dl	2918
 	.db	1,2,35,9,5
 	.db	'waterPumpPercent',0
-	.dl	1039
+	.dl	1045
 	.db	4,2,35,10,5
 	.db	'motorFanLow',0
-	.dl	2887
+	.dl	2918
 	.db	1,2,35,14,5
 	.db	'motorFanHigh',0
-	.dl	2887
+	.dl	2918
 	.db	1,2,35,15,5
 	.db	'motorFanState',0
 	.dl	183
 	.db	1,2,35,16,5
 	.db	'batteryFanLow',0
-	.dl	2887
+	.dl	2918
 	.db	1,2,35,17,5
 	.db	'batteryFanHigh',0
-	.dl	2887
+	.dl	2918
 	.db	1,2,35,18,5
 	.db	'batteryFanState',0
 	.dl	183
 	.db	1,2,35,19,0
-_67:
+_69:
 	.db	7,5
-	.dl	4727
+	.dl	4758
 	.db	8
 	.db	'CoolingSystem_new',0,16,32,16,6
-	.dl	4998
+	.dl	5029
 	.db	1,1,1,1,9
 	.db	'sm',0,16,32,49,2
-	.dl	2678
+	.dl	2709
 	.db	0,10
 	.db	'CoolingSystem_calculations',0,16,33,6,6,1,1,1,1,9
 	.db	'me',0,16,33,48,2
-	.dl	4998
+	.dl	5029
 	.db	9
 	.db	'motorControllerTemp',0,16,33,59,2
-	.dl	2880
+	.dl	2911
 	.db	9
 	.db	'motorTemp',0,16,33,87,2
-	.dl	2880
+	.dl	2911
 	.db	9
 	.db	'batteryTemp',0,16,33,105,2
-	.dl	2887
+	.dl	2918
 	.db	0,10
 	.db	'CoolingSystem_enactCooling',0,16,34,6,6,1,1,1,1,9
 	.db	'me',0,16,34,48,2
-	.dl	4998
+	.dl	5029
 	.db	0,15
-	.db	'_INDIRECT__',0,17,1,1,6,1,1,1,16
+	.db	'IO_PWM_Init',0,17,137,1,5,6
+	.dl	2911
+	.db	1,1,1,15
+	.db	'IO_PWM_DeInit',0,17,151,1,5,6
+	.dl	2911
+	.db	1,1,1,16
+	.db	'_INDIRECT__',0,17,1,1,6,1,1,1,17
 	.db	'__size_t',0,17,1,1
 	.dl	140
-	.db	17
+	.db	18
 	.db	'void',0,7,5
-	.dl	5252
-	.db	16
+	.dl	5335
+	.db	17
 	.db	'__prof_adm',0,17,1,1
-	.dl	5258
-	.db	16
+	.dl	5341
+	.db	17
 	.db	'__codeptr',0,17,1,1
-	.dl	652
+	.dl	658
 	.db	2
-	.db	'unsigned short int',0,2,7,16
+	.db	'unsigned short int',0,2,7,17
 	.db	'_iob_flag_t',0,18,82,25
-	.dl	5301
-	.db	16
+	.dl	5384
+	.db	17
 	.db	'ubyte1',0,19,21,29
 	.dl	183
-	.db	16
+	.db	17
 	.db	'ubyte2',0,19,22,29
 	.dl	140
-	.db	16
+	.db	17
 	.db	'ubyte4',0,19,23,29
-	.dl	652
-	.db	16
+	.dl	658
+	.db	17
 	.db	'sbyte1',0,19,25,29
-	.dl	2887
-	.db	16
+	.dl	2918
+	.db	17
 	.db	'sbyte2',0,19,26,29
-	.dl	2880
-	.db	16
+	.dl	2911
+	.db	17
 	.db	'float4',0,19,29,29
-	.dl	1039
-	.db	16
+	.dl	1045
+	.db	17
 	.db	'bool',0,19,31,29
 	.dl	183
-	.db	16
+	.db	17
 	.db	'IO_ErrorType',0,20,150,1,17
 	.dl	140
-	.db	16
+	.db	17
 	.db	'IO_DRIVER_SAFETY_CONF',0,2,252,2,4
 	.dl	200
 	.db	4
 	.db	'_bl_t_date',0,21,90,16,4,5
 	.db	'date',0
-	.dl	652
-	.db	4,2,35,0,0,16
+	.dl	658
+	.db	4,2,35,0,0,17
 	.db	'BL_T_DATE',0,21,93,2
-	.dl	5499
+	.dl	5582
 	.db	4
 	.db	'_bl_t_can_id',0,21,102,16,8,5
 	.db	'extended',0
-	.dl	652
+	.dl	658
 	.db	4,2,35,0,5
 	.db	'ID',0
-	.dl	652
-	.db	4,2,35,4,0,16
+	.dl	658
+	.db	4,2,35,4,0,17
 	.db	'BL_T_CAN_ID',0,21,106,2
-	.dl	5548
-	.db	18,24
+	.dl	5631
+	.db	19,24
 	.dl	183
-	.db	19,23,0,4
+	.db	20,23,0,4
 	.db	'_bl_apdb',0,21,116,16,128,1,5
 	.db	'versionAPDB',0
-	.dl	652
+	.dl	658
 	.db	4,2,35,0,5
 	.db	'flashDate',0
-	.dl	5499
+	.dl	5582
 	.db	4,2,35,4,5
 	.db	'buildDate',0
-	.dl	5499
+	.dl	5582
 	.db	4,2,35,8,5
 	.db	'nodeType',0
-	.dl	652
+	.dl	658
 	.db	4,2,35,12,5
 	.db	'startAddress',0
-	.dl	652
+	.dl	658
 	.db	4,2,35,16,5
 	.db	'codeSize',0
-	.dl	652
+	.dl	658
 	.db	4,2,35,20,5
 	.db	'legacyAppCRC',0
-	.dl	652
+	.dl	658
 	.db	4,2,35,24,5
 	.db	'appCRC',0
-	.dl	652
+	.dl	658
 	.db	4,2,35,28,5
 	.db	'nodeNr',0
-	.dl	652
+	.dl	658
 	.db	4,2,35,32,5
 	.db	'CRCInit',0
-	.dl	652
+	.dl	658
 	.db	4,2,35,36,5
 	.db	'flags',0
-	.dl	652
+	.dl	658
 	.db	4,2,35,40,5
 	.db	'hook1',0
-	.dl	652
+	.dl	658
 	.db	4,2,35,44,5
 	.db	'hook2',0
-	.dl	652
+	.dl	658
 	.db	4,2,35,48,5
 	.db	'hook3',0
-	.dl	652
+	.dl	658
 	.db	4,2,35,52,5
 	.db	'mainAddress',0
-	.dl	652
+	.dl	658
 	.db	4,2,35,56,5
 	.db	'canDownloadID',0
-	.dl	5548
+	.dl	5631
 	.db	8,2,35,60,5
 	.db	'canUploadID',0
-	.dl	5548
+	.dl	5631
 	.db	8,2,35,68,5
 	.db	'legacyHeaderCRC',0
-	.dl	652
+	.dl	658
 	.db	4,2,35,76,5
 	.db	'version',0
-	.dl	652
+	.dl	658
 	.db	4,2,35,80,5
 	.db	'canBaudrate',0
-	.dl	652
+	.dl	658
 	.db	4,2,35,84,5
 	.db	'canChannel',0
-	.dl	652
+	.dl	658
 	.db	4,2,35,88,5
 	.db	'password',0
-	.dl	652
+	.dl	658
 	.db	4,2,35,92,5
 	.db	'magicSeed',0
-	.dl	652
+	.dl	658
 	.db	4,2,35,96,5
 	.db	'reserved',0
-	.dl	5617
+	.dl	5700
 	.db	24,2,35,100,5
 	.db	'headerCRC',0
-	.dl	652
-	.db	4,2,35,124,0,16
+	.dl	658
+	.db	4,2,35,124,0,17
 	.db	'BL_APDB',0,21,150,1,2
-	.dl	5626
-	.db	16
+	.dl	5709
+	.db	17
 	.db	'Light',0,6,113,3
-	.dl	891
-	.db	16
+	.dl	897
+	.db	17
 	.db	'Sensor',0,6,143,1,3
-	.dl	1103
-	.db	20
-	.db	'Sensor_EcoButton',0,6,177,1,15,5
-	.dl	1103
-	.db	1,1,20
-	.db	'Sensor_TCSSwitchUp',0,6,178,1,15,5
-	.dl	1103
-	.db	1,1,20
-	.db	'Sensor_TCSSwitchDown',0,6,179,1,15,5
-	.dl	1103
-	.db	1,1,20
-	.db	'Sensor_TCSKnob',0,6,180,1,15,5
-	.dl	1103
-	.db	1,1,20
-	.db	'Sensor_HVILTerminationSense',0,6,184,1,15,5
-	.dl	1103
-	.db	1,1,20
-	.db	'Sensor_LVBattery',0,6,188,1,15,5
-	.dl	1103
-	.db	1,1,16
-	.db	'TorqueEncoder',0,7,36,3
-	.dl	1293
-	.db	16
-	.db	'BrakePressureSensor',0,8,37,3
-	.dl	1980
-	.db	16
-	.db	'ReadyToDriveSound',0,9,7,35
-	.dl	2562
-	.db	16
-	.db	'SerialManager',0,10,7,31
-	.dl	2658
-	.db	16
-	.db	'Direction',0,11,19,72
-	.dl	2813
-	.db	16
-	.db	'MotorController',0,11,21,33
-	.dl	2785
-	.db	16
-	.db	'BatteryManagementSystem',0,12,29,41
-	.dl	3478
-	.db	16
-	.db	'WheelSpeeds',0,13,12,29
-	.dl	3622
-	.db	16
-	.db	'SafetyChecker',0,14,21,31
-	.dl	3835
-	.db	16
-	.db	'CanChannel',0,15,13,41
-	.dl	4487
-	.db	16
-	.db	'CanManager',0,15,17,28
-	.dl	4219
-	.db	16
-	.db	'CoolingSystem',0,16,30,1
-	.dl	4727
+	.dl	1109
 	.db	21
-	.dl	5626
-_70:
-	.db	6
-	.dl	6622
+	.db	'Sensor_EcoButton',0,6,177,1,15,5
+	.dl	1109
+	.db	1,1,21
+	.db	'Sensor_TCSSwitchUp',0,6,178,1,15,5
+	.dl	1109
+	.db	1,1,21
+	.db	'Sensor_TCSSwitchDown',0,6,179,1,15,5
+	.dl	1109
+	.db	1,1,21
+	.db	'Sensor_TCSKnob',0,6,180,1,15,5
+	.dl	1109
+	.db	1,1,21
+	.db	'Sensor_HVILTerminationSense',0,6,184,1,15,5
+	.dl	1109
+	.db	1,1,21
+	.db	'Sensor_LVBattery',0,6,188,1,15,5
+	.dl	1109
+	.db	1,1,17
+	.db	'TorqueEncoder',0,7,36,3
+	.dl	1299
+	.db	17
+	.db	'BrakePressureSensor',0,8,38,3
+	.dl	1986
+	.db	17
+	.db	'ReadyToDriveSound',0,9,7,35
+	.dl	2593
+	.db	17
+	.db	'SerialManager',0,10,7,31
+	.dl	2689
+	.db	17
+	.db	'Direction',0,11,19,72
+	.dl	2844
+	.db	17
+	.db	'MotorController',0,11,21,33
+	.dl	2816
+	.db	17
+	.db	'BatteryManagementSystem',0,12,29,41
+	.dl	3509
+	.db	17
+	.db	'WheelSpeeds',0,13,12,29
+	.dl	3653
+	.db	17
+	.db	'SafetyChecker',0,14,21,31
+	.dl	3866
+	.db	17
+	.db	'CanChannel',0,15,13,41
+	.dl	4518
+	.db	17
+	.db	'CanManager',0,15,17,28
+	.dl	4250
+	.db	17
+	.db	'CoolingSystem',0,16,30,1
+	.dl	4758
 	.db	22
+	.dl	5709
+_72:
+	.db	6
+	.dl	6705
+	.db	23
 	.dl	183
-	.db	23,0,20
+	.db	24,0,21
 	.db	'_lc_ub_user_stack',0,17,1,1,2
-	.dl	6632
+	.dl	6715
 	.db	1,1,0
 	; End of section
 
 	.debug		.debug_abbrev
-_31:
+_33:
 	.db	1,17,1,3,8,37,8,27,8,19,15,128,70,12,16,6,0,0,2,36,0,3,8,11,15,62,15,0,0,3,46,0,3,8,58,15,59,15,57,15
 	.db	51,15,73,19,54,15,39,12,63,12,60,12,0,0,4,19,1,3,8,58,15,59,15,57,15,11,15,0,0,5,13,0,3,8,73,19,11,15
 	.db	56,9,0,0,6,38,0,73,19,0,0,7,15,0,51,15,73,19,0,0,8,46,1,3,8,58,15,59,15,57,15,51,15,73,19,54,15,39,12
 	.db	63,12,60,12,0,0,9,5,0,3,8,58,15,59,15,57,15,51,15,73,19,0,0,10,46,1,3,8,58,15,59,15,57,15,51,15,54,15
 	.db	39,12,63,12,60,12,0,0,11,46,0,3,8,58,15,59,15,57,15,51,15,54,15,39,12,63,12,60,12,0,0,12,4,1,58,15,59
 	.db	15,57,15,11,15,0,0,13,40,0,3,8,28,13,0,0,14,19,0,3,8,58,15,59,15,57,15,60,12,0,0,15,46,0,3,8,58,15,59
-	.db	15,57,15,51,15,54,15,63,12,60,12,0,0,16,22,0,3,8,58,15,59,15,57,15,73,19,0,0,17,59,0,3,8,0,0,18,1,1,11
-	.db	15,73,19,0,0,19,33,0,47,15,0,0,20,52,0,3,8,58,15,59,15,57,15,51,15,73,19,63,12,60,12,0,0,21,53,0,73,19
-	.db	0,0,22,1,1,73,19,0,0,23,33,0,0,0,0
+	.db	15,57,15,51,15,73,19,54,15,63,12,60,12,0,0,16,46,0,3,8,58,15,59,15,57,15,51,15,54,15,63,12,60,12,0,0,17
+	.db	22,0,3,8,58,15,59,15,57,15,73,19,0,0,18,59,0,3,8,0,0,19,1,1,11,15,73,19,0,0,20,33,0,47,15,0,0,21,52,0
+	.db	3,8,58,15,59,15,57,15,51,15,73,19,63,12,60,12,0,0,22,53,0,73,19,0,0,23,1,1,73,19,0,0,24,33,0,0,0,0
 	; End of section
 
 	.debug		.debug_line
-_32:
-	.dl	_567-_566
-_566:
-	.dw	3
+_34:
 	.dl	_569-_568
 _568:
+	.dw	3
+	.dl	_571-_570
+_570:
 	.db	2,1,-4,9,10,0,1,1,1,1,0,0,0,1
 	.db	'..\\..\\..\\Environment\\inc',0
 	.db	'c:\\Program Files (x86)\\TASKING\\C166-VX v4.0r1\\include\\',0,0
@@ -2414,14 +2476,14 @@ _568:
 	.db	'ptypes_xe167.h',0,1,0,0
 	.db	'IO_Constants.h',0,1,0,0
 	.db	'APDB.h',0,1,0,0,0
+_571:
 _569:
-_567:
 	; End of section
 
 	.debug		.debug_pubnames
-	.dl	1113
+	.dl	1146
 	.dw	2
-	.dl	_30,6669,156
+	.dl	_32,6752,156
 	.db	'IO_UART_Task',0
 	.dl	350
 	.db	'IO_Driver_Init',0
@@ -2430,1910 +2492,1934 @@ _567:
 	.dl	436
 	.db	'IO_Driver_TaskEnd',0
 	.dl	468
-	.db	'IO_DI_Init',0
-	.dl	527
 	.db	'IO_DI_DeInit',0
-	.dl	587
+	.dl	528
 	.db	'IO_DI_Get',0
-	.dl	684
+	.dl	593
+	.db	'IO_DO_Set',0
+	.dl	690
 	.db	'IO_RTC_StartTime',0
-	.dl	734
+	.dl	740
 	.db	'IO_RTC_GetTimeUS',0
-	.dl	786
+	.dl	792
 	.db	'vcu_initializeADC',0
-	.dl	833
+	.dl	839
 	.db	'vcu_ADCWasteLoop',0
-	.dl	859
+	.dl	865
 	.db	'sensors_updateSensors',0
-	.dl	1048
+	.dl	1054
 	.db	'Light_set',0
-	.dl	1732
+	.dl	1738
 	.db	'TorqueEncoder_new',0
-	.dl	1783
+	.dl	1789
 	.db	'TorqueEncoder_update',0
-	.dl	1826
+	.dl	1832
 	.db	'TorqueEncoder_startCalibration',0
-	.dl	1907
+	.dl	1913
 	.db	'TorqueEncoder_calibrationCycle',0
-	.dl	2301
+	.dl	2332
 	.db	'BrakePressureSensor_new',0
-	.dl	2338
+	.dl	2369
 	.db	'BrakePressureSensor_update',0
-	.dl	2402
+	.dl	2433
 	.db	'BrakePressureSensor_startCalibration',0
-	.dl	2483
+	.dl	2514
 	.db	'BrakePressureSensor_calibrationCycle',0
-	.dl	2592
+	.dl	2623
 	.db	'RTDS_new',0
-	.dl	2614
+	.dl	2645
 	.db	'RTDS_shutdownHelper',0
-	.dl	2684
+	.dl	2715
 	.db	'SerialManager_new',0
-	.dl	2726
+	.dl	2757
 	.db	'SerialManager_send',0
-	.dl	2895
+	.dl	2926
 	.db	'MotorController_new',0
-	.dl	3078
+	.dl	3109
 	.db	'MCM_getTemp',0
-	.dl	3116
+	.dl	3147
 	.db	'MCM_getMotorTemp',0
-	.dl	3159
+	.dl	3190
 	.db	'MCM_readTCSSettings',0
-	.dl	3261
+	.dl	3292
 	.db	'MCM_calculateCommands',0
-	.dl	3332
+	.dl	3363
 	.db	'MCM_relayControl',0
-	.dl	3395
+	.dl	3426
 	.db	'MCM_inverterControl',0
-	.dl	3514
+	.dl	3545
 	.db	'BMS_new',0
-	.dl	3581
+	.dl	3612
 	.db	'BMS_getMaxTemp',0
-	.dl	3646
+	.dl	3677
 	.db	'WheelSpeeds_new',0
-	.dl	3794
+	.dl	3825
 	.db	'WheelSpeeds_update',0
-	.dl	3861
+	.dl	3892
 	.db	'SafetyChecker_new',0
-	.dl	3954
+	.dl	3985
 	.db	'SafetyChecker_update',0
-	.dl	4094
+	.dl	4125
 	.db	'SafetyChecker_getFaults',0
-	.dl	4144
+	.dl	4175
 	.db	'SafetyChecker_reduceTorque',0
-	.dl	4242
+	.dl	4273
 	.db	'CanManager_new',0
-	.dl	4519
+	.dl	4550
 	.db	'CanManager_read',0
-	.dl	4612
+	.dl	4643
 	.db	'canOutput_sendDebugMessage',0
-	.dl	5004
+	.dl	5035
 	.db	'CoolingSystem_new',0
-	.dl	5048
+	.dl	5079
 	.db	'CoolingSystem_calculations',0
-	.dl	5166
+	.dl	5197
 	.db	'CoolingSystem_enactCooling',0
-	.dl	5215
+	.dl	5246
+	.db	'IO_PWM_Init',0
+	.dl	5271
+	.db	'IO_PWM_DeInit',0
+	.dl	5298
 	.db	'_INDIRECT__',0
 	.dl	0
 	; End of section
 
 	.debug		.debug_info, cluster 'main'
-_33:
+_35:
 	.dl	568
 	.dw	3
-	.dl	_34
+	.dl	_36
 	.db	4,1
 	.db	'main.c',0
 	.db	'TASKING VX-toolset for C166: C compiler',0
 	.db	'C:\\Users\\Timothy_Le\\Documents\\SRE\\SRE_SDK_2018\\VCU\\Environment\\dev\\sre-3b\\',0,12,1
-	.dl	_36,_35
+	.dl	_38,_37
 	.db	2
-	.dl	_29
+	.dl	_31
 	.db	3
 	.db	'main',0,1,107,6,6,1,1,1
-	.dl	_18,_37,_17
+	.dl	_20,_39,_19
 	.db	12,19,146,176,2,0,64,36,146,161,2,0,33,4
-	.dl	_18,_37
+	.dl	_20,_39
 	.db	5
 	.db	'timestamp_startTime',0,1,109,12,2
-	.dl	_40,_41
+	.dl	_42,_43
 	.db	5
 	.db	'timestamp_EcoButton',0,1,110,12,2
-	.dl	_40,_42
+	.dl	_42,_44
 	.db	5
 	.db	'calibrationErrors',0,1,111,12,2
-	.dl	_43,_44
+	.dl	_45,_46
 	.db	4
-	.dl	_45,_37
+	.dl	_47,_39
 	.db	5
 	.db	'serialMan',0,1,119,20,2
-	.dl	_46,_47
+	.dl	_48,_49
 	.db	4
-	.dl	_48,_37
+	.dl	_50,_39
 	.db	5
 	.db	'bench',0,1,136,1,10,2
-	.dl	_43,_49
+	.dl	_45,_51
 	.db	4
-	.dl	_50,_37
+	.dl	_52,_39
 	.db	5
-	.db	'canMan',0,1,167,1,17,2
-	.dl	_51,_52
-	.db	5
-	.db	'rtds',0,1,181,1,24,2
+	.db	'canMan',0,1,169,1,17,2
 	.dl	_53,_54
 	.db	5
-	.db	'mcm0',0,1,183,1,22,2
+	.db	'rtds',0,1,183,1,24,2
 	.dl	_55,_56
 	.db	5
-	.db	'tps',0,1,184,1,17,2
+	.db	'mcm0',0,1,185,1,22,2
 	.dl	_57,_58
 	.db	5
-	.db	'bps',0,1,185,1,23,2
+	.db	'tps',0,1,186,1,20,2
 	.dl	_59,_60
 	.db	5
-	.db	'wss',0,1,186,1,15,2
+	.db	'bps',0,1,187,1,26,2
 	.dl	_61,_62
 	.db	5
-	.db	'sc',0,1,187,1,17,2
+	.db	'wss',0,1,188,1,18,2
 	.dl	_63,_64
 	.db	5
-	.db	'bms',0,1,188,1,27,2
+	.db	'sc',0,1,189,1,20,2
 	.dl	_65,_66
 	.db	5
-	.db	'cs',0,1,189,1,20,2
+	.db	'bms',0,1,190,1,30,2
 	.dl	_67,_68
 	.db	5
-	.db	'timestamp_mainLoopStart',0,1,202,1,12,2
-	.dl	_40,_69
+	.db	'cs',0,1,191,1,20,2
+	.dl	_69,_70
+	.db	5
+	.db	'timestamp_mainLoopStart',0,1,204,1,12,2
+	.dl	_42,_71
 	.db	0,0,0,0,0,0
 	; End of section
 
 	.debug		.debug_abbrev, cluster 'main'
-_34:
+_36:
 	.db	1,17,1,3,8,37,8,27,8,19,15,128,70,12,85,6,16,6,0,0,2,61,0,24,16,0,0,3,46,1,3,8,58,15,59,15,57,15,51,15
 	.db	54,15,39,12,63,12,17,1,18,1,64,6,42,9,0,0,4,11,1,17,1,18,1,0,0,5,52,0,3,8,58,15,59,15,57,15,51,15,73,16
 	.db	2,6,0,0,0
 	; End of section
 
 	.debug		.debug_line, cluster 'main'
-_35:
-	.dl	_571-_570
-_570:
-	.dw	3
+_37:
 	.dl	_573-_572
 _572:
+	.dw	3
+	.dl	_575-_574
+_574:
 	.db	2,1,-4,9,10,0,1,1,1,1,0,0,0,1,0
 	.db	'main.c',0,0,0,0,0
-_573:
+_575:
 	.db	5,6,7,0,5,2
-	.dl	_18
+	.dl	_20
 	.db	3,234,0,1,5,34,9
-	.dw	_71-_18
+	.dw	_73-_20
 	.db	3,2,1,5,20,9
-	.dw	_574-_71
+	.dw	_576-_73
 	.db	3,7,1,5,32,9
-	.dw	_575-_574
-	.db	3,121,1,9
-	.dw	_576-_575
-	.db	3,1,1,5,20,9
 	.dw	_577-_576
-	.db	3,6,1,5,49,9
-	.dw	_45-_577
-	.db	3,3,1,5,30,9
-	.dw	_578-_45
-	.db	1,5,23,9
-	.dw	_579-_578
-	.db	3,1,1,5,35,9
-	.dw	_580-_579
-	.db	3,1,1,9
-	.dw	_581-_580
-	.db	3,1,1,5,16,9
-	.dw	_48-_581
-	.db	3,15,1,5,26,9
-	.dw	_582-_48
-	.db	1,5,23,9
-	.dw	_583-_582
-	.db	3,1,1,5,29,9
-	.dw	_584-_583
-	.db	3,1,1,5,57,9
-	.dw	_585-_584
-	.db	1,5,28,9
-	.dw	_3-_585
-	.db	3,2,1,5,19,9
-	.dw	_586-_3
-	.db	3,3,1,5,30,9
-	.dw	_587-_586
-	.db	1,5,26,9
-	.dw	_588-_587
-	.db	3,2,1,5,33,9
-	.dw	_4-_588
-	.db	3,2,1,5,61,9
-	.dw	_589-_4
-	.db	1,5,29,9
-	.dw	_590-_589
-	.db	3,119,1,5,57,9
-	.dw	_591-_590
-	.db	1,5,18,9
-	.dw	_2-_591
-	.db	3,11,1,5,35,9
-	.dw	_592-_2
-	.db	3,1,1,5,49,9
-	.dw	_593-_592
-	.db	1,5,35,9
-	.dw	_594-_593
-	.db	3,7,1,5,23,9
-	.dw	_595-_594
-	.db	3,1,1,5,21,9
-	.dw	_596-_595
-	.db	3,5,1,5,41,9
-	.dw	_50-_596
-	.db	3,3,1,5,46,9
-	.dw	_597-_50
-	.db	1,5,59,9
-	.dw	_598-_597
-	.db	1,5,67,9
-	.dw	_599-_598
-	.db	1,5,75,9
-	.dw	_600-_599
-	.db	1,5,24,9
-	.dw	_601-_600
-	.db	1,5,39,9
-	.dw	_602-_601
-	.db	3,14,1,5,29,9
-	.dw	_603-_602
-	.db	1,5,84,9
-	.dw	_604-_603
-	.db	3,2,1,5,75,9
-	.dw	_605-_604
-	.db	1,5,84,9
-	.dw	_606-_605
-	.db	1,5,60,9
-	.dw	_607-_606
-	.db	1,5,81,9
-	.dw	_608-_607
-	.db	1,5,27,9
-	.dw	_93-_608
-	.db	1,5,41,9
-	.dw	_609-_93
-	.db	3,1,1,5,21,9
-	.dw	_610-_609
-	.db	1,5,52,9
-	.dw	_611-_610
-	.db	3,1,1,5,27,9
-	.dw	_612-_611
-	.db	1,5,49,9
-	.dw	_613-_612
-	.db	3,1,1,5,37,9
-	.dw	_614-_613
-	.db	1,5,49,9
-	.dw	_615-_614
-	.db	1,5,45,9
-	.dw	_616-_615
-	.db	1,5,41,9
-	.dw	_115-_616
-	.db	1,5,45,9
-	.dw	_617-_115
-	.db	1,5,41,9
-	.dw	_618-_617
-	.db	1,5,51,9
-	.dw	_126-_618
-	.db	3,1,1,5,56,9
-	.dw	_619-_126
-	.db	1,5,27,9
-	.dw	_620-_619
-	.db	3,24,1,5,19,9
-	.dw	_621-_620
-	.db	3,103,1,5,56,9
-	.dw	_622-_621
+	.db	3,121,1,9
+	.dw	_578-_577
 	.db	3,1,1,5,20,9
-	.dw	_623-_622
+	.dw	_579-_578
+	.db	3,6,1,5,49,9
+	.dw	_47-_579
+	.db	3,3,1,5,30,9
+	.dw	_580-_47
+	.db	1,5,23,9
+	.dw	_581-_580
+	.db	3,1,1,5,35,9
+	.dw	_582-_581
+	.db	3,1,1,9
+	.dw	_583-_582
+	.db	3,1,1,5,28,9
+	.dw	_50-_583
+	.db	3,15,1,5,44,9
+	.dw	_584-_50
+	.db	1,5,66,9
+	.dw	_585-_584
+	.db	1,5,23,9
+	.dw	_586-_585
+	.db	3,1,1,5,29,9
+	.dw	_587-_586
+	.db	3,1,1,5,57,9
+	.dw	_588-_587
+	.db	1,5,28,9
+	.dw	_3-_588
+	.db	3,2,1,5,19,9
+	.dw	_589-_3
+	.db	3,3,1,5,30,9
+	.dw	_590-_589
+	.db	1,5,26,9
+	.dw	_591-_590
+	.db	3,2,1,5,33,9
+	.dw	_4-_591
+	.db	3,2,1,5,61,9
+	.dw	_592-_4
+	.db	1,5,29,9
+	.dw	_593-_592
+	.db	3,119,1,5,57,9
+	.dw	_594-_593
+	.db	1,5,18,9
+	.dw	_2-_594
+	.db	3,11,1,5,19,9
+	.dw	_595-_2
+	.db	3,1,1,5,35,9
+	.dw	_596-_595
+	.db	3,2,1,5,49,9
+	.dw	_597-_596
+	.db	1,5,35,9
+	.dw	_598-_597
+	.db	3,7,1,5,23,9
+	.dw	_599-_598
+	.db	3,1,1,5,21,9
+	.dw	_600-_599
+	.db	3,5,1,5,41,9
+	.dw	_52-_600
+	.db	3,3,1,5,46,9
+	.dw	_601-_52
+	.db	1,5,59,9
+	.dw	_602-_601
+	.db	1,5,67,9
+	.dw	_603-_602
+	.db	1,5,75,9
+	.dw	_604-_603
+	.db	1,5,24,9
+	.dw	_605-_604
+	.db	1,5,39,9
+	.dw	_606-_605
+	.db	3,14,1,5,29,9
+	.dw	_607-_606
+	.db	1,5,82,9
+	.dw	_608-_607
+	.db	3,2,1,5,75,9
+	.dw	_609-_608
+	.db	1,5,82,9
+	.dw	_610-_609
+	.db	1,5,60,9
+	.dw	_611-_610
+	.db	1,5,79,9
+	.dw	_612-_611
+	.db	1,5,27,9
+	.dw	_95-_612
+	.db	1,5,44,9
+	.dw	_613-_95
+	.db	3,1,1,5,24,9
+	.dw	_614-_613
+	.db	1,5,55,9
+	.dw	_615-_614
+	.db	3,1,1,5,30,9
+	.dw	_616-_615
 	.db	1,5,52,9
+	.dw	_617-_616
+	.db	3,1,1,5,40,9
+	.dw	_618-_617
+	.db	1,5,52,9
+	.dw	_619-_618
+	.db	1,5,48,9
+	.dw	_620-_619
+	.db	1,5,44,9
+	.dw	_117-_620
+	.db	1,5,48,9
+	.dw	_621-_117
+	.db	1,5,44,9
+	.dw	_622-_621
+	.db	1,5,54,9
+	.dw	_128-_622
+	.db	3,1,1,5,59,9
+	.dw	_623-_128
+	.db	1,5,27,9
 	.dw	_624-_623
-	.db	3,1,1,5,31,9
+	.db	3,24,1,5,22,9
 	.dw	_625-_624
-	.db	1,5,43,9
+	.db	3,103,1,5,59,9
 	.dw	_626-_625
 	.db	3,1,1,5,23,9
 	.dw	_627-_626
-	.db	1,5,38,9
+	.db	1,5,55,9
 	.dw	_628-_627
-	.db	3,13,1,5,36,9
+	.db	3,1,1,5,34,9
 	.dw	_629-_628
-	.db	1,5,35,9
+	.db	1,5,43,9
 	.dw	_630-_629
-	.db	3,2,1,5,27,9
+	.db	3,1,1,5,23,9
 	.dw	_631-_630
-	.db	3,7,1,5,35,9
+	.db	1,5,38,9
 	.dw	_632-_631
-	.db	3,45,1,5,46,9
+	.db	3,13,1,5,36,9
 	.dw	_633-_632
-	.db	3,22,1,5,27,9
-	.dw	_8-_633
-	.db	3,189,127,1,5,28,9
-	.dw	_634-_8
-	.db	3,2,1,5,24,9
+	.db	1,5,35,9
+	.dw	_634-_633
+	.db	3,2,1,5,27,9
 	.dw	_635-_634
-	.db	3,12,1,5,56,9
+	.db	3,7,1,5,35,9
 	.dw	_636-_635
-	.db	3,4,1,5,51,9
-	.dw	_148-_636
-	.db	1,5,39,9
-	.dw	_159-_148
-	.db	3,22,1,5,3,9
-	.dw	_637-_159
-	.db	1,5,17,9
+	.db	3,45,1,5,46,9
+	.dw	_637-_636
+	.db	3,23,1,5,16,9
 	.dw	_638-_637
-	.db	3,2,1,5,13,9
-	.dw	_639-_638
-	.db	1,5,47,9
+	.db	3,5,1,5,27,9
+	.dw	_8-_638
+	.db	3,183,127,1,5,28,9
+	.dw	_639-_8
+	.db	3,2,1,5,30,9
 	.dw	_640-_639
-	.db	3,2,1,5,35,9
+	.db	3,12,1,5,56,9
 	.dw	_641-_640
-	.db	3,1,1,5,71,9
-	.dw	_642-_641
-	.db	3,127,1,5,39,9
-	.dw	_10-_642
-	.db	3,3,1,5,18,9
-	.dw	_643-_10
-	.db	1,5,47,9
-	.dw	_644-_643
-	.db	3,2,1,5,53,9
-	.dw	_645-_644
-	.db	3,2,1,5,59,9
-	.dw	_646-_645
-	.db	3,1,1,5,42,9
-	.dw	_647-_646
-	.db	3,1,1,5,13,9
-	.dw	_648-_647
-	.db	3,122,1,5,83,9
-	.dw	_9-_648
-	.db	3,12,1,5,82,9
-	.dw	_649-_9
-	.db	1,5,104,9
-	.dw	_650-_649
-	.db	1,5,47,9
-	.dw	_651-_650
-	.db	3,2,1,5,35,9
-	.dw	_14-_651
-	.db	3,2,1,5,33,9
-	.dw	_652-_14
-	.db	1,5,24,9
-	.dw	_11-_652
-	.db	3,2,1,5,46,9
-	.dw	_653-_11
-	.db	3,2,1,5,35,9
-	.dw	_654-_653
-	.db	3,1,1,5,46,9
-	.dw	_655-_654
-	.db	3,1,1,5,22,9
-	.dw	_656-_655
-	.db	3,4,1,5,52,9
-	.dw	_657-_656
-	.db	3,10,1,5,51,9
-	.dw	_658-_657
-	.db	1,5,76,9
-	.dw	_659-_658
-	.db	1,5,75,9
-	.dw	_660-_659
-	.db	1,5,98,9
-	.dw	_661-_660
-	.db	1,5,97,9
-	.dw	_662-_661
-	.db	1,5,75,9
-	.dw	_170-_662
-	.db	1,5,36,9
-	.dw	_181-_170
-	.db	3,2,1,5,80,9
-	.dw	_556-_181
-	.db	3,5,1,5,42,9
-	.dw	_663-_556
-	.db	3,1,1,5,86,9
-	.dw	_664-_663
-	.db	3,2,1,5,56,9
-	.dw	_203-_664
-	.db	1,5,50,9
-	.dw	_225-_203
+	.db	3,4,1,5,51,9
+	.dw	_150-_641
 	.db	1,5,45,9
-	.dw	_247-_225
-	.db	1,5,46,9
-	.dw	_258-_247
-	.db	3,5,1,5,61,9
-	.dw	_558-_258
-	.db	3,7,1,5,65,9
-	.dw	_665-_558
-	.db	1,5,71,9
-	.dw	_15-_665
-	.db	1,5,33,9
-	.dw	_666-_15
-	.db	3,2,1,5,45,9
-	.dw	_667-_666
-	.db	3,1,1,5,65,9
-	.dw	_668-_667
-	.db	3,7,1,5,60,9
-	.dw	_280-_668
-	.db	1,5,54,9
-	.dw	_302-_280
-	.db	1,5,29,9
-	.dw	_313-_302
-	.db	3,9,1,5,26,9
-	.dw	_565-_313
-	.db	3,3,1,5,33,9
-	.dw	_669-_565
-	.db	3,2,1,5,65,9
-	.dw	_670-_669
-	.db	1,5,25,9
-	.dw	_16-_670
+	.dw	_161-_150
+	.db	3,22,1,5,9,9
+	.dw	_642-_161
+	.db	1,5,17,9
+	.dw	_643-_642
+	.db	3,2,1,5,13,9
+	.dw	_644-_643
+	.db	1,5,47,9
+	.dw	_645-_644
+	.db	3,2,1,5,35,9
+	.dw	_646-_645
+	.db	3,1,1,5,71,9
+	.dw	_647-_646
+	.db	3,127,1,5,39,9
+	.dw	_10-_647
+	.db	3,3,1,5,18,9
+	.dw	_648-_10
+	.db	1,5,47,9
+	.dw	_649-_648
+	.db	3,2,1,5,53,9
+	.dw	_650-_649
+	.db	3,2,1,5,59,9
+	.dw	_651-_650
+	.db	3,1,1,5,42,9
+	.dw	_652-_651
+	.db	3,1,1,5,13,9
+	.dw	_653-_652
+	.db	3,122,1,5,83,9
+	.dw	_9-_653
+	.db	3,12,1,5,82,9
+	.dw	_654-_9
+	.db	1,5,104,9
+	.dw	_655-_654
+	.db	1,5,47,9
+	.dw	_656-_655
+	.db	3,2,1,5,35,9
+	.dw	_14-_656
 	.db	3,2,1,5,33,9
-	.dw	_671-_16
-	.db	3,126,1,5,65,9
+	.dw	_657-_14
+	.db	1,5,30,9
+	.dw	_11-_657
+	.db	3,3,1,5,46,9
+	.dw	_658-_11
+	.db	3,2,1,5,41,9
+	.dw	_659-_658
+	.db	3,1,1,5,52,9
+	.dw	_660-_659
+	.db	3,1,1,5,16,9
+	.dw	_661-_660
+	.db	3,3,1,5,9,9
+	.dw	_662-_661
+	.db	1,5,23,9
+	.dw	_663-_662
+	.db	3,2,1,5,33,9
+	.dw	_664-_663
+	.db	1,5,38,9
+	.dw	_665-_664
+	.db	1,5,23,9
+	.dw	_15-_665
+	.db	3,4,1,5,33,9
+	.dw	_666-_15
+	.db	1,5,28,9
+	.dw	_667-_666
+	.db	3,4,1,5,52,9
+	.dw	_668-_667
+	.db	3,10,1,5,51,9
+	.dw	_669-_668
+	.db	1,5,76,9
+	.dw	_670-_669
+	.db	1,5,75,9
+	.dw	_671-_670
+	.db	1,5,98,9
 	.dw	_672-_671
-	.db	1,5,13,9
+	.db	1,5,97,9
 	.dw	_673-_672
-	.db	3,249,126,1,5,1,9
-	.dw	_37-_673
-	.db	3,148,1,0,1,1
-_571:
+	.db	1,5,75,9
+	.dw	_172-_673
+	.db	1,5,36,9
+	.dw	_183-_172
+	.db	3,2,1,5,80,9
+	.dw	_558-_183
+	.db	3,5,1,5,42,9
+	.dw	_674-_558
+	.db	3,1,1,5,86,9
+	.dw	_675-_674
+	.db	3,2,1,5,56,9
+	.dw	_205-_675
+	.db	1,5,50,9
+	.dw	_227-_205
+	.db	1,5,45,9
+	.dw	_249-_227
+	.db	1,5,46,9
+	.dw	_260-_249
+	.db	3,5,1,5,61,9
+	.dw	_560-_260
+	.db	3,7,1,5,65,9
+	.dw	_676-_560
+	.db	1,5,71,9
+	.dw	_17-_676
+	.db	1,5,33,9
+	.dw	_677-_17
+	.db	3,2,1,5,45,9
+	.dw	_678-_677
+	.db	3,1,1,5,65,9
+	.dw	_679-_678
+	.db	3,7,1,5,60,9
+	.dw	_282-_679
+	.db	1,5,54,9
+	.dw	_304-_282
+	.db	1,5,29,9
+	.dw	_315-_304
+	.db	3,8,1,5,26,9
+	.dw	_567-_315
+	.db	3,3,1,5,33,9
+	.dw	_680-_567
+	.db	3,2,1,5,65,9
+	.dw	_681-_680
+	.db	1,5,25,9
+	.dw	_18-_681
+	.db	3,2,1,5,33,9
+	.dw	_682-_18
+	.db	3,126,1,5,65,9
+	.dw	_683-_682
+	.db	1,5,13,9
+	.dw	_684-_683
+	.db	3,240,126,1,5,1,9
+	.dw	_39-_684
+	.db	3,157,1,0,1,1
+_573:
 	; End of section
 
 	.debug		.debug_ranges, cluster 'main'
-_36:
-	.dl	-1,_18,0,_37-_18,0,0
+_38:
+	.dl	-1,_20,0,_39-_20,0,0
 	; End of section
 
 	.debug		.debug_pubnames
 	.dl	23
 	.dw	2
-	.dl	_33,572,149
+	.dl	_35,572,149
 	.db	'main',0
 	.dl	0
 	; End of section
 
 	.debug		.debug_info, cluster 'appl_db'
-_38:
+_40:
 	.dl	162
 	.dw	3
-	.dl	_39
+	.dl	_41
 	.db	4,1
 	.db	'main.c',0
 	.db	'TASKING VX-toolset for C166: C compiler',0
 	.db	'C:\\Users\\Timothy_Le\\Documents\\SRE\\SRE_SDK_2018\\VCU\\Environment\\dev\\sre-3b\\',0,12,1,2
-	.dl	_29
+	.dl	_31
 	.db	3
 	.db	'appl_db',0,17,51,6,5
-	.dl	_70
+	.dl	_72
 	.db	1,5,3
 	.dl	_appl_db
 	.db	0
 	; End of section
 
 	.debug		.debug_abbrev, cluster 'appl_db'
-_39:
+_41:
 	.db	1,17,1,3,8,37,8,27,8,19,15,128,70,12,0,0,2,61,0,24,16,0,0,3,52,0,3,8,58,15,59,15,57,15,51,15,73,16,63
 	.db	12,2,9,0,0,0
 	; End of section
 
 	.debug		.debug_loc, cluster 'main'
-_49:
-	.dl	-1,_18,0,_37-_18
+_51:
+	.dl	-1,_20,0,_39-_20
 	.dw	2
-	.db	145,83
-	.dl	0,0
-_66:
-	.dl	-1,_18,_557-_18,_558-_18
-	.dw	6
-	.db	91,147,2,92,147,2
-	.dl	0,0
-_60:
-	.dl	-1,_18,_562-_18,_560-_18
-	.dw	6
-	.db	91,147,2,92,147,2
-	.dl	0,0
-_44:
-	.dl	-1,_18,0,_37-_18
-	.dw	2
-	.db	145,82
-	.dl	0,0
-_52:
-	.dl	-1,_18,_559-_18,_560-_18
-	.dw	6
-	.db	82,147,2,83,147,2
+	.db	145,79
 	.dl	0,0
 _68:
-	.dl	-1,_18,_555-_18,_556-_18
+	.dl	-1,_20,_559-_20,_560-_20
+	.dw	6
+	.db	91,147,2,92,147,2
+	.dl	0,0
+_62:
+	.dl	-1,_20,_564-_20,_562-_20
+	.dw	6
+	.db	91,147,2,92,147,2
+	.dl	0,0
+_46:
+	.dl	-1,_20,0,_39-_20
+	.dw	2
+	.db	145,78
+	.dl	0,0
+_54:
+	.dl	-1,_20,_561-_20,_562-_20
 	.dw	6
 	.db	82,147,2,83,147,2
 	.dl	0,0
-_17:
-	.dl	-1,_18,0,_71-_18
+_70:
+	.dl	-1,_20,_557-_20,_558-_20
+	.dw	6
+	.db	82,147,2,83,147,2
+	.dl	0,0
+_19:
+	.dl	-1,_20,0,_73-_20
 	.dw	58
 	.db	127,0,18,10
 	.dw	16383
 	.db	26,22,62,37,18,48,46,40
-	.dw	_19-_23
-_23:
-	.db	146,177,2,0,47
-	.dw	_22-_24
-_24:
-_19:
-	.db	18,49,46,40
-	.dw	_20-_25
+	.dw	_21-_25
 _25:
-	.db	146,178,2,0,47
-	.dw	_22-_26
+	.db	146,177,2,0,47
+	.dw	_24-_26
 _26:
-_20:
-	.db	18,50,46,40
-	.dw	_21-_27
-_27:
-	.db	146,179,2,0,47
-	.dw	_22-_28
-_28:
 _21:
-	.db	146,180,2,0
+	.db	18,49,46,40
+	.dw	_22-_27
+_27:
+	.db	146,178,2,0,47
+	.dw	_24-_28
+_28:
 _22:
+	.db	18,50,46,40
+	.dw	_23-_29
+_29:
+	.db	146,179,2,0,47
+	.dw	_24-_30
+_30:
+_23:
+	.db	146,180,2,0
+_24:
 	.db	22,19,62,36,33
-	.dl	_71-_18,_82-_18
+	.dl	_73-_20,_84-_20
 	.dw	61
 	.db	127,0,18,10
 	.dw	16383
 	.db	26,22,62,37,18,48,46,40
-	.dw	_72-_76
-_76:
-	.db	146,177,2,0,47
-	.dw	_75-_77
-_77:
-_72:
-	.db	18,49,46,40
-	.dw	_73-_78
+	.dw	_74-_78
 _78:
-	.db	146,178,2,0,47
-	.dw	_75-_79
+	.db	146,177,2,0,47
+	.dw	_77-_79
 _79:
-_73:
-	.db	18,50,46,40
-	.dw	_74-_80
-_80:
-	.db	146,179,2,0,47
-	.dw	_75-_81
-_81:
 _74:
-	.db	146,180,2,0
+	.db	18,49,46,40
+	.dw	_75-_80
+_80:
+	.db	146,178,2,0,47
+	.dw	_77-_81
+_81:
 _75:
-	.db	22,19,62,36,33,9,54,34
-	.dl	_82-_18,_93-_18
-	.dw	61
-	.db	127,0,18,10
-	.dw	16383
-	.db	26,22,62,37,18,48,46,40
-	.dw	_83-_87
-_87:
-	.db	146,177,2,0,47
-	.dw	_86-_88
-_88:
+	.db	18,50,46,40
+	.dw	_76-_82
+_82:
+	.db	146,179,2,0,47
+	.dw	_77-_83
 _83:
-	.db	18,49,46,40
-	.dw	_84-_89
+_76:
+	.db	146,180,2,0
+_77:
+	.db	22,19,62,36,33,9,58,34
+	.dl	_84-_20,_95-_20
+	.dw	61
+	.db	127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_85-_89
 _89:
-	.db	146,178,2,0,47
-	.dw	_86-_90
+	.db	146,177,2,0,47
+	.dw	_88-_90
 _90:
-_84:
-	.db	18,50,46,40
-	.dw	_85-_91
-_91:
-	.db	146,179,2,0,47
-	.dw	_86-_92
-_92:
 _85:
-	.db	146,180,2,0
+	.db	18,49,46,40
+	.dw	_86-_91
+_91:
+	.db	146,178,2,0,47
+	.dw	_88-_92
+_92:
 _86:
-	.db	22,19,62,36,33,9,56,34
-	.dl	_93-_18,_104-_18
-	.dw	61
-	.db	127,0,18,10
-	.dw	16383
-	.db	26,22,62,37,18,48,46,40
-	.dw	_94-_98
-_98:
-	.db	146,177,2,0,47
-	.dw	_97-_99
-_99:
+	.db	18,50,46,40
+	.dw	_87-_93
+_93:
+	.db	146,179,2,0,47
+	.dw	_88-_94
 _94:
-	.db	18,49,46,40
-	.dw	_95-_100
+_87:
+	.db	146,180,2,0
+_88:
+	.db	22,19,62,36,33,9,60,34
+	.dl	_95-_20,_106-_20
+	.dw	61
+	.db	127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_96-_100
 _100:
-	.db	146,178,2,0,47
-	.dw	_97-_101
+	.db	146,177,2,0,47
+	.dw	_99-_101
 _101:
-_95:
-	.db	18,50,46,40
-	.dw	_96-_102
-_102:
-	.db	146,179,2,0,47
-	.dw	_97-_103
-_103:
 _96:
-	.db	146,180,2,0
+	.db	18,49,46,40
+	.dw	_97-_102
+_102:
+	.db	146,178,2,0,47
+	.dw	_99-_103
+_103:
 _97:
-	.db	22,19,62,36,33,9,54,34
-	.dl	_104-_18,_115-_18
-	.dw	61
-	.db	127,0,18,10
-	.dw	16383
-	.db	26,22,62,37,18,48,46,40
-	.dw	_105-_109
-_109:
-	.db	146,177,2,0,47
-	.dw	_108-_110
-_110:
+	.db	18,50,46,40
+	.dw	_98-_104
+_104:
+	.db	146,179,2,0,47
+	.dw	_99-_105
 _105:
-	.db	18,49,46,40
-	.dw	_106-_111
+_98:
+	.db	146,180,2,0
+_99:
+	.db	22,19,62,36,33,9,58,34
+	.dl	_106-_20,_117-_20
+	.dw	61
+	.db	127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_107-_111
 _111:
-	.db	146,178,2,0,47
-	.dw	_108-_112
+	.db	146,177,2,0,47
+	.dw	_110-_112
 _112:
-_106:
-	.db	18,50,46,40
-	.dw	_107-_113
-_113:
-	.db	146,179,2,0,47
-	.dw	_108-_114
-_114:
 _107:
-	.db	146,180,2,0
+	.db	18,49,46,40
+	.dw	_108-_113
+_113:
+	.db	146,178,2,0,47
+	.dw	_110-_114
+_114:
 _108:
-	.db	22,19,62,36,33,9,56,34
-	.dl	_115-_18,_126-_18
-	.dw	61
-	.db	127,0,18,10
-	.dw	16383
-	.db	26,22,62,37,18,48,46,40
-	.dw	_116-_120
-_120:
-	.db	146,177,2,0,47
-	.dw	_119-_121
-_121:
+	.db	18,50,46,40
+	.dw	_109-_115
+_115:
+	.db	146,179,2,0,47
+	.dw	_110-_116
 _116:
-	.db	18,49,46,40
-	.dw	_117-_122
+_109:
+	.db	146,180,2,0
+_110:
+	.db	22,19,62,36,33,9,60,34
+	.dl	_117-_20,_128-_20
+	.dw	61
+	.db	127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_118-_122
 _122:
-	.db	146,178,2,0,47
-	.dw	_119-_123
+	.db	146,177,2,0,47
+	.dw	_121-_123
 _123:
-_117:
-	.db	18,50,46,40
-	.dw	_118-_124
-_124:
-	.db	146,179,2,0,47
-	.dw	_119-_125
-_125:
 _118:
-	.db	146,180,2,0
+	.db	18,49,46,40
+	.dw	_119-_124
+_124:
+	.db	146,178,2,0,47
+	.dw	_121-_125
+_125:
 _119:
-	.db	22,19,62,36,33,9,58,34
-	.dl	_126-_18,_137-_18
-	.dw	61
-	.db	127,0,18,10
-	.dw	16383
-	.db	26,22,62,37,18,48,46,40
-	.dw	_127-_131
-_131:
-	.db	146,177,2,0,47
-	.dw	_130-_132
-_132:
+	.db	18,50,46,40
+	.dw	_120-_126
+_126:
+	.db	146,179,2,0,47
+	.dw	_121-_127
 _127:
-	.db	18,49,46,40
-	.dw	_128-_133
+_120:
+	.db	146,180,2,0
+_121:
+	.db	22,19,62,36,33,9,62,34
+	.dl	_128-_20,_139-_20
+	.dw	61
+	.db	127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_129-_133
 _133:
-	.db	146,178,2,0,47
-	.dw	_130-_134
+	.db	146,177,2,0,47
+	.dw	_132-_134
 _134:
-_128:
-	.db	18,50,46,40
-	.dw	_129-_135
-_135:
-	.db	146,179,2,0,47
-	.dw	_130-_136
-_136:
 _129:
-	.db	146,180,2,0
+	.db	18,49,46,40
+	.dw	_130-_135
+_135:
+	.db	146,178,2,0,47
+	.dw	_132-_136
+_136:
 _130:
-	.db	22,19,62,36,33,9,54,34
-	.dl	_137-_18,_148-_18
-	.dw	61
-	.db	127,0,18,10
-	.dw	16383
-	.db	26,22,62,37,18,48,46,40
-	.dw	_138-_142
-_142:
-	.db	146,177,2,0,47
-	.dw	_141-_143
-_143:
+	.db	18,50,46,40
+	.dw	_131-_137
+_137:
+	.db	146,179,2,0,47
+	.dw	_132-_138
 _138:
-	.db	18,49,46,40
-	.dw	_139-_144
+_131:
+	.db	146,180,2,0
+_132:
+	.db	22,19,62,36,33,9,58,34
+	.dl	_139-_20,_150-_20
+	.dw	61
+	.db	127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_140-_144
 _144:
-	.db	146,178,2,0,47
-	.dw	_141-_145
+	.db	146,177,2,0,47
+	.dw	_143-_145
 _145:
-_139:
-	.db	18,50,46,40
-	.dw	_140-_146
-_146:
-	.db	146,179,2,0,47
-	.dw	_141-_147
-_147:
 _140:
-	.db	146,180,2,0
+	.db	18,49,46,40
+	.dw	_141-_146
+_146:
+	.db	146,178,2,0,47
+	.dw	_143-_147
+_147:
 _141:
-	.db	22,19,62,36,33,9,56,34
-	.dl	_148-_18,_159-_18
-	.dw	61
-	.db	127,0,18,10
-	.dw	16383
-	.db	26,22,62,37,18,48,46,40
-	.dw	_149-_153
-_153:
-	.db	146,177,2,0,47
-	.dw	_152-_154
-_154:
+	.db	18,50,46,40
+	.dw	_142-_148
+_148:
+	.db	146,179,2,0,47
+	.dw	_143-_149
 _149:
-	.db	18,49,46,40
-	.dw	_150-_155
+_142:
+	.db	146,180,2,0
+_143:
+	.db	22,19,62,36,33,9,60,34
+	.dl	_150-_20,_161-_20
+	.dw	61
+	.db	127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_151-_155
 _155:
-	.db	146,178,2,0,47
-	.dw	_152-_156
+	.db	146,177,2,0,47
+	.dw	_154-_156
 _156:
-_150:
-	.db	18,50,46,40
-	.dw	_151-_157
-_157:
-	.db	146,179,2,0,47
-	.dw	_152-_158
-_158:
 _151:
-	.db	146,180,2,0
+	.db	18,49,46,40
+	.dw	_152-_157
+_157:
+	.db	146,178,2,0,47
+	.dw	_154-_158
+_158:
 _152:
-	.db	22,19,62,36,33,9,58,34
-	.dl	_159-_18,_170-_18
-	.dw	61
-	.db	127,0,18,10
-	.dw	16383
-	.db	26,22,62,37,18,48,46,40
-	.dw	_160-_164
-_164:
-	.db	146,177,2,0,47
-	.dw	_163-_165
-_165:
+	.db	18,50,46,40
+	.dw	_153-_159
+_159:
+	.db	146,179,2,0,47
+	.dw	_154-_160
 _160:
-	.db	18,49,46,40
-	.dw	_161-_166
+_153:
+	.db	146,180,2,0
+_154:
+	.db	22,19,62,36,33,9,62,34
+	.dl	_161-_20,_172-_20
+	.dw	61
+	.db	127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_162-_166
 _166:
-	.db	146,178,2,0,47
-	.dw	_163-_167
+	.db	146,177,2,0,47
+	.dw	_165-_167
 _167:
-_161:
-	.db	18,50,46,40
-	.dw	_162-_168
-_168:
-	.db	146,179,2,0,47
-	.dw	_163-_169
-_169:
 _162:
-	.db	146,180,2,0
+	.db	18,49,46,40
+	.dw	_163-_168
+_168:
+	.db	146,178,2,0,47
+	.dw	_165-_169
+_169:
 _163:
-	.db	22,19,62,36,33,9,54,34
-	.dl	_170-_18,_181-_18
-	.dw	61
-	.db	127,0,18,10
-	.dw	16383
-	.db	26,22,62,37,18,48,46,40
-	.dw	_171-_175
-_175:
-	.db	146,177,2,0,47
-	.dw	_174-_176
-_176:
+	.db	18,50,46,40
+	.dw	_164-_170
+_170:
+	.db	146,179,2,0,47
+	.dw	_165-_171
 _171:
-	.db	18,49,46,40
-	.dw	_172-_177
+_164:
+	.db	146,180,2,0
+_165:
+	.db	22,19,62,36,33,9,58,34
+	.dl	_172-_20,_183-_20
+	.dw	61
+	.db	127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_173-_177
 _177:
-	.db	146,178,2,0,47
-	.dw	_174-_178
+	.db	146,177,2,0,47
+	.dw	_176-_178
 _178:
-_172:
-	.db	18,50,46,40
-	.dw	_173-_179
-_179:
-	.db	146,179,2,0,47
-	.dw	_174-_180
-_180:
 _173:
-	.db	146,180,2,0
+	.db	18,49,46,40
+	.dw	_174-_179
+_179:
+	.db	146,178,2,0,47
+	.dw	_176-_180
+_180:
 _174:
-	.db	22,19,62,36,33,9,56,34
-	.dl	_181-_18,_192-_18
-	.dw	61
-	.db	127,0,18,10
-	.dw	16383
-	.db	26,22,62,37,18,48,46,40
-	.dw	_182-_186
-_186:
-	.db	146,177,2,0,47
-	.dw	_185-_187
-_187:
+	.db	18,50,46,40
+	.dw	_175-_181
+_181:
+	.db	146,179,2,0,47
+	.dw	_176-_182
 _182:
-	.db	18,49,46,40
-	.dw	_183-_188
+_175:
+	.db	146,180,2,0
+_176:
+	.db	22,19,62,36,33,9,60,34
+	.dl	_183-_20,_194-_20
+	.dw	61
+	.db	127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_184-_188
 _188:
-	.db	146,178,2,0,47
-	.dw	_185-_189
+	.db	146,177,2,0,47
+	.dw	_187-_189
 _189:
-_183:
-	.db	18,50,46,40
-	.dw	_184-_190
-_190:
-	.db	146,179,2,0,47
-	.dw	_185-_191
-_191:
 _184:
-	.db	146,180,2,0
+	.db	18,49,46,40
+	.dw	_185-_190
+_190:
+	.db	146,178,2,0,47
+	.dw	_187-_191
+_191:
 _185:
-	.db	22,19,62,36,33,9,54,34
-	.dl	_192-_18,_203-_18
-	.dw	61
-	.db	127,0,18,10
-	.dw	16383
-	.db	26,22,62,37,18,48,46,40
-	.dw	_193-_197
-_197:
-	.db	146,177,2,0,47
-	.dw	_196-_198
-_198:
+	.db	18,50,46,40
+	.dw	_186-_192
+_192:
+	.db	146,179,2,0,47
+	.dw	_187-_193
 _193:
-	.db	18,49,46,40
-	.dw	_194-_199
+_186:
+	.db	146,180,2,0
+_187:
+	.db	22,19,62,36,33,9,58,34
+	.dl	_194-_20,_205-_20
+	.dw	61
+	.db	127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_195-_199
 _199:
-	.db	146,178,2,0,47
-	.dw	_196-_200
+	.db	146,177,2,0,47
+	.dw	_198-_200
 _200:
-_194:
-	.db	18,50,46,40
-	.dw	_195-_201
-_201:
-	.db	146,179,2,0,47
-	.dw	_196-_202
-_202:
 _195:
-	.db	146,180,2,0
+	.db	18,49,46,40
+	.dw	_196-_201
+_201:
+	.db	146,178,2,0,47
+	.dw	_198-_202
+_202:
 _196:
-	.db	22,19,62,36,33,9,56,34
-	.dl	_203-_18,_214-_18
-	.dw	61
-	.db	127,0,18,10
-	.dw	16383
-	.db	26,22,62,37,18,48,46,40
-	.dw	_204-_208
-_208:
-	.db	146,177,2,0,47
-	.dw	_207-_209
-_209:
+	.db	18,50,46,40
+	.dw	_197-_203
+_203:
+	.db	146,179,2,0,47
+	.dw	_198-_204
 _204:
-	.db	18,49,46,40
-	.dw	_205-_210
+_197:
+	.db	146,180,2,0
+_198:
+	.db	22,19,62,36,33,9,60,34
+	.dl	_205-_20,_216-_20
+	.dw	61
+	.db	127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_206-_210
 _210:
-	.db	146,178,2,0,47
-	.dw	_207-_211
+	.db	146,177,2,0,47
+	.dw	_209-_211
 _211:
-_205:
-	.db	18,50,46,40
-	.dw	_206-_212
-_212:
-	.db	146,179,2,0,47
-	.dw	_207-_213
-_213:
 _206:
-	.db	146,180,2,0
+	.db	18,49,46,40
+	.dw	_207-_212
+_212:
+	.db	146,178,2,0,47
+	.dw	_209-_213
+_213:
 _207:
-	.db	22,19,62,36,33,9,58,34
-	.dl	_214-_18,_225-_18
-	.dw	61
-	.db	127,0,18,10
-	.dw	16383
-	.db	26,22,62,37,18,48,46,40
-	.dw	_215-_219
-_219:
-	.db	146,177,2,0,47
-	.dw	_218-_220
-_220:
+	.db	18,50,46,40
+	.dw	_208-_214
+_214:
+	.db	146,179,2,0,47
+	.dw	_209-_215
 _215:
-	.db	18,49,46,40
-	.dw	_216-_221
+_208:
+	.db	146,180,2,0
+_209:
+	.db	22,19,62,36,33,9,62,34
+	.dl	_216-_20,_227-_20
+	.dw	61
+	.db	127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_217-_221
 _221:
-	.db	146,178,2,0,47
-	.dw	_218-_222
+	.db	146,177,2,0,47
+	.dw	_220-_222
 _222:
-_216:
-	.db	18,50,46,40
-	.dw	_217-_223
-_223:
-	.db	146,179,2,0,47
-	.dw	_218-_224
-_224:
 _217:
-	.db	146,180,2,0
+	.db	18,49,46,40
+	.dw	_218-_223
+_223:
+	.db	146,178,2,0,47
+	.dw	_220-_224
+_224:
 _218:
-	.db	22,19,62,36,33,9,60,34
-	.dl	_225-_18,_236-_18
-	.dw	61
-	.db	127,0,18,10
-	.dw	16383
-	.db	26,22,62,37,18,48,46,40
-	.dw	_226-_230
-_230:
-	.db	146,177,2,0,47
-	.dw	_229-_231
-_231:
+	.db	18,50,46,40
+	.dw	_219-_225
+_225:
+	.db	146,179,2,0,47
+	.dw	_220-_226
 _226:
-	.db	18,49,46,40
-	.dw	_227-_232
-_232:
-	.db	146,178,2,0,47
-	.dw	_229-_233
-_233:
-_227:
-	.db	18,50,46,40
-	.dw	_228-_234
-_234:
-	.db	146,179,2,0,47
-	.dw	_229-_235
-_235:
-_228:
+_219:
 	.db	146,180,2,0
-_229:
-	.db	22,19,62,36,33,9,62,34
-	.dl	_236-_18,_247-_18
-	.dw	61
-	.db	127,0,18,10
-	.dw	16383
-	.db	26,22,62,37,18,48,46,40
-	.dw	_237-_241
-_241:
-	.db	146,177,2,0,47
-	.dw	_240-_242
-_242:
-_237:
-	.db	18,49,46,40
-	.dw	_238-_243
-_243:
-	.db	146,178,2,0,47
-	.dw	_240-_244
-_244:
-_238:
-	.db	18,50,46,40
-	.dw	_239-_245
-_245:
-	.db	146,179,2,0,47
-	.dw	_240-_246
-_246:
-_239:
-	.db	146,180,2,0
-_240:
+_220:
 	.db	22,19,62,36,33,9,64,34
-	.dl	_247-_18,_258-_18
+	.dl	_227-_20,_238-_20
 	.dw	61
 	.db	127,0,18,10
 	.dw	16383
 	.db	26,22,62,37,18,48,46,40
-	.dw	_248-_252
-_252:
+	.dw	_228-_232
+_232:
 	.db	146,177,2,0,47
-	.dw	_251-_253
-_253:
-_248:
+	.dw	_231-_233
+_233:
+_228:
 	.db	18,49,46,40
-	.dw	_249-_254
-_254:
+	.dw	_229-_234
+_234:
 	.db	146,178,2,0,47
-	.dw	_251-_255
-_255:
-_249:
+	.dw	_231-_235
+_235:
+_229:
 	.db	18,50,46,40
-	.dw	_250-_256
-_256:
+	.dw	_230-_236
+_236:
 	.db	146,179,2,0,47
-	.dw	_251-_257
-_257:
-_250:
+	.dw	_231-_237
+_237:
+_230:
 	.db	146,180,2,0
-_251:
+_231:
 	.db	22,19,62,36,33,9,66,34
-	.dl	_258-_18,_269-_18
+	.dl	_238-_20,_249-_20
 	.dw	61
 	.db	127,0,18,10
 	.dw	16383
 	.db	26,22,62,37,18,48,46,40
-	.dw	_259-_263
-_263:
+	.dw	_239-_243
+_243:
 	.db	146,177,2,0,47
-	.dw	_262-_264
-_264:
+	.dw	_242-_244
+_244:
+_239:
+	.db	18,49,46,40
+	.dw	_240-_245
+_245:
+	.db	146,178,2,0,47
+	.dw	_242-_246
+_246:
+_240:
+	.db	18,50,46,40
+	.dw	_241-_247
+_247:
+	.db	146,179,2,0,47
+	.dw	_242-_248
+_248:
+_241:
+	.db	146,180,2,0
+_242:
+	.db	22,19,62,36,33,9,68,34
+	.dl	_249-_20,_260-_20
+	.dw	61
+	.db	127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_250-_254
+_254:
+	.db	146,177,2,0,47
+	.dw	_253-_255
+_255:
+_250:
+	.db	18,49,46,40
+	.dw	_251-_256
+_256:
+	.db	146,178,2,0,47
+	.dw	_253-_257
+_257:
+_251:
+	.db	18,50,46,40
+	.dw	_252-_258
+_258:
+	.db	146,179,2,0,47
+	.dw	_253-_259
 _259:
-	.db	18,49,46,40
-	.dw	_260-_265
+_252:
+	.db	146,180,2,0
+_253:
+	.db	22,19,62,36,33,9,70,34
+	.dl	_260-_20,_271-_20
+	.dw	61
+	.db	127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_261-_265
 _265:
-	.db	146,178,2,0,47
-	.dw	_262-_266
+	.db	146,177,2,0,47
+	.dw	_264-_266
 _266:
-_260:
-	.db	18,50,46,40
-	.dw	_261-_267
-_267:
-	.db	146,179,2,0,47
-	.dw	_262-_268
-_268:
 _261:
-	.db	146,180,2,0
+	.db	18,49,46,40
+	.dw	_262-_267
+_267:
+	.db	146,178,2,0,47
+	.dw	_264-_268
+_268:
 _262:
-	.db	22,19,62,36,33,9,54,34
-	.dl	_269-_18,_280-_18
-	.dw	61
-	.db	127,0,18,10
-	.dw	16383
-	.db	26,22,62,37,18,48,46,40
-	.dw	_270-_274
-_274:
-	.db	146,177,2,0,47
-	.dw	_273-_275
-_275:
+	.db	18,50,46,40
+	.dw	_263-_269
+_269:
+	.db	146,179,2,0,47
+	.dw	_264-_270
 _270:
-	.db	18,49,46,40
-	.dw	_271-_276
-_276:
-	.db	146,178,2,0,47
-	.dw	_273-_277
-_277:
-_271:
-	.db	18,50,46,40
-	.dw	_272-_278
-_278:
-	.db	146,179,2,0,47
-	.dw	_273-_279
-_279:
-_272:
+_263:
 	.db	146,180,2,0
-_273:
-	.db	22,19,62,36,33,9,56,34
-	.dl	_280-_18,_291-_18
-	.dw	61
-	.db	127,0,18,10
-	.dw	16383
-	.db	26,22,62,37,18,48,46,40
-	.dw	_281-_285
-_285:
-	.db	146,177,2,0,47
-	.dw	_284-_286
-_286:
-_281:
-	.db	18,49,46,40
-	.dw	_282-_287
-_287:
-	.db	146,178,2,0,47
-	.dw	_284-_288
-_288:
-_282:
-	.db	18,50,46,40
-	.dw	_283-_289
-_289:
-	.db	146,179,2,0,47
-	.dw	_284-_290
-_290:
-_283:
-	.db	146,180,2,0
-_284:
+_264:
 	.db	22,19,62,36,33,9,58,34
-	.dl	_291-_18,_302-_18
+	.dl	_271-_20,_282-_20
 	.dw	61
 	.db	127,0,18,10
 	.dw	16383
 	.db	26,22,62,37,18,48,46,40
-	.dw	_292-_296
-_296:
+	.dw	_272-_276
+_276:
 	.db	146,177,2,0,47
-	.dw	_295-_297
-_297:
-_292:
+	.dw	_275-_277
+_277:
+_272:
 	.db	18,49,46,40
-	.dw	_293-_298
-_298:
+	.dw	_273-_278
+_278:
 	.db	146,178,2,0,47
-	.dw	_295-_299
-_299:
-_293:
+	.dw	_275-_279
+_279:
+_273:
 	.db	18,50,46,40
-	.dw	_294-_300
-_300:
+	.dw	_274-_280
+_280:
 	.db	146,179,2,0,47
-	.dw	_295-_301
-_301:
-_294:
+	.dw	_275-_281
+_281:
+_274:
 	.db	146,180,2,0
-_295:
+_275:
 	.db	22,19,62,36,33,9,60,34
-	.dl	_302-_18,_313-_18
+	.dl	_282-_20,_293-_20
 	.dw	61
 	.db	127,0,18,10
 	.dw	16383
 	.db	26,22,62,37,18,48,46,40
-	.dw	_303-_307
-_307:
+	.dw	_283-_287
+_287:
 	.db	146,177,2,0,47
-	.dw	_306-_308
-_308:
-_303:
+	.dw	_286-_288
+_288:
+_283:
 	.db	18,49,46,40
-	.dw	_304-_309
-_309:
+	.dw	_284-_289
+_289:
 	.db	146,178,2,0,47
-	.dw	_306-_310
-_310:
-_304:
+	.dw	_286-_290
+_290:
+_284:
 	.db	18,50,46,40
-	.dw	_305-_311
-_311:
+	.dw	_285-_291
+_291:
 	.db	146,179,2,0,47
-	.dw	_306-_312
-_312:
-_305:
+	.dw	_286-_292
+_292:
+_285:
 	.db	146,180,2,0
-_306:
+_286:
 	.db	22,19,62,36,33,9,62,34
-	.dl	_313-_18,_37-_18
+	.dl	_293-_20,_304-_20
 	.dw	61
 	.db	127,0,18,10
 	.dw	16383
 	.db	26,22,62,37,18,48,46,40
-	.dw	_314-_318
-_318:
+	.dw	_294-_298
+_298:
 	.db	146,177,2,0,47
-	.dw	_317-_319
-_319:
-_314:
+	.dw	_297-_299
+_299:
+_294:
 	.db	18,49,46,40
-	.dw	_315-_320
-_320:
+	.dw	_295-_300
+_300:
 	.db	146,178,2,0,47
-	.dw	_317-_321
-_321:
-_315:
+	.dw	_297-_301
+_301:
+_295:
 	.db	18,50,46,40
-	.dw	_316-_322
-_322:
+	.dw	_296-_302
+_302:
 	.db	146,179,2,0,47
-	.dw	_317-_323
-_323:
-_316:
+	.dw	_297-_303
+_303:
+_296:
 	.db	146,180,2,0
+_297:
+	.db	22,19,62,36,33,9,64,34
+	.dl	_304-_20,_315-_20
+	.dw	61
+	.db	127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_305-_309
+_309:
+	.db	146,177,2,0,47
+	.dw	_308-_310
+_310:
+_305:
+	.db	18,49,46,40
+	.dw	_306-_311
+_311:
+	.db	146,178,2,0,47
+	.dw	_308-_312
+_312:
+_306:
+	.db	18,50,46,40
+	.dw	_307-_313
+_313:
+	.db	146,179,2,0,47
+	.dw	_308-_314
+_314:
+_307:
+	.db	146,180,2,0
+_308:
+	.db	22,19,62,36,33,9,66,34
+	.dl	_315-_20,_39-_20
+	.dw	61
+	.db	127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_316-_320
+_320:
+	.db	146,177,2,0,47
+	.dw	_319-_321
+_321:
+_316:
+	.db	18,49,46,40
+	.dw	_317-_322
+_322:
+	.db	146,178,2,0,47
+	.dw	_319-_323
+_323:
 _317:
-	.db	22,19,62,36,33,9,54,34
+	.db	18,50,46,40
+	.dw	_318-_324
+_324:
+	.db	146,179,2,0,47
+	.dw	_319-_325
+_325:
+_318:
+	.db	146,180,2,0
+_319:
+	.db	22,19,62,36,33,9,58,34
 	.dl	0,0
-_56:
-	.dl	-1,_18,_563-_18,_560-_18
+_58:
+	.dl	-1,_20,_565-_20,_562-_20
 	.dw	6
 	.db	93,147,2,94,147,2
 	.dl	0,0
-_54:
-	.dl	-1,_18,_564-_18,_565-_18
+_56:
+	.dl	-1,_20,_566-_20,_567-_20
 	.dw	6
 	.db	82,147,2,83,147,2
 	.dl	0,0
-_64:
+_66:
 	.dl	0,0
-_47:
-	.dl	-1,_18,_554-_18,_14-_18
+_49:
+	.dl	-1,_20,_556-_20,_14-_20
 	.dw	6
 	.db	82,147,2,83,147,2
 	.dl	0,0
-_42:
-	.dl	-1,_18,0,_37-_18
+_44:
+	.dl	-1,_20,0,_39-_20
+	.dw	2
+	.db	145,70
+	.dl	0,0
+_71:
+	.dl	-1,_20,0,_39-_20
+	.dw	2
+	.db	145,80
+	.dl	0,0
+_43:
+	.dl	-1,_20,0,_39-_20
 	.dw	2
 	.db	145,74
 	.dl	0,0
-_69:
-	.dl	-1,_18,0,_37-_18
-	.dw	2
-	.db	145,84
-	.dl	0,0
-_41:
-	.dl	-1,_18,0,_37-_18
-	.dw	2
-	.db	145,78
-	.dl	0,0
-_58:
-	.dl	-1,_18,_561-_18,_560-_18
+_60:
+	.dl	-1,_20,_563-_20,_562-_20
 	.dw	6
 	.db	84,147,2,85,147,2
 	.dl	0,0
-_62:
+_64:
 	.dl	0,0
 	; End of section
 
 	.debug		.debug_frame
-_674:
+_685:
 	.dl	148
 	.dl	-1
 	.db	3,0,2,2,173,2,15,60,127,0,18,10
 	.dw	16383
 	.db	26,22,62,37,18,48,46,40
-	.dw	_675-_679
-_679:
+	.dw	_686-_690
+_690:
 	.db	146,177,2,0,47
-	.dw	_678-_680
-_680:
-_675:
+	.dw	_689-_691
+_691:
+_686:
 	.db	18,49,46,40
-	.dw	_676-_681
-_681:
+	.dw	_687-_692
+_692:
 	.db	146,178,2,0,47
-	.dw	_678-_682
-_682:
-_676:
+	.dw	_689-_693
+_693:
+_687:
 	.db	18,50,46,40
-	.dw	_677-_683
-_683:
+	.dw	_688-_694
+_694:
 	.db	146,179,2,0,47
-	.dw	_678-_684
-_684:
-_677:
+	.dw	_689-_695
+_695:
+_688:
 	.db	146,180,2,0
-_678:
+_689:
 	.db	22,19,62,36,33,48,34,16,173,2,12,19,146,176,2,0,64,36,146,161,2,0,33,8,15,22,161,2,5,19,146,161,2,4,8
 	.db	177,2,8,178,2,8,179,2,8,180,2,16,174,2,12,19,146,176,2,0,64,36,146,161,2,0,33,16,175,2,12,19,146,176,2
 	.db	0,64,36,146,161,2,2,33,8,176,2,0,0
 	; End of section
 
 	.debug		.debug_frame, cluster 'main'
-	.dl	1740
-	.dl	_674,_18,_37-_18
+	.dl	1744
+	.dl	_685,_20,_39-_20
 	.db	8,162,2,8,166,2,8,167,2,8,168,2,8,169,2,8,170,2,8,171,2,8,172,2,4
-	.dl	(_71-_18)/2
+	.dl	(_73-_20)/2
 	.db	15,61,127,0,18,10
 	.dw	16383
 	.db	26,22,62,37,18,48,46,40
-	.dw	_324-_328
-_328:
-	.db	146,177,2,0,47
-	.dw	_327-_329
-_329:
-_324:
-	.db	18,49,46,40
-	.dw	_325-_330
+	.dw	_326-_330
 _330:
-	.db	146,178,2,0,47
-	.dw	_327-_331
+	.db	146,177,2,0,47
+	.dw	_329-_331
 _331:
-_325:
-	.db	18,50,46,40
-	.dw	_326-_332
-_332:
-	.db	146,179,2,0,47
-	.dw	_327-_333
-_333:
 _326:
-	.db	146,180,2,0
+	.db	18,49,46,40
+	.dw	_327-_332
+_332:
+	.db	146,178,2,0,47
+	.dw	_329-_333
+_333:
 _327:
-	.db	22,19,62,36,33,9,54,34,22,15,3,19,127,54,4
-	.dl	(_82-_71)/2
-	.db	15,61,127,0,18,10
-	.dw	16383
-	.db	26,22,62,37,18,48,46,40
-	.dw	_334-_338
-_338:
-	.db	146,177,2,0,47
-	.dw	_337-_339
-_339:
+	.db	18,50,46,40
+	.dw	_328-_334
 _334:
-	.db	18,49,46,40
-	.dw	_335-_340
-_340:
-	.db	146,178,2,0,47
-	.dw	_337-_341
-_341:
+	.db	146,179,2,0,47
+	.dw	_329-_335
 _335:
-	.db	18,50,46,40
-	.dw	_336-_342
-_342:
-	.db	146,179,2,0,47
-	.dw	_337-_343
-_343:
+_328:
+	.db	146,180,2,0
+_329:
+	.db	22,19,62,36,33,9,58,34,22,15,3,19,127,58,4
+	.dl	(_84-_73)/2
+	.db	15,61,127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_336-_340
+_340:
+	.db	146,177,2,0,47
+	.dw	_339-_341
+_341:
 _336:
-	.db	146,180,2,0
+	.db	18,49,46,40
+	.dw	_337-_342
+_342:
+	.db	146,178,2,0,47
+	.dw	_339-_343
+_343:
 _337:
-	.db	22,19,62,36,33,9,56,34,22,15,3,19,127,56,4
-	.dl	(_93-_82)/2
-	.db	15,61,127,0,18,10
-	.dw	16383
-	.db	26,22,62,37,18,48,46,40
-	.dw	_344-_348
-_348:
-	.db	146,177,2,0,47
-	.dw	_347-_349
-_349:
+	.db	18,50,46,40
+	.dw	_338-_344
 _344:
-	.db	18,49,46,40
-	.dw	_345-_350
-_350:
-	.db	146,178,2,0,47
-	.dw	_347-_351
-_351:
+	.db	146,179,2,0,47
+	.dw	_339-_345
 _345:
-	.db	18,50,46,40
-	.dw	_346-_352
-_352:
-	.db	146,179,2,0,47
-	.dw	_347-_353
-_353:
+_338:
+	.db	146,180,2,0
+_339:
+	.db	22,19,62,36,33,9,60,34,22,15,3,19,127,60,4
+	.dl	(_95-_84)/2
+	.db	15,61,127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_346-_350
+_350:
+	.db	146,177,2,0,47
+	.dw	_349-_351
+_351:
 _346:
-	.db	146,180,2,0
+	.db	18,49,46,40
+	.dw	_347-_352
+_352:
+	.db	146,178,2,0,47
+	.dw	_349-_353
+_353:
 _347:
-	.db	22,19,62,36,33,9,54,34,22,15,3,19,127,54,4
-	.dl	(_104-_93)/2
-	.db	15,61,127,0,18,10
-	.dw	16383
-	.db	26,22,62,37,18,48,46,40
-	.dw	_354-_358
-_358:
-	.db	146,177,2,0,47
-	.dw	_357-_359
-_359:
+	.db	18,50,46,40
+	.dw	_348-_354
 _354:
-	.db	18,49,46,40
-	.dw	_355-_360
-_360:
-	.db	146,178,2,0,47
-	.dw	_357-_361
-_361:
+	.db	146,179,2,0,47
+	.dw	_349-_355
 _355:
-	.db	18,50,46,40
-	.dw	_356-_362
-_362:
-	.db	146,179,2,0,47
-	.dw	_357-_363
-_363:
+_348:
+	.db	146,180,2,0
+_349:
+	.db	22,19,62,36,33,9,58,34,22,15,3,19,127,58,4
+	.dl	(_106-_95)/2
+	.db	15,61,127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_356-_360
+_360:
+	.db	146,177,2,0,47
+	.dw	_359-_361
+_361:
 _356:
-	.db	146,180,2,0
+	.db	18,49,46,40
+	.dw	_357-_362
+_362:
+	.db	146,178,2,0,47
+	.dw	_359-_363
+_363:
 _357:
-	.db	22,19,62,36,33,9,56,34,22,15,3,19,127,56,4
-	.dl	(_115-_104)/2
-	.db	15,61,127,0,18,10
-	.dw	16383
-	.db	26,22,62,37,18,48,46,40
-	.dw	_364-_368
-_368:
-	.db	146,177,2,0,47
-	.dw	_367-_369
-_369:
+	.db	18,50,46,40
+	.dw	_358-_364
 _364:
-	.db	18,49,46,40
-	.dw	_365-_370
-_370:
-	.db	146,178,2,0,47
-	.dw	_367-_371
-_371:
+	.db	146,179,2,0,47
+	.dw	_359-_365
 _365:
-	.db	18,50,46,40
-	.dw	_366-_372
-_372:
-	.db	146,179,2,0,47
-	.dw	_367-_373
-_373:
+_358:
+	.db	146,180,2,0
+_359:
+	.db	22,19,62,36,33,9,60,34,22,15,3,19,127,60,4
+	.dl	(_117-_106)/2
+	.db	15,61,127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_366-_370
+_370:
+	.db	146,177,2,0,47
+	.dw	_369-_371
+_371:
 _366:
-	.db	146,180,2,0
+	.db	18,49,46,40
+	.dw	_367-_372
+_372:
+	.db	146,178,2,0,47
+	.dw	_369-_373
+_373:
 _367:
-	.db	22,19,62,36,33,9,58,34,22,15,3,19,127,58,4
-	.dl	(_126-_115)/2
-	.db	15,61,127,0,18,10
-	.dw	16383
-	.db	26,22,62,37,18,48,46,40
-	.dw	_374-_378
-_378:
-	.db	146,177,2,0,47
-	.dw	_377-_379
-_379:
+	.db	18,50,46,40
+	.dw	_368-_374
 _374:
-	.db	18,49,46,40
-	.dw	_375-_380
-_380:
-	.db	146,178,2,0,47
-	.dw	_377-_381
-_381:
+	.db	146,179,2,0,47
+	.dw	_369-_375
 _375:
-	.db	18,50,46,40
-	.dw	_376-_382
-_382:
-	.db	146,179,2,0,47
-	.dw	_377-_383
-_383:
+_368:
+	.db	146,180,2,0
+_369:
+	.db	22,19,62,36,33,9,62,34,22,15,3,19,127,62,4
+	.dl	(_128-_117)/2
+	.db	15,61,127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_376-_380
+_380:
+	.db	146,177,2,0,47
+	.dw	_379-_381
+_381:
 _376:
-	.db	146,180,2,0
+	.db	18,49,46,40
+	.dw	_377-_382
+_382:
+	.db	146,178,2,0,47
+	.dw	_379-_383
+_383:
 _377:
-	.db	22,19,62,36,33,9,54,34,22,15,3,19,127,54,4
-	.dl	(_137-_126)/2
-	.db	15,61,127,0,18,10
-	.dw	16383
-	.db	26,22,62,37,18,48,46,40
-	.dw	_384-_388
-_388:
-	.db	146,177,2,0,47
-	.dw	_387-_389
-_389:
+	.db	18,50,46,40
+	.dw	_378-_384
 _384:
-	.db	18,49,46,40
-	.dw	_385-_390
-_390:
-	.db	146,178,2,0,47
-	.dw	_387-_391
-_391:
+	.db	146,179,2,0,47
+	.dw	_379-_385
 _385:
-	.db	18,50,46,40
-	.dw	_386-_392
-_392:
-	.db	146,179,2,0,47
-	.dw	_387-_393
-_393:
+_378:
+	.db	146,180,2,0
+_379:
+	.db	22,19,62,36,33,9,58,34,22,15,3,19,127,58,4
+	.dl	(_139-_128)/2
+	.db	15,61,127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_386-_390
+_390:
+	.db	146,177,2,0,47
+	.dw	_389-_391
+_391:
 _386:
-	.db	146,180,2,0
+	.db	18,49,46,40
+	.dw	_387-_392
+_392:
+	.db	146,178,2,0,47
+	.dw	_389-_393
+_393:
 _387:
-	.db	22,19,62,36,33,9,56,34,22,15,3,19,127,56,4
-	.dl	(_148-_137)/2
-	.db	15,61,127,0,18,10
-	.dw	16383
-	.db	26,22,62,37,18,48,46,40
-	.dw	_394-_398
-_398:
-	.db	146,177,2,0,47
-	.dw	_397-_399
-_399:
+	.db	18,50,46,40
+	.dw	_388-_394
 _394:
-	.db	18,49,46,40
-	.dw	_395-_400
-_400:
-	.db	146,178,2,0,47
-	.dw	_397-_401
-_401:
+	.db	146,179,2,0,47
+	.dw	_389-_395
 _395:
-	.db	18,50,46,40
-	.dw	_396-_402
-_402:
-	.db	146,179,2,0,47
-	.dw	_397-_403
-_403:
+_388:
+	.db	146,180,2,0
+_389:
+	.db	22,19,62,36,33,9,60,34,22,15,3,19,127,60,4
+	.dl	(_150-_139)/2
+	.db	15,61,127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_396-_400
+_400:
+	.db	146,177,2,0,47
+	.dw	_399-_401
+_401:
 _396:
-	.db	146,180,2,0
+	.db	18,49,46,40
+	.dw	_397-_402
+_402:
+	.db	146,178,2,0,47
+	.dw	_399-_403
+_403:
 _397:
-	.db	22,19,62,36,33,9,58,34,22,15,3,19,127,58,4
-	.dl	(_159-_148)/2
-	.db	15,61,127,0,18,10
-	.dw	16383
-	.db	26,22,62,37,18,48,46,40
-	.dw	_404-_408
-_408:
-	.db	146,177,2,0,47
-	.dw	_407-_409
-_409:
+	.db	18,50,46,40
+	.dw	_398-_404
 _404:
-	.db	18,49,46,40
-	.dw	_405-_410
-_410:
-	.db	146,178,2,0,47
-	.dw	_407-_411
-_411:
+	.db	146,179,2,0,47
+	.dw	_399-_405
 _405:
-	.db	18,50,46,40
-	.dw	_406-_412
-_412:
-	.db	146,179,2,0,47
-	.dw	_407-_413
-_413:
+_398:
+	.db	146,180,2,0
+_399:
+	.db	22,19,62,36,33,9,62,34,22,15,3,19,127,62,4
+	.dl	(_161-_150)/2
+	.db	15,61,127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_406-_410
+_410:
+	.db	146,177,2,0,47
+	.dw	_409-_411
+_411:
 _406:
-	.db	146,180,2,0
+	.db	18,49,46,40
+	.dw	_407-_412
+_412:
+	.db	146,178,2,0,47
+	.dw	_409-_413
+_413:
 _407:
-	.db	22,19,62,36,33,9,54,34,22,15,3,19,127,54,4
-	.dl	(_170-_159)/2
-	.db	15,61,127,0,18,10
-	.dw	16383
-	.db	26,22,62,37,18,48,46,40
-	.dw	_414-_418
-_418:
-	.db	146,177,2,0,47
-	.dw	_417-_419
-_419:
+	.db	18,50,46,40
+	.dw	_408-_414
 _414:
-	.db	18,49,46,40
-	.dw	_415-_420
-_420:
-	.db	146,178,2,0,47
-	.dw	_417-_421
-_421:
+	.db	146,179,2,0,47
+	.dw	_409-_415
 _415:
-	.db	18,50,46,40
-	.dw	_416-_422
-_422:
-	.db	146,179,2,0,47
-	.dw	_417-_423
-_423:
+_408:
+	.db	146,180,2,0
+_409:
+	.db	22,19,62,36,33,9,58,34,22,15,3,19,127,58,4
+	.dl	(_172-_161)/2
+	.db	15,61,127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_416-_420
+_420:
+	.db	146,177,2,0,47
+	.dw	_419-_421
+_421:
 _416:
-	.db	146,180,2,0
+	.db	18,49,46,40
+	.dw	_417-_422
+_422:
+	.db	146,178,2,0,47
+	.dw	_419-_423
+_423:
 _417:
-	.db	22,19,62,36,33,9,56,34,22,15,3,19,127,56,4
-	.dl	(_181-_170)/2
-	.db	15,61,127,0,18,10
-	.dw	16383
-	.db	26,22,62,37,18,48,46,40
-	.dw	_424-_428
-_428:
-	.db	146,177,2,0,47
-	.dw	_427-_429
-_429:
+	.db	18,50,46,40
+	.dw	_418-_424
 _424:
-	.db	18,49,46,40
-	.dw	_425-_430
-_430:
-	.db	146,178,2,0,47
-	.dw	_427-_431
-_431:
+	.db	146,179,2,0,47
+	.dw	_419-_425
 _425:
-	.db	18,50,46,40
-	.dw	_426-_432
-_432:
-	.db	146,179,2,0,47
-	.dw	_427-_433
-_433:
+_418:
+	.db	146,180,2,0
+_419:
+	.db	22,19,62,36,33,9,60,34,22,15,3,19,127,60,4
+	.dl	(_183-_172)/2
+	.db	15,61,127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_426-_430
+_430:
+	.db	146,177,2,0,47
+	.dw	_429-_431
+_431:
 _426:
-	.db	146,180,2,0
+	.db	18,49,46,40
+	.dw	_427-_432
+_432:
+	.db	146,178,2,0,47
+	.dw	_429-_433
+_433:
 _427:
-	.db	22,19,62,36,33,9,54,34,22,15,3,19,127,54,4
-	.dl	(_192-_181)/2
-	.db	15,61,127,0,18,10
-	.dw	16383
-	.db	26,22,62,37,18,48,46,40
-	.dw	_434-_438
-_438:
-	.db	146,177,2,0,47
-	.dw	_437-_439
-_439:
+	.db	18,50,46,40
+	.dw	_428-_434
 _434:
-	.db	18,49,46,40
-	.dw	_435-_440
-_440:
-	.db	146,178,2,0,47
-	.dw	_437-_441
-_441:
+	.db	146,179,2,0,47
+	.dw	_429-_435
 _435:
-	.db	18,50,46,40
-	.dw	_436-_442
-_442:
-	.db	146,179,2,0,47
-	.dw	_437-_443
-_443:
+_428:
+	.db	146,180,2,0
+_429:
+	.db	22,19,62,36,33,9,58,34,22,15,3,19,127,58,4
+	.dl	(_194-_183)/2
+	.db	15,61,127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_436-_440
+_440:
+	.db	146,177,2,0,47
+	.dw	_439-_441
+_441:
 _436:
-	.db	146,180,2,0
+	.db	18,49,46,40
+	.dw	_437-_442
+_442:
+	.db	146,178,2,0,47
+	.dw	_439-_443
+_443:
 _437:
-	.db	22,19,62,36,33,9,56,34,22,15,3,19,127,56,4
-	.dl	(_203-_192)/2
-	.db	15,61,127,0,18,10
-	.dw	16383
-	.db	26,22,62,37,18,48,46,40
-	.dw	_444-_448
-_448:
-	.db	146,177,2,0,47
-	.dw	_447-_449
-_449:
+	.db	18,50,46,40
+	.dw	_438-_444
 _444:
-	.db	18,49,46,40
-	.dw	_445-_450
-_450:
-	.db	146,178,2,0,47
-	.dw	_447-_451
-_451:
+	.db	146,179,2,0,47
+	.dw	_439-_445
 _445:
-	.db	18,50,46,40
-	.dw	_446-_452
-_452:
-	.db	146,179,2,0,47
-	.dw	_447-_453
-_453:
+_438:
+	.db	146,180,2,0
+_439:
+	.db	22,19,62,36,33,9,60,34,22,15,3,19,127,60,4
+	.dl	(_205-_194)/2
+	.db	15,61,127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_446-_450
+_450:
+	.db	146,177,2,0,47
+	.dw	_449-_451
+_451:
 _446:
-	.db	146,180,2,0
+	.db	18,49,46,40
+	.dw	_447-_452
+_452:
+	.db	146,178,2,0,47
+	.dw	_449-_453
+_453:
 _447:
-	.db	22,19,62,36,33,9,58,34,22,15,3,19,127,58,4
-	.dl	(_214-_203)/2
-	.db	15,61,127,0,18,10
-	.dw	16383
-	.db	26,22,62,37,18,48,46,40
-	.dw	_454-_458
-_458:
-	.db	146,177,2,0,47
-	.dw	_457-_459
-_459:
+	.db	18,50,46,40
+	.dw	_448-_454
 _454:
-	.db	18,49,46,40
-	.dw	_455-_460
-_460:
-	.db	146,178,2,0,47
-	.dw	_457-_461
-_461:
+	.db	146,179,2,0,47
+	.dw	_449-_455
 _455:
-	.db	18,50,46,40
-	.dw	_456-_462
-_462:
-	.db	146,179,2,0,47
-	.dw	_457-_463
-_463:
+_448:
+	.db	146,180,2,0
+_449:
+	.db	22,19,62,36,33,9,62,34,22,15,3,19,127,62,4
+	.dl	(_216-_205)/2
+	.db	15,61,127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_456-_460
+_460:
+	.db	146,177,2,0,47
+	.dw	_459-_461
+_461:
 _456:
-	.db	146,180,2,0
+	.db	18,49,46,40
+	.dw	_457-_462
+_462:
+	.db	146,178,2,0,47
+	.dw	_459-_463
+_463:
 _457:
-	.db	22,19,62,36,33,9,60,34,22,15,3,19,127,60,4
-	.dl	(_225-_214)/2
-	.db	15,61,127,0,18,10
-	.dw	16383
-	.db	26,22,62,37,18,48,46,40
-	.dw	_464-_468
-_468:
-	.db	146,177,2,0,47
-	.dw	_467-_469
-_469:
+	.db	18,50,46,40
+	.dw	_458-_464
 _464:
-	.db	18,49,46,40
-	.dw	_465-_470
-_470:
-	.db	146,178,2,0,47
-	.dw	_467-_471
-_471:
+	.db	146,179,2,0,47
+	.dw	_459-_465
 _465:
-	.db	18,50,46,40
-	.dw	_466-_472
-_472:
-	.db	146,179,2,0,47
-	.dw	_467-_473
-_473:
-_466:
+_458:
 	.db	146,180,2,0
-_467:
-	.db	22,19,62,36,33,9,62,34,22,15,3,19,127,62,4
-	.dl	(_236-_225)/2
-	.db	15,61,127,0,18,10
-	.dw	16383
-	.db	26,22,62,37,18,48,46,40
-	.dw	_474-_478
-_478:
-	.db	146,177,2,0,47
-	.dw	_477-_479
-_479:
-_474:
-	.db	18,49,46,40
-	.dw	_475-_480
-_480:
-	.db	146,178,2,0,47
-	.dw	_477-_481
-_481:
-_475:
-	.db	18,50,46,40
-	.dw	_476-_482
-_482:
-	.db	146,179,2,0,47
-	.dw	_477-_483
-_483:
-_476:
-	.db	146,180,2,0
-_477:
+_459:
 	.db	22,19,62,36,33,9,64,34,22,15,4,19,127,192,0,4
-	.dl	(_247-_236)/2
+	.dl	(_227-_216)/2
 	.db	15,61,127,0,18,10
 	.dw	16383
 	.db	26,22,62,37,18,48,46,40
-	.dw	_484-_488
-_488:
+	.dw	_466-_470
+_470:
 	.db	146,177,2,0,47
-	.dw	_487-_489
-_489:
-_484:
+	.dw	_469-_471
+_471:
+_466:
 	.db	18,49,46,40
-	.dw	_485-_490
-_490:
+	.dw	_467-_472
+_472:
 	.db	146,178,2,0,47
-	.dw	_487-_491
-_491:
-_485:
+	.dw	_469-_473
+_473:
+_467:
 	.db	18,50,46,40
-	.dw	_486-_492
-_492:
+	.dw	_468-_474
+_474:
 	.db	146,179,2,0,47
-	.dw	_487-_493
-_493:
-_486:
+	.dw	_469-_475
+_475:
+_468:
 	.db	146,180,2,0
-_487:
+_469:
 	.db	22,19,62,36,33,9,66,34,22,15,4,19,127,194,0,4
-	.dl	(_258-_247)/2
+	.dl	(_238-_227)/2
 	.db	15,61,127,0,18,10
 	.dw	16383
 	.db	26,22,62,37,18,48,46,40
-	.dw	_494-_498
-_498:
+	.dw	_476-_480
+_480:
 	.db	146,177,2,0,47
-	.dw	_497-_499
-_499:
+	.dw	_479-_481
+_481:
+_476:
+	.db	18,49,46,40
+	.dw	_477-_482
+_482:
+	.db	146,178,2,0,47
+	.dw	_479-_483
+_483:
+_477:
+	.db	18,50,46,40
+	.dw	_478-_484
+_484:
+	.db	146,179,2,0,47
+	.dw	_479-_485
+_485:
+_478:
+	.db	146,180,2,0
+_479:
+	.db	22,19,62,36,33,9,68,34,22,15,4,19,127,196,0,4
+	.dl	(_249-_238)/2
+	.db	15,61,127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_486-_490
+_490:
+	.db	146,177,2,0,47
+	.dw	_489-_491
+_491:
+_486:
+	.db	18,49,46,40
+	.dw	_487-_492
+_492:
+	.db	146,178,2,0,47
+	.dw	_489-_493
+_493:
+_487:
+	.db	18,50,46,40
+	.dw	_488-_494
 _494:
-	.db	18,49,46,40
-	.dw	_495-_500
-_500:
-	.db	146,178,2,0,47
-	.dw	_497-_501
-_501:
+	.db	146,179,2,0,47
+	.dw	_489-_495
 _495:
-	.db	18,50,46,40
-	.dw	_496-_502
-_502:
-	.db	146,179,2,0,47
-	.dw	_497-_503
-_503:
+_488:
+	.db	146,180,2,0
+_489:
+	.db	22,19,62,36,33,9,70,34,22,15,4,19,127,198,0,4
+	.dl	(_260-_249)/2
+	.db	15,61,127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_496-_500
+_500:
+	.db	146,177,2,0,47
+	.dw	_499-_501
+_501:
 _496:
-	.db	146,180,2,0
+	.db	18,49,46,40
+	.dw	_497-_502
+_502:
+	.db	146,178,2,0,47
+	.dw	_499-_503
+_503:
 _497:
-	.db	22,19,62,36,33,9,54,34,22,15,3,19,127,54,4
-	.dl	(_269-_258)/2
-	.db	15,61,127,0,18,10
-	.dw	16383
-	.db	26,22,62,37,18,48,46,40
-	.dw	_504-_508
-_508:
-	.db	146,177,2,0,47
-	.dw	_507-_509
-_509:
+	.db	18,50,46,40
+	.dw	_498-_504
 _504:
-	.db	18,49,46,40
-	.dw	_505-_510
-_510:
-	.db	146,178,2,0,47
-	.dw	_507-_511
-_511:
+	.db	146,179,2,0,47
+	.dw	_499-_505
 _505:
-	.db	18,50,46,40
-	.dw	_506-_512
-_512:
-	.db	146,179,2,0,47
-	.dw	_507-_513
-_513:
-_506:
+_498:
 	.db	146,180,2,0
-_507:
-	.db	22,19,62,36,33,9,56,34,22,15,3,19,127,56,4
-	.dl	(_280-_269)/2
-	.db	15,61,127,0,18,10
-	.dw	16383
-	.db	26,22,62,37,18,48,46,40
-	.dw	_514-_518
-_518:
-	.db	146,177,2,0,47
-	.dw	_517-_519
-_519:
-_514:
-	.db	18,49,46,40
-	.dw	_515-_520
-_520:
-	.db	146,178,2,0,47
-	.dw	_517-_521
-_521:
-_515:
-	.db	18,50,46,40
-	.dw	_516-_522
-_522:
-	.db	146,179,2,0,47
-	.dw	_517-_523
-_523:
-_516:
-	.db	146,180,2,0
-_517:
+_499:
 	.db	22,19,62,36,33,9,58,34,22,15,3,19,127,58,4
-	.dl	(_291-_280)/2
+	.dl	(_271-_260)/2
 	.db	15,61,127,0,18,10
 	.dw	16383
 	.db	26,22,62,37,18,48,46,40
-	.dw	_524-_528
-_528:
+	.dw	_506-_510
+_510:
 	.db	146,177,2,0,47
-	.dw	_527-_529
-_529:
-_524:
+	.dw	_509-_511
+_511:
+_506:
 	.db	18,49,46,40
-	.dw	_525-_530
-_530:
+	.dw	_507-_512
+_512:
 	.db	146,178,2,0,47
-	.dw	_527-_531
-_531:
-_525:
+	.dw	_509-_513
+_513:
+_507:
 	.db	18,50,46,40
-	.dw	_526-_532
-_532:
+	.dw	_508-_514
+_514:
 	.db	146,179,2,0,47
-	.dw	_527-_533
-_533:
-_526:
+	.dw	_509-_515
+_515:
+_508:
 	.db	146,180,2,0
-_527:
+_509:
 	.db	22,19,62,36,33,9,60,34,22,15,3,19,127,60,4
-	.dl	(_302-_291)/2
+	.dl	(_282-_271)/2
 	.db	15,61,127,0,18,10
 	.dw	16383
 	.db	26,22,62,37,18,48,46,40
-	.dw	_534-_538
-_538:
+	.dw	_516-_520
+_520:
 	.db	146,177,2,0,47
-	.dw	_537-_539
-_539:
-_534:
+	.dw	_519-_521
+_521:
+_516:
 	.db	18,49,46,40
-	.dw	_535-_540
-_540:
+	.dw	_517-_522
+_522:
 	.db	146,178,2,0,47
-	.dw	_537-_541
-_541:
-_535:
+	.dw	_519-_523
+_523:
+_517:
 	.db	18,50,46,40
-	.dw	_536-_542
-_542:
+	.dw	_518-_524
+_524:
 	.db	146,179,2,0,47
-	.dw	_537-_543
-_543:
-_536:
+	.dw	_519-_525
+_525:
+_518:
 	.db	146,180,2,0
-_537:
+_519:
 	.db	22,19,62,36,33,9,62,34,22,15,3,19,127,62,4
-	.dl	(_313-_302)/2
+	.dl	(_293-_282)/2
 	.db	15,61,127,0,18,10
 	.dw	16383
 	.db	26,22,62,37,18,48,46,40
-	.dw	_544-_548
-_548:
+	.dw	_526-_530
+_530:
 	.db	146,177,2,0,47
-	.dw	_547-_549
-_549:
-_544:
+	.dw	_529-_531
+_531:
+_526:
 	.db	18,49,46,40
-	.dw	_545-_550
-_550:
+	.dw	_527-_532
+_532:
 	.db	146,178,2,0,47
-	.dw	_547-_551
-_551:
-_545:
+	.dw	_529-_533
+_533:
+_527:
 	.db	18,50,46,40
-	.dw	_546-_552
-_552:
+	.dw	_528-_534
+_534:
 	.db	146,179,2,0,47
-	.dw	_547-_553
-_553:
-_546:
+	.dw	_529-_535
+_535:
+_528:
 	.db	146,180,2,0
+_529:
+	.db	22,19,62,36,33,9,64,34,22,15,4,19,127,192,0,4
+	.dl	(_304-_293)/2
+	.db	15,61,127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_536-_540
+_540:
+	.db	146,177,2,0,47
+	.dw	_539-_541
+_541:
+_536:
+	.db	18,49,46,40
+	.dw	_537-_542
+_542:
+	.db	146,178,2,0,47
+	.dw	_539-_543
+_543:
+_537:
+	.db	18,50,46,40
+	.dw	_538-_544
+_544:
+	.db	146,179,2,0,47
+	.dw	_539-_545
+_545:
+_538:
+	.db	146,180,2,0
+_539:
+	.db	22,19,62,36,33,9,66,34,22,15,4,19,127,194,0,4
+	.dl	(_315-_304)/2
+	.db	15,61,127,0,18,10
+	.dw	16383
+	.db	26,22,62,37,18,48,46,40
+	.dw	_546-_550
+_550:
+	.db	146,177,2,0,47
+	.dw	_549-_551
+_551:
+_546:
+	.db	18,49,46,40
+	.dw	_547-_552
+_552:
+	.db	146,178,2,0,47
+	.dw	_549-_553
+_553:
 _547:
-	.db	22,19,62,36,33,9,54,34,22,15,3,19,127,54
+	.db	18,50,46,40
+	.dw	_548-_554
+_554:
+	.db	146,179,2,0,47
+	.dw	_549-_555
+_555:
+_548:
+	.db	146,180,2,0
+_549:
+	.db	22,19,62,36,33,9,58,34,22,15,3,19,127,58
 	; End of section
 
 
-; main.c	   343          }
-; main.c	   344  
-; main.c	   345      } //end of main loop
-; main.c	   346  
-; main.c	   347      //----------------------------------------------------------------------------
-; main.c	   348      // VCU Subsystem Deinitializations
-; main.c	   349      //----------------------------------------------------------------------------
-; main.c	   350      //IO_ADC_ChannelDeInit(IO_ADC_5V_00);
-; main.c	   351      //Free memory if object won't be used anymore
-; main.c	   352  
-; main.c	   353  }
-; main.c	   354  
+; main.c	   354          }
 ; main.c	   355  
+; main.c	   356      } //end of main loop
+; main.c	   357  
+; main.c	   358      //----------------------------------------------------------------------------
+; main.c	   359      // VCU Subsystem Deinitializations
+; main.c	   360      //----------------------------------------------------------------------------
+; main.c	   361      //IO_ADC_ChannelDeInit(IO_ADC_5V_00);
+; main.c	   362      //Free memory if object won't be used anymore
+; main.c	   363  
+; main.c	   364  }
+; main.c	   365  
+; main.c	   366  
 
 	; Module end
 	.end

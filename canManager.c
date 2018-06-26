@@ -576,6 +576,7 @@ void canOutput_sendDebugMessage(CanManager* me, TorqueEncoder* tps, BrakePressur
     else //if (Sensor_LVBattery.sensorValue < 14340)
         LVBatterySOC = .9 + .1 * getPercent(Sensor_LVBattery.sensorValue, 13300, 14340, FALSE);
 
+    //507: LV Battery 
     canMessageCount++;
     byteNum = 0;
     canMessages[canMessageCount - 1].id = canMessageID + canMessageCount - 1;
@@ -608,9 +609,12 @@ void canOutput_sendDebugMessage(CanManager* me, TorqueEncoder* tps, BrakePressur
     canMessages[canMessageCount - 1].data[byteNum++] = Sensor_HVILTerminationSense.sensorValue;
     canMessages[canMessageCount - 1].data[byteNum++] = Sensor_HVILTerminationSense.sensorValue >> 8;
     canMessages[canMessageCount - 1].data[byteNum++] = MCM_getHvilOverrideStatus(mcm);
-    canMessages[canMessageCount - 1].data[byteNum++] = 0;
-    canMessages[canMessageCount - 1].data[byteNum++] = 0;
-    canMessages[canMessageCount - 1].data[byteNum++] = 0;
+    canMessages[canMessageCount - 1].data[byteNum++] = 0;   
+    // Lockout check 
+    if(MCM_getLockoutStatus(mcm) == UNKNOWN) canMessages[canMessageCount - 1].data[byteNum++] = 0;
+    else if(MCM_getLockoutStatus(mcm) == DISABLED) canMessages[canMessageCount - 1].data[byteNum++] = 1;
+    else if(MCM_getLockoutStatus(mcm) == ENABLED) canMessages[canMessageCount - 1].data[byteNum++] = 2;
+    else canMessages[canMessageCount - 1].data[byteNum++] = 0xFF;    
     canMessages[canMessageCount - 1].data[byteNum++] = 0;
     canMessages[canMessageCount - 1].data[byteNum++] = 0;
     canMessages[canMessageCount - 1].length = byteNum;

@@ -281,13 +281,14 @@ void MCM_calculateCommands(MotorController* me, TorqueEncoder* tps, BrakePressur
 	sbyte2 torqueOutput = 0;
 	sbyte2 appsTorque = 0;
 	sbyte2 bpsTorque = 0;
-
+    // temporary change
+    // if (me->torqueMaximumDNm > 50) me->torqueMaximumDNm = 50;
 	appsTorque = me->torqueMaximumDNm * getPercent(tps->percent, me->regen_percentAPPSForCoasting, 1, TRUE) - me->regen_torqueAtZeroPedalDNm * getPercent(tps->percent, me->regen_percentAPPSForCoasting, 0, TRUE);
 	bpsTorque = 0 - (me->regen_torqueLimitDNm - me->regen_torqueAtZeroPedalDNm) * getPercent(bps->percent, 0, me->regen_percentBPSForMaxRegen, TRUE);
 	
 	torqueOutput = appsTorque + bpsTorque;
     //torqueOutput = me->torqueMaximumDNm * tps->percent;  //REMOVE THIS LINE TO ENABLE REGEN
-    MCM_commands_setTorqueDNm(me, torqueOutput);
+    MCM_commands_setTorqueDNm(me, torqueOutput); 
 
     me->HVILOverride = (IO_RTC_GetTimeUS(me->timeStamp_HVILOverrideCommandReceived) < 1000000);
 }
@@ -326,7 +327,7 @@ void MCM_relayControl(MotorController* me, Sensor* HVILTermSense)
 
         me->previousHVILState = FALSE;
     }
-    else  // HVILTermSense->sensorValue == TRUE || me->HVILOverride == TRUE
+    if(HVILTermSense->sensorValue == TRUE || me->HVILOverride == TRUE)
     {
         //If HVIL just changed, send a message
         if (me->previousHVILState == FALSE)
@@ -340,13 +341,20 @@ void MCM_relayControl(MotorController* me, Sensor* HVILTermSense)
         IO_DO_Set(IO_DO_00, TRUE);
         me->relayState = TRUE;
     }
+    else
+    {
+        SerialManager_send(me->serialMan, "HVIL Term Sense is not properly being broadcasted.\n");
+    }
 }
 
 //See diagram at https://onedrive.live.com/redir?resid=F9BB8F0F8FDB5CF8!30410&authkey=!ABSF-uVH-VxQRAs&ithint=file%2chtml
-void MCM_inverterControl(MotorController* me, TorqueEncoder* tps, BrakePressureSensor* bps, ReadyToDriveSound* rtds)
+void MCM_inverterControl(MotorController* me, TorqueEncoder* tps, BrakePressureSensor* bps, ReadyToDriveSound* rtds, SafetyChecker* sc)
 {
-    float4 RTDPercent;
-    RTDPercent = (Sensor_RTDButton.sensorValue == TRUE ? 1 : 0);
+    float4 RTDPercent = 0;
+    if(Sensor_RTDButton.sensorValue == TRUE && sc->faults == FALSE) 
+    {
+        RTDPercent = 1;
+    }
     
 	//----------------------------------------------------------------------------
 	// Determine inverter state
@@ -376,7 +384,7 @@ void MCM_inverterControl(MotorController* me, TorqueEncoder* tps, BrakePressureS
         //Nothing: wait for RTD button
 
         //How to transition to next state ------------------------------------------------
-        if (Sensor_RTDButton.sensorValue == TRUE 
+        if (Sensor_RTDButton.sensorValue == TRUE // Could just put RTDPercent
             && tps->calibrated == TRUE
             && bps->calibrated == TRUE
             && tps->percent < .1
@@ -399,13 +407,23 @@ void MCM_inverterControl(MotorController* me, TorqueEncoder* tps, BrakePressureS
         {
             RTDPercent = 1; //Doesn't matter if button is no longer pressed - RTD light should be on if car is driveable
             SerialManager_send(me->serialMan, "Inverter has been enabled.  Starting RTDS.  Car is ready to drive.\n");
-            RTDS_setVolume(rtds, 1, 1500000);
+            RTDS_setVolume(rtds, 0, 1500000);
             MCM_setStartupStage(me, 4); //MCM_getStartupStage(me) + 1);  //leave this stage since we've already kicked off the RTDS
         }
         break;
 
     case 4: //inverter=disabled, rtds=already started
         //Actions to perform upon entering this state ------------------------------------------------
+        if(MCM_getInverterStatus(me) == DISABLE)
+        {
+            SerialManager_send(me->serialMan, "MCM inverter has been disabled.\n");
+            MCM_setStartupStage(me, 2);
+        }
+        if(MCM_getLockoutStatus(me) == ENABLE)
+        {
+            SerialManager_send(me->serialMan, "MCM lockout has been enabled.\n");
+            MCM_setStartupStage(me, 1);
+        }
         SerialManager_send(me->serialMan, "RTD procedure complete.\n");  //Just send a message
         RTDPercent = 1; //This line is redundant
 
@@ -416,9 +434,18 @@ void MCM_inverterControl(MotorController* me, TorqueEncoder* tps, BrakePressureS
 
     case 5: //inverter=enabled, rtds=notstarted
         //What happens in this state ------------------------------------------------
+        if(MCM_getInverterStatus(me) == DISABLE)
+        {
+            SerialManager_send(me->serialMan, "MCM inverter has been disabled.\n");
+            MCM_setStartupStage(me, 2);
+        }
+        if(MCM_getLockoutStatus(me) == ENABLE)
+        {
+            SerialManager_send(me->serialMan, "MCM lockout has been enabled.\n");
+            MCM_setStartupStage(me, 1);
+        }
         RTDPercent = 1; //This line is redundant
         //This case is here so we don't send a message anymore
-        
         //How to transition to next state ------------------------------------------------
         //Don't. //MCM_setStartupStage(me, MCM_getStartupStage(me) + 1);
         break;
@@ -429,8 +456,11 @@ void MCM_inverterControl(MotorController* me, TorqueEncoder* tps, BrakePressureS
         break;
     }
     
-    //After all that, we can turn the RTD light on/off
-    Light_set(Light_dashRTD, RTDPercent);
+    while(sc->faults == FALSE)
+    {
+        //After all that, we can turn the RTD light on/off
+        Light_set(Light_dashRTD, RTDPercent);
+    }    
 
 }
 
