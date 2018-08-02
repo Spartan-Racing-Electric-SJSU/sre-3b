@@ -609,14 +609,15 @@ void canOutput_sendDebugMessage(CanManager* me, TorqueEncoder* tps, BrakePressur
     canMessages[canMessageCount - 1].data[byteNum++] = Sensor_HVILTerminationSense.sensorValue;
     canMessages[canMessageCount - 1].data[byteNum++] = Sensor_HVILTerminationSense.sensorValue >> 8;
     canMessages[canMessageCount - 1].data[byteNum++] = MCM_getHvilOverrideStatus(mcm);
-    canMessages[canMessageCount - 1].data[byteNum++] = 0;   
+    canMessages[canMessageCount - 1].data[byteNum++] = 0;
+    canMessages[canMessageCount - 1].data[byteNum++] = 0;
+    canMessages[canMessageCount - 1].data[byteNum++] = 0;
     // Lockout check 
-    if(MCM_getLockoutStatus(mcm) == UNKNOWN) canMessages[canMessageCount - 1].data[byteNum++] = 0;
-    else if(MCM_getLockoutStatus(mcm) == DISABLED) canMessages[canMessageCount - 1].data[byteNum++] = 1;
-    else if(MCM_getLockoutStatus(mcm) == ENABLED) canMessages[canMessageCount - 1].data[byteNum++] = 2;
-    else canMessages[canMessageCount - 1].data[byteNum++] = 0xFF;    
-    canMessages[canMessageCount - 1].data[byteNum++] = 0;
-    canMessages[canMessageCount - 1].data[byteNum++] = 0;
+    if(MCM_getLockoutStatus(mcm) == UNKNOWN) canMessages[canMessageCount - 1].data[byteNum++] = 0x99;
+    else if(MCM_getLockoutStatus(mcm) == DISABLED) canMessages[canMessageCount - 1].data[byteNum++] = 0;
+    else if(MCM_getLockoutStatus(mcm) == ENABLED) canMessages[canMessageCount - 1].data[byteNum++] = 1;
+    else canMessages[canMessageCount - 1].data[byteNum++] = 0xFF;
+    canMessages[canMessageCount - 1].data[byteNum++] = MCM_getStartupStage(mcm);
     canMessages[canMessageCount - 1].length = byteNum;
 
     // 50A: Reserved for LV testing
