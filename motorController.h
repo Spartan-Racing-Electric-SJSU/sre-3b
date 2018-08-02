@@ -91,7 +91,7 @@ void MCM_readTCSSettings(MotorController* me, Sensor* TCSSwitchUp, Sensor* TCSSw
 void MCM_calculateCommands(MotorController* mcm, TorqueEncoder* tps, BrakePressureSensor* bps);
 
 void MCM_relayControl(MotorController* mcm, Sensor* HVILTermSense);
-void MCM_inverterControl(MotorController* mcm, TorqueEncoder* tps, BrakePressureSensor* bps, ReadyToDriveSound* rtds);
+void MCM_inverterControl(MotorController* mcm, TorqueEncoder* tps, BrakePressureSensor* bps, ReadyToDriveSound* rtds, SafetyChecker* sc);
 
 void MCM_parseCanMessage(MotorController* mcm, IO_CAN_DATA_FRAME* mcmCanMessage);
 
