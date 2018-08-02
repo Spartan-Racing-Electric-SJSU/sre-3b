@@ -614,10 +614,10 @@ void canOutput_sendDebugMessage(CanManager* me, TorqueEncoder* tps, BrakePressur
     canMessages[canMessageCount - 1].data[byteNum++] = 0;
     // Lockout check 
     if(MCM_getLockoutStatus(mcm) == UNKNOWN) canMessages[canMessageCount - 1].data[byteNum++] = 0x99;
-    else if(MCM_getLockoutStatus(mcm) == DISABLED) canMessages[canMessageCount - 1].data[byteNum++] = 0;
-    else if(MCM_getLockoutStatus(mcm) == ENABLED) canMessages[canMessageCount - 1].data[byteNum++] = 1;
-    else canMessages[canMessageCount - 1].data[byteNum++] = 0xFF;
-    canMessages[canMessageCount - 1].data[byteNum++] = MCM_getStartupStage(mcm);
+        else if(MCM_getLockoutStatus(mcm) == DISABLED) canMessages[canMessageCount - 1].data[byteNum++] = 0;
+        else if(MCM_getLockoutStatus(mcm) == ENABLED) canMessages[canMessageCount - 1].data[byteNum++] = 1;
+        else canMessages[canMessageCount - 1].data[byteNum++] = 0xFF;
+    canMessages[canMessageCount - 1].data[byteNum++] = MCM_getStartupStage(mcm);//showing which state in the RTD state machine
     canMessages[canMessageCount - 1].length = byteNum;
 
     // 50A: Reserved for LV testing
