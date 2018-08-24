@@ -15,7 +15,7 @@ struct _ReadyToDriveSound
 ReadyToDriveSound* RTDS_new(void)
 {
     ReadyToDriveSound* rtds = (ReadyToDriveSound*) malloc(sizeof(struct _ReadyToDriveSound));
-    RTDS_setVolume(rtds, 0, 1000000); //1000000 is 1 second
+    RTDS_setVolume(rtds, 0, 1000000); //1,000,000 micro-seconds is 1 second
     return rtds;
 }
 

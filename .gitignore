@@ -41,7 +41,4 @@ build/*
 !build/main.hex
 
 release/*
-cc3232a
-cc12248a
-
-AddAPDB.html
+cc*a

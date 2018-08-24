@@ -87,17 +87,17 @@ void sensors_updateSensors(void)
 	*/
 
     //Wheel speed sensors ---------------------------------------------------
-	Sensor_WSS_FL.ioErr_signalGet = IO_PWD_FreqGet(IO_PWD_10, &Sensor_WSS_FL.sensorValue);
-	Sensor_WSS_FR.ioErr_signalGet = IO_PWD_FreqGet(IO_PWD_08, &Sensor_WSS_FR.sensorValue);
-	Sensor_WSS_RL.ioErr_signalGet = IO_PWD_FreqGet(IO_PWD_11, &Sensor_WSS_RL.sensorValue);
-	// Sensor_WSS_RR.ioErr_signalGet = IO_PWD_FreqGet(IO_PWD_09, &Sensor_WSS_RR.sensorValue);
+	Sensor_WSS_FL.ioErr_signalGet = IO_PWD_FreqGet(IO_PWD_10, &Sensor_WSS_FL.sensorValue); //IO_PIN_274
+	Sensor_WSS_FR.ioErr_signalGet = IO_PWD_FreqGet(IO_PWD_08, &Sensor_WSS_FR.sensorValue); //IO_PIN_275
+	Sensor_WSS_RL.ioErr_signalGet = IO_PWD_FreqGet(IO_PWD_11, &Sensor_WSS_RL.sensorValue); //IO_PIN_267
+	Sensor_WSS_RR.ioErr_signalGet = IO_PWD_FreqGet(IO_PWD_09, &Sensor_WSS_RR.sensorValue); //IO_PIN_268 //Rear right WSS dead, confirmed by Brian A. w/ oscilloscope on May 5, 2018
 
     //Switches / Digital ---------------------------------------------------
-	Sensor_RTDButton.ioErr_signalGet = IO_DI_Get(IO_PIN_263, &Sensor_RTDButton.sensorValue);
-	Sensor_EcoButton.ioErr_signalGet = IO_DI_Get(IO_DI_01, &Sensor_EcoButton.sensorValue);
-	Sensor_TCSSwitchUp.ioErr_signalGet = IO_DI_Get(IO_DI_02, &Sensor_TCSSwitchUp.sensorValue);
-	Sensor_TCSSwitchDown.ioErr_signalGet = IO_DI_Get(IO_DI_03, &Sensor_TCSSwitchDown.sensorValue);
-	Sensor_HVILTerminationSense.ioErr_signalGet = IO_DI_Get(IO_PIN_253, &Sensor_HVILTerminationSense.sensorValue);
+	Sensor_RTDButton.ioErr_signalGet = IO_DI_Get(IO_DI_00, &Sensor_RTDButton.sensorValue); //IO_PIN_263
+	Sensor_EcoButton.ioErr_signalGet = IO_DI_Get(IO_DI_01, &Sensor_EcoButton.sensorValue); //IO_PIN_256
+	Sensor_TCSSwitchUp.ioErr_signalGet = IO_DI_Get(IO_DI_02, &Sensor_TCSSwitchUp.sensorValue); //IO_PIN_262
+	Sensor_TCSSwitchDown.ioErr_signalGet = IO_DI_Get(IO_DI_03, &Sensor_TCSSwitchDown.sensorValue); //IO_PIN_255
+	Sensor_HVILTerminationSense.ioErr_signalGet = IO_DI_Get(IO_DI_07, &Sensor_HVILTerminationSense.sensorValue); //IO_PIN_253
 
     //Other stuff ---------------------------------------------------
     //Battery voltage (at VCU internal electronics supply input)
@@ -115,7 +115,7 @@ void Light_set(Light light, float4 percent)
     {
     //PWM devices
 	case Light_brake:
-		// IO_PWM_SetDuty(IO_PWM_02, duty, NULL);  //Pin 116
+		IO_PWM_SetDuty(IO_PWM_02, duty, NULL);  //IO_PIN_117 //somehow it was commented as pin 116?
 		break;
 
     case Cooling_waterPump:
