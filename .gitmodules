@@ -1,0 +1,3 @@
+[submodule "PCAN"]
+	path = PCAN
+	url = https://github.com/Spartan-Racing-Electric-SJSU/PCAN
